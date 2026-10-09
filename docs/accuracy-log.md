@@ -49396,3 +49396,70 @@ positive control is.
 **Gates:** negative + positive controls as above; `audit-data` clean on the
 live store at the baseline 4 HIGH. `audit-data.mjs` is **not** one of the six
 path-filter files, so this creates no build-data run.
+
+## 2026-10-09 (14:4xZ) — the last decorative control in `merge-name-test` is gone, and a frozen fixture could never have fixed it
+
+**What was wrong.** `merge-name-test.mjs` holds every control here to the same
+standard — disagree on at least one pinned case or exit 1 as decoration — with
+**one exemption**: the issuer arm's both-halves pre-filter printed
+*"DECORATIVE on this store, as the caps arm's equivalent is — labelled, not
+claimed"* and skipped the exit. That is the one shape this record calls worse
+than no gate, because a reader cannot tell an exemption from a pass, and the
+queue's standing prescription was to build it a **frozen fixture**.
+
+**THE PRESCRIPTION WAS IMPOSSIBLE, AND THE SHIPPED COMMENT ALREADY SAID SO.**
+`merge-4i`'s own note claims the condition is subsumed **by construction**, not
+merely inert on this store: both disjuncts force `w >= 3` whenever
+`joined >= 1`, `joined >= 1` holds for any string drawn from the column the
+maps are built from, and a whole string attested 3+ times contributes each of
+its halves as a token 3+ times. So a fixture where dropping the pre-filter
+changes an answer would have to be a case production can never ask — and
+pinning one would pin behaviour that does not exist, which is exactly the
+`ExxonMobil` trap this same file documents 230 lines above, met in reverse.
+*Third instance of a queued prescription being wrong about WHERE or WHETHER
+rather than about the symptom* (`fb-vanished` impossible, the vesting ranking
+aimed at the wrong stage, this one unbuildable).
+
+**What shipped instead** is an assertion of the unreachability over the domain
+production actually asks about — every distinct **RAW** issuer value in the
+store, 15,544 of them (raw, not `issWhole`'s keys, which are lowercased and
+would answer 0 for every string by construction; that clean zero is already
+recorded at line 421 as a tell). **The pre-filter changes the answer on 0 of
+15,544.** It can fail, which the label could not: a widening that makes
+`joined === 0` reachable, or a change to how the halves are cut, turns the
+pre-filter back into a live guard and the check prints the strings where it is
+load-bearing and says merge-4i's "SUBSUMED" comment is stale.
+
+**AND THE ASSERTION NEEDED ITS OWN POSITIVE CONTROL, WHICH FAILED FIRST AND WAS
+RIGHT TO.** A broken comparison and a subsumed condition read the same 0. My
+first probe was the documented out-of-population `ExxonMobil` — and the control
+reported *"the comparison cannot see a difference"*, correctly: its halves are
+attested **5 and 5**, so the pre-filter is not what refuses it and both variants
+split it. The file's note is right that `ExxonMobil` is unreachable; it is
+unreachable **for a different reason than this condition**. ***A probe chosen
+because it is out-of-population is not thereby a probe the condition under test
+refuses*** — the sibling of *a case protected twice proves neither*, on the
+instrument instead of the fixture.
+
+So the probe is now **CONSTRUCTED from the store at run time**: weld a real
+spaced issuer value at a seam one of whose halves is attested fewer than three
+times, require the welded form absent from the column, and require the two
+variants to disagree. 1,398 such candidates exist; the check takes the first
+and prints it — today `"BAT Stock Fund-BAT AmericanDepository Shares"`, shipped
+`null` against the no-prefilter repair. **A hardcoded probe would have ROTTED**:
+these attestations move on every DOL refresh, and a probe that quietly went
+inert would turn the control back into the decoration it replaced. If no probe
+exists at all, the check says so and exits 1 rather than reporting a zero.
+
+**State:** `merge-name-test.mjs` exits **0**, **0 decorative controls**, 33
+seconds. Not a path-filter file, so no build-data run.
+
+**NOT WIRED INTO CI, and the reason is the record's own standard rather than
+caution.** Every pin's verdict is read off live store attestations, and this
+test's status has already flipped between 0 and 1 **three times** on store
+drift alone — twice because a repair arm destroyed the evidence its own control
+depended on. A gate that goes red on a DOL refresh without anything being wrong
+is the habitually-red gate that made ten consecutive `site-test` failures
+invisible. Making it CI-safe means freezing the attestation evidence the pins
+read, which is a larger change than the control fixed here and is named, not
+done.

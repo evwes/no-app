@@ -38,6 +38,12 @@ const whole = new Map(), tok = new Map(), caseOf = new Map();
  * test therefore has to build both, because feeding the issuer arm the NAME
  * column's evidence is precisely the defect the issuer control exists to catch. */
 const issWhole = new Map(), issTok = new Map();
+/* THE DISTINCT RAW ISSUER VALUES — the population production asks the issuer
+ * arm about, and the only honest domain for the subsumption check below.
+ * RAW and not `issWhole`'s keys: those are lowercased, and SEAM needs
+ * [a-z][A-Z], so a lowercased domain answers 0 for every string BY
+ * CONSTRUCTION — recorded at line 421 as a clean zero that was the tell. */
+const issRaw = new Set();
 for (let s = 0; s < 64; s++) {
   const E = JSON.parse(fs.readFileSync(`${R}/data/lineups/${String(s).padStart(2,"0")}.json`, "utf8"));
   for (const [, e] of Object.entries(E)) {
@@ -45,6 +51,7 @@ for (let s = 0; s < 64; s++) {
     for (const f of e.funds) {
       const v = String(f.iss || "").trim();
       if (v) {
+        issRaw.add(v);
         issWhole.set(v.toLowerCase(), (issWhole.get(v.toLowerCase()) || 0) + 1);
         for (const t of v.split(/[^A-Za-z]+/))
           if (t.length > 1) issTok.set(t.toLowerCase(), (issTok.get(t.toLowerCase()) || 0) + 1);
@@ -517,11 +524,86 @@ for (const [f, label] of [
   console.log(`\nNEGATIVE CONTROL — ${label}:\n  disagrees on ${brk.length} of ${ISS_CASES.length}:`);
   for (const x of brk) console.log(`    ${x}`);
   if (!brk.length) {
-    /* the halves test is a PRE-FILTER and is measured DECORATIVE on this store
-     * (0 of 188 rows), exactly as the caps arm's is; it is named rather than
-     * carried as reassurance, and the whole-store 0 is in merge-4i's comment. */
-    if (f === issNoHalves) console.log(`  DECORATIVE on this store, as the caps arm's equivalent is — labelled, not claimed`);
-    else { console.log(`  DECORATIVE: this control cannot fail — it is not testing anything`); process.exitCode = 1; }
+    /* THE HALVES PRE-FILTER IS SUBSUMED, AND AS OF 2026-10-09 THAT IS ASSERTED
+     * OVER THE WHOLE POPULATION RATHER THAN LABELLED AWAY.
+     *
+     * It read "DECORATIVE on this store (0 of 188 rows)" and exempted itself
+     * from the exit-1 every other control here is held to — which is the one
+     * shape this record calls worse than no gate, because a reader cannot tell
+     * an exemption from a pass. But a frozen fixture CANNOT fix it: merge-4i's
+     * own comment makes the stronger claim that the condition is unreachable BY
+     * CONSTRUCTION, so a case where dropping it changes an answer would have to
+     * be a case production can never ask, and pinning one would pin behaviour
+     * that does not exist — the `ExxonMobil` trap, 230 lines above, in reverse.
+     *
+     * So the control becomes an assertion of the UNREACHABILITY instead, over
+     * the domain production actually asks about: every distinct RAW issuer
+     * value in the store. The arithmetic the claim rests on is that both
+     * disjuncts force `w >= 3` whenever `joined >= 1`, and `joined >= 1` holds
+     * for any string drawn from the column the maps are built from; a whole
+     * string attested 3+ times contributes each of its halves as a token 3+
+     * times, so the pre-filter can never be the condition that refuses.
+     *
+     * This CAN fail, which the label could not: a later widening that makes
+     * `joined === 0` reachable, or a change to how the halves are cut, turns
+     * the pre-filter back into a live guard and this prints the strings where
+     * it is load-bearing. It is a PERFORMANCE claim being checked, not a
+     * safety one — two map lookups instead of building a candidate string at
+     * every split point — and that is what the message says. */
+    if (f === issNoHalves) {
+      const live = [];
+      for (const v of issRaw) {
+        const a = iss(v) || null, b = f(v) || null;
+        if (a !== b) live.push(`${JSON.stringify(v)}: shipped ${JSON.stringify(a)} vs no-prefilter ${JSON.stringify(b)}`);
+      }
+      /* POSITIVE CONTROL FOR THE ASSERTION ITSELF — a zero is only a finding
+       * once the comparison has been shown able to see a difference, because a
+       * broken comparison and a subsumed condition read the same 0.
+       *
+       * THE PROBE IS DERIVED FROM THE STORE, NOT HARDCODED, and that is the
+       * whole design. My first version pinned `ExxonMobil`, which this file
+       * documents 240 lines above as out of the issuer population — and the
+       * control FAILED, correctly: its halves are attested 5 and 5, so the
+       * pre-filter is not what refuses it and the predicate splits it under
+       * both variants. The file's own note is right that `ExxonMobil` is
+       * unreachable; it is unreachable for a different reason than this
+       * condition. *A probe chosen because it is out-of-population is not
+       * thereby a probe the condition under test refuses.*
+       *
+       * So the probe is CONSTRUCTED to be one the pre-filter is the sole
+       * refuser of: weld a real spaced issuer value at a seam one of whose
+       * halves is attested fewer than 3 times, and require the welded form to
+       * be absent from the column (`joined === 0`, which makes `w > joined*3`
+       * degenerate to `w > 0` — the very branch the ExxonMobil note says
+       * production cannot reach). A hardcoded probe would also ROT: these
+       * attestations move on every DOL refresh, and a probe that quietly became
+       * inert would turn this control back into decoration. */
+      {
+        let probe = null;
+        for (const v of issRaw) {
+          const parts = v.split(" ");
+          for (let k = 1; k < parts.length && !probe; k++) {
+            const L = parts[k - 1], Rt = parts[k];
+            if (!/^[A-Za-z]{4,}$/.test(L) || !/^[A-Z][a-z]{2,}$/.test(Rt)) continue;
+            if (issTok.get(L.toLowerCase()) >= 3 && issTok.get(Rt.toLowerCase()) >= 3) continue;
+            const welded = parts.slice(0, k - 1).concat(L + Rt, parts.slice(k + 1)).join(" ");
+            if (issWhole.has(welded.toLowerCase())) continue;
+            if ((iss(welded) || null) !== (f(welded) || null)) probe = { welded, v };
+          }
+          if (probe) break;
+        }
+        if (!probe) { console.log(`  NO PROBE EXISTS where the pre-filter is the sole refuser — the comparison cannot be shown able to see a difference, so this assertion is decoration`); process.exitCode = 1; }
+        else console.log(`  comparison verified on a constructed out-of-column probe: ${JSON.stringify(probe.welded)} -> shipped ${JSON.stringify(iss(probe.welded) || null)} vs no-prefilter ${JSON.stringify(f(probe.welded) || null)}`);
+      }
+      console.log(`  SUBSUMED, asserted over all ${issRaw.size.toLocaleString()} distinct raw issuer values — the population production asks:`);
+      console.log(`    the pre-filter changes the answer on ${live.length} of them (a PRE-FILTER, so 0 is the claim)`);
+      for (const x of live.slice(0, 8)) console.log(`      ${x}`);
+      if (live.length) {
+        console.log(`  the both-halves test is NO LONGER a pre-filter — it is now load-bearing on the strings above,`);
+        console.log(`  so it needs pinned cases and merge-4i's "SUBSUMED" comment is stale`);
+        process.exitCode = 1;
+      }
+    } else { console.log(`  DECORATIVE: this control cannot fail — it is not testing anything`); process.exitCode = 1; }
   }
 }
 if (issBad) process.exitCode = 1;

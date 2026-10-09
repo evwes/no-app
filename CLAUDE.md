@@ -2655,12 +2655,32 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   THIS ENTRY HAS NOW GONE STALE THREE TIMES IN BOTH DIRECTIONS** (0 → 1 → 0),
   which is itself the point: *a queue entry records what was true when it was
   written.* The file now handles the hazard honestly rather than failing — it
-  sets `process.exitCode = 1` for ANY control that goes decorative, with one
-  explicit exemption: the both-halves PRE-FILTER reads 0 of 32 and is
-  **labelled** decorative instead of claimed (`merge-name-test:523`). So the
-  prescribed frozen-fixture remedy is still unbuilt, and what it would buy is
-  one control made load-bearing — not a red test. It remains OUT of CI, which
-  is correct while any control is decorative.
+  sets `process.exitCode = 1` for ANY control that goes decorative.
+  **THE LAST EXEMPTION IS GONE AS OF 2026-10-09 14:4xZ, AND THE PRESCRIBED
+  FROZEN FIXTURE COULD NEVER HAVE BUILT IT.** The both-halves PRE-FILTER was
+  labelled decorative rather than claimed; `merge-4i`'s own comment says it is
+  subsumed **by construction** (both disjuncts force `w >= 3` whenever
+  `joined >= 1`, which holds for any string drawn from the column the maps are
+  built from), so a fixture where dropping it changes an answer would pin
+  behaviour production cannot reach — the `ExxonMobil` trap in reverse, and the
+  **third** queued prescription wrong about WHETHER rather than about the
+  symptom. What shipped is an assertion of the unreachability over all **15,544
+  distinct RAW issuer values** (raw, not the lowercased keys, which answer 0 by
+  construction): **the pre-filter changes the answer on 0**, and the check
+  prints the strings and exits 1 if that ever stops being true.
+  **Its own positive control FAILED FIRST and was right to:** `ExxonMobil` is
+  out-of-population but its halves are attested **5 and 5**, so the pre-filter
+  is not what refuses it — ***a probe chosen because it is out-of-population is
+  not thereby a probe the condition under test refuses.*** The probe is now
+  CONSTRUCTED from the store each run (weld a real spaced issuer at a seam with
+  a half attested <3; 1,398 candidates exist) because a hardcoded one would rot
+  on the next DOL refresh and go quietly inert.
+  **0 decorative controls, exits 0, 33 seconds — and STILL OUT OF CI on
+  purpose:** every pin's verdict is read off live store attestations and this
+  test's status has flipped three times on drift alone, so CI-safety means
+  freezing the evidence the pins read, which is named and not done. A gate that
+  reddens on a refresh with nothing wrong is the habitually-red gate that hid
+  ten `site-test` failures. `docs/accuracy-log.md` 2026-10-09 (14:4xZ).
   **THE ORIGINAL DIAGNOSIS, which is what made it worth recording (2026-10-02
   20:0xZ):** The failure is the **ISSUER arm's
   `iss-noshipped` control reading 0 of 32** where the record says 1, and the
