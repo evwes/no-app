@@ -53,10 +53,16 @@ number asserted again.
   `[skip ci]`** — a push without it cancels the run and its hours;
 - a run in flight **on main** also blocks the mirror (a force push under a
   run that is about to commit to main is the unsafe case);
-- keep working (sections 5–6); arm a `send_later` check-in for ~10 minutes
-  after the run's expected end (full re-parse ≈ 55–90 min, OCR-heavy 3h+,
-  no-op hour ≈ 7 min) with the verdict instructions of section 4, so the
-  verdict does not wait for the next hourly wake.
+- keep working (sections 5–6) and let the **next hourly wake** carry the
+  verdict. **Do NOT arm a `send_later` check-in (owner directive 2026-10-09).**
+  Every one of those raises a Deny/Allow prompt the owner has to click — the
+  tool is in `permissions.allow` and prompts regardless, because only the
+  **Auto** permission mode runs non-edit tool calls unattended and the mode is
+  a UI dropdown no session can set for itself. A per-run check-in buys about
+  thirty minutes of verdict latency against an interruption every single
+  cycle, around the clock. That is a bad trade and the loop does not make it.
+  The ONLY case for one is a run whose end is far from the next wake and whose
+  result gates something time-critical — and then say so when arming it.
 
 ## 3. No run in flight? Dispatch — every hour
 
