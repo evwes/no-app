@@ -2230,6 +2230,39 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   **It also subsumes two open queue items by construction:** the matcher reads
   `Dodge and Cox Stock` → DODGX, which is the `and`-spelling item (228 rows),
   and it pins share classes, which is the store-vs-page item's blocker.
+  **SIZED 2026-10-09 01:3xZ, AND THE 43.3% WAS NOT THE GAIN — THE GAIN IS
+  14.1%, AND 93% OF IT IS ASTERISKS.** Over all **1,721,920 published+served
+  rows** (549,416 distinct issuer|name pairs), asking the SHIPPED
+  `lookupTicker` and `resolveHolding` side by side:
+
+  | | rows | |
+  |---|---|---|
+  | resolves today (UPPER bound) | 701,841 | |
+  | none today, SEC **EXACT** | **17,732** | would ASSERT a symbol |
+  | none today, SEC **AMBIGUOUS** | **224,201** | would publish a COMPARABLE (*) |
+  | none today, SEC silent | 778,146 | still a gap |
+
+  **So 241,933 rows / 14.1% of published rows would gain a symbol, and only
+  17,732 of them an ASSERTED one** — the other 92.7% are asterisked
+  approximations, because filers usually do not state the share class. *The
+  43.3% I published one turn earlier is the MATCHER's own coverage of fund-like
+  rows, most of which the page already resolves; quoting it as the gain
+  over-stated this item by ~3x.* Family gains: Fidelity 1,637 exact / 47,955
+  ambiguous, Vanguard 3,020 / 21,146, JPMorgan 798 / 10,702, iShares 1,078 / 47.
+  **Participants were NOT computed** — the bucket sets were built and never
+  printed — so there is no people figure for this item yet and none should be
+  quoted.
+  **THE GAIN IS A LOWER BOUND BY CONSTRUCTION:** `lookupTicker` is asked without
+  renderRow's later gates (the `tab === "menu"` gate, `stockRow`, the
+  suppressors), so "resolves today" is an upper bound. Fixtures confirm the
+  instrument in both directions: `Dodge and Cox Stock` reads page `null` / sec
+  `DODGX*`, and `Costco Wholesale Corporation` reads null on BOTH — employer
+  stock is no registered series, which is why the synthetic-plan shortcut cannot
+  inflate the gain.
+  **WHAT THE SIZING MAKES DEBATABLE RATHER THAN OBVIOUS:** publishing 224,201
+  new asterisked comparables is a large increase in hedged content for a modest
+  increase in identification, and a comparable is still a published claim. The
+  asserted 17,732 are the clean half. **Owner's call on the comparable half.**
   **NOT SHIPPED AND NOT TO BE SHIPPED BLIND.** A ticker is what the page
   ASSERTS, so this moves hundreds of thousands of published symbol cells and
   must be sized through the tracked renderer first — gains, SWAPS and losses

@@ -7,6 +7,53 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-09 (01:3xZ) — the SEC wiring sized, and the 43.3% I published an hour earlier was the wrong number
+
+**What was wrong.** I reported the SEC matcher's **43.3%** coverage of fund-like
+rows as the size of the ticker gain, and called it "the highest-value item on
+the board". That figure is the MATCHER's own coverage; **most of the rows it
+covers the page already resolves.** Quoting it as a gain over-stated the item by
+roughly 3x.
+
+**The gain, measured.** Over all **1,721,920 published+served rows** (549,416
+distinct issuer|name pairs), asking the two shipped resolvers side by side:
+resolves today 701,841 (upper bound) · **none today + SEC EXACT 17,732** ·
+**none today + SEC AMBIGUOUS 224,201** · none today + SEC silent 778,146. So
+**241,933 rows / 14.1% would gain a symbol and only 17,732 an ASSERTED one** —
+92.7% of the gain is asterisked approximation, because filers usually do not
+state the share class.
+
+**Which changes the decision rather than just the number.** 224,201 new
+asterisked comparables is a large increase in hedged published content for a
+modest increase in identification, and a comparable is still a published claim.
+The asserted 17,732 are the clean half and separable.
+
+**Three instrument lessons, all paid for in this one sizing.**
+
+1. **A background process gets CPU only while a turn is active**, so the
+   full-store render stalled at 0 bytes for ten minutes and had to be killed.
+   The recorded rule is that the fix is not patience but narrowing — met again.
+2. **Memoising renderRow on distinct triples was still too slow**: 580s of
+   FOREGROUND cpu did not finish, because renderRow is a vm-evaluated slice that
+   runs the whole per-row block. The ticker cell needs one function, and
+   `buildRenderer().fns.lookupTicker` exists precisely so a caller can ask for
+   one cell without re-slicing app.js. *Narrow to the function that computes the
+   cell, not to the rows.*
+3. **And the bias has to be named with its DIRECTION.** `lookupTicker` is asked
+   without renderRow's later gates, so "resolves today" is an upper bound and the
+   gain is a LOWER bound — the safe direction for a number used to justify work.
+
+**Fixtures ran before the count and validated the instrument in both
+directions:** `Dodge and Cox Stock` reads page `null` / sec `DODGX*`, which is
+the `and`-spelling queue item resolving itself, and `Costco Wholesale
+Corporation` reads null on BOTH, confirming that employer stock is no registered
+series and so the synthetic-plan shortcut cannot inflate the gain.
+
+**And one figure is simply missing rather than estimated: participants.** The
+per-bucket plan sets were built and never printed, so this item has NO people
+count and none should be quoted until it is re-run. *A figure that was not
+computed is not a figure that is small.*
+
 ## 2026-10-09 (01:0xZ) — the owner offered four issuer fund lists; the tickers were already in the repo, with share classes, and the page reads none of them
 
 **What prompted it.** The owner offered to supply fund lists from Fidelity,
