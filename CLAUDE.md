@@ -2651,10 +2651,18 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   (`Plan Loan Default Fund` ×194, `Loan Collateral Fund` ×76, `Loan Escrow
   Fund` ×16). All publish no ticker and no fee, so the harm is the CLAIM alone.
   `docs/accuracy-log.md` 2026-10-02 (18:2xZ).
-- **`scripts/merge-name-test.mjs` EXITS 1 AGAIN, AND THE CAUSE IS A GATE THAT
-  ERASES ITS OWN EVIDENCE (2026-10-02 20:0xZ).** This entry read "EXITS 0, not
-  1" — measured and true when written, wrong now; it exits 1 both stashed to
-  HEAD and with a diff applied. The failure is the **ISSUER arm's
+- **`scripts/merge-name-test.mjs` EXITS 0 — RE-MEASURED 2026-10-09 14:3xZ, AND
+  THIS ENTRY HAS NOW GONE STALE THREE TIMES IN BOTH DIRECTIONS** (0 → 1 → 0),
+  which is itself the point: *a queue entry records what was true when it was
+  written.* The file now handles the hazard honestly rather than failing — it
+  sets `process.exitCode = 1` for ANY control that goes decorative, with one
+  explicit exemption: the both-halves PRE-FILTER reads 0 of 32 and is
+  **labelled** decorative instead of claimed (`merge-name-test:523`). So the
+  prescribed frozen-fixture remedy is still unbuilt, and what it would buy is
+  one control made load-bearing — not a red test. It remains OUT of CI, which
+  is correct while any control is decorative.
+  **THE ORIGINAL DIAGNOSIS, which is what made it worth recording (2026-10-02
+  20:0xZ):** The failure is the **ISSUER arm's
   `iss-noshipped` control reading 0 of 32** where the record says 1, and the
   file correctly calls its own control decorative.
   **The arithmetic:** the control's case was `AllianceBernstien → Alliance
