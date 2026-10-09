@@ -1189,6 +1189,26 @@ published cells:
   withdrawing `Mutual fund` needs new display wording, so a guard and the claim
   it licenses are one change. Both are display-side; `PARSER_VERSION` stays 203.
   `docs/accuracy-log.md` 2026-10-09 (18:4xZ).
+  **AND THE GENERAL FORM — ANY INSURER IN THE ISSUER CELL — WAS SIZED AND
+  REFUTED 2026-10-09 20:2xZ. Do not rebuild it.** Legal-entity vocabulary only,
+  type cell naming no vehicle, a fee published: 12,698 rows / 2,597 plans /
+  2,843,940 ppl / $15.9B — but its top 30 is **two already-gated families** (the
+  0.35 stable-value item, and the `Fidelity Freedom Index <vintage> Instl Prem`
+  ladder at 0.12 under Empower), and the new residue that ASSERTS a registered
+  symbol is 4,310 rows / 746 plans / 628,589 ppl. **`data/fees/NN.json`'s
+  `a: {cm,fe,cr}` is a free Schedule A witness (64,472 acks, 9,910 carry one)
+  and it corroborates only 51.4%** — so *the issuer cell's evidential value is
+  now PRICED at approximately nothing*, the third and first-quantified instance
+  of **the issuer cell routinely holds the CUSTODIAN or PLATFORM**. The seeded
+  draw says why, 20 of 20: every row names a RETAIL fund with its share class
+  stated (`Admiral`, `R-6`, `R3`, `Investor Shares`), and **a separate account
+  has no such class** — the insurer is the platform and the symbol and fee are
+  right. *A witness keyed on the PLAN cannot settle a question about a ROW*: the
+  Schedule A is TRUE and attaches to the menu's stable-value row, not the one
+  being judged. **Survives, unsized:** a name carrying the insurer's OWN prefix
+  (`TA Vanguard LifeStrategy Mod Gr`, VSMGX at 0.1) — and the record already
+  calls a wrapper lead correct as filed, so it needs the registry, not a wider
+  screen. `docs/accuracy-log.md` 2026-10-09 (20:2xZ).
 - Stable value / guaranteed accounts publishing a fabricated ER: 4,669 rows /
   **7,389,704 ppl**, 4,571 of them at exactly 0.35.
   **AND ITS CLEANEST SUB-CASE IS SIZED AND AWAITING A DECISION — FOUND BY THE

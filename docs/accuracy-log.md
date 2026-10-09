@@ -50318,3 +50318,101 @@ a CREF account `Mutual fund` on the 4,672 rows. Both are display-side,
 `PARSER_VERSION` stays 203, and (b) needs the crawlable pages regenerated and
 read. **Found outside the item and unsized: the `TIAA Access` T3/T4 sub-account
 family**, same vehicle defect, third brand, living inside the ambiguous half.
+
+## 2026-10-09 (20:2xZ) — the insurer in the ISSUER CELL is not a witness that the plan holds a wrapper: my screen refuted at 51.4% corroboration and 20 of 20 on its own draw
+
+**Found by the 19:07 draw, worked as the 20:07 cycle's item.** Trinity Glass
+International (281 ppl, 25 funds, ratio 0.999) publishes every row with issuer
+`Voya Retirement Insurance and Annuity Company` and **every row's TYPE CELL
+BLANK**, so nine rows publish a fee — `American Funds Am Balanced` 0.4,
+`JPMorgan US Equity Fund` 0.44, `MFS Intl Intrinsic Val Fnd` 0.6 — while the
+TICKER is correctly withheld on all 25. **The control sat one plan away in the
+same draw:** Student Transport files the same house's `American Funds 2030 TD`
+typed `Pooled separate account` and correctly publishes NO fee. Same product
+family, one typed and suppressed, one blank-typed and priced.
+
+**The hypothesis was the recorded vehicle defect reached by a new door.**
+`fund-er.js:1451`'s `pooled` veto reads the NAME and the TYPE CELL and **never
+the issuer cell**, and its own comment already names the harm — an insurance
+separate account resolving to the underlying fund is *"the claim that the plan
+holds the Vanguard fund itself. It does not; it holds a separate account that
+invests in it, at the separate account's higher cost."* The shipped
+annuity-contract guard (`lib-disclose:2944`) is anchored on the filer's own
+phrase in the NAME, declines to fill a blank type because *"filling a blank is
+NEW COVERAGE and a different claim"*, and likewise never reads the issuer cell.
+So the issuer-cell route is genuinely unreached, and withdrawing a fabricated
+fee is one-directional.
+
+**The broad class is real in size and is TWO ALREADY-GATED FAMILIES wearing a
+new label.** Legal-entity vocabulary only (`insurance|annuity|annuities|
+assurance|life ins` — never a house or brand, because a count keyed on a
+vocabulary measures the vocabulary), issuer cell matching, type cell naming no
+vehicle, a fee published: **12,698 rows / 2,596 acks / 2,597 plans / 2,843,940
+ppl / $15,922,335,622**, of which 10,970 have a blank type and 1,328 are typed
+`Mutual fund`. Reading its top 30 splits it:
+
+* the **guaranteed / stable-value family at exactly 0.35** — `Guaranteed
+  Long-Term` $277,699,196 at 14.7% of its menu, `NJM Stable Value Fund`
+  $213,694,133 at 22.5%, `MetLife Guaranteed Account`, `Securian Guaranteed
+  Return Account B2`, `Lincoln Stable Value Account`, `TIAA—Stable Value Fund`.
+  This is the recorded owner-gated stable-value item (4,669 rows / 7.39M ppl,
+  4,571 at exactly 0.35), independently re-found.
+* the **`Fidelity Freedom Index <vintage> Instl Prem` ladder at 0.12**, all
+  issued by Empower Annuity Insurance Company of America — six vintages between
+  $52M and $100M. That is the 17:07 ladder finding, same fee and same shape.
+
+**EXCLUDING both gated families by name, the new question is 4,310 rows / 746
+acks / 746 plans / 628,589 ppl / $4,241,963,922 ASSERTING a registered fund's
+symbol** (never an asterisked comparable) with an insurer in the issuer cell and
+no vehicle in the type cell, 3,456 of them publishing a fee too.
+
+**AND IT IS REFUTED, BY A WITNESS ALREADY IN OUR DATA AND THEN BY ITS OWN
+DRAW.** `data/fees/NN.json` carries `a: {cm, fe, cr}` — Schedule A insurance
+commissions — for any ack whose filing attached one, and a Schedule A is how a
+plan reports an insurance contract it holds. That is evidence from the FILING
+rather than from a name, available for **64,472 acks, 9,910 carrying one**, and
+it was free: *before adding a source, ask what the pipeline already reads.*
+Measured across the sub-case: **Schedule A corroborates 2,216 of 4,310 rows —
+51.4%.** A coin toss is not a gate.
+
+**The seeded uniform draw of 20 then said why, and it is unanimous: every single
+drawn row names a RETAIL MUTUAL FUND WITH ITS SHARE CLASS STATED** —
+`American Funds 2020 Target Date Retirement Fund Class R-6` (RRCTX),
+`Vanguard Target Retirement 2040 Fund Investor Shares` (VFORX),
+`Vanguard Wellington Admiral` (VWENX), `Vanguard 500 Index Fund Admiral`
+(VFIAX), `MFS Value, Class R3` (MEIHX), `Dodge & Cox Stock Fund` (DODGX),
+`Pimco Total Return Instl` (PTTRX). ***An insurance separate account has no
+`Admiral`, `R-6`, `R3` or `Investor Shares` class — those are the share classes
+of registered funds, and they are exactly what a plan holds DIRECTLY through a
+platform.*** So for this population the insurer in the issuer cell is the
+PLATFORM, the symbol is right and the fee is right, and the page is being
+faithful. **Fourth refuted screen of this session, and the first refuted by a
+witness rather than by a member list.**
+
+***THE RULE IT QUANTIFIES, which is the durable part.*** *The issuer cell
+routinely holds the CUSTODIAN or the PLATFORM rather than the product issuer* is
+recorded twice already — a Vanguard trust-company issuer over a correct Fidelity
+symbol, and the 18:4xZ CREF sizing taking 464 wrong rows off a house witness in
+this very cell, one hour before this. **It now has a number: an insurer's name
+in that cell corroborates an insurance contract 51.4% of the time.** The two
+prior instances were qualitative and this one prices the cell's evidential value
+at approximately nothing. **And Schedule A's uselessness HERE is worth recording
+so nobody rebuilds it:** it is a real witness to a real fact and the fact is not
+the one the question needs, because a plan can hold a group annuity contract for
+its stable-value option *and* a platform lineup of retail funds in the same
+menu — so the Schedule A is TRUE and attaches to a different row than the one
+being judged. *A witness keyed on the PLAN cannot settle a question about a ROW.*
+
+**WHAT SURVIVES, named and not sized:** the rows whose filed name carries the
+insurer's OWN prefix rather than a retail share class — `TA Vanguard
+LifeStrategy Mod Gr` (Transamerica Financial Life Ins Co, VSMGX at 0.1,
+$16,627,076 at 13.7% of its menu, and a second copy at $15,518,914). The record
+already calls a WRAPPER lead correct as filed (`Nationwide Loomis…` 0/21, `Voya
+T. Rowe…` 0/18, `LVIP…` 0/51, `MyCompass American Funds…` 0/608), so whether a
+`TA ` prefix means the plan holds Transamerica's wrapper or merely the platform's
+spelling of a Vanguard fund is undecided by anything measured here, and the
+honest instrument is the registry (`data/fund-facts.json`), not a wider screen.
+Also seen in passing and unsized: `Tafcott Resolution Life Insurance Company`,
+an OCR garble of Talcott in a published issuer cell.
+
+**Nothing shipped. `PARSER_VERSION` stays 203.**
