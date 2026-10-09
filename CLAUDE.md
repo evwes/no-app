@@ -857,6 +857,88 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
+**v203 IS COMMITTED AND NOT YET DISPATCHED (`[skip ci]`, #603 was in flight on
+this branch). `PARSER_VERSION` is 203: `Employer-money vesting: Immediate` is
+withheld where the sentence that would set it states only an ACCELERATION
+TRIGGER — 123 plans / 59,316 ppl, which is the SAME defect v202 fixed for the
+GRADED phrasing (ninth instance of *a fix for one phrasing of a class is not a
+fix for the class*).** The oracle is `lib-quote`'s shipped
+`accelerationOnlyVesting`, so the label gate and the display's acceleration note
+are ONE predicate and cannot contradict each other.
+
+**THE TOUCHABLE POPULATION IS BY CONSTRUCTION, NOT BY SAMPLE — and naming the
+disjunct is what v202's 15x miss cost.** The arm fires inside the `IMMED`
+branch, which stores that very sentence as `vestingText` and `break`s, so for
+any entry labelled `Immediate` by it the STORED quote IS `cap(s)`: a verdict can
+move only where `accelerationOnlyVesting` accepts the stored quote. Over all
+65,495 lineup entries (trust acks and non-confident included), that is **123 /
+59,316 — 0.82% of the 15,003 `Immediate*` entries — and 0 reach the label by
+v96's dated-superseding route**, the one other writer of `"Immediate"`. The
+whole-store ceiling and the reader-facing figure are the SAME 123, which is the
+control that nothing hides in a trust.
+
+**TWO PUBLISHED THINGS MOVE, and both are registered:**
+
+| | ceiling |
+|---|---|
+| labels that stop saying `Immediate` | **exactly 123** |
+| of those, label WITHDRAWN (quote retained) | **82–94**, point est. ~91 |
+| of those, label REPLACED by the real schedule from the same filing | **29–41** |
+| `vesting` on the coverage line | **FALLS 82–94** — the fall IS the improvement |
+| `vestQuote` | **RISES by the same 82–94**, 5,281 -> 5,363–5,375 |
+| `vesting-quote-test` `accel class` | 59 -> **141–153** plans, ~90,000 ppl |
+| `vesting-quote-test` `accelLabelled` | 123 -> **29–41** |
+| `WITHHELD` | **32**, unchanged — no quote is lost |
+| QUOTE LOST | **0** |
+
+Everything else on the coverage line must be unchanged except `pv` 202 -> 203 at
+~99.9% (`dl` 48 or higher; a rise means the EFAST2 bucket grew). The fall is
+inside `audit-data`'s −150 vesting tolerance, so **no `reparse-regression`
+HIGH** — if one appears, the guard reached further than the replay predicted.
+
+**NAMED SET.** Relabelled: `20260731105946NAL0021349123001` (Arcosa, 5,875, ->
+**2-year cliff**, quoting a sentence that was in the filing all along),
+`20251015163726NAL0005439857001` (Weather Shield, 1,261, -> 6-year schedule),
+`20251023060840NAL0005718002001` (Titus-Will, 1,079),
+`20260917090038NAL0005170288001` (Collins Pine, 950),
+`20251014143800NAL0004251888001` (Osf International, 945). Withdrawn:
+`20260803211832NAL0001051744001` (Ambrosia Qsr, 2,514),
+`20251014082720NAL0001114643001` (Golf & Tennis Pro Shop, 2,197),
+`20251003075018NAL0002895346001` (Quality Oil, 1,995),
+`20260715104425NAL0002846225001` (Producers Dairy, 1,553),
+`20250120103659NAL0001351219001` (Resurgens, 1,529).
+
+**Measured by replaying the REAL extractor on all 123 real filings**, v202 vs
+v203 in one process: the v202 replay reproduces the stored label on **111 of
+123** (the control that the harness's inputs are production's inputs), and of
+those 82 are withdrawn / 29 relabelled / **0 keep the label / 0 lose the
+quote**. **12 plans / 2,974 ppl are PREDICTED, NOT MEASURED** — production reads
+their notes through OCR and local `pdftotext` yields no label under either
+version, which is the entire width of the 82–94 range. Control: 83
+Immediate-labelled plans the guard must not touch (25 ranked largest + 60 drawn
+uniformly, seeded, from the other 14,878) move **0 cells**.
+
+**THE FIRST DRAFT WAS A `labelBlocked` ARM AND IT COST 107 PLANS / 53,317 PPL
+THEIR BEST SENTENCE** — those guards `continue` where the `IMMED` branch stores
+the quote unconditionally and `break`s, so the acceleration clause was displaced
+by *"The method for crediting vesting service … is based on vesting periods of
+service."* **No count showed it; reading the moved quotes did.** Sixth instance
+of *blocking a wrong ANSWER must never suppress the honest EVIDENCE*, and the
+first by DISPLACEMENT rather than omission. `docs/accuracy-log.md` 2026-10-09
+(04:xxZ).
+
+**AND THE NEW SPECIMEN'S FIRST RUN EXPOSED A GATE PASSING FOR THE WRONG REASON
+SINCE AUGUST.** `parser-gate.mjs` picked its "other feature" key as
+`k !== "match" && k !== "vesting"`, so **`quote` fell into the generic-feature
+branch** — a false FAIL for the new `{vesting: null, quote: true}` pin, and a
+false PASS for the v82 pin `{vesting: null, quote: null}`, where
+`got === want` is `null === null` and the specimen asserted NEITHER its label nor
+its quote while printing `GATE OK` for two months. Fixed with
+`&& k !== "quote"`. **The tell was printed on every run — that line read
+`quote=(none)` with no `vesting=` in front of it, where every other vesting
+specimen prints one.** *When a fixture table dispatches on which KEYS are
+present, a new key combination tests the DISPATCHER, not only the parser.*
+
 **v201 LANDED (#577, `success`) AND ITS REGISTRATION HELD — every coverage
 figure identical, `pv` the only move. Its reader-facing figure UNDER-predicted:
 WITHHELD came in at 34 where 36 was registered, because production's OCR path

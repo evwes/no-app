@@ -8,10 +8,13 @@ import { dirname, join } from "node:path";
 /* v201: the vesting QUOTE fallback asks the SHIPPED DISPLAY GUARD whether the
  * sentence it is about to store would ever reach a reader. `lib-quote.mjs`
  * imports nothing, so this cannot cycle, and the guard is pure. */
-import { vestingQuoteOk } from "./lib-quote.mjs";
+/* v203 adds `accelerationOnlyVesting`, the same guard the two display surfaces
+ * use to qualify an acceleration-only quote — so the label gate and the
+ * reader-facing sentence are one predicate and cannot contradict each other. */
+import { vestingQuoteOk, accelerationOnlyVesting } from "./lib-quote.mjs";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 202;
+export const PARSER_VERSION = 203;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -7517,8 +7520,86 @@ export function extractPlanFeatures(text, sponsorName = "") {
         if (blockedButQuotable && (!out.vestingText || vestingQuoteUpgrade(out, cap(s))) && !/forfeit/i.test(s)) out.vestingText = cap(s);
         continue;
       }
+      /* v203: AN ACCELERATION TRIGGER IS NOT A SCHEDULE, AND "Immediate" OVER
+       * ONE IS A WRONG ANSWER. v202's guard twenty lines above stops a
+       * spelled-out GRADED schedule being labelled Immediate; this is the SAME
+       * defect in a different phrasing, which is the ninth instance on this
+       * record of *a fix for one phrasing of a class is not a fix for the
+       * class.* 123 plans / 59,316 participants carried the label over their
+       * own published quote contradicting it:
+       *   Arcosa (5,875 ppl)      "Participants are 100% vested in Company
+       *                            contributions … UPON THEIR ATTAINMENT OF AGE
+       *                            65, total and permanent disability or death"
+       *                            — and the same filing states the real rule,
+       *                            "vest in full upon attainment of two years
+       *                            of service", which this change promotes.
+       *   Weather Shield (1,261)  "Participants WHO ARE EMPLOYED ON OR AFTER
+       *                            THEIR NORMAL RETIREMENT AGE (65), or are
+       *                            terminated due to death or disability, are
+       *                            automatically 100% vested …" — real rule:
+       *                            100% after 6 years of credited service.
+       * Every such sentence is TRUE and every one answers a different question
+       * than the label does: what makes a participant fully vested REGARDLESS
+       * of service, not when employer money is earned. Telling a 40-year-old
+       * their match is theirs today because the plan vests them at 65 is the
+       * worst shape this project can publish — a blank is honest, a label reads
+       * as knowledge. `IMMED`'s "always … vested" and "100% vested in all" arms
+       * are what match these; the "immediately vested" arms cannot, because a
+       * sentence carrying the word `immediate` is refused by the oracle below.
+       *
+       * THE ORACLE IS THE SHIPPED DISPLAY PREDICATE, DELIBERATELY.
+       * `lib-quote`'s `accelerationOnlyVesting` already decides exactly this
+       * question for the PUBLISHED quote — a full-vest claim AND an
+       * acceleration trigger AND no schedule of any kind, with
+       * `AV_VEST_AS_CONDITION` and `AV_INCLUDING` carving out the two shapes
+       * that only look like it — and both render surfaces gate its sentence on
+       * `!ff.vesting` precisely so the page never prints it under a label
+       * saying Immediate (`app.js:3235`, `build-seo-pages.mjs:197`). Reusing it
+       * makes the label gate and the reader-facing note ONE predicate, so the
+       * two claims cannot contradict each other: a plan either keeps the label,
+       * or loses it and gains the note. A second vocabulary here would have
+       * been a second thing to drift.
+       * The input-shape trap that closed the 29M-participant remedy-(b) class
+       * was CHECKED, not assumed: all 19 of its fixtures in
+       * `docs/quote-guard-cases.json` are single sentences lifted from audited
+       * notes, which is exactly what `s` is — one `clean()`ed
+       * `[^.]{0,220}vest[^.]{0,220}\.` window. It is not a substring of one.
+       *
+       * IT IS ASKED OF THE FULL SENTENCE, NOT OF `cap(s)`. The display sees
+       * `quoteTrim(cap(s))`, truncated at 300 characters, so a schedule sitting
+       * past that boundary is invisible there and visible here. Asking the full
+       * sentence is the CONSERVATIVE direction — a ladder beyond char 300 keeps
+       * the Immediate label rather than withdrawing a true one. Withdrawing a
+       * TRUE label is this change's failure mode, so every discretionary choice
+       * in it runs that way. Measured: 3 of the 123 stored quotes are truncated
+       * and all 3 give the same verdict either way.
+       *
+       * WHY THIS IS NOT A `labelBlocked` ARM, which is where it was written
+       * first and which was WRONG BY MEASUREMENT. The guards above set
+       * `labelBlocked` and `continue`, where this branch stores the quote
+       * unconditionally and `break`s — and that `break` is load-bearing for the
+       * QUOTE. Routed through `labelBlocked`, the quote became conditional on
+       * `vestingQuoteUpgrade` and the loop ran on, so on **107 plans / 53,317
+       * ppl** a later, vacuous sentence displaced the acceleration clause:
+       * "The method for crediting vesting service for company matching and
+       * profit-sharing contributions is based on vesting periods of service."
+       * That trades a true sentence the reader can act on for one that says
+       * nothing, and no count would have shown it — only reading the moved
+       * quotes did. Withholding the label and nothing else leaves the control
+       * flow byte-for-byte as v202 left it: same quote, same `break`, so the
+       * post-loop readers see the identical state and the whole delta is one
+       * field. *Blocking a wrong ANSWER must never suppress the honest
+       * EVIDENCE* — sixth instance, and here the evidence was nearly suppressed
+       * by displacement rather than by omission.
+       *
+       * The post-loop full-vesting-horizon reader still fires on a blank label,
+       * and that is where most of the value lands: 29 of the 123 do not merely
+       * lose a false label, they gain the REAL schedule out of the same filing
+       * (Arcosa "2-year cliff", Weather Shield "6-year schedule").
+       * `docs/accuracy-log.md` 2026-10-09. */
       if (IMMED.test(s)) {
-        out.vesting = "Immediate"; out.vestingText = cap(s); break;
+        if (!accelerationOnlyVesting(s)) out.vesting = "Immediate";
+        out.vestingText = cap(s); break;
       }
       /* v82: the same wrong-topic defect v80 fixed for the match quote —
        * measured separately here rather than ported blind, because the two

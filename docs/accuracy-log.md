@@ -7,6 +7,288 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-09 (04:xxZ) — v203: `Employer-money vesting: Immediate` PUBLISHED OVER A QUOTE THAT CONTRADICTS IT — 123 plans / 59,316 participants, and 29 of them gain the REAL schedule out of the same filing
+
+### What was wrong
+
+**The page told 59,316 participants their employer money was theirs today on the
+strength of a sentence saying they vest at 65, or on death, or on disability.**
+123 plans carried the label `Immediate` while their own published quote made
+vesting CONDITIONAL:
+
+- **Arcosa (5,875 ppl)** — *"Participants are 100% vested in Company
+  contributions and the allocated portion of related earnings **upon their
+  attainment of age 65**, total and permanent disability or death…"*
+- **Weather Shield (1,261)** — *"Participants **who are employed on or after
+  their normal retirement age (65)**, or are terminated due to death or
+  disability, are automatically 100% vested in all employer contributions."*
+- 95 more share one near-boilerplate wording: *"Participants are always 100%
+  vested in their company matching and profit-sharing contributions **if they
+  are employed on or after their Normal Retirement Age** or if they terminate
+  employment on account of death or disability."*
+
+Every one of those sentences is TRUE and every one answers a different question
+than the label does. An acceleration clause says what makes a participant fully
+vested REGARDLESS of service; the label claims there is no service requirement
+at all. `IMMED`'s `always … vested` and `100% vested in all` arms are what
+matched them — the `immediately vested` arms could not, because a sentence
+carrying the word `immediate` is refused by the oracle below.
+
+**THIS IS THE NINTH INSTANCE OF *a fix for one phrasing of a class is not a fix
+for the class*, AND THE EIGHTH WAS TWO VERSIONS AGO.** v202 added the guard at
+`lib-4i:7417` that stops a spelled-out GRADED schedule being labelled
+`Immediate`. Same defect, different phrasing, four days later.
+
+**It was found by a must-NOT-fire CONTROL, not by a screen for it.** The cycle
+that shipped `accelerationOnlyVesting` (`09982a6c`) had to assert that the
+qualifier's sentence is gated off where a vesting LABEL exists — and the counter
+written to prove that gate was exercised came back at **123 plans, every single
+one of them labelled `Immediate`**. The gate was doing its job and what it was
+hiding was a wrong answer. *A control written to prove a gate is exercised can
+report the population the gate is protecting the reader FROM.*
+
+### The change
+
+`PARSER_VERSION` 202 → **203**. One condition, at the one site that writes the
+label:
+
+```js
+if (IMMED.test(s)) {
+  if (!accelerationOnlyVesting(s)) out.vesting = "Immediate";
+  out.vestingText = cap(s); break;
+}
+```
+
+**THE ORACLE IS THE SHIPPED DISPLAY PREDICATE, DELIBERATELY.** `lib-quote`'s
+`accelerationOnlyVesting` already decides exactly this question for the
+PUBLISHED quote, and both render surfaces gate its sentence on `!ff.vesting`
+(`app.js:3235`, `build-seo-pages.mjs:197`) precisely so the page never prints
+*"this states when vesting is accelerated, not how it is earned"* under a label
+saying `Immediate`. Reusing it makes the label gate and the reader-facing note
+**one predicate**, so the two claims cannot contradict each other: a plan either
+keeps the label, or loses it and gains the note. A second vocabulary here would
+have been a second thing to drift.
+
+**The input-shape trap was CHECKED, not assumed.** This record carries a
+29-million-participant class closed because a shipped predicate was handed a
+different SHAPE of input than its fixtures cover. All 19 `accelCases` in
+`docs/quote-guard-cases.json` are single sentences lifted from audited notes,
+which is exactly what `s` is — one `clean()`ed `[^.]{0,220}vest[^.]{0,220}\.`
+window. It is not a substring of one, and that is the whole difference.
+
+**It is asked of the FULL sentence, not of `cap(s)`.** The display sees
+`quoteTrim(cap(s))`, truncated at 300 characters, so a schedule past that
+boundary is invisible there and visible here. Asking the full sentence is the
+CONSERVATIVE direction — a ladder beyond char 300 keeps the label rather than
+withdrawing a true one. Withdrawing a TRUE label is this change's failure mode,
+so every discretionary choice runs that way. Measured: 3 of 123 stored quotes
+are truncated and all 3 give the same verdict either way.
+
+### WHAT THE FIRST DRAFT GOT WRONG, and only READING THE OUTPUT showed it
+
+The obvious place for this is a `labelBlocked` / `blockedButQuotable` arm beside
+v202's, which is where it was written first. **It cost 107 plans / 53,317
+participants their best sentence.** Those guards `continue`, where the `IMMED`
+branch stores the quote **unconditionally** and `break`s — and that `break` is
+load-bearing for the QUOTE. Routed through `labelBlocked`, the quote became
+conditional on `vestingQuoteUpgrade` and the loop ran on, so a later vacuous
+sentence displaced the acceleration clause:
+
+> "The method for crediting vesting service for company matching and
+> profit-sharing contributions is based on vesting periods of service."
+
+That trades a true sentence a reader can act on for one that says nothing, and
+**no count would have shown it** — the label diff, the quote-lost count and both
+display guards were identical under the two drafts. Reading the moved quotes is
+what showed it. *Blocking a wrong ANSWER must never suppress the honest
+EVIDENCE* — sixth instance after v82, v83, v84, v86/87 and v202, and the first
+where the evidence was nearly suppressed by **displacement** rather than by
+omission. Withholding the label and nothing else leaves the control flow
+byte-for-byte as v202 left it: same quote, same `break`, so the post-loop
+readers see the identical state and the whole delta is one field.
+
+### Measured by replaying the REAL extractor on the REAL filings
+
+All 123 filings downloaded from EFAST2 and re-parsed under v202 and v203 in the
+same process. **The v202 replay reproduces the stored label on 111 of 123** —
+that is the control that the harness's inputs are production's inputs, and it
+is the rule v201 paid for (a cached-extraction harness under-predicted by 2
+plans because production's OCR path reads sentences `pdftotext` does not). The
+12 that do not reproduce are OCR-read in production; they are reported as
+predicted rather than measured, below.
+
+| over the 111 reproducible | plans | ppl |
+|---|---|---|
+| label WITHDRAWN entirely, quote retained | **82** | **38,788** |
+| label REPLACED by the real schedule from the same filing | **29** | **17,554** |
+| label KEPT (guard correctly silent) | 0 | 0 |
+| **QUOTE LOST** | **0** | **0** |
+| quote changed | 29 | 17,554 — all of them to the schedule sentence |
+
+The 29 are the part worth more than the repair. Arcosa stops saying `Immediate`
+and starts saying **2-year cliff**, quoting *"The Company contributions and
+related earnings vest in full upon attainment of two years of service"* — a
+sentence that was in the filing the whole time, behind a false label. Weather
+Shield reads **6-year schedule (shape not stated)**: *"A participant is 100%
+vested after 6 years of credited service."* The post-loop full-vesting-horizon
+reader fires on a blank label and does the rest.
+
+**CONTROL: 83 Immediate-labelled plans the guard must NOT touch — 25 ranked
+largest plus 60 drawn uniformly with a fixed seed from the other 14,878 — and
+the moved cells are 0 plans / 0 ppl.** Two more were unreachable (Insperity 404,
+Mercy Flights 403, the documented withdrawn-bucket class).
+
+### THE CEILING IS BY CONSTRUCTION, over the whole store
+
+v203 makes one assignment conditional, and the branch that makes it stores that
+very sentence as `out.vestingText` and `break`s. **So for any entry labelled
+`Immediate` by it, the STORED quote IS `cap(s)`, and a verdict can move only
+where `accelerationOnlyVesting` accepts the stored quote.** Measured over all
+65,495 lineup entries — trust acks and non-confident entries included, because
+the parse store is what a re-parse rewrites:
+
+- 15,003 entries carry an `Immediate*` label with a stored quote (26,654,532 ppl
+  of reach)
+- **123 / 59,316 ppl are the touchable population — 0.82% of them**
+- **0** of the 123 reach the label through v96's dated-superseding route, the one
+  other writer of `"Immediate"`, which v203 does not cover
+
+The whole-store ceiling and the reader-facing figure are the **same 123 /
+59,316**, which is itself the control that nothing is hidden in a trust or an
+unpublished entry. *A count keyed on PLANS is blind to a trust* has cost this
+project nine measurements; here the trust-inclusive read was taken first and
+agrees.
+
+### Pre-registered for the re-parse
+
+- **`vesting` FALLS by 82–94** (point estimate ~91). The fall IS the
+  improvement, exactly as `match` 43,441 → 43,312 was for v199/v200. Within
+  `audit-data`'s −150 tolerance, so no `reparse-regression` HIGH.
+- **`vestQuote` RISES by the same 82–94**, 5,281 → 5,363–5,375. A withdrawn
+  label reverts to quoting the filing; it does not go blank.
+- **Labels that stop saying `Immediate`: exactly 123**, since the ceiling is the
+  class and all 111 reproducible members moved.
+- **Labels REPLACED by a real schedule: 29–41.**
+- **`node scripts/vesting-quote-test.mjs` — `accel class` 59 → 141–153 plans,
+  ~90,000 ppl; `accelLabelled` 123 → 29–41.** That is the SECOND moved published
+  thing and the point of the change: a reader who saw a false `Immediate` now
+  sees the acceleration note instead. `ACCEL_CEILING` is raised 110 → 200 in the
+  same commit, with the range written at the constant.
+- **`WITHHELD` stays 32**: `vestingQuoteOk` is untouched and no quote is lost.
+- Everything else on the coverage line unchanged except `pv` 202 → 203 at
+  ~99.9%: `confident`, lineups, entries, `match`, `roth`, HIGH 4, `tkExact`.
+  `dl` 48 or higher — a rise means the EFAST2 bucket grew.
+- **NAMED SET for the two halves.** Relabelled, largest first:
+  `20260731105946NAL0021349123001` (Arcosa, 5,875, → 2-year cliff),
+  `20251015163726NAL0005439857001` (Weather Shield, 1,261, → 6-year schedule),
+  `20251023060840NAL0005718002001` (Titus-Will, 1,079),
+  `20260917090038NAL0005170288001` (Collins Pine, 950),
+  `20251014143800NAL0004251888001` (Osf International, 945).
+  Withdrawn, largest first: `20260803211832NAL0001051744001` (Ambrosia Qsr,
+  2,514), `20251014082720NAL0001114643001` (Golf & Tennis Pro Shop, 2,197),
+  `20251003075018NAL0002895346001` (Quality Oil, 1,995),
+  `20260715104425NAL0002846225001` (Producers Dairy, 1,553),
+  `20250120103659NAL0001351219001` (Resurgens, 1,529).
+  **A coverage line that moves anything else is the thing to investigate.**
+- **12 plans / 2,974 ppl are PREDICTED, NOT MEASURED** — their notes are
+  OCR-read in production and the local `pdftotext` replay produces no label at
+  all, so neither version can be observed on them here. The prediction is
+  one-directional and bounded: their stored quote is accepted by the oracle by
+  construction, so the label goes; whether the horizon reader then supplies a
+  real schedule is unknown, which is the whole width of the 82–94 range.
+
+### The prevention
+
+- **Six new `FEATURE_SPECIMENS` in `scripts/parser-gate.mjs`, three positive and
+  three decoys, every decoy a SINGLE-PROTECTION case measured over the live
+  population rather than invented.** Leave-one-out across all 14,878
+  Immediate-labelled plans carrying a published quote:
+  `AV_TRIGGER` alone protects **1,442 plans / 2,986,014 ppl** (largest
+  reproducible member: **Kroger, 262,794**, *"All accounts of a participant are
+  fully vested at all times"* — no triggering event is named, so nothing in the
+  sentence is an acceleration); `AV_SCHEDULE`'s `immediate` arm alone protects
+  **16 plans / 43,674 ppl** (St. Luke's Health Network 24,937 and Capital Health
+  7,971, both pinned); and **`AV_FULL` and `AV_VEST_AS_CONDITION` are the only
+  protection on ZERO plans in this population**, so no honest fixture for them
+  can be drawn from it and none was written — their cases live in
+  `docs/quote-guard-cases.json`, measured against the population they were
+  written for. *A control that cannot fail is decorative, and a case protected
+  twice proves neither.*
+  **The decoys carry 50× the readers of the repair, which is the right ratio for
+  a change whose failure mode is withdrawing a true label.**
+- **Ambrosia Qsr is pinned `{ vesting: null, quote: true }`** — the label must go
+  and the SENTENCE must stay. If a later change routes this through
+  `labelBlocked`, the quote becomes conditional and that specimen fails.
+- **Two entries in `docs/defect-specimens.json`**, the defect (Arcosa) and the
+  decoy (Kroger), so `diff-lineups` tops the corpus up with both.
+- **`ACCEL_CEILING` raised with its arithmetic written at the constant**, not
+  silently: the raise names which plans move, why, and what a figure above the
+  range would mean.
+
+### AND THE NEW SPECIMEN FAILED FIRST, WHICH EXPOSED A GATE THAT HAD BEEN PASSING FOR THE WRONG REASON SINCE AUGUST
+
+`GATE FAIL v203: Ambrosia Qsr … quote=(none) (expected true, quote missing)` on a
+parse that was verified correct one command earlier. The cause is in
+`parser-gate.mjs`'s own dispatch:
+
+```js
+const otherKey = Object.keys(expect).find((k) => k !== "match" && k !== "vesting");
+```
+
+`quote` is not an "other feature" — it is a MODIFIER on the vesting assertion
+forty lines below — and leaving it out of that exclusion list routes any
+specimen carrying it into the generic-feature branch, which reads `ff.quote`
+(always `undefined`) against the expectation. **For the new specimen that is a
+false FAIL. For the pre-existing v82 specimen `{vesting: null, quote: null}` it
+is a false PASS: `got === want` is `null === null`, so since 2026-08 that
+specimen has asserted NEITHER its label NOR its quote while printing
+`GATE OK`** — the one fixture whose whole stated purpose is *"a change that
+restores the quote passes the vesting check and must still fail here."*
+
+Fixed by adding `&& k !== "quote"`. ***A gate that passes for the wrong reason is
+worse than no gate***, and the tell had been printed on every run: its output
+line read `quote=(none)` with **no `vesting=` in front of it**, where every other
+vesting specimen prints `vesting=…`. Nobody read the shape of the line, only its
+verdict. Sibling of *a red guard nobody opened stayed red for ten runs*, in the
+other direction and harder to see, because a green line invites no reading at
+all. The general form: **when a fixture table dispatches on which KEYS are
+present, a new key combination tests the dispatcher, not only the parser** — and
+that is how this was found.
+
+### NAMED RESIDUE — two sentences the oracle still clears, measured not guessed
+
+Both are false `Immediate` labels that v203 does NOT repair, and both are
+properties of `accelerationOnlyVesting`, not of this change:
+
+1. **Ohio Transmission Holding (2,190 ppl)** files *"Participants who have
+   attained normal retirement age or have terminated as a result of death or
+   disability are **immediately** fully vested in Company matching
+   contributions…"* — an acceleration clause that happens to use the word
+   `immediately`, which `AV_SCHEDULE`'s `\bimmediate` arm reads as "a complete
+   answer is present". It is the **same arm that protects St. Luke's and Capital
+   Health**, where the word really does state the schedule, so narrowing it is
+   its own measurement over the display predicate's whole population and would
+   move the published note on both surfaces.
+2. **The Bruce Company of Wisconsin (271 ppl)** files *"Participants who leave
+   the Plan because of death or disability … are considered 100 percent vested
+   in all types of contributions **including** allocable additional discretionary
+   employer…"* — `AV_INCLUDING` was written for Lehigh Heavy Forge, where the
+   trigger sits inside an appositive on a UNIVERSAL claim; here the trigger is
+   the subject's own restrictive clause and the arm misfires. **1 plan, the
+   whole live population of that arm's single protection.**
+
+Neither is a regression and neither is new; both are now counted, which they
+were not before.
+
+### What this change does not do
+
+No display change, so no `stamp-assets` and no `index.html`: `lib-quote`,
+`app.js` and `build-seo-pages` are untouched and `slice-vq --check` is
+byte-identical. The parser is the only moved surface, and the two things a
+reader sees move as a consequence of the store, not of the render.
+
+---
+
 ## 2026-10-09 (03:2xZ) — THE PUBLISHED VESTING ANSWER IS THE ACCELERATION CLAUSE: 59 plans / 51,205 ppl now say so, on both surfaces
 
 ### What was wrong

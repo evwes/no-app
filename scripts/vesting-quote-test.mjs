@@ -126,8 +126,26 @@ console.log(`accel fixtures: ${accelCases.length} cases (${accelCases.filter((c)
  * `vestingQuoteOk`, served from the plan's OWN ack (features are never served
  * from a trust), and carrying no vesting LABEL, because where a label exists
  * the schedule already reaches the reader and the qualifier is gated off. */
-const ACCEL_CEILING = 110;          /* measured at 59 plans on the pv-202 store */
-const ACCEL_PPL_CEILING = 160_000;  /* measured at 51,205 */
+/* RAISED FOR v203, 2026-10-09, AND THE RAISE IS THE PRE-REGISTRATION.
+ * `accelLabelled` below counts plans where the qualifier FIRES but a vesting
+ * LABEL gates it off — and on the pv-202 store **all 123 of them are labelled
+ * `Immediate`, which is the defect v203 repairs**: the label and the quote
+ * contradict each other. v203 withholds `Immediate` over exactly these
+ * sentences (`lib-4i`, the `IMMED` branch), so after the re-parse those plans
+ * lose the label and MOVE OUT of `accelLabelled` and INTO `accel` — the
+ * qualified population grows by the number of labels withdrawn and nothing
+ * else changes. Measured by replaying the real extractor on all 123 filings:
+ * 82 lose the label outright, 29 gain the REAL schedule from the same filing
+ * (so they stay labelled and stay gated off), and 12 could not be replayed
+ * locally because production reads their notes through OCR.
+ *   expected after v203:  accel 59 -> 141..153   (82..94 join)
+ *                         accelPpl 51,205 -> ~90,000
+ *                         accelLabelled 123 -> 29..41
+ * The 200 is headroom over the top of that range, not a new measurement; a
+ * figure above it means the guard reached further than the replay predicted
+ * and the members must be read before it is raised again. */
+const ACCEL_CEILING = 200;          /* 59 plans on pv-202; 141..153 expected on pv-203 */
+const ACCEL_PPL_CEILING = 160_000;  /* measured at 51,205; ~90,000 expected on pv-203 */
 /* `participants` and NOT `partEOY || participants`: both display surfaces print
  * `participants` beside the quote, and a reader-facing figure must be summed in
  * the field the reader is shown. The other convention reads 51,489 here. */

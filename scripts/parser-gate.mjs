@@ -175,6 +175,45 @@ const FEATURE_SPECIMENS = [
   // a rule the filing has already replaced is not this plan's rule
   ["'Prior to July 1, 2019, participants were fully vested … after three years'",
     "20250522164643NAL0002778387001", { vesting: null }],
+  /* v203: AN ACCELERATION TRIGGER UNDER AN "Immediate" LABEL — 123 plans /
+   * 59,316 participants were told their employer money was theirs today on the
+   * strength of a sentence saying they vest at 65, or on death, or on
+   * disability. v202 fixed the GRADED phrasing of the same defect; this is the
+   * acceleration phrasing. The guard is `lib-quote`'s shipped
+   * `accelerationOnlyVesting`, the same predicate both render surfaces use to
+   * qualify such a quote, so the label gate and the reader-facing note are one
+   * thing and cannot contradict each other.
+   *
+   * THREE POSITIVES AND THREE DECOYS, and the decoys are not decoration — each
+   * is the single-protection case for one condition of the oracle, measured
+   * over all 14,878 Immediate-labelled plans rather than invented:
+   *   AV_TRIGGER alone protects 1,442 plans / 2,986,014 ppl (Kroger below is
+   *     its largest reproducible member — "fully vested at all times" names no
+   *     triggering event, so nothing in the sentence is an acceleration);
+   *   AV_SCHEDULE's `immediate` arm alone protects 16 plans / 43,674 ppl
+   *     (St. Luke's and Capital Health below are its two largest);
+   *   AV_FULL and AV_VEST_AS_CONDITION are the only protection on ZERO plans
+   *     in this population, so no honest fixture for them can be drawn from it
+   *     — their cases live in `docs/quote-guard-cases.json`, where they were
+   *     measured against the population they were written for.
+   * Ambrosia asserts `quote: true` on purpose: the label must go and the
+   * SENTENCE must stay. *Blocking a wrong ANSWER must never suppress the
+   * honest EVIDENCE* — if a later change makes this a `labelBlocked` arm, the
+   * quote becomes conditional and a vacuous "the method for crediting vesting
+   * service … is based on vesting periods of service" displaces it on 107
+   * plans, which is exactly what the first draft of v203 did. */
+  ["v203: Arcosa — false Immediate over 'attainment of age 65' becomes the real cliff",
+    "20260731105946NAL0021349123001", { vesting: "2-year cliff" }],
+  ["v203: Weather Shield — 'employed on or after normal retirement age (65)' → the filed 6-year horizon",
+    "20251015163726NAL0005439857001", { vesting: "6-year schedule (shape not stated)" }],
+  ["v203: Ambrosia Qsr — label withdrawn, QUOTE RETAINED (nothing better is filed)",
+    "20260803211832NAL0001051744001", { vesting: null, quote: true }],
+  ["v203 decoy (AV_TRIGGER, 1,442 plans): Kroger 'fully vested at all times' keeps Immediate",
+    "20250616133852NAL0002461698001", { vesting: "Immediate" }],
+  ["v203 decoy (AV_SCHEDULE `immediate`, 16 plans): St. Luke's immediate-with-a-carve-out keeps Immediate",
+    "20260825120902NAL0025739360001", { vesting: "Immediate" }],
+  ["v203 decoy (AV_SCHEDULE `immediate`): Capital Health 'vested immediately … 100% at normal retirement' keeps Immediate",
+    "20251015083721NAL0004357777001", { vesting: "Immediate" }],
 ];
 
 const SPECIMENS = [
@@ -564,7 +603,19 @@ for (const [label, ack, expect] of FEATURE_SPECIMENS) {
    * would have caught the qualified-Roth miss could not be written down.
    * Demands the quote too: a flag with no filed sentence behind it is the one
    * thing this project must never publish. */
-  const otherKey = Object.keys(expect).find((k) => k !== "match" && k !== "vesting");
+  /* `quote` is NOT an "other feature" — it is a modifier on the vesting
+   * assertion below, and leaving it out of this exclusion list meant any
+   * specimen carrying it was routed through this branch instead. FOUND
+   * 2026-10-09 BY A NEW SPECIMEN FAILING: v203 pinned Ambrosia Qsr as
+   * `{vesting: null, quote: true}` and the gate read `ff.quote` — undefined —
+   * against `true` and failed a correct parse. Worse in the other direction:
+   * the v82 specimen `{vesting: null, quote: null}` has been taking this path
+   * since 2026-08, where `got === want` is `null === null` and passes
+   * UNCONDITIONALLY — so for two months that specimen asserted neither its
+   * label nor its quote while printing `GATE OK`. *A gate that passes for the
+   * wrong reason is worse than no gate*, and the tell was in its own output
+   * line: it printed `quote=(none)` with no `vesting=` in front of it. */
+  const otherKey = Object.keys(expect).find((k) => k !== "match" && k !== "vesting" && k !== "quote");
   if (otherKey) {
     const got = ff[otherKey] === undefined ? null : ff[otherKey];
     const want = expect[otherKey];

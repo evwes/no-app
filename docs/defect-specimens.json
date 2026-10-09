@@ -1187,6 +1187,20 @@
    "fixed": "v202",
    "sponsor": "Polsinelli Pc",
    "was": "the guard that stops a GRADED schedule being labelled 'Immediate' (lib-4i :7417) was a bare continue, so it discarded the sentence along with the label; every sibling guard in that loop sets blockedButQuotable for exactly this reason. Fifth instance of 'blocking a wrong ANSWER must never suppress the honest EVIDENCE' (v82, v83, v84, v86/87)"
+  },
+  {
+   "ack": "20260731105946NAL0021349123001",
+   "class": "immediate-over-acceleration",
+   "fixed": "v203",
+   "sponsor": "Arcosa",
+   "was": "the page published 'Employer-money vesting: Immediate' over its own quote 'Participants are 100% vested in Company contributions ... upon their ATTAINMENT OF AGE 65, total and permanent disability or death' -- an acceleration TRIGGER read as a schedule. 123 plans / 59,316 participants were told their employer money was theirs today; Arcosa's own filing states the real rule ('vest in full upon attainment of two years of service'), which v203 promotes to a 2-year cliff. Ninth instance of 'a fix for one phrasing of a class is not a fix for the class' -- v202 had repaired the GRADED phrasing of the same defect. The guard is lib-quote's shipped accelerationOnlyVesting, the same predicate both render surfaces use to qualify such a quote, so the label gate and the reader-facing note are one thing"
+  },
+  {
+   "ack": "20250616133852NAL0002461698001",
+   "class": "immediate-over-acceleration-DECOY",
+   "fixed": "v203",
+   "sponsor": "The Kroger Co.",
+   "was": "the DECOY, not a defect: 'All accounts of a participant are fully vested at all times' names no triggering event, so AV_TRIGGER refuses and the Immediate label is TRUE and must survive. Measured over all 14,878 Immediate-labelled plans, AV_TRIGGER alone protects 1,442 plans / 2,986,014 participants and this is its largest locally-reproducible member. Withdrawing a TRUE label is v203's failure mode, so the decoy carries more readers than the repair"
   }
  ]
 }
