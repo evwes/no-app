@@ -7,6 +7,69 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-09 (00:1xZ) — the participant-weighted draw credited a trust's menu to plans that are served their own, 3,350,019 participants of mis-weighting, and it drew one to show me
+
+**What was wrong.** `scripts/draw-published.mjs` built its pool by collecting
+every member plan of each ack — correctly, since a plan-keyed count is blind to
+a trust — and then credited each published ack with the FULL participant count
+of all its members. But both display surfaces serve a trust's menu **only where
+the plan's own lineup is unusable** (`app.js:2898`,
+`build-seo-pages.mjs:111`). So a plan with a perfectly good menu of its own was
+weighted onto its trust's menu as well as its own.
+
+Measured over every published trust ack: **330 published trust acks, 11,917,545
+participants credited to them, 8,567,526 actually served — 3,350,019
+participants, 28.1% of the credited trust weight, credited to a menu their page
+never shows.**
+
+**How it surfaced, which is the part worth keeping.** The 00:08 cycle draw came
+up with **Bank of America pn=003, 246,394 ppl**, on its TRUST's ack: 15 rows,
+every one a guaranteed investment contract, summing **$4,582,824,615 against the
+plan's filed $71,509,884,637 — a menu covering 6.4% of the plan.** That reads
+exactly like a serious published defect, and I began sizing it as one.
+
+**It is not a defect, and the control is what said so.** BofA's OWN ack
+`20260807125158NAL0006445970001` is confident (index bits 69), so its page shows
+its own menu and that trust entry reaches no reader at all. The entry is also
+correctly JUDGED: its stored `coverageRatio` is **0.85**, measured against the
+TRUST's own assets, which is the right denominator for what it measures. *A
+ratio is only as meaningful as its denominator* — and here two different correct
+denominators made a sound entry look like a 6.4% catastrophe.
+
+**The change.** The pool now applies the serving condition, importing
+`servedLineup` from `scripts/lib-ledger.mjs` rather than retyping it, because a
+transcription of a shipped expression rots as the expression grows. Pool:
+60,163 menus / 103,501,088 ppl → **60,070 / 100,151,069**, exactly 3,350,019
+removed. **Independent corroboration: that new total equals the field ledger's
+`lineup` published figure to the digit**, computed by a different route from a
+different file.
+
+**AND THE FIRST VERSION OF THE FIX BROKE A DIAGNOSTIC BY REORDERING TWO GATES.**
+`servedBy` can only ever return a CONFIDENT ack, so filtering by it first makes
+the member list empty for every unpublished entry — and the "excluded as not
+published" counter silently read **0**, where the truth is 1,265 menus and
+10,317,233 participants. *A clean zero reports on the query*, met inside the fix
+for a different measurement defect. The publish gate now runs first against the
+full member weight, then the serving filter, and the two exclusions print
+separately because they are different facts.
+
+**What prevents it.** The condition is pinned by WEIGHT on the case that exposed
+it: if the trust ack `20260807124444NAL0005911459001` appears in the pool
+carrying BofA pn=003, the script throws. By weight rather than by the ack's
+presence, deliberately — that trust legitimately serves other members, and
+excluding it outright would be the opposite error. `scripts/ledger-test.mjs`
+pins the same condition from the other side on Home Depot, whose own ack is
+non-confident and whose trust's is.
+
+**This is the SECOND instance inside this one tool, and that is the lesson.**
+`draw-published.mjs` was promoted into the repo in the first place to fix a draw
+defect — it drew from every STORED entry where the site renders only CONFIDENT
+ones, 1,265 entries / 10,317,233 participants, 9.1% of the weight. That fix
+added the confident gate and never asked the second question. ***A gate on
+whether a menu is publishABLE is not a gate on whether THIS plan is shown it***,
+and the register's own count of "a plan-keyed measurement blind to a trust" now
+stands at nine instances, three of them in the past week.
+
 ## 2026-10-05 (02:5xZ) — the cycle draw reads clean on the second-largest plan drawn this session, and it is a shipped design CONFIRMED rather than merely unbroken
 
 `draw-published.mjs --seed 2072026` drew **The Kroger Co. pn=010 — 674,716

@@ -123,7 +123,10 @@ const members = new Map();
 for (const r of d.rows) {
   const o = { sponsorName: d.get(r, "sponsorName"), ein: d.get(r, "ein"), pn: d.get(r, "pn"),
     ticker: d.get(r, "ticker"), ppl: d.get(r, "partEOY") || d.get(r, "participants") || 0,
-    assets: d.get(r, "assetsEOY") || 0, planYear: d.get(r, "planYear") };
+    assets: d.get(r, "assetsEOY") || 0, planYear: d.get(r, "planYear"),
+    /* the plan's own and linked-trust acks, needed to ask which menu its page
+     * actually serves — see servedBy() below */
+    ack: d.get(r, "ack"), mtiaAck: d.get(r, "mtiaAck") };
   for (const a of [d.get(r, "ack"), d.get(r, "mtiaAck")]) {
     if (!a) continue;
     if (!members.has(a)) members.set(a, []);
@@ -131,18 +134,63 @@ for (const r of d.rows) {
   }
 }
 
+/* AND BEING A MEMBER OF AN ACK IS NOT BEING SERVED ITS MENU — found 2026-10-09
+ * by a draw made through this very file.
+ *
+ * Both surfaces serve a trust's menu ONLY where the plan's own lineup is
+ * unusable (`app.js:2898`, `build-seo-pages.mjs:111`). This pool credited every
+ * member plan of a published trust ack with its full participant count, so a
+ * plan with a perfectly good menu of its own was weighted onto its trust's menu
+ * as well. Measured over every published trust ack: **3,350,019 participants,
+ * 28.1% of the credited trust weight**, are credited to a menu their page never
+ * shows.
+ *
+ * It drew one. Bank of America pn=003 (246,394 ppl) came up on its TRUST's ack,
+ * whose 15 rows are all guaranteed investment contracts summing $4.58B against
+ * the plan's filed $71.5B — a menu covering 6.4% of the plan, which reads
+ * exactly like a serious accuracy defect. It is not: BofA's own ack is
+ * confident and its page shows its own menu, so that trust entry reaches no
+ * reader. The entry is also correctly judged — `coverageRatio` 0.85 against the
+ * TRUST's own assets, which is the right denominator for what it measures.
+ *
+ * This is the same class of error the file's own header records EIGHT instances
+ * of, and the second one inside this tool: the earlier fix added the CONFIDENT
+ * gate (9.1% of the weight was entries no reader sees) and never asked the
+ * second question. *A gate on whether a menu is publishABLE is not a gate on
+ * whether THIS plan is shown it.*
+ *
+ * The condition is imported rather than retyped — `lib-ledger.mjs` is the one
+ * place it lives, and a transcription of a shipped expression rots as the
+ * expression grows. */
+import { servedLineup } from "./lib-ledger.mjs";
+const servedBy = (m) => servedLineup(m, INDEX).ack;
+
 const pool = [];
-let skippedUnpublished = 0, skippedPpl = 0;
+let skippedUnpublished = 0, skippedPpl = 0, skippedUnserved = 0, skippedUnservedPpl = 0;
 for (let s = 0; s < 64; s++) {
   const f = `${ROOT}/data/lineups/${String(s).padStart(2, "0")}.json`;
   if (!existsSync(f)) continue;
   for (const [ack, e] of Object.entries(JSON.parse(readFileSync(f, "utf8")))) {
-    const mem = members.get(ack);
-    if (!mem || !e.funds || !e.funds.length) continue;
-    const ppl = mem.reduce((a, m) => a + m.ppl, 0);
-    if (ppl <= 0) continue;
+    const all = members.get(ack);
+    if (!all || !e.funds || !e.funds.length) continue;
+    /* THE TWO GATES RUN IN THIS ORDER ON PURPOSE, and the order is the whole
+     * reason the telemetry below still means anything. `servedBy` can only ever
+     * return a CONFIDENT ack, so filtering by it first makes `mem` empty for
+     * every unpublished entry and the "excluded as not published" counter
+     * silently reads 0 — which is how the first version of this fix reported
+     * that nothing was excluded, where the truth is 1,265 menus and 10,317,233
+     * participants. *A clean zero reports on the query.* So: publish gate
+     * first, against the FULL member weight, then the serving filter. */
+    const pplAll = all.reduce((a, m) => a + m.ppl, 0);
+    if (pplAll <= 0) continue;
     const published = ((INDEX[ack] || 0) & 1) === 1;
-    if (!published && !ALL) { skippedUnpublished++; skippedPpl += ppl; continue; }
+    if (!published && !ALL) { skippedUnpublished++; skippedPpl += pplAll; continue; }
+    /* ONLY the members this ack's menu is actually SERVED to. With --all the
+     * serving condition is lifted along with the confident gate, since that
+     * mode exists to audit the gates themselves and says so loudly. */
+    const mem = ALL ? all : all.filter((m) => servedBy(m) === ack);
+    const ppl = mem.reduce((a, m) => a + m.ppl, 0);
+    if (!mem.length || ppl <= 0) { skippedUnserved++; skippedUnservedPpl += pplAll; continue; }
     pool.push({ ack, e, mem, ppl, published });
   }
 }
@@ -157,13 +205,32 @@ if (!ALL) {
     throw new Error("draw-published: the confident gate is not holding — Home Depot's non-confident plan ack is drawable, and its menu is three Form 5500 form artifacts");
   if (members.has(HD_TRUST) && !has(HD_TRUST))
     throw new Error("draw-published: the confident gate is TOO TIGHT — Home Depot's confident trust ack (33 funds, $14.02B) is not drawable");
+
+  /* THE SERVING CONDITION, pinned on the case that exposed it. Bank of America
+   * pn=003 is a member of this trust ack AND has a confident menu of its own,
+   * so its 246,394 participants must not be weighted onto the trust's 15-GIC
+   * menu. Asserted by WEIGHT rather than by the ack's presence, because the
+   * trust legitimately serves other members and excluding it outright would be
+   * the opposite error. */
+  const BOFA_TRUST = "20260807124444NAL0005911459001";
+  const bofaEntry = pool.find((p) => p.ack === BOFA_TRUST);
+  if (bofaEntry && bofaEntry.mem.some((m) => m.ein === "560906609" && m.pn === "003"))
+    throw new Error("draw-published: the SERVING condition is not holding — Bank of America pn=003 "
+      + "(246,394 ppl) has its own confident menu and is still being credited to its trust's 15-GIC "
+      + "menu, which covers 6.4% of the plan and reaches no reader");
 }
 
 const total = pool.reduce((a, p) => a + p.ppl, 0);
 console.log(`pool: ${pool.length.toLocaleString()} ${ALL ? "stored" : "PUBLISHED"} menus reaching ${total.toLocaleString()} participants`
   + (SEED === null ? "" : `   seed=${JSON.stringify(SEED)}`));
 if (ALL) console.log(`  !! --all: the confident gate is OFF. These menus include entries NO READER SEES.\n     A figure taken this way is not a statement about readers.`);
-else console.log(`  (${skippedUnpublished.toLocaleString()} stored menus / ${skippedPpl.toLocaleString()} participants excluded as not published)`);
+else {
+  console.log(`  (${skippedUnpublished.toLocaleString()} stored menus / ${skippedPpl.toLocaleString()} participants excluded as not published)`);
+  /* The second exclusion, reported separately because it is a different
+   * fact: these menus ARE publishable and every member plan of them is
+   * served its own menu instead, so they reach no reader through this ack. */
+  console.log(`  (${skippedUnserved.toLocaleString()} publishable menus / ${skippedUnservedPpl.toLocaleString()} participants excluded as served their OWN menu instead)`);
+}
 
 const used = new Set();
 const picks = [];
