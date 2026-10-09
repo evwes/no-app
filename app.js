@@ -86,6 +86,43 @@
     return !VQ_OTHER_RULE.test(t);              /* (a) states another one */
   }
 
+  const AV_FULL = new RegExp([
+    String.raw`(?:\b100\s?%|\b100\s+percent\b|\bone\s+hundred\s+percent\b|\bfully\b|\bfull\b)[^.]{0,40}?\bvest`,
+    String.raw`\bvested\s+(?:100\s?%|100\s+percent\b|one\s+hundred\s+percent\b)`,
+  ].join("|"), "i");
+  /* each arm is an event that ACCELERATES vesting — it happens TO a participant
+   * rather than being measured in service */
+  const AV_TRIGGER = new RegExp([
+    String.raw`\b(?:death|dies|died|deceased)\b`,
+    String.raw`\bdisab`,
+    String.raw`\b(?:normal|early)\s+retirement\b`,
+    String.raw`\bretirement\s+age\b`,
+    String.raw`\b(?:attain|attains|attaining|reach|reaches|reaching)\w*\s+(?:the\s+)?age\b`,
+    String.raw`\bage\s+(?:\d{2}|sixty|sixty-five|fifty-nine)\b`,
+  ].join("|"), "i");
+  const AV_SCHEDULE = new RegExp([
+    String.raw`\byears?\s+(?:of\s+)?(?:\w+\s+){0,2}?(?:service|employment|participation)\b`,
+    String.raw`(?<!age )\b(?:\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten)\s*(?:\(\s?\d{1,2}\s?\)\s*)?(?:years?|yrs?|yeas)\b`,
+    String.raw`\b[1-9]\d?\s?%`,                        /* 1-99%: a ladder step. 100% cannot match */
+    String.raw`\bschedule`,
+    String.raw`\bimmediate`,                           /* a complete answer is present */
+    String.raw`\bcompleting\b|\bcompletion\s+of\b`,
+    String.raw`\bhours\s+of\s+service\b`,
+  ].join("|"), "i");
+
+  const AV_VEST_AS_CONDITION = /\b(?:if|provided(?:\s+that)?|to\s+the\s+extent|that|which|when)\s+(?:the\s+|they\s+|he\s+|she\s+|it\s+)?(?:\w+\s+){0,2}?(?:is|are|was|were)\s+(?:100\s?%|100\s+percent|fully)\s*vested/i;
+  const AV_INCLUDING = /\bincluding\b/i;
+
+  function accelerationOnlyVesting(text) {
+    const t = String(text || "").replace(/\s+/g, " ").trim();
+    if (!t) return false;
+    if (!AV_FULL.test(t)) return false;
+    if (!AV_TRIGGER.test(t)) return false;
+    if (AV_VEST_AS_CONDITION.test(t)) return false;
+    if (AV_INCLUDING.test(t)) return false;
+    return !AV_SCHEDULE.test(t);
+  }
+
   const Q_LEAD = /^(?:[|│┃]|[)\]}]|[;:]|_)+[\s|)\]};:_.\-–]*/;
   const Q_SENTENCE = /^(?:[A-Z]|\d+(?:\.\d+)?\s*%|["“(])/;
 
@@ -161,6 +198,7 @@
     return quoteStripLead(t) || t;
   }
   window.__wampoVestingQuoteOk = vestingQuoteOk;   // read by the smoke test only
+  window.__wampoAccelOnly = accelerationOnlyVesting; // read by the smoke test only
   window.__wampoQuoteTrim = quoteTrim;             // read by the smoke test only
 
   /* Coverage band — canonical copy in scripts/lib-disclose.mjs, which carries
@@ -3194,6 +3232,7 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
       ${schRLine(plan)}
       ${ff.vesting ? `<p class="max-benefit">Employer-money vesting: <strong>${esc(ff.vesting)}</strong></p>` : ""}
       ${vestingQuote ? `<blockquote class="quote">“${esc(vestingQuote)}”</blockquote>` : ""}
+      ${vestingQuote && !ff.vesting && accelerationOnlyVesting(vestingQuote) ? `<p class="max-benefit">The sentence above states when vesting is <strong>accelerated</strong> — the events that make a participant fully vested regardless of service. It does not say how employer money vests for a participant who leaves before then; check the plan's SPD.</p>` : ""}
       ${!ff.vesting && !vestingQuote ? (
         ff.safeHarbor && !/QACA|qualified automatic/i.test((ff.matchText || "") + (ff.necText || ""))
           ? `<p class="max-benefit">Employer-money vesting: <strong>immediate for the safe-harbor contribution</strong> — required by law (IRC §401(k)(12)); the audited notes don't state a schedule for any other employer money.</p>`

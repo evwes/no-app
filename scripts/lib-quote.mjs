@@ -263,6 +263,171 @@ export function vestingQuoteOk(text) {
   return !VQ_OTHER_RULE.test(t);              /* (a) states another one */
 }
 
+/* ---- AND THE PUBLISHED SENTENCE IS THE ACCELERATION CLAUSE, NOT THE SCHEDULE
+ * 2026-10-09, from the queue entry sized 2026-10-05 02:3xZ.
+ *
+ * `vestingQuoteOk` asks "is this sentence a vesting rule?" and these sentences
+ * ARE one, so it accepts them and should. The defect is one layer up: where the
+ * extractor found no vesting LABEL, the quote is the plan's WHOLE published
+ * vesting answer, and for this class that answer is
+ *
+ *   "A participant becomes fully vested in Company contributions and earnings
+ *    thereon if the participant's termination of employment occurs due to
+ *    death, disability or normal retirement."          (Smith And Nephew)
+ *   "A participant becomes 100% vested in Employer Contributions if the
+ *    participant becomes totally disabled, dies or reaches age 65 while
+ *    employed by the Company."                         (U.S. Fire Insurance)
+ *
+ * Every word TRUE, and answering a different question. An accelerated-vesting
+ * clause is near-universal boilerplate; it says nothing about when a
+ * participant who simply LEAVES owns employer money, which is the only thing a
+ * reader of the vesting line wants.
+ *
+ * SO THIS IS NOT A GUARD AND MUST NOT BECOME ONE. Reading the six largest
+ * filings of the class (2026-10-05 02:3xZ) found that FIVE OF SIX state no
+ * ladder anywhere in the attachment — so withholding the quote would publish
+ * "not stated in the audited notes" about a filing that DID state something.
+ * *A guard that withdraws a true answer because it is incomplete makes the page
+ * less honest, not more.* The quote stays; a sentence beside it says what the
+ * quote is.
+ *
+ * AND THE CLAIM IS ABOUT THE QUOTE, NOT ABOUT THE FILING. The queue entry
+ * prescribed a label reading "the notes state only when vesting ACCELERATES",
+ * which is a claim about the attachment — and it is FALSE for the minority:
+ * Aaron Thomas (2,285 ppl) files a real `Years of service | Vesting %` table
+ * (2->20, 3->40, 4->60, 5->80, 6->100) that the extractor did not select. A
+ * label asserting the notes say nothing more would be a NEW false statement on
+ * that page. What the shipped wording asserts instead — that THIS SENTENCE
+ * states when vesting is accelerated and does not say how employer money vests
+ * for someone who leaves before then — is verifiable from the published
+ * sentence alone, cannot be falsified by a ladder elsewhere in the attachment,
+ * and needs no per-filing reading to be safe.
+ *
+ * THE SHAPE: a FULL-vesting claim, an ACCELERATION trigger, and no SCHEDULE
+ * anywhere in the sentence under a deliberately generous test — the same
+ * conjunction shape as `vestingQuoteOk`, and generous in the same direction,
+ * because here a false positive puts a qualifier on a sentence that does state
+ * a schedule.
+ *
+ * PLAN TERMINATION IS DELIBERATELY NOT A TRIGGER. For a plan that HAS
+ * terminated, "all participants become fully vested upon termination of the
+ * Plan" is a complete answer, not an acceleration exception. Termination of
+ * EMPLOYMENT due to death is a trigger and is reached by the death arm. */
+/* NO TRAILING `\b` AFTER THE ALTERNATION. The first version had one, and `%` is
+ * a non-word character, so `100%` followed by a space has no boundary between
+ * them: the arm matched "fully vested" and MISSED "100% vested", which is the
+ * commonest spelling in the class. Five of the six pinned filings failed, and
+ * they failed BEFORE the count printed — which is the only reason this is a
+ * footnote and not a published figure. */
+/* AND THE PERCENTAGE FOLLOWS THE PARTICIPLE AS OFTEN AS IT PRECEDES IT. Manko
+ * Window Systems (423 ppl) files "An employee who becomes disabled, dies, or
+ * reaches age 60 will be VESTED 100% in employer contributions" — a textbook
+ * member the forward-only arm missed, found by the leave-one-out asking what
+ * requiring AV_FULL keeps out. The other two it keeps out are forfeiture
+ * accounting ("The NON-VESTED account balances of participants who terminated
+ * for any reason other than death …", Emeh, 1,163 ppl) and a distribution
+ * election (Aspeq Heating, 508) — both correctly refused, which is what makes
+ * this condition load-bearing in the first place. */
+const AV_FULL = new RegExp([
+  String.raw`(?:\b100\s?%|\b100\s+percent\b|\bone\s+hundred\s+percent\b|\bfully\b|\bfull\b)[^.]{0,40}?\bvest`,
+  String.raw`\bvested\s+(?:100\s?%|100\s+percent\b|one\s+hundred\s+percent\b)`,
+].join("|"), "i");
+/* each arm is an event that ACCELERATES vesting — it happens TO a participant
+ * rather than being measured in service */
+const AV_TRIGGER = new RegExp([
+  String.raw`\b(?:death|dies|died|deceased)\b`,
+  String.raw`\bdisab`,
+  String.raw`\b(?:normal|early)\s+retirement\b`,
+  String.raw`\bretirement\s+age\b`,
+  String.raw`\b(?:attain|attains|attaining|reach|reaches|reaching)\w*\s+(?:the\s+)?age\b`,
+  String.raw`\bage\s+(?:\d{2}|sixty|sixty-five|fifty-nine)\b`,
+].join("|"), "i");
+/* ABSENCE of all of these is the third condition. Generous on purpose: any hint
+ * that the sentence also carries a schedule — a service requirement, a
+ * percentage that is not 100, a ladder word, or an IMMEDIATE-vesting statement,
+ * which is itself a complete answer — refuses the qualifier.
+ *
+ * FIVE MORE ARMS WERE WRITTEN AND DELETED BY LEAVE-ONE-OUT: `as follows`,
+ * `graded|cliff|increment`, `anniversar`, `(per|each|every) year` and the
+ * spelled-out `twenty percent` family each admit **0** quotes the surviving
+ * arms do not already refuse. Every arm below has a real single-protection case
+ * drawn from the pool and named at its own line. *A control that cannot fail is
+ * decorative*, and an arm that can never be the only protection is the same
+ * thing in the other register; a future filing that needs one of them brings
+ * its own case with it. */
+const AV_SCHEDULE = new RegExp([
+  String.raw`\byears?\s+(?:of\s+)?(?:\w+\s+){0,2}?(?:service|employment|participation)\b`,
+  /* A COUNT OF YEARS IS A SCHEDULE, AND THE FILINGS SPELL IT FOUR WAYS. Three
+   * live false positives needed this arm and one of them is the typo this
+   * record already names: Gilster-Mary Lee (2,288 ppl) files "after six (6)
+   * yeas of vesting services", a COMPLETE six-year rule, so neither the
+   * service arm above (`yeas`) nor a digit test (`six`) reaches it — hence the
+   * spelled numbers, the optional parenthesised digit AND the `yeas` stem.
+   * Stone Belt Arc states "at the end of three years or earlier when you reach
+   * normal retirement age", a three-year cliff beside the exception.
+   * The `age` lookbehind is what keeps "reaches age 65 years" out of it: an age
+   * is not a service count, and that spelling is in the class itself. */
+  String.raw`(?<!age )\b(?:\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten)\s*(?:\(\s?\d{1,2}\s?\)\s*)?(?:years?|yrs?|yeas)\b`,
+  String.raw`\b[1-9]\d?\s?%`,                        /* 1-99%: a ladder step. 100% cannot match */
+  /* `schedule` is taken BARE on purpose. Onestream Software (1,028 ppl)
+   * publishes its whole ladder inside the quote — "in accordance with the
+   * following schedule: Vesting Service (Years) Vesting (%) Less than 1 - 1
+   * but less than 2 25 2 but less than 3 50 …" — whose steps carry no percent
+   * sign and whose year column is spelled `Service (Years)`, so every narrower
+   * arm missed it. A sentence that refers to a schedule at all is a sentence
+   * this qualifier must not describe. */
+  String.raw`\bschedule`,
+  String.raw`\bimmediate`,                           /* a complete answer is present */
+  String.raw`\bcompleting\b|\bcompletion\s+of\b`,
+  String.raw`\bhours\s+of\s+service\b`,
+].join("|"), "i");
+
+/* VESTING AS THE PRECONDITION OF ANOTHER RULE, which `VQ_OTHER_RULE`'s
+ * vocabulary reaches only when it happens to name the rule. Akins Ford (384
+ * ppl) publishes "Upon attainment of age 59 ½, benefits attributable to any
+ * employer contributions … are available for withdrawal **if the participant is
+ * 100% vested** in those benefits" — an age trigger and a full-vest claim, and
+ * no acceleration anywhere: the vesting is the CONDITION, the withdrawal is the
+ * rule. Anchored on the subordinator so it cannot reach a main-clause claim:
+ * "If Participants were employed on or after their retirement age, the …
+ * contributions were fully vested" (Patriot Transportation) is the class
+ * itself and must survive. */
+const AV_VEST_AS_CONDITION = /\b(?:if|provided(?:\s+that)?|to\s+the\s+extent|that|which|when)\s+(?:the\s+|they\s+|he\s+|she\s+|it\s+)?(?:\w+\s+){0,2}?(?:is|are|was|were)\s+(?:100\s?%|100\s+percent|fully)\s*vested/i;
+/* AND AN `including` CLAUSE MAKES THE TRIGGER AN EXAMPLE RATHER THAN THE
+ * CONDITION. Lehigh Heavy Forge (163 ppl) files "All participants, INCLUDING
+ * participants incurring a severance from employment as a result of death or
+ * disability, are 100% vested in elective deferrals and employer discretionary
+ * contributions" — universal vesting, a COMPLETE answer, with the trigger words
+ * sitting inside an appositive. Telling that reader the sentence does not say
+ * how employer money vests would be a new false claim. */
+const AV_INCLUDING = /\bincluding\b/i;
+
+/**
+ * True when a published vesting quote states only when vesting is ACCELERATED.
+ * The caller must also have NO vesting label to show: where a label exists the
+ * schedule already reaches the reader and the qualifier would be noise.
+ * @param {string} text the quote as published (post-`quoteTrim`)
+ */
+export function accelerationOnlyVesting(text) {
+  const t = String(text || "").replace(/\s+/g, " ").trim();
+  if (!t) return false;
+  if (!AV_FULL.test(t)) return false;
+  if (!AV_TRIGGER.test(t)) return false;
+  /* A `VQ_OTHER_RULE.test(t)` refusal stood here and was REMOVED BY
+   * MEASUREMENT, not by taste. It was written for Bridgestone Hosepower (882
+   * ppl), "Participants may receive an in-service distribution … from all of
+   * their accounts that are fully vested" — an adjectival vest-word on a
+   * DISTRIBUTION rule, which `vestingQuoteOk` publishes anyway because its
+   * condition (b) sees "are fully vested" and returns before (a) is asked.
+   * Leave-one-out over the whole pool: neutering it admits **0** quotes the
+   * class does not already refuse, because `AV_VEST_AS_CONDITION` catches
+   * Bridgestone on `that are fully vested`. Sufficient, necessary for nothing.
+   * *A condition that can never be the only protection proves nothing.* */
+  if (AV_VEST_AS_CONDITION.test(t)) return false;
+  if (AV_INCLUDING.test(t)) return false;
+  return !AV_SCHEDULE.test(t);
+}
+
 /* TABLE DEBRIS LEADING A PUBLISHED QUOTE — 2026-10-03, found by the 15:0xZ
  * participant-weighted draw.
  *
@@ -474,7 +639,14 @@ if (process.argv[1] && process.argv[1].endsWith("lib-quote.mjs") && process.argv
       console.log(`FAIL vesting expected ${c.expect} got ${got} [${c.why}]\n     "${c.text.slice(0, 120)}"`);
     }
   }
-  const { trimCases } = JSON.parse(readFileSync(url, "utf8"));
+  for (const c of (JSON.parse(readFileSync(url, "utf8")).accelCases) || []) {
+    const got = accelerationOnlyVesting(c.text);
+    if (got !== c.expect) {
+      bad++;
+      console.log(`FAIL accel expected ${c.expect} got ${got} [${c.why}]\n     "${c.text.slice(0, 120)}"`);
+    }
+  }
+  const { trimCases, accelCases } = JSON.parse(readFileSync(url, "utf8"));
   for (const c of trimCases || []) {
     const got = quoteTrim(c.text);
     if (got !== c.expect) {
@@ -482,7 +654,7 @@ if (process.argv[1] && process.argv[1].endsWith("lib-quote.mjs") && process.argv
       console.log(`FAIL trim [${c.why}]\n     in   "${c.text.slice(0, 110)}"\n     want "${c.expect.slice(0, 110)}"\n     got  "${got.slice(0, 110)}"`);
     }
   }
-  const n = cases.length + (vestingCases || []).length + (trimCases || []).length;
+  const n = cases.length + (vestingCases || []).length + (trimCases || []).length + (accelCases || []).length;
   console.log(bad ? `\n${bad} of ${n} fixtures FAILED` : `all ${n} quote-guard fixtures pass`);
   process.exit(bad ? 1 : 0);
 }

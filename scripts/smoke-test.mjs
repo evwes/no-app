@@ -226,6 +226,24 @@ try {
     fail(`vesting-quote guard in app.js disagrees with docs/quote-guard-cases.json on ${vDrift.length} of ${vCases.length} filings`);
   }
 
+  /* And the ACCELERATION-ONLY qualifier, which decides whether a published
+   * vesting quote carries the sentence saying it states when vesting is
+   * accelerated rather than how it is earned. 59 plans / 51,205 participants
+   * publish such a quote as their WHOLE vesting answer. Same two homes, same
+   * slice, so a disagreement here means app.js was hand-edited. */
+  const aCases = JSON.parse(readFileSync("docs/quote-guard-cases.json", "utf8")).accelCases || [];
+  if (!aCases.length) fail("docs/quote-guard-cases.json carries no accelCases — the acceleration twin is unchecked");
+  const aGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoAccelOnly !== "function") return null;
+    return cs.map((c) => window.__wampoAccelOnly(c.text));
+  }, aCases);
+  if (!aGot) fail("app.js no longer exposes __wampoAccelOnly — the qualifier cannot be cross-checked");
+  const aDrift = aCases.map((c, i) => [c, aGot?.[i]]).filter(([c, got]) => got !== c.expect);
+  if (aDrift.length) {
+    for (const [c, got] of aDrift) console.error(`  app.js accel qualifier: expected ${c.expect}, got ${got} — ${c.why}`);
+    fail(`acceleration qualifier in app.js disagrees with docs/quote-guard-cases.json on ${aDrift.length} of ${aCases.length} cases`);
+  }
+
   /* And the same for the quote TRIM, which has the same two homes as the two
    * guards above and is the thing that decides a published quote's FIRST
    * CHARACTER. Lithia Motors (30,021 participants) published its match quote

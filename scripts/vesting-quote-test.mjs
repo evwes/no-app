@@ -17,7 +17,7 @@
  * Run: node scripts/vesting-quote-test.mjs
  */
 import { readFileSync, existsSync } from "node:fs";
-import { vestingQuoteOk } from "./lib-quote.mjs";
+import { vestingQuoteOk, quoteTrim, accelerationOnlyVesting } from "./lib-quote.mjs";
 import { vestingQuoteUpgrade } from "./lib-4i.mjs";
 import { loadPlans } from "./lib-schema.mjs";
 
@@ -107,6 +107,59 @@ if (!/vestingQuoteOk\(ff\.vestingText\)/.test(appjs))
 const seo = readFileSync(`${R}/scripts/build-seo-pages.mjs`, "utf8");
 if (!/vestingQuoteOk/.test(seo))
   fail("scripts/build-seo-pages.mjs renders the vesting quote without the guard — the crawlable pages are the other surface");
+
+/* ---- 4b. the ACCELERATION-ONLY qualifier, 2026-10-09 ----
+ * `accelerationOnlyVesting` does not withhold anything; it adds a sentence
+ * saying the published quote states when vesting is ACCELERATED rather than how
+ * it is earned. So the risk runs the other way from the guard above: a false
+ * positive puts that sentence under a quote that DOES state a schedule, which
+ * is a wrong published claim. Hence a ceiling AND a floor, both measured, and
+ * the fixtures run here too so this file fails on its own. */
+const { accelCases } = JSON.parse(readFileSync(`${R}/docs/quote-guard-cases.json`, "utf8"));
+if (!accelCases?.length) fail("docs/quote-guard-cases.json carries no accelCases");
+for (const c of accelCases || []) {
+  const got = accelerationOnlyVesting(c.text);
+  if (got !== c.expect) fail(`accel fixture: expected ${c.expect} got ${got} — ${c.why}`);
+}
+console.log(`accel fixtures: ${accelCases.length} cases (${accelCases.filter((c) => c.expect).length} must-fire, ${accelCases.filter((c) => !c.expect).length} must-not-fire)`);
+/* THE CLASS, re-derived through both gates the display applies: published by
+ * `vestingQuoteOk`, served from the plan's OWN ack (features are never served
+ * from a trust), and carrying no vesting LABEL, because where a label exists
+ * the schedule already reaches the reader and the qualifier is gated off. */
+const ACCEL_CEILING = 110;          /* measured at 59 plans on the pv-202 store */
+const ACCEL_PPL_CEILING = 160_000;  /* measured at 51,205 */
+/* `participants` and NOT `partEOY || participants`: both display surfaces print
+ * `participants` beside the quote, and a reader-facing figure must be summed in
+ * the field the reader is shown. The other convention reads 51,489 here. */
+const ownAck = new Map();
+for (const row of d.rows) {
+  const a = d.get(row, "ack");
+  if (a) ownAck.set(a, (ownAck.get(a) || 0) + (d.get(row, "participants") || 0));
+}
+let accel = 0, accelPpl = 0, accelLabelled = 0;
+for (let s = 0; s < 64; s++) {
+  const f = `${R}/data/lineups/${String(s).padStart(2, "0")}.json`;
+  if (!existsSync(f)) continue;
+  for (const [ack, e] of Object.entries(JSON.parse(readFileSync(f, "utf8")))) {
+    const t = e?.features?.vestingText;
+    if (!t || !vestingQuoteOk(t) || !ownAck.has(ack)) continue;
+    if (!accelerationOnlyVesting(quoteTrim(t))) continue;
+    if (e.features.vesting) { accelLabelled++; continue; }
+    accel++; accelPpl += ownAck.get(ack) || 0;
+  }
+}
+console.log(`accel class: ${accel} plans / ${accelPpl.toLocaleString()} ppl qualified; ${accelLabelled} more fire but carry a LABEL and are gated off`);
+if (accel === 0) fail("the qualifier reaches 0 plans — on a store holding Smith And Nephew and U.S. Fire, a clean zero reports on the query");
+if (accel > ACCEL_CEILING) fail(`qualifier reaches ${accel} plans, ceiling ${ACCEL_CEILING} — read the members before raising it`);
+if (accelPpl > ACCEL_PPL_CEILING) fail(`qualifier reaches ${accelPpl} ppl, ceiling ${ACCEL_PPL_CEILING}`);
+if (accelLabelled === 0) fail("0 labelled quotes fire — the `!ff.vesting` gate is then untested against the population it exists for");
+/* both surfaces, and the LABEL GATE on each, because the gate is half the claim */
+if (!/window\.__wampoAccelOnly/.test(appjs))
+  fail("app.js does not expose __wampoAccelOnly — the browser twin cannot be cross-checked by the smoke test");
+if (!/!ff\.vesting && accelerationOnlyVesting\(vestingQuote\)/.test(appjs))
+  fail("app.js renders the acceleration qualifier without the `!ff.vesting` gate, or not at all");
+if (!/!ff\.vesting && accelerationOnlyVesting\(vestQuote\)/.test(seo))
+  fail("scripts/build-seo-pages.mjs renders the acceleration qualifier without the `!ff.vesting` gate, or not at all");
 
 /* ---- 5. the v201 UPGRADE predicate, which makes this guard an ORACLE ----
  * `vestingQuoteUpgrade` lets a guard-ACCEPTED sentence displace a stored quote

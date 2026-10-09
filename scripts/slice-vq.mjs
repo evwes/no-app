@@ -39,14 +39,15 @@ let slice = src.slice(a, b).trimEnd();
  * constant the guard reads and nothing executable from the selftest block. A
  * new constant added to the guard and left outside these boundaries would make
  * the twin throw `ReferenceError` in the browser and nothing else would say so. */
-for (const must of ["VQ_RULE_WORD", "VQ_VESTS", "VQ_OTHER_RULE", "export function vestingQuoteOk"])
+for (const must of ["VQ_RULE_WORD", "VQ_VESTS", "VQ_OTHER_RULE", "export function vestingQuoteOk",
+  "AV_FULL", "AV_TRIGGER", "AV_SCHEDULE", "export function accelerationOnlyVesting"])
   if (!slice.includes(must)) throw new Error(`the slice is missing ${must} — it is outside the boundaries`);
 if (/--selftest|process\.(argv|exit)|readFileSync/.test(slice))
   throw new Error("the slice reaches into the selftest block");
 /* every identifier the sliced code READS must be something the slice DEFINES or
  * the browser provides — the ReferenceError check the generic-twin failure
  * wanted and did not have */
-for (const id of (slice.match(/\bVQ_[A-Z_]+\b/g) || []))
+for (const id of (slice.match(/\b(?:VQ|AV|Q)_[A-Z_0-9]+\b/g) || []))
   if (!new RegExp(`const ${id}\\s*=`).test(slice)) throw new Error(`the slice reads ${id} without defining it`);
 
 /* A MODULE `export` IN A CLASSIC SCRIPT BREAKS THE WHOLE FILE, AND
@@ -91,6 +92,7 @@ const HEAD = `  /* ---- vesting-quote guard ------------------------------------
  * the quoteTrim half was hand-written — which is how `--check` found its first
  * drift. */
 const TAIL = "  window.__wampoVestingQuoteOk = vestingQuoteOk;   // read by the smoke test only\n"
+  + "  window.__wampoAccelOnly = accelerationOnlyVesting; // read by the smoke test only\n"
   + "  window.__wampoQuoteTrim = quoteTrim;             // read by the smoke test only\n";
 const twin = HEAD + body + "\n" + TAIL;
 

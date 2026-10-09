@@ -392,5 +392,102 @@
    "text": "Participants vest in employer matching contributions at a rate of 20% after two years of service.",
    "expect": "Participants vest in employer matching contributions at a rate of 20% after two years of service."
   }
+ ],
+ "accelCases": [
+  {
+   "why": "Smith And Nephew, 9,307 ppl -- the largest member of the class, and the SOLE case for AV_FULL's forward arm (`fully ... vested`)",
+   "expect": true,
+   "text": "A participant becomes fully vested in Company contributions and earnings thereon if the participant\u2019s termination of employment occurs due to death, disability or normal retirement."
+  },
+  {
+   "why": "Patriot Transportation, 755 ppl -- SOLE case for the `retirement age` trigger arm, and the shape AV_VEST_AS_CONDITION must NOT catch: `If Participants were employed ... were fully vested` is a main-clause claim, not a precondition",
+   "expect": true,
+   "text": "If Participants were employed on or after their retirement age, the Company's matching and discretionary contributions were fully vested."
+  },
+  {
+   "why": "Saratoga Hospital, 4,085 ppl -- SOLE case for the bare `age NN` trigger arm (`NRA (age 59 1/2)`), which no retirement-word arm reaches",
+   "expect": true,
+   "text": "Employees who achieve NRA (age 59\u00bd) are fully vested in all employer contributions."
+  },
+  {
+   "why": "Manko Window Systems, 423 ppl -- SOLE case for AV_FULL's REVERSED arm (`will be vested 100% in`); the forward-only arm missed a textbook member",
+   "expect": true,
+   "text": "An employee who becomes disabled, dies, or reaches age 60 will be vested 100% in employer contributions."
+  },
+  {
+   "why": "Gilster-Mary Lee, 2,288 ppl -- SOLE case for the year-COUNT arm, and a FILER'S TYPO: `after six (6) yeas of vesting services` is a complete six-year rule that neither a service-word arm nor a digit test reaches",
+   "expect": false,
+   "text": "Participants are 100% vested in the Company\u2019s discretionary matching contribution plus actual earnings thereon after six (6) yeas of vesting services unless the participant reaches normal retirement age (65), dies or becomes disabled while an employee."
+  },
+  {
+   "why": "Onestream Software, 1,028 ppl -- SOLE case for the bare `schedule` arm: the whole ladder is inside the quote with no percent signs on its steps and the year column spelled `Service (Years)`",
+   "expect": false,
+   "text": "Company matching contributions vest in accordance with the following schedule: Vesting Service (Years) Vesting (%) Less than 1 - 1 but less than 2 25 2 but less than 3 50 3 but less than 4 75 4 or more 100 Participants become fully vested in the event of retirement, death, and disability, as defi\u2026"
+  },
+  {
+   "why": "The Eby Group, 2,492 ppl -- SOLE case for the 1-99% arm: a ladder table bled into the quote ahead of the acceleration sentence",
+   "expect": false,
+   "text": "Less than 1 0% 1 40% 1 20% 2 60% 2 40% 3 80% 3 60% 4 100% 4 80% 5 100% In the event of permanent disability, death, reaching normal retirement age, or termination of the Plan, the Company contributions will become fully vested."
+  },
+  {
+   "why": "Precision Machine Works, 109 ppl -- SOLE case for the years-of-service arm: `100% vested following two full years of service, as defined, or upon attaining ...` states BOTH the schedule and the exception",
+   "expect": false,
+   "text": "The Company\u2019s matching contributions plus actual earnings thereon, become 100% vested following two full years of service, as defined, or upon attaining normal retirement age, death or disability."
+  },
+  {
+   "why": "Upper Iowa University, 1,003 ppl -- SOLE case for the `completing/completion` arm",
+   "expect": false,
+   "text": "Participants become 100% vested in employer contributions upon completing three full years of services or the attainment of age 65."
+  },
+  {
+   "why": "IBEW Local 9, 1,956 ppl -- SOLE case for the `hours of service` arm: 501 hours is a service requirement measured in hours",
+   "expect": false,
+   "text": "Participants become fully vested in the employer contribution portion of their account if they have completed 501 hours of service in one Plan year or reach the normal retirement age, decease, become disabled or if the Plan terminates."
+  },
+  {
+   "why": "Carrier Johnson, 135 ppl -- SOLE case for the `immediate` arm: `100% immediate` is a COMPLETE answer sitting beside the exception",
+   "expect": false,
+   "text": "For employer nonelective contributions: the following applies (except 100% vested upon normal retirement age) 100% immediate."
+  },
+  {
+   "why": "Akins Ford, 384 ppl -- SOLE case for AV_VEST_AS_CONDITION: an age trigger and a full-vest claim where the vesting is the CONDITION of a withdrawal rule, not the rule",
+   "expect": false,
+   "text": "Upon attainment of age 59 \u00bd, benefits attributable to any employer contributions allocated to a participant are available for withdrawal if the participant is 100% vested in those benefits."
+  },
+  {
+   "why": "Bridgestone Hosepower, 882 ppl -- the second shape of AV_VEST_AS_CONDITION (`accounts THAT ARE fully vested`), and the case that made a VQ_OTHER_RULE refusal necessary-for-0",
+   "expect": false,
+   "text": "Participants may receive an in-service distribution upon the attainment of age 59 \u00bd years from all of their accounts that are fully vested."
+  },
+  {
+   "why": "Lehigh Heavy Forge, 163 ppl -- SOLE case for AV_INCLUDING: universal vesting with the trigger words inside an appositive, so the sentence IS a complete answer",
+   "expect": false,
+   "text": "Vesting: All participants, including participants incurring a severance from employment as a result of death or disability, are 100% vested in elective deferrals and employer discretionary contributions."
+  },
+  {
+   "why": "Jefferson City Medical Group -- the 2026-10-05 entry's first motivating case, REPAIRED by v202: it now publishes a real 20%-per-year ladder and must never be described as an acceleration clause. Refused by several conditions at once, so it is a regression pin and not a single-protection case.",
+   "expect": false,
+   "text": "Participants vest in employer matching and discretionary contributions at a rate of 20% after two years of service and in 20% increments each subsequent year with full vesting in employer matching and discretionary contributions occurring after six years of service."
+  },
+  {
+   "why": "Koroseal Interior Products -- same, v202-repaired: 20% after two years with a 20% step",
+   "expect": false,
+   "text": "Company contributions are 20% vested after two years of eligible service, with a 20% increase for each additional year of eligible service, resulting in full vesting after six eligible years."
+  },
+  {
+   "why": "Center Id Corp -- same, v202-repaired: 25% after one year, full after four",
+   "expect": false,
+   "text": "Participants are vested in the discretionary match and profit-sharing contributions at a rate of 25% after one year of service with full vesting after four years of service."
+  },
+  {
+   "why": "the shape CLAUDE.md quotes for this class, kept as text because v202 replaced the filings' stored sentences: an age/retirement/disability/death enumeration and nothing else",
+   "expect": true,
+   "text": "Participants are 100% vested upon attaining age 65, qualifying for early retirement, or upon total disability or death."
+  },
+  {
+   "why": "same, the Koroseal wording the record quotes",
+   "expect": true,
+   "text": "However, a participant will be deemed fully vested in Company contributions upon death, disability, or attainment of the normal retirement age."
+  }
  ]
 }

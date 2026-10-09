@@ -1259,9 +1259,43 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   and the crawlable pages regenerated and READ. Two fixtures already pinned:
   Motiva must be left alone, and the four openers must still survive
   `quoteTrim`. `docs/accuracy-log.md` 2026-10-05 (00:3xZ).
-- **THE ACCELERATED-VESTING EXCEPTION CLASS — SIZED 2026-10-05 02:3xZ at 69
-  plans / 53,298 ppl, AND READING SIX FILINGS REFUTED THE REMEDY THIS ENTRY
-  PRESCRIBED FOR THE BULK OF IT.** Narrowed 115 / 80,858 -> 73 / 59,132 ->
+- **SHIPPED 2026-10-09 03:2xZ — THE ACCELERATED-VESTING EXCEPTION CLASS: 59
+  plans / 51,205 ppl on the report, 5 crawlable pages / 23,656 ppl, display-only
+  (`PARSER_VERSION` stays 202).** `accelerationOnlyVesting` in `lib-quote.mjs`,
+  sliced into app.js, imported by `build-seo-pages`. **IT IS NOT A GUARD AND
+  MUST NEVER BECOME ONE** — nothing is withheld; a sentence beside the quote
+  says *"The sentence above states when vesting is **accelerated** — the events
+  that make a participant fully vested regardless of service. It does not say
+  how employer money vests for a participant who leaves before then."*
+  **THIS ENTRY'S OWN PRESCRIBED WORDING WAS FALSE FOR THE MINORITY** and was not
+  shipped: *"the notes state only when vesting ACCELERATES"* is a claim about the
+  ATTACHMENT, and Aaron Thomas (2,285 ppl) files a real ladder the extractor did
+  not select, so the shipped claim is about the **QUOTE** instead — verifiable
+  from the published sentence alone. **DO NOT CARRY 69 / 53,298**: v202 repaired
+  this entry's three motivating plans (Jefferson City, Koroseal, Center Id now
+  publish real ladders and are pinned must-NOT-fire).
+  **FOUR FALSE POSITIVES WERE FOUND ONLY BY READING ALL 60 MEMBERS** — Onestream
+  publishes its whole ladder INSIDE the quote with no percent signs on its steps;
+  Gilster-Mary Lee states a complete six-year rule through the typo `six (6)
+  yeas`; Akins Ford and Bridgestone state vesting as the PRECONDITION of a
+  withdrawal rule; Lehigh Heavy Forge states universal vesting with the trigger
+  inside an `including` appositive. **AND LEAVE-ONE-OUT DELETED SIX CONDITIONS I
+  WROTE**, each necessary-for-0; every survivor has a single-protection case
+  pinned by ack. **A CONJUNCTION AND A DISJUNCTION ARE NOT TESTED BY THE SAME
+  MUTATION**: neutering a REQUIRED condition to never-match empties the class, so
+  the first pass called every `AV_TRIGGER` arm inert — measured by what each arm
+  alone ADMITS, two are the sole admitter of a plan.
+  **FOUND BY THE MUST-NOT-FIRE CONTROL AND BIGGER THAN THE ITEM — NAMED, NOT
+  FIXED: 123 plans / 59,316 ppl publish `Employer-money vesting: Immediate` over
+  an acceleration clause** (Arcosa 5,875: *"100% vested … upon their attainment
+  of age 65"*, labelled Immediate; Weather Shield 1,261). Our own store
+  contradicts our own label — the `lib-4i:7417` shape v202 fixed for GRADED
+  schedules. **A wrong answer outranking a missing one, and it is a PARSER change
+  needing a bump and a full re-parse: owner's call.** It is also why the shipped
+  sentence is gated on `!ff.vesting`. `docs/accuracy-log.md` 2026-10-09 (03:2xZ).
+- **ORIGINAL SIZING, kept because it is what was predicted — SIZED 2026-10-05
+  02:3xZ at 69 plans / 53,298 ppl, AND READING SIX FILINGS REFUTED THE REMEDY
+  THIS ENTRY PRESCRIBED FOR THE BULK OF IT.** Narrowed 115 / 80,858 -> 73 / 59,132 ->
   **69 / 53,298**, each step from READING members. 126 more quotes are
   exception-only but carry a vesting LABEL, so the schedule reaches the reader
   and they are correctly not the class.

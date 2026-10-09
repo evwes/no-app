@@ -9,7 +9,7 @@
  * "not stated in the public filings" — never a guess. Filenames are
  * EIN-PN (stable forever, no orphans when a sponsor renames). */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
-import { matchQuoteOk, vestingQuoteOk, quoteTrim } from "./lib-quote.mjs";
+import { matchQuoteOk, vestingQuoteOk, quoteTrim, accelerationOnlyVesting } from "./lib-quote.mjs";
 import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow, hasNoFundIdentity, isLoanDescriptionRow, isLoanAnswerRow, isLoanMaturityRow, isLoanVocabularyRow, isDirectionCaptionRow, isOfficeListRow, isPageBreakCaptionRow, isLabelOnlyName, isSentenceRow, isNonIssuerCell, captionFiledType, trustShareBound, trustScheduleDMenu } from "./lib-disclose.mjs";
 import { isGenericTypeName } from "./lib-4i.mjs";
 
@@ -187,6 +187,14 @@ for (const r of d.plans.slice(0, TOP_N)) {
    * contributions"), and others over vesting schedules and accounting
    * boilerplate. The rule already existed in app.js and only there. */
   const matchQuote = matchQuoteOk(ff.matchText, !!ff.match) ? quoteTrim(ff.matchText) : null;
+
+  /* AND THE VESTING QUOTE IS SOMETIMES THE ACCELERATION CLAUSE RATHER THAN THE
+   * SCHEDULE. Gated on `!ff.vesting` — where a label exists the schedule
+   * already reaches the reader through the facts table above, and the qualifier
+   * would describe a page that is not showing the quote as its whole answer.
+   * lib-quote.mjs carries the measurement and the three refusals. */
+  const vestQuote = quoteTrim(ff.vestingText);
+  const vestAccelOnly = !ff.vesting && accelerationOnlyVesting(vestQuote);
 
   /* QUALIFIERS THE REPORT APPLIES AND THIS PAGE DID NOT. Enumerated on
    * 2026-09-10 by diffing every field name app.js renders against the ones
@@ -366,7 +374,8 @@ ${matchQuote ? `<h2>Match formula, as filed</h2><blockquote>${esc(matchQuote)}</
 ${ff.nec ? `<h2>Employer nonelective contribution, as filed</h2>
 <p>This plan contributes <strong>${esc(ff.nec)}</strong> regardless of what a participant puts in — separate from any matching contribution.</p>
 ${ff.necText ? `<blockquote>${esc(ff.necText)}</blockquote>` : ""}` : ""}
-${vestingQuoteOk(ff.vestingText) ? `<h2>Vesting, as filed</h2><blockquote>${esc(quoteTrim(ff.vestingText))}</blockquote>` : ""}
+${vestingQuoteOk(ff.vestingText) ? `<h2>Vesting, as filed</h2><blockquote>${esc(vestQuote)}</blockquote>${vestAccelOnly ? `
+<p class="muted"><strong>This says when vesting is accelerated, not how it is earned.</strong> The sentence above gives the events that make a participant fully vested regardless of service. It does not say how employer money vests for a participant who leaves before then — check the plan's summary plan description.</p>` : ""}` : ""}
 ${funds ? `<h2>Fund lineup${lineupVia ? ` (via ${esc(lineupVia)})` : ""} — top holdings</h2>
 ${/* THE NEWLINE LIVES INSIDE THE CONDITIONAL, and the block six lines down
      already says why: an unconditionally emitted newline adds a blank line to

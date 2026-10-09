@@ -7,6 +7,217 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-09 (03:2xZ) — THE PUBLISHED VESTING ANSWER IS THE ACCELERATION CLAUSE: 59 plans / 51,205 ppl now say so, on both surfaces
+
+### What was wrong
+
+`vestingQuoteOk` asks "is this sentence a vesting rule?" and for this class the
+answer is correctly YES. The defect sits one layer up: where the extractor found
+no vesting **label**, the quote is the plan's WHOLE published vesting answer,
+and for 59 plans / **51,205 participants** that answer is the near-universal
+accelerated-vesting boilerplate —
+
+> A participant becomes fully vested in Company contributions and earnings
+> thereon if the participant's termination of employment occurs due to death,
+> disability or normal retirement.  *(Smith And Nephew, 9,307 ppl)*
+
+> A participant becomes 100% vested in Employer Contributions if the participant
+> becomes totally disabled, dies or reaches age 65 while employed by the
+> Company.  *(U.S. Fire Insurance, 3,478 ppl)*
+
+Every word true, and every one answering a different question. It says nothing
+about when a participant who simply LEAVES owns employer money, which is the
+only thing a reader of the vesting line wants, and the facts table directly
+above it reads "not stated in the public filings".
+
+### The change
+
+`accelerationOnlyVesting` in `scripts/lib-quote.mjs`, beside `matchQuoteOk` /
+`vestingQuoteOk`, sliced into app.js's browser twin by `scripts/slice-vq.mjs`
+and imported by `scripts/build-seo-pages.mjs`. Display-only: `PARSER_VERSION`
+stays **202**, no re-parse, nothing pre-registered.
+
+**IT IS NOT A GUARD AND MUST NEVER BECOME ONE.** The queue entry's own reading
+of six filings (2026-10-05 02:3xZ) found **five of six state no ladder anywhere
+in the attachment**, so withholding the quote would publish "not stated in the
+audited notes" about a filing that DID state something. *A guard that withdraws
+a true answer because it is incomplete makes the page less honest, not more.*
+The quote stays; a sentence beside it says what the quote is.
+
+**AND THE QUEUE ENTRY'S PRESCRIBED WORDING WAS FALSE FOR THE MINORITY.** It
+asked for a label reading *"the notes state only when vesting ACCELERATES"* —
+a claim about the ATTACHMENT. Aaron Thomas (2,285 ppl) files a real
+`Years of service | Vesting %` table (2→20 … 6→100) the extractor did not
+select, so on that page the prescribed label would be a NEW false statement.
+What shipped is a claim about the **QUOTE**, verifiable from the published
+sentence alone and unfalsifiable by a ladder elsewhere in the filing:
+
+- report: *"The sentence above states when vesting is **accelerated** — the
+  events that make a participant fully vested regardless of service. It does not
+  say how employer money vests for a participant who leaves before then; check
+  the plan's SPD."*
+- crawlable page: *"**This says when vesting is accelerated, not how it is
+  earned.** The sentence above gives the events that make a participant fully
+  vested regardless of service. It does not say how employer money vests for a
+  participant who leaves before then — check the plan's summary plan
+  description."*
+
+Both are gated on `!ff.vesting`: where a label exists the schedule already
+reaches the reader and the sentence would describe a page that is not showing
+the quote as its whole answer.
+
+### Reader-facing figures, and the three surfaces they are measured on
+
+- **report (app.js): 59 plans / 51,205 participants.** Published by
+  `vestingQuoteOk`, served from the plan's OWN ack (features are never served
+  from a trust), no vesting label. Summed in `participants`, the field both
+  surfaces print — the `partEOY || participants` convention reads 51,489.
+- **crawlable pages: 5 of 5,000 / 23,656 participants.** Smith And Nephew 9,307,
+  Woodgrain 5,758, Saratoga Hospital 4,085, U.S. Fire 3,478, Pennsylvania
+  National 1,028. The other 54 are small plans outside `TOP_N`.
+- **targeting control: 4,411 pages carry a "Vesting, as filed" section and 5
+  gained the sentence**, while **665 unchanged pages publish a percent-per-year
+  ladder** in that very quote. A cut that fired on 4,411 would be noise and the
+  diff would not show it.
+- **gated-off control: 123 more plans / 59,316 ppl fire the predicate and carry
+  a label**, so the `!ff.vesting` gate is exercised by a real population rather
+  than being decorative. (See the separate finding below — their label is
+  wrong.)
+
+### What reading the members cost, and what the fixtures caught
+
+**The three motivating plans in the queue entry are FIXED and now publish real
+ladders** — Jefferson City Medical Group, Koroseal and Center Id were v202's own
+seven improvements, so pinning them as must-NOT-fire is the first thing this
+work did. The class to re-derive was the 02:3xZ set, and the recorded
+69 / 53,298 came back as **59 / 51,205** on the pv-202 store.
+
+**FIVE OF THE SIX PINNED MUST-SEE FILINGS FAILED BEFORE THE FIRST COUNT
+PRINTED**, and the cause is worth the line: `AV_FULL` was written with a
+trailing `\b` after its alternation, and `%` is a non-word character, so
+`100%` followed by a space has **no boundary between them** — the arm matched
+"fully vested" and missed "100% vested", the commonest spelling in the class.
+*Putting the must-SEE fixture ahead of the measurement turns a wrong answer into
+a refusal*, for the third time on this record.
+
+**FOUR FALSE POSITIVES WERE FOUND ONLY BY READING ALL 60 MEMBERS, none visible
+in a count:**
+- Onestream Software (1,028 ppl) publishes its **whole ladder inside the quote**
+  — "in accordance with the following schedule: Vesting Service (Years) Vesting
+  (%) Less than 1 - 1 but less than 2 25 2 but less than 3 50 …" — whose steps
+  carry no percent sign and whose year column is spelled `Service (Years)`, so
+  every narrow arm missed it. `\bschedule` is therefore taken BARE.
+- Stone Belt Arc (676) states a three-year cliff beside the exception, and
+  **Gilster-Mary Lee (2,288) states a complete six-year rule through a filer's
+  typo** — `after six (6) **yeas** of vesting services` — which neither a
+  service-word arm nor a digit test reaches. Hence a year-COUNT arm taking
+  spelled numbers, an optional parenthesised digit and the `yeas` stem, with an
+  `(?<!age )` lookbehind so "reaches age 65 years" is not read as service.
+- Akins Ford (384) and Bridgestone Hosepower (882) state vesting as the
+  **PRECONDITION of a withdrawal rule** ("available for withdrawal **if the
+  participant is 100% vested**", "accounts **that are fully vested**"), not as
+  the rule. `AV_VEST_AS_CONDITION` is anchored on the subordinator so it cannot
+  reach a main-clause claim — Patriot Transportation's "If Participants were
+  employed on or after their retirement age, the … contributions were fully
+  vested" is the class itself and survives.
+- Lehigh Heavy Forge (163) files universal vesting with the trigger words inside
+  an appositive — "All participants, **including** participants incurring a
+  severance … as a result of death or disability, are 100% vested" — a COMPLETE
+  answer. An `including` clause makes the trigger an example rather than the
+  condition.
+
+**AND LEAVE-ONE-OUT DELETED SIX CONDITIONS I HAD WRITTEN.** A
+`VQ_OTHER_RULE` refusal (sufficient for Bridgestone, **necessary for 0** because
+`AV_VEST_AS_CONDITION` already catches it) plus `as follows`,
+`graded|cliff|increment`, `anniversar`, `(per|each|every) year` and the
+spelled-out `twenty percent` family — each admits **0** quotes the survivors do
+not already refuse. *A condition that can never be the only protection proves
+nothing.* Every surviving condition now has a real single-protection case drawn
+FROM the population and pinned by ack in `docs/quote-guard-cases.json`:
+`\bschedule` → Onestream, year-count → Gilster-Mary Lee, `1-99%` → The Eby
+Group, years-of-service → Precision Machine Works, `completing` → Upper Iowa,
+`hours of service` → IBEW Local 9, `immediate` → Carrier Johnson,
+`AV_VEST_AS_CONDITION` → Akins Ford, `AV_INCLUDING` → Lehigh Heavy Forge,
+`retirement age` trigger → Patriot Transportation, bare `age NN` trigger →
+Saratoga Hospital, `AV_FULL` reversed arm → Manko Window Systems.
+
+**THE LEAVE-ONE-OUT HAD TO RUN IN TWO DIRECTIONS, and one direction reads 0 no
+matter what.** Neutering a REQUIRED condition to never-match empties the class,
+so every arm of `AV_TRIGGER` reported "blocks 0" and looked inert. Measured the
+other way — which members does each arm alone ADMIT — `retirement age` and bare
+`age NN` are each the sole admitter of one plan, and the first pass's
+"AV_TRIGGER is inert" was an artifact of the mutation direction. *A conjunction
+and a disjunction are not tested by the same mutation.*
+
+**The widening it also bought:** asking what requiring `AV_FULL` keeps OUT
+surfaced Manko Window Systems (423 ppl), "will be **vested 100%** in employer
+contributions" — a textbook member the forward-only arm missed. The other two it
+keeps out are forfeiture accounting (Emeh, 1,163) and a distribution election
+(Aspeq Heating, 508), both correctly refused.
+
+### Gates
+
+`lib-quote --selftest` 90 fixtures (19 new `accelCases`, 6 must-fire / 13
+must-not), `vesting-quote-test` (new section 4b: fixtures, a measured
+ceiling/floor on the class, the gated-off population asserted non-zero, and the
+`!ff.vesting` gate asserted present in BOTH surfaces' source),
+`no-identity-test`, `slice-vq --check`, `smoke-test` — and the smoke-test's new
+twin cross-check was proved live by breaking the exposure and watching it fail
+(`SMOKE FAIL: app.js no longer exposes __wampoAccelOnly`). *A check that prints
+nothing on a quiet store has not been tested.*
+
+**The pages and the report were both READ in a browser, not inferred.** Smith
+And Nephew's report now carries the sentence under its quote; the strictest
+control — Jefferson City Medical Group, **no label and a real 20%-per-year
+ladder as its whole answer** — shows the quote and no sentence; and
+`010573945-004` (3,649 ppl), whose quote carries a retirement trigger AND
+"after three years of service", is untouched on both surfaces.
+
+### FOUND OUTSIDE THE ITEM, NAMED NOT FIXED: 123 plans / 59,316 ppl publish "Employer-money vesting: **Immediate**" over an acceleration clause
+
+This is the must-NOT-fire control reading back a bigger defect than the item.
+All 123 carry the label `Immediate` (122) or `Immediate (varies by hire date per
+the filing)` (1), and their own published quote contradicts it:
+
+> Participants are 100% vested in Company contributions and the allocated
+> portion of related earnings upon their **attainment of age 65** …
+> *(Arcosa, 5,875 ppl — labelled "Immediate")*
+
+> Participants who are employed on or after their normal retirement age (65), or
+> are terminated due to death or disability, are automatically 100% vested …
+> *(Weather Shield Mfg., 1,261 ppl — labelled "Immediate")*
+
+The extractor read "100% vested" / "always 100% vested" and set `Immediate`
+while the sentence makes it conditional on reaching NRA. **This is a wrong
+answer, not a missing one, and it outranks the item above it: 59,316
+participants against 51,205.** It needs no external witness — our own store
+contradicts our own label, the same shape as `lib-4i:7417`, the guard v202 fixed
+for GRADED schedules. It is a **PARSER** change (`PARSER_VERSION` bump and a
+full re-parse), so it is proposed and left for the owner rather than shipped,
+and it is why the display sentence is gated on `!ff.vesting`: a sentence saying
+"this states when vesting is accelerated" directly under a label saying
+"Immediate" would publish two contradictory claims instead of one.
+
+### The prevention
+
+- `accelerationOnlyVesting` is canonical in `lib-quote.mjs`, SLICED into app.js
+  by `slice-vq.mjs` (never typed), `--check` wired into `site-test`, and the
+  browser twin cross-checked by `smoke-test` against the same fixture file.
+- `slice-vq.mjs` now asserts the slice carries `AV_FULL`, `AV_TRIGGER`,
+  `AV_SCHEDULE` and `accelerationOnlyVesting` by name, and its
+  reads-without-defining check covers the `AV_`/`Q_` prefixes as well as `VQ_` —
+  a new constant left outside the boundaries would otherwise throw
+  `ReferenceError` in the browser and nothing would say so.
+- `vesting-quote-test` asserts the `!ff.vesting` gate is present in BOTH
+  app.js and `build-seo-pages.mjs` by source match, so a surface can no longer
+  render the quote while losing the gate — and holds the class to a measured
+  ceiling (110 plans / 160,000 ppl against 59 / 51,205), because a qualifier
+  that silently grows to 4,100 plans is a different qualifier.
+- The 19 fixtures are pinned from REAL filings by ack, each named with the
+  condition it is the only protection for.
+
+---
+
 ## 2026-10-09 (03:0xZ) — #601/#602 verdict, and TWO CONCURRENT RUNS ON TWO REFS DIVERGE BY A TIMESTAMP, NOT BY DATA
 
 ### The verdict: clean, one figure moved, and it was not my change
