@@ -1893,6 +1893,189 @@ export function isLoanVocabularyRow(name) {
   return loanDescriptionResidue(s).length === 0;
 }
 
+/* THE CUSTODIAN'S COUNTRY ROLL-UP CAPTION, AND THE RECORDKEEPER'S LOAN
+ * ACCOUNTING LINE — the FIFTH member of this family, 2026-10-09.
+ *
+ * THE LABEL IS THE FILING'S OWN SECTION HEADING, which is why this is a repair
+ * and not a judgement about shape. Northern Trust's `5500 Supplemental
+ * Schedules` export nests its Schedule of Assets as
+ * `<asset class> / <country> - <currency> / <row>`, and four filings were read
+ * to settle it:
+ *
+ *   Packaging Corp     `Participant Loans` / `United States - USD` /
+ *                      `&&&PACKAGING CORP. HOURLY PLAN   LOAN ASSET` $47,205,065
+ *   Kohl's             `Participant Loans` / `United States - USD` /
+ *                      `KOHL'S LOAN ACCOUNT` $44,362,425   (no `&&&` at all)
+ *   The Kroger Co.     `Other` / `United States - USD` / `&&&KROGER LOAN ASSET`
+ *                      $142,816,695, par == cost == value, CUSIP 000877001
+ *   KPH Healthcare     `Participant Loans` / `EMPLOYEE LOANS` whose description
+ *                      column reads `interest rates from 3.25% to 8.50%`
+ *
+ * Par equal to cost equal to current value is a loan receivable and not a
+ * security; the CUSIPs are the custodian's placeholders. Our parse keeps the
+ * COUNTRY caption and drops the section heading, so the reader is shown
+ * `Other United States - USD &&&KROGER LOAN ASSET` as a fund in a menu.
+ *
+ * THE OTHER HALF IS THE RECORDKEEPER'S OWN ACCOUNTING SUB-ACCOUNT, same label
+ * and the same filings' evidence: TIAA's `Plan Loan Default Fund` (194 rows)
+ * is the bucket a DEFAULTED participant loan sits in — University of Puget
+ * Sound files it in the description column of a `College Retirement Equities
+ * Fund variable annuities` line at $27,154, two rows above its own
+ * `Participant loans` entry — and `Loan Collateral Fund` / `Loan Escrow Fund`
+ * are the accounts holding the collateral. Nobody can pick any of them.
+ *
+ * WHY `LOAN_ROW` AND ITS THREE SIBLINGS CANNOT REACH THESE. Every one is
+ * anchored on the name BEGINNING with the loan word, which is exactly what
+ * keeps `Bank Loan Fund` safe, and `isLoanVocabularyRow`'s residue test
+ * deliberately holds no `fund`, `asset` or `account` — so `Plan Loan Default
+ * Fund` keeps a residue and is refused. *A fix for one phrasing of a class is
+ * not a fix for the class*, met here on a PREFIX and on an account noun.
+ *
+ * TWO ARMS, each measured necessary over all 2,651 published-and-served rows
+ * carrying a loan word:
+ *
+ *   ARM A — the custodian's statement furniture (`&&&`, or a country/currency
+ *     caption at the head) plus an account head. 10 rows / 1,336,126
+ *     participants / $375,339,585, and it is the ONLY arm that reaches any of
+ *     them: the plan's own name sits in the residue (`KROGER`, `HD SUPPLY`,
+ *     `SUNCHEM`, `PAINEWEBBER INC., SAVINGS INVESTMENT PLAN`) and no residue
+ *     test can be asked to know a sponsor from a fund house.
+ *   ARM B — the residue test, with the account-line nouns added to the strip.
+ *     361 rows / 1,064,407 participants / $162,908,913.
+ *
+ * ARM A TAKES THE PLACE OF A SPONSOR-NAME STRIP, DELIBERATELY. A first draft
+ * stripped the plan sponsor's own tokens from the residue, which reached the
+ * same rows — and made the verdict depend on WHICH plan is being viewed, so a
+ * trust row would have been labelled on one member plan's page and left a
+ * fund on another's. The custodian caption is the better witness anyway: it is
+ * evidence about the DOCUMENT rather than about the name.
+ *
+ * EVERY CONDITION WAS PRICED BY LEAVE-ONE-OUT OVER THE LIVE STORE AND FOUR
+ * WERE DELETED FOR BLOCKING NOTHING — a CUSIP/ISIN identifier strip, a
+ * corporate-entity-word strip (`inc`, `ltd`, `limited`), a caption strip
+ * inside ARM B, and ten of twenty-five candidate account nouns (`assets`,
+ * `collateral`, `balance`, `balances`, `various`, `maturity`, `maturities`,
+ * `reserves`, `totaling`, `employees` — the first four because
+ * `LOAN_DESC_WORDS` already strips them, the rest because nothing in the store
+ * needs them). *An exclusion that blocks nothing measurable is not a
+ * protection.* The fifteen that survive are each necessary for at least one
+ * row and most for a named handful: `account` 3 (`Plan Loan Collateral
+ * Account`), `accounts` 1, `funds` 6, `reserve` 6, `defaulted` 3, `pldf` 6
+ * (`PLDF# Plan Loan Default Fund`), `unitized` 2, `pooled` 1 (`Pooled Loan
+ * Default Fund`), `issued` 3 (`Loans Issued at`), `other` 4, `asset` 2,
+ * `escrow` 24, `employee` 12, `default` 219, `fund` 321.
+ *
+ * THE PARENTHESIS REFUSAL HAS A MEASURED SINGLE-PROTECTION CASE and it is the
+ * only thing standing between this rule and a real holding: Ki Bois Community
+ * Action's `Interest Account (Loan Collateral)` (351 participants,
+ * $289,560) names MetLife's fixed interest account and states the loan
+ * portion as an aside. Dropping the refusal admits exactly that one row. The
+ * same shape protects four larger rows that ARM B already refuses on their
+ * residue — `Fidelity VIP ContraFund Portfolio (includes loan collateral
+ * fund)` carries ticker FCNTX, and `TIAA Traditional Annuity Contracts FBR
+ * (GSRA, SRA, RCP, and Plan Loan Default)` is a real annuity — so the
+ * fixtures below pin the one case where it is the ONLY protection.
+ *
+ * THE ASSET-CLASS REFUSAL IS NAMED AS INERT RATHER THAN CLAIMED. `senior`,
+ * `participation`, `syndicated`, `leveraged` and `obligation` block ZERO live
+ * rows, because ARM B's residue already refuses every real member in the store
+ * (`Invesco Senior Loan ETF` -> invesco, senior, etf; `Senior Loan Portfolio`
+ * -> senior, portfolio; `Collateralized Loan Obligation` -> obligation). It is
+ * kept because ARM A has NO residue test of its own, so a future
+ * `… - USD MFO INVESCO SENIOR LOAN FUND` would otherwise be relabelled, and it
+ * is the only guard that could refuse it. Its pin below is labelled a SHAPE
+ * pin and proves no single protection.
+ *
+ * READER-FACING SIZE, with the serving condition applied (both surfaces serve
+ * a trust's menu only where the plan's own lineup is unusable, so each row is
+ * credited only to the member plans actually shown it): 371 rows / 339 served
+ * menus / 2,400,533 participants / $538,248,498. **0 publish a ticker and 0 a
+ * fee**, measured through the page's own renderer, so the harm was the CLAIM
+ * alone and nothing is withdrawn but a false one. All 57 distinct names were
+ * read. TYPED, NOT DROPPED: the value stays in the denominator, so no other
+ * row's published percentage moves.
+ *
+ * NAMED RESIDUE, left alone and conservative: a recordkeeper BRAND in front of
+ * the same account line keeps its residue and so keeps reading as a fund —
+ * `VALIC Loan Collateral Fund` (11 rows), `TIAA Plan Loan Default Fund` (10),
+ * `Transamerica LOAN FUND` (3), `CHARLES SCHWAB LOAN FUND` (4). Reaching them
+ * needs a recordkeeper-brand witness, which is a different class with its own
+ * machinery. */
+const LOAN_ACCT_CAPTION =
+  /^(?:(?:other|international|emerging\s+markets)\s+)*[a-z][a-z .,'()-]{2,40}?\s*-\s*(?:USD|EUR|GBP|CAD|JPY|CHF|AUD|SEK|DKK|NOK)\b/i;
+const LOAN_ACCT_DELIM = /&&&/;
+const LOAN_ACCT_NOUN = /\b(?:asset|account|accounts|fund|funds|reserve|escrow|default|defaulted|pldf|unitized|pooled|issued|employee|other)\b/gi;
+const LOAN_ACCT_HEAD = /\b(?:asset|assets|account|accounts|fund|funds)\b/i;
+const LOAN_ACCT_CLASS = /\b(?:senior|participation|syndicated|leveraged|securitized|securitised|obligation|obligations|whole)\b/i;
+const LOAN_ACCT_PARENS = /\([^)]*\)/g;
+export function isLoanAccountRow(name) {
+  const s = String(name || "").trim();
+  if (!s) return false;
+  if (!/\bloans?\b/i.test(s)) return false;
+  if (LOAN_ACCT_CLASS.test(s)) return false;
+  /* the loan words must not be an ASIDE on a named holding: whatever sits
+   * outside the parentheses has to be the loan line itself */
+  if (!/\bloans?\b/i.test(s.replace(LOAN_ACCT_PARENS, " "))) return false;
+  if ((LOAN_ACCT_DELIM.test(s) || LOAN_ACCT_CAPTION.test(s)) && LOAN_ACCT_HEAD.test(s)) return true;
+  return loanDescriptionResidue(s.replace(/&&&/g, " ").replace(LOAN_ACCT_NOUN, " ")).length === 0;
+}
+/* Asserted at import, both directions. Every must-SEE case is a real filed
+ * string from the live store; every must-KEEP case is either a measured
+ * single-protection case or is labelled as a shape pin. */
+for (const [s, why] of [
+  ["Other United States - USD &&&KROGER LOAN ASSET", "the motivating row — $142,816,695, 2.2% of the trust's menu, 674,716 participants across its member plans"],
+  ["United States - USD KOHL'S LOAN ACCOUNT", "$44,362,425 — the one member with NO `&&&`, so the caption half of ARM A is its only route"],
+  ["United States - USD &&&HD SUPPLY LOAN ASSET", "The Home Depot's trust, 468,817 participants"],
+  ["MCDONALD'S LOAN ASSETS McDonald’s Loan Asset&&& (4.25-9.50%, 2024-2029)", "the loan word is outside the parentheses, so the aside refusal must not fire"],
+  ["United States - USD &&&PAINEWEBBER INC., SAVINGS INVESTMENT PLAN LOAN ASSET CUSIP : 999982", "the identifier run and a plan name in the residue"],
+  ["United States - USD &&&SCHLUMBERGER LIMITED LOAN FUND", "an entity word in the residue"],
+  ["Other United States - USD &&& COCA COLA LOAN ASSET", "a space after the delimiter"],
+  ["Other United States - USD &&& WK KELLOGG CO LOAN ASSET", ""],
+  ["United States - USD &&&SUNCHEM PART. LOAN FUND", "an ABBREVIATED sponsor, which no sponsor-token strip would have reached"],
+  ["Other United States - USD &&&UBS PR LOAN ASSET CUSIP : 000810283", ""],
+  ["PLAN LOAN ASSET", "Packaging Corp's salaried plan, $14,870,723 — ARM B, no caption at all"],
+  ["LOAN ASSET", "Packaging Corp's hourly plan, $47,205,065"],
+  ["Plan Loan Default Fund", "194 rows — the commonest member, so a regression to 0 would look quiet"],
+  ["Loan Collateral Fund", "50 rows"],
+  ["LOAN ESCROW FUND", "7 rows — `escrow` is necessary for 24"],
+  ["EMPLOYEE LOANS", "10 rows — `employee` is necessary for 12"],
+  ["PLDF# Plan Loan Default Fund", "6 rows — `pldf` is necessary for exactly these"],
+  ["Pooled Loan Default Fund", "1 row — `pooled` is necessary for exactly this one"],
+  ["Loans Issued at", "`issued` is necessary for 3"],
+  ["Other - Loan Reserve", "`other` and `reserve`, 3 rows"],
+]) if (!isLoanAccountRow(s)) {
+  throw new Error(`lib-disclose: isLoanAccountRow no longer reaches ${JSON.stringify(s)} (${why}) — the arm is inert, fix it rather than shipping a quiet guard`);
+}
+for (const [s, why] of [
+  ["Interest Account (Loan Collateral)", "351 ppl / $289,560 — MetLife's real fixed interest account; the PARENTHESIS refusal is the ONLY protection, measured"],
+  ["Bank Loan Fund", "a real bank-loan fund — `bank` in the residue is the only protection"],
+  ["Floating Rate Loan Fund", "likewise, `floating`"],
+  ["Invesco Senior Loan ETF", "a registered ETF"],
+  ["First Trust Senior Loan ETF", "likewise"],
+  ["Senior Loan Portfolio", "a real portfolio"],
+  ["Loan Participation Fund", "SHAPE PIN for the asset-class refusal — out of population, proves no single protection"],
+  ["United States - USD &&&MFO INVESCO SENIOR LOAN FUND", "SHAPE PIN: the constructed case ARM A would otherwise relabel, and the asset-class refusal is its only guard"],
+  ["Collateralized Loan Obligation", "Nuvance Health, $177,637 — a real security class"],
+  ["LOANS SECURED BY MTGES-RESID.", "Johnson & Johnson's real mortgage holding, $76,510,398"],
+  ["LOANS SECURED BY MTGES-COM'L", "likewise, $19,057,019"],
+  ["FEDERAL HOME LOAN BANK OF BOSTON", "Pentegra, $115,744,176 — an agency bond"],
+  ["Federal Home Loan Bank of Chicago", "likewise"],
+  ["WINDSOR FEDERAL SAVINGS & LOAN ASSOC", "a bank, $16,118,681"],
+  ["VOLKSWAGEN AUTO LOAN ENHANCED TRUST", "a securitisation"],
+  ["Federal Home Loan Mortgage Corp", "Freddie Mac"],
+  ["Toyota Auto Loan Extended Note Trust 2024-1", "Wells Fargo's synthetic GIC collateral"],
+  ["CCRR PARENT, INC. TERM LOAN", "HCA, a real term loan held in a bond sleeve"],
+  ["BEACH POINT LOAN FUND LTD", "Stoel Rives, $16,855,055 — a real fund"],
+  ["Fidelity VIP ContraFund Portfolio (includes loan collateral fund)", "carries ticker FCNTX — the residue refuses it and the aside refusal does too"],
+  ["Fixed Account - Lincoln National Life (and Loan Reserve)", "a real fixed account"],
+  ["MetLife Guaranteed Fixed Account & Loan Collateral", "a real guaranteed account"],
+  ["TIAA Traditional Annuity Contracts FBR (GSRA, SRA, RCP, and Plan Loan Default)", "a real annuity contract, $6,295,859"],
+  ["contract loan reserves Lincoln Fin. Group Trust Co., Inc. Lincoln Stable Value Account", "names a real stable value account, $89,900,705"],
+  ["VALIC Loan Collateral Fund", "NAMED RESIDUE, left alone on purpose: a recordkeeper brand keeps its residue"],
+]) if (isLoanAccountRow(s)) {
+  throw new Error(`lib-disclose: isLoanAccountRow would relabel ${JSON.stringify(s)} (${why}) — it names a holding, fix the predicate rather than the control`);
+}
+
 /* THE FILING NAMED NO FUND — one decision, asked by both display paths.
  *
  * A row whose whole name is a bare vehicle type (`Mutual funds`,

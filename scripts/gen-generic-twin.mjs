@@ -38,7 +38,7 @@ import { GENERIC_TYPE_ANY, GENERIC_TYPE_DESPACED, isGenericTypeName,
 import { isNamelessFundRow, isLoanDescriptionRow, isAnnuityContractRow,
   annuityFeeIsGuaranteeOnly, isInvestmentContractRow, isMistypedStockRow,
   mistypedStockFeeIsGuaranteeOnly, issuerPricedER, isCollectiveTrustName,
-  isLoanAnswerRow, isLoanVocabularyRow, isBankDepositRow,
+  isLoanAnswerRow, isLoanVocabularyRow, isLoanAccountRow, isBankDepositRow,
   employerStockSymbolOk, sponsorNameKey, trustScheduleDMenu,
   hasNoFundIdentity, isLabelOnlyName, isSentenceRow, isNonIssuerCell,
   isScheduleHCaption, cleanFiledName } from "./lib-disclose.mjs";
@@ -290,6 +290,18 @@ const tme = dis.indexOf("\n}\n", dis.indexOf("export function trustScheduleDMenu
 if (tme < 3) throw new Error("gen-generic-twin: trustScheduleDMenu moved in lib-disclose");
 const trustmenu = dis.slice(tms, tme).replace(/^export /gm, "");
 
+/* AND A SEVENTH, SLICED ON THE DAY IT SHIPS: the custodian's country roll-up
+ * caption and the recordkeeper's loan accounting line (2026-10-09). Two arms
+ * and five constants, and every one of them is the rule — ARM A's caption
+ * regex is what reaches Kohl's $44,362,425 row, and the account-noun
+ * alternation is fifteen tokens each measured necessary for at least one live
+ * row. A retyped copy of either would change which rows the page labels. */
+const lacs = dis.indexOf("const LOAN_ACCT_CAPTION =");
+if (lacs < 0) throw new Error("gen-generic-twin: LOAN_ACCT_CAPTION moved in lib-disclose");
+const lace = dis.indexOf("\n}\n", dis.indexOf("export function isLoanAccountRow(")) + 3;
+if (lace < 3) throw new Error("gen-generic-twin: isLoanAccountRow moved in lib-disclose");
+const loanacct = dis.slice(lacs, lace).replace(/^export /gm, "");
+
 const block = `  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND.
    * lib-4i derives these patterns from GENERIC_TYPE_NAME by asserted
    * replacements, so they are DERIVED and transcribing one is the move this
@@ -364,6 +376,8 @@ ${empstock.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoSponsorNameKey = sponsorNameKey;  // read by the smoke test only
 ${trustmenu.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoTrustScheduleDMenu = trustScheduleDMenu;  // read by the smoke test only
+${loanacct.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
+  window.__wampoLoanAccountRow = isLoanAccountRow;  // read by the smoke test only
 `;
 
 /* THE END MARKER MUST BE THE BLOCK'S LAST LINE. It was `__wampoGenericName`
@@ -381,6 +395,7 @@ const MARK_S = "  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND."
  * moved and the old tail stayed — so the list only ever grows, and the cut must
  * be made at the LAST marker present, not the first one found. */
 const MARK_ENDS = [
+  "  window.__wampoLoanAccountRow = isLoanAccountRow;  // read by the smoke test only\n",
   "  window.__wampoTrustScheduleDMenu = trustScheduleDMenu;  // read by the smoke test only\n",
   "  window.__wampoSponsorNameKey = sponsorNameKey;  // read by the smoke test only\n",
   /* the bank-deposit hook took a second argument on 2026-10-02 (the predicate
@@ -472,6 +487,8 @@ vm.runInContext(block
     "globalThis.__sk = sponsorNameKey;")
   .replace("window.__wampoTrustScheduleDMenu = trustScheduleDMenu;  // read by the smoke test only",
     "globalThis.__td = trustScheduleDMenu;")
+  .replace("window.__wampoLoanAccountRow = isLoanAccountRow;  // read by the smoke test only",
+    "globalThis.__lac = isLoanAccountRow;")
   .replace(/^\s{2}/gm, ""), ctx);
 const names = ["Mutual funds", "Mutual Fund Shares", "Sub-total: Registered Investment Companies",
   "Commingled funds", "Pooled separate account funds", "Collective trust funds",
@@ -978,6 +995,28 @@ const loanVocabNames = ["Outstanding Loan Balance", "Outstanding Plan Loans",
 for (const n of loanVocabNames) if (ctx.__lv(n) !== isLoanVocabularyRow(n)) {
   bad++; console.log(`  LOAN-VOCAB DRIFT ${JSON.stringify(n)} twin=${ctx.__lv(n)} lib=${isLoanVocabularyRow(n)}`);
 }
+/* THE LOAN ACCOUNTING LINE (2026-10-09). Two arms, and NOT ONE of the probes
+ * above reaches either — every name here that must read TRUE is refused by
+ * `isLoanVocabularyRow`, which is the whole reason the rule exists. So the
+ * probe set is built from the live store: both ARM A routes (the `&&&`
+ * delimiter and the bare country caption), four account nouns that are each
+ * necessary for a named handful of rows, and the ONE measured
+ * single-protection case for the parenthesis refusal. */
+const loanAcctNames = ["Other United States - USD &&&KROGER LOAN ASSET",
+  "United States - USD KOHL'S LOAN ACCOUNT", "United States - USD &&&HD SUPPLY LOAN ASSET",
+  "MCDONALD'S LOAN ASSETS McDonald’s Loan Asset&&& (4.25-9.50%, 2024-2029)",
+  "PLAN LOAN ASSET", "LOAN ASSET", "Plan Loan Default Fund", "Loan Collateral Fund",
+  "LOAN ESCROW FUND", "EMPLOYEE LOANS", "PLDF# Plan Loan Default Fund",
+  "Pooled Loan Default Fund", "Loans Issued at", "Other - Loan Reserve",
+  /* must stay FALSE */ "Interest Account (Loan Collateral)", "Bank Loan Fund",
+  "Invesco Senior Loan ETF", "Collateralized Loan Obligation",
+  "LOANS SECURED BY MTGES-RESID.", "FEDERAL HOME LOAN BANK OF BOSTON",
+  "United States - USD &&&MFO INVESCO SENIOR LOAN FUND",
+  "Fidelity VIP ContraFund Portfolio (includes loan collateral fund)",
+  "VALIC Loan Collateral Fund", "BEACH POINT LOAN FUND LTD"];
+for (const n of loanAcctNames) if (ctx.__lac(n) !== isLoanAccountRow(n)) {
+  bad++; console.log(`  LOAN-ACCOUNT DRIFT ${JSON.stringify(n)} twin=${ctx.__lac(n)} lib=${isLoanAccountRow(n)}`);
+}
 /* THE BANK-DEPOSIT PROBES ARE ROWS AS OF 2026-10-02, not names — the predicate
  * reads the ISSUER cell as well, and every probe here was a bare string, so
  * not one of them would have reached the issuer half or the money-market-
@@ -1174,4 +1213,4 @@ for (const [t, own, zero, wantN, why] of trustMenuCases) {
   if (!over || over.share !== 1) { bad++; console.log(`  TRUST-MENU share must clamp at 1, got ${over && over.share}`); }
 }
 if (bad) { console.error(`generated with ${bad} DRIFT — do not commit`); process.exit(1); }
-console.log(`generated; twin agrees with lib-4i on ${names.length} names, with lib-disclose on ${rows.length} rows, ${loans.length} loan-description names, ${annuityRows.length} annuity-contract rows, ${guarFeeNames.length} guarantee-only fee names, ${investmentContractRows.length} investment-contract rows, ${mistypedStockRows.length} mistyped-employer-stock rows and ${mistypedStockFeeNames.length} mistyped-stock fee names and ${issuerFeeCases.length} issuer-priced fee cases, ${citNames.length} collective-trust names and ${loanAnsNames.length} loan-answer names and ${loanVocabNames.length} loan-vocabulary names and ${bankDepNames.length} bank-deposit names and ${espCases.length} employer-stock provenance cases, ${noIdNames.length} no-identity names and ${labelNames.length} label-only names and ${sentNames.length} sentence names and ${issCells.length} issuer-cell strings and ${capNames.length} caption names, and both composed gates over all ${names.length} names`);
+console.log(`generated; twin agrees with lib-4i on ${names.length} names, with lib-disclose on ${rows.length} rows, ${loans.length} loan-description names, ${annuityRows.length} annuity-contract rows, ${guarFeeNames.length} guarantee-only fee names, ${investmentContractRows.length} investment-contract rows, ${mistypedStockRows.length} mistyped-employer-stock rows and ${mistypedStockFeeNames.length} mistyped-stock fee names and ${issuerFeeCases.length} issuer-priced fee cases, ${citNames.length} collective-trust names and ${loanAnsNames.length} loan-answer names and ${loanVocabNames.length} loan-vocabulary names and ${loanAcctNames.length} loan-account names and ${bankDepNames.length} bank-deposit names and ${espCases.length} employer-stock provenance cases, ${noIdNames.length} no-identity names and ${labelNames.length} label-only names and ${sentNames.length} sentence names and ${issCells.length} issuer-cell strings and ${capNames.length} caption names, and both composed gates over all ${names.length} names`);

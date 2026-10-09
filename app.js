@@ -2319,6 +2319,26 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
   }
 
   window.__wampoTrustScheduleDMenu = trustScheduleDMenu;  // read by the smoke test only
+  const LOAN_ACCT_CAPTION =
+    /^(?:(?:other|international|emerging\s+markets)\s+)*[a-z][a-z .,'()-]{2,40}?\s*-\s*(?:USD|EUR|GBP|CAD|JPY|CHF|AUD|SEK|DKK|NOK)\b/i;
+  const LOAN_ACCT_DELIM = /&&&/;
+  const LOAN_ACCT_NOUN = /\b(?:asset|account|accounts|fund|funds|reserve|escrow|default|defaulted|pldf|unitized|pooled|issued|employee|other)\b/gi;
+  const LOAN_ACCT_HEAD = /\b(?:asset|assets|account|accounts|fund|funds)\b/i;
+  const LOAN_ACCT_CLASS = /\b(?:senior|participation|syndicated|leveraged|securitized|securitised|obligation|obligations|whole)\b/i;
+  const LOAN_ACCT_PARENS = /\([^)]*\)/g;
+  function isLoanAccountRow(name) {
+    const s = String(name || "").trim();
+    if (!s) return false;
+    if (!/\bloans?\b/i.test(s)) return false;
+    if (LOAN_ACCT_CLASS.test(s)) return false;
+    /* the loan words must not be an ASIDE on a named holding: whatever sits
+     * outside the parentheses has to be the loan line itself */
+    if (!/\bloans?\b/i.test(s.replace(LOAN_ACCT_PARENS, " "))) return false;
+    if ((LOAN_ACCT_DELIM.test(s) || LOAN_ACCT_CAPTION.test(s)) && LOAN_ACCT_HEAD.test(s)) return true;
+    return loanDescriptionResidue(s.replace(/&&&/g, " ").replace(LOAN_ACCT_NOUN, " ")).length === 0;
+  }
+
+  window.__wampoLoanAccountRow = isLoanAccountRow;  // read by the smoke test only
 
   /* A SCHEDULE H PARTICIPANT-DIRECTION CAPTION IS NOT A HOLDING — the rule,
    * the Microsoft row that found it ($6,602,388,247 = 8.6% of a 50-row menu),
@@ -3783,7 +3803,19 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
        * opens with an ordinary adjective, so `LOAN_ROW`'s anchor — the thing
        * that keeps `Bank Loan Fund` safe — cannot reach it. lib-disclose.mjs. */
       const loanVocabRow = isLoanVocabularyRow(f.name || "");
-      const loanRow = LOAN_ROW.test(f.name || "") || descLoanRow || loanAnsRow || loanMatRow || loanVocabRow;
+      /* ...and the FIFTH: the custodian's country roll-up caption welded onto
+       * the plan's own loan asset, and the recordkeeper's loan accounting
+       * sub-account. `Other United States - USD &&&KROGER LOAN ASSET` at 2.2%
+       * of its trust's menu, $142,816,695, read by 674,716 participants; 194
+       * copies of TIAA's `Plan Loan Default Fund`. The label is the FILING's
+       * own section heading — four filings were read and Packaging Corp's,
+       * Kohl's and KPH Healthcare's all nest these rows under `Participant
+       * Loans` — and the measurement, the two arms and the four conditions
+       * deleted for blocking nothing are in scripts/lib-disclose.mjs. 371 rows
+       * / 339 served menus / 2,400,533 participants, and 0 of them publish a
+       * ticker or a fee, so only a false claim is withdrawn. */
+      const loanAcctRow = isLoanAccountRow(f.name || "");
+      const loanRow = LOAN_ROW.test(f.name || "") || descLoanRow || loanAnsRow || loanMatRow || loanVocabRow || loanAcctRow;
       /* AN INSURANCE ANNUITY CONTRACT TYPED `Mutual fund` — the rule and its
        * whole safety argument live in scripts/lib-disclose.mjs; this is the
        * generated twin's call site. It suppresses the ticker and the fee for

@@ -7,6 +7,227 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-09 (16:0xZ) — the custodian's country roll-up caption published as a fund: 371 rows / 339 served menus / 2,400,533 participants / $538,248,498 stop reading as menu choices
+
+### What was wrong
+
+`Other United States - USD &&&KROGER LOAN ASSET` was published as a fund in
+Kroger's trust menu — **$142,816,695, 2.2% of the menu, 674,716 participants
+across the member plans the trust's menu is actually served to** — with the
+type column reading `—`. It is not a fund. It is the plan's **participant-loan
+balance**, and four filings were downloaded and read to settle that rather than
+inferring it from the shape:
+
+| filing | what the attachment says |
+|---|---|
+| Packaging Corp `…9522401001` | section heading **`Participant Loans`** / `United States - USD` / `&&&PACKAGING CORP. HOURLY PLAN   LOAN ASSET` $47,205,065 |
+| Kohl's `…22846514001` | **`Participant Loans`** / `United States - USD` / `KOHL'S LOAN ACCOUNT` $44,362,425 — and **no `&&&` at all** |
+| The Kroger Co. `…1583216001` | `Other` / `United States - USD` / `&&&KROGER LOAN ASSET`, par = cost = current value = $142,816,695, CUSIP `000877001` |
+| KPH Healthcare `…232803001` | **`Participant Loans`** / `EMPLOYEE LOANS`, description column `interest rates from 3.25% to 8.50%` |
+
+Northern Trust's `5500 Supplemental Schedules` export nests the Schedule of
+Assets as `<asset class> / <country> - <currency> / <row>`. **Our parse keeps
+the COUNTRY caption and drops the section heading**, so the one cell that said
+what the row is was thrown away and the one that says where the custodian
+filed it was published as a fund name. Par equal to cost equal to current
+value is a loan receivable and not a security; the CUSIPs are the custodian's
+placeholders.
+
+**The same label is owed to the recordkeeper's own loan accounting
+sub-account**, and the filings say so too: University of Puget Sound files
+TIAA's `Plan Loan Default Fund` ($27,154) in the description column of a
+`College Retirement Equities Fund variable annuities` line, two rows above its
+own `Participant loans` entry. 194 copies of that string were published as
+funds, plus `Loan Collateral Fund` (76 across three casings) and `Loan Escrow
+Fund` (16) — the accounts holding the collateral securing those loans.
+**95 of the 371 rows had a FILED type asserting a vehicle**: `Mutual fund` 29,
+`Pooled separate account` 28, `Stable value / GIC` 25, `Separate account` 7,
+`Cash / short-term` 5, `Collective trust` 1.
+
+**Why none of `LOAN_ROW`'s four siblings could reach them.** Every one is
+anchored on the name BEGINNING with the loan word, which is exactly what keeps
+`Bank Loan Fund` safe — so a leading country caption puts the whole family out
+of reach — and `isLoanVocabularyRow`'s residue test deliberately holds no
+`fund`, `asset` or `account`, so `Plan Loan Default Fund` keeps a residue and
+is refused. *A fix for one phrasing of a class is not a fix for the class*, met
+here on a PREFIX and on an account noun at once.
+
+### The change
+
+`isLoanAccountRow` in `scripts/lib-disclose.mjs`, beside the four siblings;
+sliced VERBATIM into app.js by `gen-generic-twin.mjs` (**20 insertions, 0
+deletions** — nothing in the generated block was lost); joined to app.js's
+`loanRow` disjunction and to `build-seo-pages.mjs`'s loan suffix, so both
+display paths move. **`PARSER_VERSION` is untouched at 203 — display only.**
+
+Two arms, each measured necessary over all **2,651** published-and-served rows
+carrying a loan word:
+
+| | rows | participants | |
+|---|---|---|---|
+| **ARM A** — custodian furniture (`&&&`, or a country/currency caption at the head) + an account head | **10** | 1,336,126 | the only arm that reaches any of them |
+| **ARM B** — the residue test with the account-line nouns added to the strip | **361** | 1,064,407 | |
+
+**ARM A replaced a sponsor-name strip, deliberately.** The first draft stripped
+the viewing plan's own sponsor tokens from the residue. It reached the same
+rows — and made the verdict depend on WHICH plan is being viewed, so a trust
+row would have been labelled on one member plan's page and left a fund on
+another's. ***A name predicate whose answer depends on the reader is two
+predicates.*** The custodian caption is the better witness anyway: it is
+evidence about the DOCUMENT, not about the name. It is also the only route to
+Kohl's row (no `&&&`) and the only one that could ever have reached an
+ABBREVIATED sponsor (`&&&SUNCHEM PART. LOAN FUND`, where no token of `Sun
+Chemical Corporation` appears).
+
+### What moved, measured through the page's own renderer
+
+Both copies of `renderRow` (working tree vs **HEAD's** app.js, fund-er.js and
+sec-tickers.js), with the publish gate and the **serving condition** applied —
+a row is credited only to the member plans actually shown that menu:
+
+**371 rows / 339 served menus / 2,400,533 participants / $538,248,498.**
+Cells moved: `shownType` **371**, name **0**, ticker **0**, fee **0**. Row
+membership cannot move because the name does not: `ID_ONLY` is evaluated on the
+cleaned name upstream of the slice. TYPED, NOT DROPPED — the value stays in the
+denominator, so no other row's published percentage changes.
+276 rows went from `—`; the other 95 had a false vehicle type withdrawn.
+
+**Crawlable pages: 3 changed, 266,168 participants** — Kroger pn=010 (160,358),
+Kohl's pn=002 (66,634), Schlumberger pn=016 (39,176) — one row each, all three
+read. Only 3 because those pages print `funds.slice(0, 12)` and most of these
+rows sit below that cut. The store-side count's premise was checked the way
+this record prescribes: Kroger is in the count, Kroger has a page, and the
+string is on it.
+
+### Every condition priced, and four deleted for blocking nothing
+
+Leave-one-out over the live store:
+
+- **the parenthesis refusal** (the loan words must not be an aside on a named
+  holding) has a **measured single-protection case**: dropping it admits
+  exactly one row, Ki Bois Community Action's `Interest Account (Loan
+  Collateral)` (351 ppl, $289,560), MetLife's real fixed interest account.
+- **DELETED, each necessary for 0 rows**: a CUSIP/ISIN identifier strip; a
+  corporate-entity-word strip (`inc`, `ltd`, `limited`); a caption strip inside
+  ARM B; and **ten of twenty-five candidate account nouns** — `assets`,
+  `collateral`, `balance`, `balances`, `various`, `maturity`, `maturities`,
+  `reserves`, `totaling`, `employees`. The first four were redundant because
+  **`LOAN_DESC_WORDS` already strips them**, which a reading of the shipped
+  vocabulary would have told me and a measurement did. *An exclusion that
+  blocks nothing measurable is not a protection.*
+- the fifteen surviving nouns are each necessary for at least one row and most
+  for a named handful: `fund` 321, `default` 219, `escrow` 24, `employee` 12,
+  `funds` 6, `reserve` 6, `pldf` 6, `account` 3, `defaulted` 3, `issued` 3,
+  `other` 4, `asset` 2, `unitized` 2, `accounts` 1, `pooled` 1.
+- **the asset-class refusal is NAMED AS INERT RATHER THAN CLAIMED.** `senior`,
+  `participation`, `syndicated`, `leveraged`, `obligation` block **0** live
+  rows, because ARM B's residue already refuses every real member in the store
+  (`Invesco Senior Loan ETF` → invesco, senior, etf; `Collateralized Loan
+  Obligation` → obligation). It is kept because **ARM A has no residue test of
+  its own**, so a future `… - USD MFO INVESCO SENIOR LOAN FUND` would otherwise
+  be relabelled and this is the only guard that could refuse it. Its two
+  fixtures are labelled SHAPE pins and prove no single protection.
+
+### Refuted screens, recorded so nobody re-derives them
+
+- **DO NOT CARRY the queue entry's "11 rows / 18 plans / 1,506,159 ppl / 
+  $500,411,091" as the narrow clean subset.** Re-measured it is **11 rows**
+  exactly (10 via `&&&` or a caption, plus Packaging Corp's two bare `LOAN
+  ASSET` rows minus one that carries its caption in the ISSUER cell) but
+  reaching them with the caption alone is **not safe**: screening
+  `<Country> - <CCY>` over the published store returns **115 rows / 29 acks /
+  2,424,992 ppl / $14,489,235,935**, and its largest members are **real funds
+  the caption merely prefixes** — HCA's `United States - USD MFB NT COLLECTIVE
+  AGGREGATE BOND INDEX FUND - LENDING` ($3,047,542,671, publishing a 0.05 fee)
+  and Honeywell's `… MFO BLACKROCK RUSSELL 2500 INDEX CLASS F` (publishing
+  **SMMD** at 0.15). ***The caption is a PREFIX on both real and unreal rows;
+  it is evidence of a custodian export, not of a non-fund.*** That is why ARM A
+  needs the account head and the asset-class refusal, and why a caption STRIP
+  (the honest repair for most of the 115) is a separate and much riskier change
+  that would move tickers and fees.
+- **DO NOT CARRY the register's 722 rows / 625 plans / 4,537,997 ppl /
+  $1,651,174,135** for the unreached loan-vocabulary residue. Re-measured
+  through the page's own renderer with the serving condition: **738 rows / 624
+  served menus / 4,628,617 ppl / $1,485,558,175**. It reproduces in shape and
+  the data has drifted; *a re-size is a new measurement.*
+- **An `and`-adjacency screen (`loan` next to a plan-administration word, minus
+  an asset-class descriptor) reads 474 rows / 2,762,860 ppl and has five
+  false positives its count cannot show** — `Fidelity VIP ContraFund Portfolio
+  (includes loan collateral fund)` carrying ticker **FCNTX**, `Fixed Account -
+  Lincoln National Life (and Loan Reserve)`, `MetLife Guaranteed Fixed Account
+  & Loan Collateral`, `TIAA Traditional Annuity Contracts FBR (GSRA, SRA, RCP,
+  and Plan Loan Default)` and `Collateralized Loan Obligation`. The residue
+  test refuses four of them and the parenthesis refusal the fifth. **An
+  adjacency vocabulary cannot tell a loan line from a loan ASIDE on a real
+  account** — only "and nothing else is left" can.
+- The second family named in the queue as separable (`Plan Loan Default Fund`
+  ×194, `Loan Collateral Fund` ×76, `Loan Escrow Fund` ×16 = 359 rows / 329
+  plans / 1,219,186 ppl) **shipped in the same change**, because reading the
+  filings showed the LABEL is identical: both populations are the plan's loan
+  asset under the filing's own `Participant Loans` heading. Re-measured as part
+  of ARM B rather than carried.
+
+### Why the loan label and not "the filing names no specific fund"
+
+`isScheduleHCaption`'s own comment records `loan`/`loans`/`mortgage` as a
+**deliberate exclusion**, because *"the loan label is appended by a DIFFERENT
+arm on the same cell, so including them would double-label a row"*. That
+settles it in the right direction: the loan family is where this class belongs,
+and app.js's `shownType` chain puts `loanRow` **ahead of** `namelessRow`, so
+there is no double label by construction. And the stronger reason is the
+evidence — *"names no specific fund"* would be **false**: these filings name
+exactly what the row is, under a heading we dropped.
+
+### Named residue, left alone and conservative
+
+A recordkeeper BRAND in front of the same account line keeps a residue and so
+still reads as a fund: `VALIC Loan Collateral Fund` (11 rows), `TIAA Plan Loan
+Default Fund` (10), `CHARLES SCHWAB LOAN FUND` (4), `Transamerica LOAN FUND`
+(3). Reaching them needs a recordkeeper-brand witness, which is a different
+class with its own machinery. Also left: `Share Balance` whose **ISSUER** cell
+reads `OUTSTANDING LOAN BALANCE` (Avaya, $7,996,230) — the predicate is
+name-only on purpose.
+
+### What prevents it
+
+- **21 must-SEE and 25 must-KEEP fixtures assert at IMPORT** in
+  `lib-disclose.mjs`, every must-SEE case a real filed string from the live
+  store. **All three negative controls were proved to fail BY NAME on exactly
+  their own cases**: deleting the parenthesis refusal throws on `Interest
+  Account (Loan Collateral)`, deleting ARM A throws on the Kroger row, deleting
+  the asset-class refusal throws only on the two strings labelled SHAPE pins.
+- **`smoke-test.mjs` tethers the browser twin** on 24 cases, and *not one of
+  the existing `vocabCases` reaches either new arm* — every string that must
+  flag here is one `isLoanVocabularyRow` refuses, which is the whole reason the
+  rule exists, so a probe set inherited from the sibling would have passed
+  whether or not app.js carried the rule. **The tether was proved live**:
+  breaking `LOAN_ACCT_HEAD` in app.js's twin produced
+  `SMOKE FAIL: the loan-account predicate in app.js disagrees with
+  scripts/lib-disclose.mjs on 4 of 24 names`.
+- **`gen-generic-twin.mjs` carries the slice and the new end marker**, so the
+  twin can never be hand-written and a later regeneration cannot delete it —
+  the failure this record logs four times.
+
+### The reusable lessons
+
+1. ***A name predicate whose answer depends on the reader is two predicates.***
+   A sponsor-token strip reaches the right rows and splits the two surfaces;
+   the document's own furniture reaches them and does not.
+2. **Before adding a strip vocabulary, read the one you are building on.** Four
+   of my ten dead nouns were dead because `LOAN_DESC_WORDS` already held them.
+3. **A caption that prefixes real rows and unreal rows alike is evidence about
+   the DOCUMENT, not about the holding** — so it can trigger an arm but can
+   never be the whole arm. The 115-row screen is what said so, and its two
+   largest members publish a fee and a ticker.
+4. **Narrow by a property of the change, read off the source.** The whole diff
+   is one disjunct whose function's FIRST line requires a loan word, so
+   1,719,269 of 1,721,920 rows are excluded as a **superset by construction**.
+   The unnarrowed two-renderer run did not finish in twelve minutes of wall
+   clock; narrowed it takes seconds. *This is the recorded rule and I ran the
+   wide version first anyway.*
+
+---
+
 ## 2026-10-09 (13:3xZ) — 122 vs 123 SETTLED: a population mismatch, and the guess recorded for it was wrong
 
 ### What was unproved

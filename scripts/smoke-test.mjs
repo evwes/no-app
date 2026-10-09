@@ -268,7 +268,7 @@ try {
    * canonical, app.js carries a twin because it is a plain browser script.
    * Run the BROWSER copy against the module's own boundary cases. */
   const { coverageBand, frozenClaimOk, cleanFiledName, isParticipantLoanRow, isLoanDescriptionRow,
-    isAnnuityContractRow, annuityFeeIsGuaranteeOnly, isCollectiveTrustName, isLoanVocabularyRow, isLoanAnswerRow, isLoanMaturityRow,
+    isAnnuityContractRow, annuityFeeIsGuaranteeOnly, isCollectiveTrustName, isLoanVocabularyRow, isLoanAccountRow, isLoanAnswerRow, isLoanMaturityRow,
     isDirectionCaptionRow,
     isOfficeListRow, isPageBreakCaptionRow,
     isInvestmentContractRow, isMistypedStockRow, isBankDepositRow,
@@ -1120,6 +1120,46 @@ try {
     if (!isLoanVocabularyRow(n)) fail(`loan-vocabulary predicate no longer recognises a loan row: ${JSON.stringify(n)}`);
   for (const n of vocabCases.slice(12))
     if (isLoanVocabularyRow(n)) fail(`loan-vocabulary predicate would tell a reader a REAL HOLDING is a participant loan: ${JSON.stringify(n)}`);
+
+  /* THE LOAN ACCOUNTING LINE, tethered the same way — 2026-10-09. NOT ONE of
+   * the `vocabCases` above reaches either of its arms: every string here that
+   * must flag is one `isLoanVocabularyRow` refuses, which is why the rule
+   * exists at all. So the probes come from the live store — both ARM A routes
+   * (the custodian's `&&&` delimiter, and the bare country/currency caption
+   * that is Kohl's only route), the account nouns each necessary for a named
+   * handful of rows, and the ONE measured single-protection case for the
+   * parenthesis refusal (`Interest Account (Loan Collateral)`, MetLife's real
+   * fixed interest account, 351 participants). */
+  const acctCases = [
+    /* must FLAG */
+    "Other United States - USD &&&KROGER LOAN ASSET",
+    "United States - USD KOHL'S LOAN ACCOUNT",
+    "United States - USD &&&HD SUPPLY LOAN ASSET",
+    "MCDONALD'S LOAN ASSETS McDonald’s Loan Asset&&& (4.25-9.50%, 2024-2029)",
+    "PLAN LOAN ASSET", "LOAN ASSET", "Plan Loan Default Fund", "Loan Collateral Fund",
+    "LOAN ESCROW FUND", "EMPLOYEE LOANS", "PLDF# Plan Loan Default Fund",
+    "Pooled Loan Default Fund", "Loans Issued at", "Other - Loan Reserve",
+    /* must KEEP */
+    "Interest Account (Loan Collateral)", "Bank Loan Fund", "Invesco Senior Loan ETF",
+    "Collateralized Loan Obligation", "LOANS SECURED BY MTGES-RESID.",
+    "FEDERAL HOME LOAN BANK OF BOSTON", "BEACH POINT LOAN FUND LTD",
+    "United States - USD &&&MFO INVESCO SENIOR LOAN FUND",
+    "Fidelity VIP ContraFund Portfolio (includes loan collateral fund)",
+    "VALIC Loan Collateral Fund"];
+  const acctGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoLoanAccountRow !== "function") return null;
+    return cs.map((n) => window.__wampoLoanAccountRow(n));
+  }, acctCases);
+  if (!acctGot) fail("app.js no longer exposes __wampoLoanAccountRow — the loan-account predicate cannot be cross-checked");
+  const acctDrift = acctCases.filter((n, i) => isLoanAccountRow(n) !== acctGot[i]);
+  if (acctDrift.length) {
+    for (const n of acctDrift) console.error(`  ${JSON.stringify(n)}  app.js=${acctGot[acctCases.indexOf(n)]}  module=${isLoanAccountRow(n)}`);
+    fail(`the loan-account predicate in app.js disagrees with scripts/lib-disclose.mjs on ${acctDrift.length} of ${acctCases.length} names`);
+  }
+  for (const n of acctCases.slice(0, 14))
+    if (!isLoanAccountRow(n)) fail(`loan-account predicate no longer recognises a loan accounting line: ${JSON.stringify(n)}`);
+  for (const n of acctCases.slice(14))
+    if (isLoanAccountRow(n)) fail(`loan-account predicate would tell a reader a REAL HOLDING is a participant loan: ${JSON.stringify(n)}`);
 
   /* THE ANNUITY-CONTRACT PREDICATE, tethered the same way, 2026-09-29. It is a
    * TWO-CELL rule — the filed NAME against the stored TYPE — so every case here

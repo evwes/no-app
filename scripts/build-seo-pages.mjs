@@ -10,7 +10,7 @@
  * EIN-PN (stable forever, no orphans when a sponsor renames). */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { matchQuoteOk, vestingQuoteOk, quoteTrim, accelerationOnlyVesting } from "./lib-quote.mjs";
-import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow, hasNoFundIdentity, isLoanDescriptionRow, isLoanAnswerRow, isLoanMaturityRow, isLoanVocabularyRow, isDirectionCaptionRow, isOfficeListRow, isPageBreakCaptionRow, isLabelOnlyName, isSentenceRow, isNonIssuerCell, captionFiledType, trustShareBound, trustScheduleDMenu } from "./lib-disclose.mjs";
+import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow, hasNoFundIdentity, isLoanDescriptionRow, isLoanAnswerRow, isLoanMaturityRow, isLoanVocabularyRow, isLoanAccountRow, isDirectionCaptionRow, isOfficeListRow, isPageBreakCaptionRow, isLabelOnlyName, isSentenceRow, isNonIssuerCell, captionFiledType, trustShareBound, trustScheduleDMenu } from "./lib-disclose.mjs";
 import { isGenericTypeName } from "./lib-4i.mjs";
 
 const BASE = "https://evwes.github.io/no-app"; // becomes the custom domain when DNS lands
@@ -298,7 +298,12 @@ for (const r of d.plans.slice(0, TOP_N)) {
        * the measurement: 422 rows / 167,240 participants, 259 of them
        * publishing a ticker, which is the proof the NAME is a real fund. */
       : (iss && !isNonIssuerCell(iss) ? titleCase(iss) + " · " : "") + titleCase(nm)
-      + (isParticipantLoanRow(nm) || isLoanAnswerRow(nm) || isLoanMaturityRow(nm) || isLoanVocabularyRow(nm) ? " — participant loans, not a menu choice" : "")
+      /* `isLoanAccountRow` is the FIFTH member of this family (2026-10-09) and
+       * joins the same disjunct app.js's `loanRow` puts it in: the custodian's
+       * country roll-up caption welded onto the plan's loan asset, and the
+       * recordkeeper's loan accounting sub-account. lib-disclose.mjs carries
+       * the measurement and the four filings that supply the label. */
+      + (isParticipantLoanRow(nm) || isLoanAnswerRow(nm) || isLoanMaturityRow(nm) || isLoanVocabularyRow(nm) || isLoanAccountRow(nm) ? " — participant loans, not a menu choice" : "")
       + (nameless ? " — the filing names no specific fund" : "");
     /* A SCHEDULE H ASSET-CLASS CAPTION, WHOSE ONLY PROTECTION ON THE REPORT IS A
      * COLUMN THIS PAGE DOES NOT HAVE — 2026-10-09. 70 rows / 54 pages / 801,791
