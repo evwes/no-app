@@ -99,6 +99,40 @@ designed. *Take the v203 verdict on the COMPLETE store, not this one.*
 **48 → 92**, and **one ack now carries `e:"analyze"`**, a class that had read
 zero since the v118 null-deref was fixed.
 
+### BOTH RE-PROBED THE SAME HOUR, AND BOTH CAME BACK CLEAN (11:2xZ)
+
+**`dl` 92: the FIFTH whole-population probe, and `e=download` is still an
+honest published claim — 92 of 92 answered 403.** `gap-census` renders that code
+to readers as *"the public copy has been withdrawn from the EFAST2 bucket
+(403)"*, which was false once (2026-09-10, when an analyze-stage TypeError was
+being filed as a download failure), so the standing rule is to re-probe rather
+than inherit. The whole population, not a sample; the rise 48 → 92 is the bucket
+genuinely growing. Probed with an explicit `-w "%{http_code}"`, because the
+egress proxy answers a denied host with **HTTP 000 and zero bytes** and a
+grep-based check would print a plausible answer about a query that reached no
+server.
+
+**The one `e:"analyze"` ack answered HTTP 200 — which is exactly what that code
+is for — and it has already self-healed.** `20251230141538NAL0018843697001`
+(Health Dimensions Consulting) downloads fine, extracts 175,287 chars over 40
+pages, carries **no statutory 4i header**, and extracts features richly
+(match, vesting, eligibility, loans, Roth, safe harbor).
+
+**Its stored `pv` of 202 is the mechanism explaining itself:** the error path
+deliberately keeps the OLD pv so the ack stays on future work lists for retry,
+so #605 wrote this entry under v203 and the residue run was already retrying it.
+**Replayed through the REAL production path** (`ONLY_ACKS_4I` + `PARSE_SHARD`,
+the hook that exists because *testing the parts is not testing the path*): it
+does **not** throw — it completes, OCRs 4 pages in 8s, and records
+`e:"no-section"` with `dx:"nohead"` at pv 203. So the honest classification is
+the documented no-4i-section gap, and the throw in #605 was transient
+(environment, not code).
+
+***Two mechanisms are confirmed working rather than merely believed:*** the
+`download`/`analyze` split still separates "it is gone" from "the gap is ours",
+and the stale-pv retry reclassified a transient failure without anyone
+intervening.
+
 ---
 
 ## 2026-10-09 (06:5xZ) — RUN #604 READ NONE OF THE UNIVERSE AND REPORTED 99.7% COVERAGE: an `apt-get install` with no `update`, and three instruments that each enumerated the wrong failure shapes
