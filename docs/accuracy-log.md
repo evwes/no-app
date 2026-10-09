@@ -49334,3 +49334,65 @@ in CI.
   spelling leaves that row blank until `gen-sec-tickers.mjs` is re-run (~20
   minutes). Neither direction can publish a wrong symbol, and there is no CI
   check for staleness because the check costs the whole run.
+
+## 2026-10-09 (14:1xZ) — the form-question check was asymmetric in BOTH directions; made symmetric as PREVENTION, population zero
+
+**What was wrong.** `audit-data`'s correctness pass has carried a form-question
+check since the 30,795 false quotes shipped, and it tested **`f.matchText`
+alone**, against four phrases (`permissive aggregation`, `check all boxes`,
+`design-based safe harbor`, `complete this item`). The register named "making it
+symmetric" a small separate change, on the reading that the MATCH side was
+guarded in a different place by a different mechanism. **Reading both surfaces
+shows the asymmetry runs both ways:** `lib-quote`'s `VQ_FORM_TEXT` vetoes a
+FIFTH phrase — Form 5500 line **6g(2)**, *"Number of participants who terminated
+employment during the plan year …"* — and only on the **vesting** side, which
+`lib-quote:230` already records in its own comment. So each surface was missing
+the other's protection: `audit-data` could not see a vesting quote at all and
+did not know 6g(2); the display guard knew 6g(2) and nothing about the four.
+
+**The change.** One union regex, both fields:
+
+```js
+const FORM_QUESTION =
+  /permissive aggregation|check all boxes|design[- ]based safe harbor|complete this item|\bNumber of participants who terminated employment during the plan year\b/i;
+for (const k of ["matchText", "vestingText"]) { … }
+```
+
+and the finding now NAMES its offenders (`<ack14>:<field>`, first six) instead
+of printing a bare count — a count told the operator a number and not where to
+look.
+
+**The population is ZERO on all four combinations** (match × the four, match ×
+6g(2), vesting × the four, vesting × 6g(2)), over all **64,153** entries
+carrying features. So this publishes nothing and repairs nothing: it is a
+**guard**, and a guard with an empty population is legitimate exactly where the
+defect it names has actually shipped — which is the difference between this and
+the inert repair ARM this record calls untested machinery. The `-6-` page-number
+arm was dropped for a zero; this zero is kept, and the distinction is whether a
+real defect is on the other side of it.
+
+**Controls, because a check that cannot be shown to fire is decorative.** Run in
+a detached worktree: SILENT on the healthy store with HIGH at the baseline 4,
+and FIRING when the form text is planted in `matchText` on one ack **and**
+`vestingText` on another — naming both. The `vestingText` half is the one that
+proves the extension is load-bearing rather than cosmetic, since the old code
+could not have seen it.
+
+**AND I RE-DERIVED A SCREEN MY OWN RECORD HAD ALREADY REFUTED.** Sizing this
+produced a four-sided zero, and the register says of *this exact item*
+(2026-10-04 21:0xZ) that the stored quotes cannot establish it: the form text
+that reaches the store is a DIFFERENT SHAPE — Vensure's
+`23 3607881 2a Name of Participating 2b EIN` — so a both-sided zero across a
+whole population **reports on the query**, and a veto meant to catch that must
+be written from the extractor's CANDIDATE SETS. What saved it was the recorded
+habit rather than the recorded entry: an implausible zero was refused before a
+conclusion was drawn, and a positive control confirmed all five phrases are
+detected in both directions **before** the number was believed. *A broken regex
+and an inert one read the same zero* — that is why the control came first and
+why the comment above the check says in full that its zero is not a claim about
+what the page publishes. Re-reading the rule is not what caught it; running the
+positive control is.
+
+**Gates:** negative + positive controls as above; `audit-data` clean on the
+live store at the baseline 4 HIGH. `audit-data.mjs` is **not** one of the six
+path-filter files, so this creates no build-data run.

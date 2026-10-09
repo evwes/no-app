@@ -303,12 +303,46 @@ for (const [ack, e] of Object.entries(entriesByAckCov)) {
 }
 // form-question text must never appear as an audit-note quote (30,795
 // false quotes shipped before this check existed)
+//
+// SYMMETRIC OVER BOTH QUOTE FIELDS AS OF 2026-10-09, AND THE ASYMMETRY RAN
+// BOTH WAYS. This check tested `matchText` alone against the four phrases
+// below, while `lib-quote`'s VQ_FORM_TEXT vetoes a FIFTH phrase (Form 5500
+// line 6g(2)) on the VESTING side only — so each surface was missing the
+// other's protection, and `lib-quote:230` records the gap in its own comment.
+// Both fields now meet the union: four phrases here, and 6g(2) added so this
+// check does not depend on a display guard to cover one of its own cases.
+//
+// POPULATION TODAY IS ZERO ON ALL FOUR COMBINATIONS (match × 4, match × 6g(2),
+// vesting × 4, vesting × 6g(2)), measured over all 64,153 entries carrying
+// features. That is PREVENTION, not a repair, and it publishes nothing —
+// legitimate here because the 30,795 false quotes are a defect that actually
+// shipped, which is the difference between an inert GUARD and the inert
+// repair ARM this record calls untested machinery.
+//
+// *** AND A ZERO HERE IS NOT A CLAIM THAT NO FORM TEXT IS PUBLISHED. *** The
+// recorded lesson for exactly this measurement (docs/accuracy-log.md
+// 2026-10-04 21:0xZ) is that stored quotes cannot establish it: the form text
+// that reaches the store is a DIFFERENT SHAPE (Vensure's
+// `23 3607881 2a Name of Participating 2b EIN`), so a both-sided zero across
+// the whole population reports on the QUERY. A veto meant to catch that must
+// be written from the extractor's CANDIDATE SETS, not from this field. The
+// four-sided zero was verified against a positive control first — a broken
+// regex and an inert one read the same zero.
+const FORM_QUESTION =
+  /permissive aggregation|check all boxes|design[- ]based safe harbor|complete this item|\bNumber of participants who terminated employment during the plan year\b/i;
 let formQuotes = 0;
-for (const e of Object.values(entriesByAckCov)) {
+const formFields = [];
+for (const [ack, e] of Object.entries(entriesByAckCov)) {
   const f = e && e.features;
-  if (f && f.matchText && /permissive aggregation|check all boxes|design[- ]based safe harbor|complete this item/i.test(f.matchText)) formQuotes++;
+  if (!f) continue;
+  for (const k of ["matchText", "vestingText"]) {
+    if (f[k] && FORM_QUESTION.test(f[k])) { formQuotes++; formFields.push(`${ack.slice(0, 14)}:${k}`); }
+  }
 }
-if (formQuotes) { mismatches += formQuotes; mmList.unshift(formQuotes + " quotes contain FORM-QUESTION text (must be zero)"); }
+if (formQuotes) {
+  mismatches += formQuotes;
+  mmList.unshift(formQuotes + " quotes contain FORM-QUESTION text (must be zero): " + formFields.slice(0, 6).join(", "));
+}
 
 console.log(`\n== CORRECTNESS (formula-vs-quote): ${checked} checked, ${mismatches} mismatches${mismatches ? "" : " — all consistent"}`);
 for (const l of mmList) console.log("  " + l);
