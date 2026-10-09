@@ -803,19 +803,26 @@ VMware and Neiman Marcus. The witness must be **BOY** assets.
 `docs/accuracy-log.md` 2026-10-03 (19:5xZ) and 2026-10-04 (10:4xZ).
 
 `confident` **60,182** · lineups 59,833 · entries 65,495 ·
-match **43,312** · vesting 53,115 · roth 38,369 · **HIGH 4** ·
+match **43,312** · vesting **53,023** · roth 38,369 · **HIGH 4** ·
 warn **556** · overshoot 370 · overshootTrust 12 ·
-aggRow 114 · dl **48** · pvTopShare **99.9** (pv **202**) ·
-tkExact **37.77** · tkComparable **3.41** · vestQuote **5,281**.
+aggRow 114 · dl **93** · pvTopShare **99.9** (pv **203**) ·
+tkExact **37.77** · tkComparable **3.41** · vestQuote **5,373**.
+(vesting/vestQuote/dl/pv re-derived from the #607 line 2026-10-09 13:0xZ, the
+first COMPLETE v203 store; `dl` 93 was HEAD-probed at 92/92 -> 403 minutes
+earlier, so the code is honest and the bucket is growing.)
 (`tkExact` was 37.76 until #601 on 2026-10-09; ~9 rows of an 87,106-row sample
 whose size did not move, produced by the code at `4f6e29d1` — i.e. the DATA, not
 that hour's display ship. Re-derive before quoting.)
 
-**`vestQuote` 5,281 IS v202's OWN DELIVERY AND THE ONE FIGURE ITS
-REGISTRATION DENIED** — it counts STORED quotes carrying no vesting label, and
-v202 gave 103 plans a quote where nothing had been stored at all. Read it with
-WITHHELD **32** (`node scripts/vesting-quote-test.mjs`), down from 41 before
-v201.
+**`vestQuote` IS NOW 5,373 AND THE +92 IS v203's DELIVERY** — it counts STORED
+quotes carrying no vesting label, so withdrawing a false `Immediate` label moves
+a plan INTO this counter while its quote stays put, which is why the fall in
+`vesting` and the rise here are the same number. **The 5,281 this line used to
+quote was v202's delivery** (103 plans gaining a quote where nothing had been
+stored — the one figure v202's registration denied) and is now history, not the
+live figure. Read it with WITHHELD **32** (`node
+scripts/vesting-quote-test.mjs`), down from 41 before v201; v203 was registered
+to leave WITHHELD unchanged.
 
 **`match` 43,312 IS LOWER THAN v199's 43,441 ON PURPOSE** — v199 and v200
 withhold a misread formula rather than publishing it, so the fall IS the
@@ -857,27 +864,32 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
-**v203 MERGED FROM #605 AND ITS REGISTRATION HELD — BUT THE COMMITTED STORE IS
-PARTIAL AT 94.87% AND MUST NOT BE MIRRORED. A RESIDUE RUN IS IN FLIGHT.**
-Delivered: `vesting` 53,115 -> **53,029 (falls 86**, registered 82-94),
-`vestQuote` 5,281 -> **5,367 (rises 86** — the fall and the rise are the SAME
-number, which is the registered "QUOTE LOST 0"), confident 60,182 / match 43,312
-/ entries 65,495 / warn 556 all unchanged, `pv` 203 at 94.9% with
-`partial-store` correctly the 5th HIGH. **pv 203 covers 65,502 acks and pv 202
-holds 3,496** — one shard's slice. **Take the verdict on the COMPLETE store.**
-**TWO FIGURES TO RE-PROBE RATHER THAN INHERIT: `dl` rose 48 -> 92, and one ack
-carries `e:"analyze"`**, a class that had read zero since v118.
-**WHY IT IS PARTIAL:** `parse (1)` hung 3h14m against nineteen siblings at
-38-55 minutes — ten binary spawn sites carried no `timeout` — and was cancelled,
-since `merge` runs under `if: always()` and the 355-minute backstop would have
-produced the same 19/20 merge 2h45m later. Lossless: the work list is
-`pv != current`, so the residue returns automatically.
-**#604, the FIRST attempt, failed for a reason that had nothing to do with v203**
-— `pdftotext` absent on all twenty shards, 68,865 filings read as nothing, the
-publish gate refusing to commit (`confident -60033`) — and **v203 is exonerated**
-by `trace-filing` (Amgen 33 rows / 0.995 / CONFIDENT, and Arcosa moving
-`Immediate` -> `2-year cliff` under a v202-vs-v203 comparison).
-`docs/accuracy-log.md` 2026-10-09 (06:5xZ) and (10:3xZ).
+**v203 IS COMPLETE, VERIFIED AND MIRRORED TO MAIN (`bb4bed5a` -> `97f7ae97`, a
+MATCHED code/store pair). ITS REGISTRATION HELD EXACTLY, SO THERE IS NOTHING
+PRE-REGISTERED AND PENDING.** Delivered on the complete store: `vesting`
+53,115 -> **53,023 (falls 92**, registered 82-94), `vestQuote` 5,281 -> **5,373
+(rises 92** — the fall and the rise are the SAME number, which is the registered
+"QUOTE LOST 0", and 5,373 is inside the registered 5,363-5,375), confident
+60,182 / match 43,312 / entries 65,495 / warn 556 all unchanged, **pv 203 at
+99.86%**, `partial-store` cleared and **HIGH back to the baseline 4**.
+**IT TOOK THREE RUNS AND BOTH FAILURES WERE OURS, NOT v203's** — #604's absent
+`pdftotext` (68,865 filings read as nothing at a reported 99.7% coverage) and
+#605's hung shard (ten binary spawn sites with no `timeout`). #607 finished the
+residue. `docs/accuracy-log.md` 2026-10-09 (06:5xZ) and (10:3xZ).
+**THE MIRROR'S `--force` WAS EARNED BY MEASUREMENT, NOT ASSERTED:** main carried
+TWO scheduled data commits, and before forcing over them `plans-all` was shown
+IDENTICAL (112,652 rows, 0 only-on-main — the real "discards fresh filings"
+hazard), `mtias`/`plans-list`/`fee-percentiles` identical, the coverage trail a
+strict SUPERSET (0 main lines absent), `mirror-gate` plan-keyed at 0 plans / 0
+participants, and the lineup index moving on **bit 16 alone across 122 acks with
+bit 1 (has a lineup) withdrawn on ZERO**. `--force-data` was NOT used: the data
+gate passed on its own, so the check that exists to stop a menu vanishing stayed
+armed. *mirror-gate is lineup-keyed and does not cover the six non-lineup
+stores, which is why the structural diff is a separate step.*
+**STILL OPEN AND NOT PROVED: 122 acks clear bit 16 where the registration said
+exactly 123.** Likeliest is one of the 123 sitting in the 46 acks still at
+pv 202, clearing on a later run — direction "not yet applied" rather than
+"wrong" — but it is unverified and must be checked rather than assumed.
 
 **`PARSER_VERSION` is 203: `Employer-money vesting: Immediate` is
 withheld where the sentence that would set it states only an ACCELERATION

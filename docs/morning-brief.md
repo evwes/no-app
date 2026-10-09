@@ -1,109 +1,103 @@
-# wampo brief — 2026-10-09, 07:0xZ
+# wampo brief — 2026-10-09, 13:0xZ
 
 Overwritten nightly. Decision-shaped: what shipped and what it changed in
-numbers, what was found wrong, what is in flight, what is waiting on the owner.
+numbers, what was found wrong, what is held, what is waiting on the owner.
 
-## The headline is a near miss, and the gate is what caught it
+## v203 is live on main, and its registration held exactly
 
-**Run #604 — the v203 full re-parse — downloaded 68,865 filings, read ZERO of
-them, and reported 99.7% coverage.** prep succeeded, all twenty parse shards
-succeeded in normal wall clock, and the completeness line said *"0.07% download
-failures"*. The only instrument that saw it was the merge job's publish gate:
+**123 plans stop telling 59,316 participants their employer money is vested
+today** on the strength of a sentence that says they vest at 65, or on death, or
+on disability. Arcosa (5,875 ppl) now publishes the **2-year cliff** that was in
+its notes all along; about 37 plans gain their real schedule out of the same
+filing, the rest keep the quote and lose only the false label.
 
-```
-confident -60033, match -43211, vesting -52994, lineups -59684  ⚠ REGRESSED
-```
+Measured on the complete store, against what was pre-registered before dispatch:
 
-**Nothing was committed and no reader ever saw a wrong number.** But the run
-cost 4h20m of wall clock and an hour of wrongly suspecting v203, which is
-innocent — `trace-filing` parses Amgen under v203 at 33 rows / ratio 0.995 /
-CONFIDENT.
-
-**The cause was one missing line.** Both apt steps ran
-`apt-get install -y -q poppler-utils tesseract-ocr >/dev/null 2>&1 || true`
-with **no `apt-get update`**. `apt-get install` is atomic, so prep (one package)
-succeeded while parse (two) installed **neither** — `pdftotext` was absent on
-every shard. The redirect ate the reason, `|| true` ate the exit code, and the
-only trace in the log named the *OCR* binaries, because the OCR probe was the
-only toolchain check anyone had written.
-
-**Two instruments were also wrong and are also fixed:** `fetch-4i`'s `pdftotext`
-branch was the only error path that destroyed a stored entry and incremented no
-counter (the shard tally read `download=5` while 3,448 filings were wiped), and
-`audit-data`'s completeness line knew two `e` codes where the store carried
-three.
-
-## What shipped
-
-| | |
+| registered | delivered |
 |---|---|
-| **`29b04aca`** — pushed, `[skip ci]` | `apt-get update`, un-redirected install, no `\|\| true`, and a version probe of every binary each job calls. A missing toolchain now fails the job in its first 30 seconds. |
-| same commit | the missing `failCounts["pdftotext"]`, so a destroyed entry is countable |
-| same commit | `extraction-failures` as a HIGH at **0.1%** — deliberately a tenth of the download threshold, because a 403 **preserves** the stored entry and an extraction failure **destroys** it |
-| **`09982a6c`** (earlier, mirrored) | the accelerated-vesting exception note: **59 plans / 51,205 ppl** on the report, 5 crawlable pages, display-only |
-| **`6ce9946e`** | `send_later` removed from the cycle skill — it was the source of the permission dialog the owner was shown |
+| `vesting` falls 82–94 | 53,115 → **53,023 = falls 92** |
+| `vestQuote` rises by the same, → 5,363–5,375 | 5,281 → **5,373 = rises 92** |
+| QUOTE LOST 0 | fall and rise are the **same number** |
+| confident / match / entries / warn unchanged | 60,182 / 43,312 / 65,495 / 556 |
+| `pv` 202 → 203 at ~99.9% | **99.86%**, `partial-store` cleared, HIGH back to **4** |
 
-**Both controls on the new HIGH were run**, because a check that prints 0 on a
-quiet store has not been tested: negative — healthy store reads `0 UNREADABLE
-(0.00%)`, HIGH stays at the baseline 4; positive — in a detached worktree with
-99.74% of acks marked `e:"pdftotext"` to replay #604 exactly, the flag **FIRES**
-and HIGH goes to 5.
+Mirrored `bb4bed5a` → **`97f7ae97`**, a MATCHED pair: the data-producing code
+moved with the store that code produced. Pages build on main's HEAD was
+in flight at the time of writing — the deploy is not claimed until its
+conclusion reads success, and the live site is unreachable from the sandbox, so
+the verification is the mirrored tree plus a positive control, never a `curl`.
 
-## In flight
+## It took three runs, and the two failures were ours, not v203's
 
-**#605, dispatched 06:56Z on `29b04aca`** — v203 again, now with a toolchain
-that cannot fail silently. Pre-registered, unchanged from #604's registration:
-`vesting` **falls 82–94** (the fall *is* the improvement, inside the −150
-tolerance), `vestQuote` **rises by the same** 5,281 → 5,363–5,375, **exactly
-123** labels stop saying `Immediate`, 29–41 gain the real schedule from the same
-filing, WITHHELD stays 32, **0 quotes lost**, `pv` 202 → 203 at ~99.9%. Anything
-else moving on the coverage line is the thing to investigate.
+**#604 read NONE of the universe and reported 99.7% coverage.** Both apt steps
+ran `apt-get install … >/dev/null 2>&1 || true` with no `apt-get update`;
+`apt-get install` is atomic, so prep (one package) succeeded while parse (two)
+installed neither, and `pdftotext` was absent on all twenty shards. The publish
+gate caught it and committed nothing. Three instruments were blind: the install
+discarded both streams and its exit code; `fetch-4i`'s `pdftotext` branch was
+the only error path that destroyed an entry and incremented no counter; and
+`audit-data` knew two `e` codes where the store carried three. All fixed, with
+an `extraction-failures` HIGH at 0.1% — a tenth of the download threshold,
+because a 403 *preserves* the stored entry and an extraction failure
+*destroys* it.
 
-**A background agent is wiring the SEC asserted tickers** and still holds
-`scripts/match-sec-tickers.mjs`, `scripts/gen-sec-tickers.mjs` and
-`sec-tickers.js`. Not committed, not shipped.
+**#605 then hung one shard for 3h14m against nineteen siblings at 38–55
+minutes.** Cause: ten `execFileSync`/`execFile` sites spawn `pdftotext`,
+`pdftoppm`, `pdfimages` and `tesseract` and **not one passed `timeout`**.
+`TIME_BUDGET_MIN` could not help — *a budget enforced at the top of a loop is
+not a bound on the body of the loop.* Cancelled deliberately (the 355-minute
+backstop would have produced the same 19/20 merge 2h45m later, and the work list
+self-heals), and #607 finished the residue. Ceilings now on all ten sites with
+`SIGKILL`, controlled both ways: a wedged process dies at 1507ms, a real filing
+extracts 361,202 chars in 1076ms against a 180s ceiling (167× headroom).
 
-## Two published figures of mine were wrong and are corrected in CLAUDE.md
+**And the hang produced no evidence at all**, which is #604's defect one run
+later: the 40-line failure tail was gated on `ec -ne 0`, so a *cancelled* step —
+the one case where the log is the only evidence — reached it never. Now a `trap`
+dumps it on success, failure, timeout and cancellation alike.
 
-- **The SEC asserted-half size: 9,189,637 ppl, published four times, wrong by
-  43%.** Re-measured through the tracked `apppath` harness with the serving
-  condition and the publish gate applied: **20,332 rows / 5,296 plans /
-  6,436,341 ppl.** The original screen asked the resolvers of every *stored*
-  row. *A measurement of what a page publishes must apply every condition the
-  page applies, in order* — the fifth instance on this record, and this time it
-  cost the headline of the only half of the item I had called shippable.
-- **"Nothing a reader sees consumes the SEC file" — false.** `merge-4i` already
-  writes `ftk` on 2,823 rows and `lookupTicker` reads it **first**. This
-  inverted the safety argument: a merge-time write can take a correct symbol
-  AWAY, where a render-time fallback cannot.
+## Also shipped today
 
-## Held, and why
+- **The SEC asserted tickers: 4,346 published rows / 1,938 plans / 2,316,219
+  participants** gain a symbol, swaps 0, losses 0, 0 comparables. Its largest
+  judgment was a **refusal**: 51,491 rows / 19.6M participants typed collective
+  trust or separate account were withheld, because a pooled vehicle is not the
+  registered fund — the symbol is right for the fund and wrong for the vehicle,
+  so every count, fixture and whole-store diff read clean and only a draw
+  printing each row's TYPE could see it.
+- **The accelerated-vesting note: 59 plans / 51,205 ppl**, display-only.
+- **`trace-filing --vs`** repaired — unrunnable since v201 and unable to observe
+  a feature-only change, so it reported "no difference" for exactly the versions
+  it was needed for.
 
-- **No mirror.** The branch carries `PARSER_VERSION` 203 above a store at 202,
-  so code and data disagree until #605 merges. `mirror.sh` is the only path and
-  it will be run after the verdict.
-- **No second dispatch.** One re-parse in flight at a time.
+## Settled rather than inherited
+
+- **`dl` 48 → 93.** Fifth whole-population HEAD probe: **92 of 92 answered
+  403** at probe time, so `e=download` remains an honest published claim and the
+  rise is the EFAST2 bucket growing.
+- **`e:"analyze"`** is a recurring ~one-per-run transient, each instance a
+  different ack, each preserved and retried by the stale-pv mechanism. The
+  original self-healed to `no-section` / `dx:"nohead"`, reproduced exactly
+  through the real production path.
+
+## Open, and honestly unresolved
+
+- **122 acks clear the immediate-vesting bit where the registration said exactly
+  123.** Likeliest explanation is one of the 123 sitting in the 46 acks still at
+  pv 202, which would clear on a later run — direction "not yet applied", not
+  "wrong" — but that is **not proved** and should be checked, not assumed.
+- `audit-generic-names` stands above its 230 threshold, as recorded.
 
 ## Waiting on the owner
 
-Unchanged from yesterday, and all of it moves millions of published cells: the
-share-class symbol/fee population (5,929 rows / 11.1M ppl, errs both ways), our
-own store contradicting our own page (5,692 rows / 8.2M ppl, one-directional on
-every row read), the fee pre-emption (40,229 rows / 13.3M ppl), stable-value
-fabricated ERs (4,669 rows / 7.4M ppl), the American Funds no-share-class fee
-(10.5M ppl), and the **comparable** half of the SEC wiring — 224,201 new
-asterisked approximations on pages read by 59.3M people, which is a decision
-about how much hedged content the page should carry, not a cleanup.
-
-**One thing the owner can fix in one click:** the permission dialogs come from
-the session's mode dropdown being on *Accept edits*. **Auto** runs non-file
-tool calls unattended. No session can set that for itself.
-
-## Continues today
-
-#605's verdict and loss triage, then mirror; the SEC agent's asserted half,
-sized through the tracked harness with gains, swaps and losses kept apart; the
-hourly participant-weighted draw; and `trace-filing.mjs --vs`, which is broken
-(it copies `lib-4i.mjs` to a temp dir without `lib-quote.mjs`, so every v201–v203
-comparison throws `ERR_MODULE_NOT_FOUND` — the fix must pull `lib-quote` from
-the same ref, since all three versions turn on its guards).
+- **The SEC *comparable* half:** 188,846 rows / 35,353 plans / **49,065,090
+  participants** would gain an asterisked approximation. That is a decision
+  about how much hedged content the page should carry, not a correctness
+  question — the asserted half is already shipped.
+- The long-standing gated items are unchanged: the share-class symbol+fee
+  population (11.1M ppl), our own store contradicting our own page (8.2M ppl),
+  the fee pre-emption (13.3M ppl), stable-value fabricated ERs (7.4M ppl), and
+  the American Funds no-share-class fee (10.5M ppl).
+- **One click, unrelated to data:** the session's permission prompts come from
+  the mode dropdown being on *Accept edits*; **Auto** runs non-file tool calls
+  unattended. No session can set that for itself.
