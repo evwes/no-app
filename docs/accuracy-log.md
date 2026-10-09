@@ -50599,3 +50599,74 @@ phrase is the right anchor — which is also the constraint the queue imposed:
 anchor on the product's own filed NAME, because *the issuer cell routinely holds
 the custodian or the platform* and was priced at approximately nothing one hour
 earlier. The issuer cell is empty on the great majority of these rows anyway.
+
+## 2026-10-09 (21:2xZ) — a Vanguard COLLECTIVE TRUST publishing the retail mutual fund's ticker AS FACT, and our own page gets the same product right one plan over
+
+**Found by the 21:07 draw** on General Dynamics (144,837 ppl across 4 member
+plans, a 41-fund $22.99B menu at ratio 0.855). Nine consecutive rows shaped
+**`VANGUARD TARGET RET <vintage> FLEX`** publish VTHRX / VTTHX / VTTVX / VFORX /
+VTIVX / VFIFX / VFFVX / VTTSX / VLXVX at **er 0.08, ASSERTED — no asterisk —
+with the TYPE CELL BLANK**. The 2030 row alone is **$1,067,037,798**, 4.6% of
+the menu.
+
+**THE WITNESS IS THIS REPO'S OWN REGISTRY, asserted before the count and set to
+throw if it ever stops holding:** `sec-funds.json` registers **VTHRX as
+`VANGUARD CHESTER FUNDS :: Vanguard Target Retirement 2030 Fund`, class
+`Investor Shares`** — a retail mutual fund — and **`FLEX` appears 145 times in
+that file and NOT ONCE as a Vanguard target-date series** (every hit is Janus
+Henderson Short Duration Flexible Bond and kin). *Vanguard Target Retirement
+Trust Flex* is a COLLECTIVE INVESTMENT TRUST sold to retirement plans; the SEC
+registers no such series, so it has no ticker and no public expense ratio. The
+page therefore tells 146,668 people they hold the retail fund when the filing
+says they hold a CIT — `fund-er.js:1451`'s own recorded failure mode
+(*"the claim that the plan holds the Vanguard fund itself. It does not"*), one
+brand along from the VALIC case its comment names.
+
+**SIZE: 18 published+served rows / 2 acks / 7 plans / 146,668 ppl /
+$11,497,614,236**, all 18 publishing a fee and all 18 with a blank type cell.
+It is nine vintages filed twice, because General Dynamics files two acks whose
+menus are identical and both are served. Small in rows and large in money, and
+the harm is the highest category on this record: **a false IDENTIFICATION, not a
+labelled approximation.**
+
+***THE CONTROL IS INTERNAL AND IT IS WHAT MAKES THIS CONVICTABLE: our own page
+already handles this exact product correctly on other plans.*** Of the 537
+published `FLEX` rows store-wide, the ones the screen leaves alone are the same
+trust under its fuller filed name:
+
+* `Vanguard Target Retirement 2050 Trust Flex`, typed **`Collective trust`**,
+  $1,014,132,228 — publishes **`VFIFX*`**, an ASTERISKED COMPARABLE.
+* ditto 2055 / 2045 / 2060 / 2040 / 2035 / 2030 / 2025 / Inc., every one
+  asterisked, every one typed `Collective trust`.
+* `VFTC Target Retirement <vintage> Trust Flex` ×8 (VFTC = Vanguard Fiduciary
+  Trust Company) publish **no symbol and no fee at all** — the most honest
+  answer of the three.
+
+So one product gets three different treatments on one site, and **the only thing
+that varies is the TYPE CELL**: where the filer typed `Collective trust` the
+comparable machinery hedges correctly; where the type cell is blank, every
+type-reading suppressor is defeated and the same resolver ASSERTS. This is the
+`gicRow`-reads-the-type-cell shape for the fourth time (Accenture's stable value,
+the 17:4xZ Fidelity Freedom ladder, the CREF accounts, now this) — ***a blank
+type cell is not missing data, it is a hole in every guard we have.***
+
+**THE REMEDY IS ONE-DIRECTIONAL AND NEEDS NO REGISTRY WE LACK:** the row should
+get the asterisk its typed sibling already gets, i.e. assert → comparable, never
+the reverse. The `FLEX` token is the witness and it is NAME-anchored, so it does
+not depend on the issuer cell — which matters, because the issuer cell was
+measured worthless for exactly this question two hours earlier (51.4%
+corroboration, 20 of 20 refuted). **Not shipped this cycle:** a `wam` agent held
+the working tree on the adjacent TIAA Access family, and the fee half belongs
+with the owner-gated families — 0.08 is the Investor Shares fee published as a
+trust's, and *a fee is SOURCED, never derived*, so the honest end state is the
+asterisk plus a withdrawn fee, which is two claims and one decision.
+
+**AND THE SCREEN'S OWN FIRST READ WAS A GUESSED FIELD NAME:** my first registry
+query printed `rows 0` and `FLEX matches 0`, which would have read as "the
+registry is silent, so FLEX is unregistered" — the conclusion I was looking for,
+reached by a query that found nothing because `sec-funds.json` keys its array
+under `funds` and I had guessed `rows`/`series`. ***A clean zero that agrees
+with your hypothesis is the most dangerous kind*** — the same rule this file
+records for a clean zero reporting on the query, met where the zero was
+convenient. Reading the file's actual shape turned it into a real control with a
+named registrant and a named share class.

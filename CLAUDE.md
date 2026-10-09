@@ -2807,6 +2807,36 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   recorded: 188,846 rows / 35,353 plans / 49,065,090 ppl**, not 224,201 /
   59.7M — the pooled rows are classified as a vehicle refusal before the
   asserted/comparable split is reached. `docs/accuracy-log.md` 2026-10-09.
+- **FOUND BY THE 21:07 DRAW, SIZED NOT SHIPPED — A VANGUARD COLLECTIVE TRUST
+  PUBLISHING THE RETAIL FUND'S TICKER AS FACT: 18 rows / 2 acks / 7 plans /
+  146,668 ppl / $11,497,614,236**, all 18 publishing a fee and all 18 with a
+  BLANK type cell. General Dynamics files nine `VANGUARD TARGET RET <vintage>
+  FLEX` rows publishing VTHRX / VTTHX / VTTVX / VFORX / VTIVX / VFIFX / VFFVX /
+  VTTSX / VLXVX at **er 0.08, ASSERTED**, the 2030 row alone $1,067,037,798
+  (4.6% of a $22.99B menu); the 18 is nine vintages × two acks whose menus are
+  identical and both served.
+  **THE WITNESS IS THIS REPO'S OWN REGISTRY, asserted before the count and set
+  to THROW if it stops holding:** `sec-funds.json` registers VTHRX as
+  `VANGUARD CHESTER FUNDS :: Vanguard Target Retirement 2030 Fund`, class
+  **Investor Shares**, and **`FLEX` appears 145 times with NOT ONE a Vanguard
+  target-date series** (all Janus Henderson Short Duration Flexible Bond and
+  kin). *Vanguard Target Retirement Trust Flex* is a COLLECTIVE TRUST the SEC
+  registers no series for, so it has no ticker and no public ER.
+  ***THE CONTROL IS INTERNAL — our own page already gets this product right on
+  other plans, and only the TYPE CELL varies.*** Of 537 published `FLEX` rows,
+  `Vanguard Target Retirement 2050 Trust Flex` typed **`Collective trust`**
+  publishes **`VFIFX*`**, an asterisked comparable ($1,014,132,228), and eight
+  siblings likewise; `VFTC Target Retirement <vintage> Trust Flex` ×8 publish
+  **no symbol and no fee**, the most honest of the three. So one product gets
+  three treatments and a blank type defeats every type-reading guard — the
+  `gicRow` shape for the FOURTH time (Accenture stable value, the 17:4xZ
+  Fidelity Freedom ladder, the CREF accounts, this). **Remedy is
+  one-directional and needs no registry we lack:** give the row the asterisk its
+  typed sibling already gets, assert -> comparable, never the reverse; the `FLEX`
+  token is NAME-anchored so it does not touch the issuer cell, which was
+  measured worthless two hours earlier. The FEE half (0.08 is the Investor
+  Shares fee published as a trust's) goes with the owner-gated families — *a fee
+  is SOURCED, never derived.* `docs/accuracy-log.md` 2026-10-09 (21:2xZ).
 - The one-class residue: 511 shipped `stk` rows / 339 names / 395,265 ppl state
   a class the series does not register, dominated by `Vanguard Target Ret <year>
   Inst`. A pre-existing property of `resolve`'s one-class arm; refusing it in one
