@@ -200,14 +200,30 @@ jobs:
           # So: stream as before, and on failure re-print the tail AT THE END,
           # which is exactly where a tail-only reader lands.
           set -o pipefail
+          # AND THE TAIL MUST BE DUMPED ON **ANY** ENDING, NOT ONLY A NON-ZERO
+          # EXIT. Run #605's shard 1 hung for 3h14m and was cancelled by hand;
+          # because the dump below was gated on `ec -ne 0`, a CANCELLED step
+          # never reaches it, so the one failure mode where the log is the only
+          # evidence produced none at all. It also wrote no results-1.json —
+          # that flushes every 250 filings, so the hang was inside its first
+          # 250 — leaving the shard with neither a log nor an artifact.
+          #
+          # Same shape as #604 one run earlier: the program's account of itself
+          # was computed and then discarded unless one specific branch ran.
+          # A trap fires on the signal GitHub sends to cancel, so the tail now
+          # lands for success, failure, timeout and cancellation alike.
+          dump() {
+            echo "===== SHARD ${{ matrix.shard }} — last 40 lines (ending: $1) ====="
+            tail -40 /tmp/parse-${{ matrix.shard }}.log 2>/dev/null || echo "(no log was written)"
+            echo "===== end shard ${{ matrix.shard }} tail ====="
+          }
+          trap 'dump SIGNALLED; exit 143' TERM INT
           TIME_BUDGET_MIN=320 PARSE_SHARD=${{ matrix.shard }} PARSE_SHARDS=${{ needs.prep.outputs.count }} BATCH_4I=999999 \
             node scripts/fetch-4i.mjs 2>&1 | tee /tmp/parse-${{ matrix.shard }}.log
           ec=$?
           if [ "$ec" -ne 0 ]; then
             echo "::error::parse shard ${{ matrix.shard }} exited $ec"
-            echo "===== SHARD ${{ matrix.shard }} FAILED (exit $ec) — last 40 lines ====="
-            tail -40 /tmp/parse-${{ matrix.shard }}.log
-            echo "===== end shard ${{ matrix.shard }} failure tail ====="
+            dump "exit $ec"
           fi
           exit $ec
       - uses: actions/upload-artifact@v4

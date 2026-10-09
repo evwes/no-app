@@ -32,8 +32,47 @@ const OCR_NOTES_EXTRA = 18; // extra budget granted ONLY for notes pages 13-30:
 // Filings with readable early pages (JPM) add zero notes pages and keep
 // v5's exact proven allocation.
 const OCR_SKIP_BAD = 250; // strip-scan makes big scans affordable; only 250+ page monsters skip
+
+/* EVERY EXTERNAL BINARY GETS A WALL-CLOCK CEILING, AND RUN #605 IS WHY.
+ *
+ * Shard 1 of #605 ran 3h14m while its nineteen siblings finished in 38-55
+ * minutes each, blocking the merge until the run was cancelled by hand. It
+ * never wrote results-1.json, which flushes every 250 filings — so it hung
+ * inside its first 250, not late and not slowly. The work list is partitioned
+ * `i % PARSE_SHARDS === PARSE_SHARD` over an assets-sorted list, so every
+ * shard carries a near-identical composition BY CONSTRUCTION and a 3.5x
+ * outlier cannot be an OCR-load difference. One filing hung one binary.
+ *
+ * `TIME_BUDGET_MIN` could not save it: the budget is checked BETWEEN filings,
+ * and a hang inside a filing never returns to the loop to be checked. Neither
+ * could the job's `timeout-minutes: 355`, which was still 160 minutes away.
+ * ***A budget enforced at the top of a loop is not a bound on the body of the
+ * loop.***
+ *
+ * Eight call sites spawned pdftotext, pdftoppm, pdfimages and tesseract and
+ * not ONE passed `timeout`, so every one of them waited forever by default.
+ * Each ceiling below is set generously against measured work — a shard
+ * averages ~0.8s/filing and an OCR page 10-30s — because a ceiling that is
+ * too TIGHT manufactures the #604 failure: `pdftotext` throwing is recorded
+ * as e:"pdftotext", which DESTROYS the stored entry. The interlock against
+ * that is already shipped and watching: `audit-data` raises
+ * `extraction-failures` above 0.1%, a tenth of the download threshold.
+ * SIGKILL rather than SIGTERM because a wedged decoder need not honour a
+ * polite signal. docs/accuracy-log.md 2026-10-09. */
+const BIN_TIMEOUT = {
+  pdftotext: 180_000, // whole document, -layout; 200 MB maxBuffer implies big ones
+  pdftoppm: 60_000, // ONE page at 100-200 dpi
+  pdfimages: 30_000, // -list on one page, metadata only
+  tesseract: 120_000, // ONE page, 4-12x the measured 10-30s
+  tesseractOsd: 60_000, // --psm 0 orientation probe on one page
+};
+const KILL = "SIGKILL";
+
 let hasOcrTools = true;
-try { execFileSync("tesseract", ["--version"], { stdio: "ignore" }); execFileSync("pdftoppm", ["-v"], { stdio: "ignore" }); }
+try {
+  execFileSync("tesseract", ["--version"], { stdio: "ignore", timeout: 30_000, killSignal: KILL });
+  execFileSync("pdftoppm", ["-v"], { stdio: "ignore", timeout: 30_000, killSignal: KILL });
+}
 catch { hasOcrTools = false; console.log("tesseract/pdftoppm missing — OCR fallback disabled"); }
 
 /* Pages needing OCR: near-empty (scanned image) or mostly non-letters
@@ -110,7 +149,7 @@ function findImageTablePages(text, pdfPath) {
 function pageHasLargeImage(pdfPath, page) {
   try {
     const out = execFileSync("pdfimages", ["-f", String(page), "-l", String(page), "-list", pdfPath],
-      { encoding: "utf8", maxBuffer: 4 * 1024 * 1024 });
+      { encoding: "utf8", maxBuffer: 4 * 1024 * 1024, timeout: BIN_TIMEOUT.pdfimages, killSignal: KILL });
     for (const line of out.split("\n").slice(2)) {
       const c = line.trim().split(/\s+/);
       if (c.length > 5 && +c[3] >= 900 && +c[4] >= 500) return true;
@@ -130,7 +169,8 @@ async function stripScan(pdfPath, pages, workDir) {
   for (const p of pages) {
     try {
       execFileSync("pdftoppm", ["-r", "100", "-gray", "-y", "0", "-H", "420",
-        "-f", String(p), "-l", String(p), pdfPath, path.join(workDir, "s" + String(p).padStart(4, "0"))]);
+        "-f", String(p), "-l", String(p), pdfPath, path.join(workDir, "s" + String(p).padStart(4, "0"))],
+        { timeout: BIN_TIMEOUT.pdftoppm, killSignal: KILL });
     } catch { /* damaged page — no strip */ }
   }
   const imgs = readdirSync(workDir).filter((f) => /\.p[gpb]m$/.test(f)).sort();
@@ -142,7 +182,8 @@ async function stripScan(pdfPath, pages, workDir) {
       const page = +imgs[mine].slice(1, 5);
       byPage[page] = await new Promise((resolve) => {
         execFile("tesseract", [path.join(workDir, imgs[mine]), "stdout", "--psm", "6"],
-          { encoding: "utf8", maxBuffer: 8 * 1024 * 1024, env: { ...process.env, OMP_THREAD_LIMIT: "1" } },
+          { encoding: "utf8", maxBuffer: 8 * 1024 * 1024, timeout: BIN_TIMEOUT.tesseract,
+            killSignal: KILL, env: { ...process.env, OMP_THREAD_LIMIT: "1" } },
           (e, out) => resolve(out || ""));
       });
     }
@@ -192,11 +233,13 @@ function targetPages(badPages, stripText) {
 function detectRotation(pdfPath, probePage, workDir) {
   try {
     mkdirSync(workDir, { recursive: true });
-    execFileSync("pdftoppm", ["-r", "120", "-gray", "-f", String(probePage), "-l", String(probePage), pdfPath, path.join(workDir, "osd")]);
+    execFileSync("pdftoppm", ["-r", "120", "-gray", "-f", String(probePage), "-l", String(probePage), pdfPath, path.join(workDir, "osd")],
+      { timeout: BIN_TIMEOUT.pdftoppm, killSignal: KILL });
     const img = readdirSync(workDir).filter((f) => /^osd.*\.p[gpb]m$/.test(f))[0];
     if (!img) return 0;
     const out = execFileSync("tesseract", [path.join(workDir, img), "stdout", "--psm", "0"],
-      { encoding: "utf8", env: { ...process.env, OMP_THREAD_LIMIT: "1" } });
+      { encoding: "utf8", timeout: BIN_TIMEOUT.tesseractOsd, killSignal: KILL,
+        env: { ...process.env, OMP_THREAD_LIMIT: "1" } });
     const m = out.match(/Rotate:\s*(\d+)/);
     return m ? +m[1] : 0;
   } catch { return 0; }
@@ -213,7 +256,8 @@ async function ocrPages(pdfPath, badPages, workDir, psm = "6") {
   // them. Per-page, a crash costs only its own page.
   for (const p of take) {
     try {
-      execFileSync("pdftoppm", ["-r", "200", "-gray", "-f", String(p), "-l", String(p), pdfPath, path.join(workDir, "pg")]);
+      execFileSync("pdftoppm", ["-r", "200", "-gray", "-f", String(p), "-l", String(p), pdfPath, path.join(workDir, "pg")],
+        { timeout: BIN_TIMEOUT.pdftoppm, killSignal: KILL });
     } catch { /* damaged page renders what it can */ }
   }
   const imgs = readdirSync(workDir).filter((f) => /\.p[gpb]m$/.test(f)).sort().map((f) => path.join(workDir, f));
@@ -227,7 +271,8 @@ async function ocrPages(pdfPath, badPages, workDir, psm = "6") {
         // HALF the speed (measured), and 4 workers x 4 OMP threads thrashed the
         // 4-core runner to ~20 min per filing. Parallelism stays process-level.
         execFile("tesseract", [imgs[mine], "stdout", "--psm", psm, "-c", "preserve_interword_spaces=1"],
-          { encoding: "utf8", maxBuffer: 64 * 1024 * 1024, env: { ...process.env, OMP_THREAD_LIMIT: "1" } },
+          { encoding: "utf8", maxBuffer: 64 * 1024 * 1024, timeout: BIN_TIMEOUT.tesseract,
+            killSignal: KILL, env: { ...process.env, OMP_THREAD_LIMIT: "1" } },
           (e, out) => resolve(out || ""));
       });
     }
@@ -537,6 +582,7 @@ async function analyzePdf(ack, plan, tag) {
   try {
     text = execFileSync("pdftotext", ["-layout", "-q", dest, "-"], {
       encoding: "utf8", maxBuffer: 200 * 1024 * 1024,
+      timeout: BIN_TIMEOUT.pdftotext, killSignal: KILL,
     });
   } catch {
     try { unlinkSync(dest); } catch { /* ignore */ }
