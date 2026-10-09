@@ -50103,3 +50103,71 @@ enough to read and large enough to be the owner's call.
 **A FIELD NOTE, consistent with 15:5xZ:** Acosta reads 54,936 participants in
 the draw and 30,624 here — `partEOY` against `participants`. Both are right and
 they are different fields; this entry uses `participants` throughout.
+
+## 2026-10-09 (18:3xZ) — `Vanguard Target <X>` with no vintage: ONE named instance, not a class, and my screen was refuted by its own member list for the third time this session
+
+**Found by the 18:07 draw.** Mass General Brigham (136,132 ppl, a 120-fund
+$16.7B menu at ratio 0.999) publishes **`VANGUARD TARGET INSTITUTIONAL INDEX
+PLUS` at er 0.1 on $657,993,000 — 3.9% of its menu — with no ticker and no
+asterisk.** There is no such product: `Vanguard Institutional Index Fund
+Institutional Plus Shares` is **VIIIX at 0.02**, so the word TARGET is welded in
+from one of the eight neighbouring `VANGUARD TARGET RETIREMENT <vintage>` rows
+and the published fee is **~5x** the real fund's. The register already carries
+the sibling shape as an unverified cost (140 rows reading `Vanguard Target
+Return <vintage>` as a garble of Target Retirement).
+
+**DO NOT CARRY MY SCREEN'S 1,273 rows / 1,209 plans / 6,289,900 ppl /
+$10,709,071,087.** The condition was "Vanguard + Target with no 4-digit
+vintage", excluding what I thought were the genuine vintage-less products via
+`/target\s+retirement\s+(income|trust|fund)?/`. That exclusion required the
+words SPELLED OUT, so every ABBREVIATED spelling of the real Target Retirement
+Income fund fell into the suspect bucket: `VANGUARD TARGET INC` 72 rows /
+$1.55B, `Vanguard Target Retire Income` 116 / $448M, `VANGUARD TARGET RETMT
+INCOME` 114 / $178M, `Vanguard Target Retrmnt Inc` 63, `Vanguard Target Income`
+18, `Vanguard Target Inc.` 3. **914 of the 1,273 resolve VTINX and 246 are
+correctly asterisked** — the resolver is reading them right and the screen was
+reading its own regex. ***A count keyed on a SPELLING measures the spelling***,
+and the tell was there to be refused: 896 of 1,273 publishing a fee is not the
+profile of a garble class.
+
+**What survives, read row by row from the frequency table:**
+* **the genuine defect, 1 row:** MGB's `VANGUARD TARGET INSTITUTIONAL INDEX
+  PLUS`, $657,993,000 at 0.1 — a fee ~5x VIIIX's on a name that names nothing.
+* **TRUNCATIONS publishing no fee** (coverage, not a false claim, and the
+  recorded position for them is reconstruction rather than suppression):
+  `(Vanguard Instl Target Retirement` 1 / $436M, `Vanguard Target Trust Select`
+  1 / $232M, `Vanguard Institutional Target` 3 / $133M, `VANGUARD TARGET
+  INCOM E` 1 / $140M.
+* **`Vanguard Target Retirement` bare, 56 rows / $2,793,726,439** — the fund
+  FAMILY with no vintage, publishing no ticker and no fee, which belongs to the
+  recorded bare-house-name class and is already honest about knowing nothing.
+* **correct as filed:** `IncomeFlex Target-Vanguard Balanced Index` (a
+  Prudential wrapper, a real product name) and `Fidelity Vanguard Target Ret
+  Income` (two houses welded, resolving VTINX correctly).
+
+**So the honest size is ONE row**, and a one-row fix is recorded as one row. It
+is reportable rather than shippable: the repair is to drop a welded `TARGET`
+from a name whose remainder resolves VIIIX, and the register's standing evidence
+on lead/tail strips is that such an arm must ABSTAIN where the orientation is
+not decided — with one member there is no population to price an arm against.
+**The valuable part is the fee: $657,993,000 of one plan's menu is priced at 5x
+the real fund** to 136,132 readers, and that is worth naming even with no class
+behind it.
+
+**THIRD REFUTED SCREEN OF THIS SESSION, all three mine and all three caught by
+reading members rather than by re-reading counts:** the exact-equality witness
+(five of seven matches were $1-NAV money-market arithmetic), the split-ladder
+screen (dropped `star`, merged a class with its own inverse, wrong by 4x), and
+this one (an exclusion keyed on a spelling). The fixture is what kept each cheap
+— it prints the motivating row with every field before the count, so an
+implausible profile can be refused instead of published.
+
+**UNSIZED and named rather than counted, from the same page:** five TIAA-CREF
+rows whose names are cut to an asset-class word — `TIAA-CREF Funds STOCK` at
+**$1,209,911,000, 7.2% of MGB's menu** (the product is the CREF Stock Account),
+`TIAA-CREF Funds GROWTH` $275.8M, `GLOBAL EQUITIES` $155.0M, `Global Quality
+Equity` $111.0M, and **`EQUITY INDEX` publishing er 0.06 on $140,358,000**,
+which looks like an index-fund pattern estimate landing on a CREF variable
+annuity account. The control is on the same page: the two TIAA Traditional rows
+are correctly suppressed (`noPublicPrice`, `guaranteeOnlyFee`). Sizing it needs
+the CREF account vocabulary and has not been done.
