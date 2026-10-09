@@ -2633,7 +2633,64 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   in `fundTickerInfo`'s `wrapped` test reading the NAME while `lookupTicker` asks
   the bare name), and 140 rows / $987,688,869 reading `Vanguard Target Return
   <vintage>` as a garble of Target Retirement.
-- **THE KROGER LOAN ASSET — MEASURED 2026-10-02, predicate stated.** Published
+- **SHIPPED 2026-10-09 16:0xZ as `isLoanAccountRow` — 371 rows / 339 served
+  menus / 2,400,533 ppl / $538,248,498 stop being published as a menu choice, 3
+  crawlable pages / 266,168 ppl.** `shownType` is the ONLY cell that moves:
+  verified independently before push against 014e5892's own app.js through both
+  copies of `renderRow`, narrowed to the 2,306 rows where the predicate fires
+  (a superset by construction) with a 4,305-row control over untouched rows —
+  **372 moved, all on `shownType`, name 0 / tk 0 / er 0 / star 0, TICKER
+  withdrawn 0, FEE withdrawn 0, control differs on 0.** That check was not
+  optional: `loanAcctRow` feeds `loanRow`, which GATES `lookupTicker` and
+  overrides `tk` outright. **95 rows had a FALSE VEHICLE TYPE withdrawn**
+  (`Mutual fund` 29, `Pooled separate account` 28, `Stable value / GIC` 25).
+  **THE LABEL IS THE FILING'S OWN WORDS, and only the filings could say so:**
+  four were read, and Packaging Corp's, Kohl's and KPH Healthcare's all nest
+  these rows under the attachment's own section heading **`Participant Loans`**
+  — our parse keeps the Northern Trust export's COUNTRY CAPTION and drops the
+  section heading, the one cell that said what the row is. Kroger files it at
+  par = cost = current value, which is a loan receivable. *"Names no specific
+  fund" would have been FALSE* — these filings name exactly what the row is.
+  **DO NOT CARRY the entry below's framing:** screening the country caption
+  ALONE reads **115 rows / 2,424,992 ppl / $14.5B** whose largest members are
+  REAL funds the caption merely prefixes (HCA's `… MFB NT COLLECTIVE AGGREGATE
+  BOND INDEX FUND - LENDING`, $3.05B at 0.05; Honeywell's publishing **SMMD**).
+  *The caption is evidence about the DOCUMENT, not the holding, so it can
+  trigger an arm and can never be one.* Four conditions were deleted for
+  blocking 0 rows, and a first-draft SPONSOR-NAME strip was refused for making
+  the verdict depend on WHICH PLAN IS VIEWING. **Named residue, conservative:** a
+  recordkeeper brand in front of the same line keeps it (`VALIC Loan Collateral
+  Fund` ×11, `TIAA Plan Loan Default Fund` ×10) — needs a brand witness.
+  `docs/accuracy-log.md` 2026-10-09 (16:0xZ).
+- **FOUND BY THE 15:07 DRAW, SIZED NOT SHIPPED — A TABLE ROW PUBLISHED AS A FUND
+  NAME: 163 rows / 73 entries / 75 plans / 115,586 ppl / $408,613,563, of which
+  only 6 are already qualified and 43 publish a TICKER and 60 a FEE off the
+  debris** (38 at ≥5% of their own menu). The witness is structural: a published
+  name carrying TWO OR MORE comma-grouped numbers is a current-year and a
+  prior-year COLUMN, and no registered fund is named by two large comma-grouped
+  figures. Largest row `40,714 — 40,714 40,714 — VANGUARD FIDUCIARY EXT MKT` at
+  **$167,418,000**; Republic National (15,199 ppl) publishes `$ 1,990,313 3211
+  p200 $ 28,445,571 3221 p227 …` at **18.8% of its menu / $36,321,498**.
+  **NOT SHIPPED BECAUSE THE CLASS SPLITS AND 117 OF THE 163 HAVE NO DIAGNOSED
+  CAUSE YET** — my family classifier assigned only 46, and it failed because it
+  keyed on the ISSUER CELL being populated where the big rows carry the fund name
+  INSIDE the damaged string (*a classifier keyed on a field measures the field*).
+  That is also why 37 of those 117 resolve a CORRECT ticker: `Fund Investment
+  Company Fidelity 500 Index Fund 236,722.144 shares of Registered 36,475,39`
+  publishes **FXAIX at 0.015** — symbol right, name unreadable, legibility and
+  not a false claim — while Republic National's row is pure debris. A blanket
+  qualification would suppress both, and *a row that names nothing and a row
+  whose name we mangled are two classes.* Next step is READING the 117, not
+  widening a shape test. The dominant family is a parser defect (column welding /
+  region selection) needing a bump: owner's call.
+  **DO NOT CARRY the exact-equality witness as the size — it is a SUBSET of 2
+  rows / 1 plan and is blind to one of the three rows of its own motivating
+  menu**, and before an own-value refusal it was dominated by $1-NAV MONEY
+  MARKET rows whose share count equals their value as ARITHMETIC (L Brands'
+  `85,408,028 - shares` publishes VMFXX correctly). `docs/accuracy-log.md`
+  2026-10-09 (15:5xZ).
+- **ORIGINAL SIZING, kept for the two sub-populations it correctly refuses —
+  THE KROGER LOAN ASSET, MEASURED 2026-10-02.** Published
   rows whose cleaned name carries loan vocabulary and which NO shipped loan
   predicate reaches (all are anchored on the name BEGINNING with the loan
   words, the anchor that keeps `Bank Loan Fund` safe): **722 rows / 625 plans /

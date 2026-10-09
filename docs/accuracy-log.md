@@ -49684,3 +49684,104 @@ is the habitually-red gate that made ten consecutive `site-test` failures
 invisible. Making it CI-safe means freezing the attestation evidence the pins
 read, which is a larger change than the control fixed here and is named, not
 done.
+
+## 2026-10-09 (15:5xZ) — the 15:07 draw: a TABLE ROW published as a fund name, 163 rows / 115,586 ppl, with 43 tickers and 60 fees priced off the debris
+
+**Found by the participant-weighted draw** (`draw-published.mjs 3 --seed 9102026`,
+so it can be re-read rather than re-rolled). Vitas Healthcare publishes three
+rows of a fair-value/liquidity note table as holdings:
+
+```
+iss "Class lII"               "31,861,175 30,222,190 Daily Exceeding"   $1,000,000
+iss "Federated Class P"       "12,124,980 12,635,491 Daily Exceeding"   $1,000,000
+iss "Neuberger Trust Class R" "3,202,405 3,261,127 Daily Exceeding"     $1,000,000
+```
+
+`12,124,980` is row 4's value to the dollar and `3,202,405` is row 7's, so the
+columns are the current and prior-year values of funds already listed above —
+each published as a separate holding at an identically round $1,000,000,
+double-counting $3M into a menu already at ratio 1.028.
+
+**THE CLASS, sized: a published name carrying TWO OR MORE comma-grouped numbers
+— 163 rows / 73 entries / 75 plans / 115,586 participants / $408,613,563.** Only
+**6 are already qualified**, so the rest reach a reader as a named holding;
+**43 publish a TICKER and 60 publish a FEE** off the damaged string, and 38 sit
+at ≥5% of their own menu. A fund name may carry one number (a vintage, a
+contract number, a share count); no registered fund is named by two large
+comma-grouped figures, which is a current-year and a prior-year column.
+
+**THE FIRST WITNESS WAS A SUBSET AND ITS FALSE POSITIVES WERE ARITHMETIC, NOT
+DAMAGE.** The screen began as "the name's leading number equals ANOTHER row's
+value in the same menu" — exact, store-internal, and apparently unfalsifiable
+since no fund is named by another holding's dollar amount. It read 7 rows, and
+**reading the members killed five of them: a MONEY MARKET fund is priced at $1 a
+share, so its share count EQUALS its value as arithmetic.** L Brands' `85,408,028
+- shares` (issuer `Vanguard Federal Money Market Fund`, publishing VMFXX
+correctly) is a true holding with a junky name, and three of the seven were that
+shape. Refusing a number equal to the row's OWN value leaves **2 rows / 1 plan /
+13,326 ppl** — *and that witness is blind to one of the three rows of its own
+motivating menu*, because Vitas's `31,861,175` matches no published row. ***An
+exact witness can be both sound and a subset: equality with another row's value
+convicts individual rows and cannot size the class.*** The structural witness
+(two grouped numbers) sees all three and is pinned to do so.
+
+**AND MY FAMILY SPLIT MOSTLY FAILED — recorded because the number would read as
+a diagnosis.** Classifying the 163 assigned only **46**: welded share-count +
+name + value where the issuer holds the clean name 26 rows / 7,562 ppl,
+rollforward/transactions ledger 13 / 1,345 (parenthesised negatives, the same
+figure at two precisions, trailing `SERIES`), the note table 4 / 15,194,
+page-reference runs 3 / 2,453. **117 rows / 53 plans / 90,185 ppl / $299.6M —
+72%, including the three largest — are UNCLASSIFIED, and the cause is mine: the
+welded test keyed on the ISSUER CELL being populated**, where the big rows carry
+the fund name INSIDE the damaged string and no issuer at all. *A classifier
+keyed on a field measures the field.* That is also why 37 of those 117 still
+resolve a ticker correctly.
+
+**NAMED INSTANCES, each read:**
+* `40,714 — 40,714 40,714 — VANGUARD FIDUCIARY EXT MKT` at **$167,418,000** — a
+  repeated share count welded to a fund fragment, the largest row in the class.
+* `Fund Investment Company Fidelity 500 Index Fund 236,722.144 shares of
+  Registered 36,475,39` — $48,336,295, **12.9% of its menu**, publishing
+  **FXAIX at 0.015**. The symbol is RIGHT and the name is unreadable, so this
+  half of the class is legibility rather than a false claim — and the trailing
+  `36,475,39` is a TRUNCATED figure.
+* `Dodge & Cox International Stock 269,900.894 shares of Registered 10,852,576`
+  — publishing **DODFX at 0.62**, same shape.
+* Republic National Distributing (15,199 ppl) publishes `$ 1,990,313 3211 p200 $
+  28,445,571 3221 p227 …` at **18.8% of its menu, $36,321,498** — a run of
+  Schedule-H line codes and PAGE references.
+* `MIP CL 2 $ 946,617 $ 610,297 Daily None LARGE CP VALUE I1 2,706,705
+  2,458,615 Daily None` — two note-table rows welded into one holding.
+
+**NOT SHIPPED, and the reason is the split rather than caution:** the dominant
+population is a PARSER defect (column welding and region selection), it needs a
+`PARSER_VERSION` bump and a full re-parse, and the 117 unclassified rows have no
+diagnosed cause yet — so a display-side qualification would blanket-suppress
+rows whose ticker is correct (FXAIX, DODFX) alongside rows that are pure debris.
+*A row that names nothing and a row whose name we mangled are two classes, and
+one label cannot serve both.* Next step is to classify the 117 by reading them,
+not by widening a shape test.
+
+**A FIELD CORRECTION worth keeping:** the draw prints Vitas at 14,076
+participants and `plans-all` says 13,326 — both right, different fields
+(`partEOY` 14,076, `participants` 13,326, `partBalances` 13,175,
+`activeParticipants` 10,878). `draw-published` reports `partEOY`. Two numbers
+for one plan is a question about the FIELD, not about the plan.
+
+**Owner-gated instance from the same menu, recorded not acted on:** `Lincoln
+Stable Value Separate Account - Z487` publishes a fabricated **0.35** on
+$40,455,828 to Vitas's readers — a second named live instance of the
+stable-value item (4,669 rows / 7.4M ppl, 4,571 at exactly 0.35), escaping by
+exactly the recorded Accenture mechanism: **`gicRow` reads the TYPE cell** and
+this row is typed `Separate account`, not `Stable value / GIC`.
+
+**Two instrument faults, both caught by an assertion rather than by a plausible
+number:** a guessed `plans-all` field (`name`; it is `sponsorName`, and `ack` /
+`mtiaAck` are on that file, so the detail-shard walk I wrote was unnecessary),
+and calling the tracked harness as `render(entry)` where the real signature is
+`renderRow(plan, f, "menu", total)` per row with the CLEANED name. **And an
+empty output file was first diagnosed as CPU starvation when `| head -70` in the
+pipeline explains it equally well — `head` cannot flush.** The narrowing that
+made the screen affordable is a superset BY CONSTRUCTION (`cleanFiledName` never
+adds digits) and was DISCHARGED as an implication on every rejected row:
+**0 of 1,724,453 cleaned into a leading number.**
