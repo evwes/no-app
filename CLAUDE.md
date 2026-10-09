@@ -857,8 +857,15 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
-**v203 IS COMMITTED AND NOT YET DISPATCHED (`[skip ci]`, #603 was in flight on
-this branch). `PARSER_VERSION` is 203: `Employer-money vesting: Immediate` is
+**v203 IS DISPATCHED AS #605 (06:56Z), ON THE COMMIT THAT FIXES THE TOOLCHAIN.
+ITS FIRST ATTEMPT, #604, FAILED FOR A REASON THAT HAD NOTHING TO DO WITH v203 —
+`pdftotext` was absent on all twenty shards, 68,865 filings were read as
+nothing, and the publish gate refused to commit** (`confident -60033`,
+`match -43211`, `vesting -52994`). **v203 is exonerated** by `trace-filing`
+(Amgen, 33 rows / 0.995 / CONFIDENT) and the registration below stands
+unchanged. `docs/accuracy-log.md` 2026-10-09 (06:5xZ).
+
+**`PARSER_VERSION` is 203: `Employer-money vesting: Immediate` is
 withheld where the sentence that would set it states only an ACCELERATION
 TRIGGER — 123 plans / 59,316 ppl, which is the SAME defect v202 fixed for the
 GRADED phrasing (ninth instance of *a fix for one phrasing of a class is not a
@@ -2408,13 +2415,23 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   ones: exact-normalized or filed-tokens ⊇ series-tokens WITH the manager token,
   never across managers, and an unstated share class gets the comparable
   asterisk rather than a silently chosen class.
-  **NOTHING A READER SEES CONSUMES ANY OF IT.** `sec-funds.json` appears in
-  `app.js` and `fund-er.js` **only inside comments**, as the authority used to
-  hand-verify individual corrections; the runtime resolver is `fund-er.js`'s
-  hand-written pattern table, and the matcher's output feeds
-  `docs/fund-ticker-reference.md`, a markdown doc. *Before adding a SOURCE, ask
-  what the pipeline already reads and throws away* — fourth instance, and much
-  the biggest: the download, the parse and the matcher are all already paid for.
+  **"NOTHING A READER SEES CONSUMES ANY OF IT" IS WHAT THIS ENTRY USED TO SAY
+  AND IT IS FALSE — CORRECTED 2026-10-09 06:5xZ.** `sec-funds.json` appears in
+  `app.js` and `fund-er.js` only inside comments, which is true and is not the
+  same claim: **`merge-4i.mjs` already writes `ftk` — a matcher-resolved ticker,
+  on 2,823 rows — into the lineup store, and `lookupTicker` reads `f.ftk`
+  FIRST**, ahead of every pattern-table arm. So a reader is already seeing SEC
+  symbols today, and the wiring question is not "connect an unused source" but
+  "widen a channel that exists". *Before adding a SOURCE, ask what the pipeline
+  already reads and throws away* still applies — the download, the parse and the
+  matcher are all already paid for — but the honest version is narrower.
+  ***AND THE ERROR INVERTED THE SAFETY ARGUMENT, which is why it mattered more
+  than the sentence.*** A merge-time write **overwrites** whatever
+  `lookupTicker` would otherwise have resolved, so widening `ftk` can take a
+  symbol AWAY as readily as add one; a RENDER-TIME fallback consulted after
+  every existing arm cannot, by construction. The two have the same gain and
+  completely different loss profiles, and I had argued for the merge-time shape
+  on the strength of a claim that there was no channel to disturb.
   **It also subsumes two open queue items by construction:** the matcher reads
   `Dodge and Cox Stock` → DODGX, which is the `and`-spelling item (228 rows),
   and it pins share classes, which is the store-vs-page item's blocker.
@@ -2444,10 +2461,21 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
   | at least one row on this plan's page would | plans | ppl |
   |---|---|---|
-  | gain an **ASSERTED** symbol (B) | 7,857 | **9,189,637** |
+  | gain an **ASSERTED** symbol (B) | 7,857 | ~~9,189,637~~ **see below** |
   | gain a **COMPARABLE** (C) | 39,178 | **59,327,082** |
   | remain unresolved (D) | 59,726 | 99,915,818 |
   | **gain anything** (B or C) | 41,562 | **61,821,621** |
+
+  **DO NOT CARRY 7,857 plans / 9,189,637 ppl FOR THE ASSERTED HALF — I published
+  it four times and it is wrong by 43%. Re-measured through the tracked
+  `apppath` harness with the serving condition and the publish gate applied:
+  20,332 rows / 5,296 plans / 6,436,341 ppl.** The screen above asked
+  `lookupTicker` and `resolveHolding` of every stored row; the page serves a
+  trust's menu only where the plan's own lineup is unusable, and a row behind a
+  suppressor is never priced or symbolised at all. ***A measurement of what a
+  page PUBLISHES must apply every condition the page applies, in order*** —
+  recorded in this file four times before this instance, and the figure it cost
+  was the headline of the only half of this item I had called shippable.
 
   ***THE BUCKETS OVERLAP AND MUST NEVER BE SUMMED*** — a plan appears in every
   bucket its menu carries a row of, which is why D is 99.8% of participants:
@@ -2455,9 +2483,14 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   reaches.** That is the honest ceiling and it belongs beside any gain claim.
   **The comparable half would put a new asterisk on a page read by 59.3M
   people**, which is the scale that makes it a decision and not a cleanup.
-  **A ship of the ASSERTED half alone touches 7,857 plans / 9,189,637 ppl**, of
-  which **2,384 plans / 2,494,539 ppl carry no comparable row at all** and are
-  the cleanly separable population.
+  **A ship of the ASSERTED half alone touches 5,296 plans / 6,436,341 ppl** (the
+  corrected figure above), of which **2,384 plans / 2,494,539 ppl carry no
+  comparable row at all** — that sub-figure is from the uncorrected screen and
+  is an upper bound until re-derived — and are the cleanly separable population.
+  **THE CRAWLABLE PAGES PUBLISH NO TICKER COLUMN AT ALL** (verified: no
+  `lookupTicker`, no `fundTickerInfo`, no `.stk` in `build-seo-pages.mjs`), so
+  this is a ONE-SURFACE change and the usual "regenerate the pages and diff"
+  control is inapplicable rather than skipped.
   **NAMED LIVE INSTANCE, FOUND BY THE 01:08 DRAW — UnitedHealth Group, 262,812
   ppl, a healthy 95-fund menu at ratio 0.992**, publishes no ticker on
   `AMERICAN NEW PERSPECTIVE CLASS F1`, `AMERICAN THE NEW ECONOMY FUND CL F2`,
@@ -3379,6 +3412,30 @@ These outlived the versions that produced them. The accuracy log has the case.
 - **A diagnosis that cannot be reproduced is not a diagnosis.** What worked on
   the hardest bug on this record was not a better theory but making the program
   SAY what happened.
+- **AND THE NEXT LAYER OUT: A PROGRAM THAT SAYS WHAT HAPPENED AND NOTHING THAT
+  ADDS IT UP (2026-10-09, run #604).** `>/dev/null 2>&1 || true` on the parse
+  job's `apt-get install` — with no `apt-get update` — let an ATOMIC two-package
+  install fail entirely while prep's one-package install succeeded, so
+  `pdftotext` was absent on all twenty shards, **68,865 filings were downloaded
+  and read as nothing, and the run reported 99.7% coverage.** Only the merge
+  job's publish gate caught it, 4h20m in, and v203 was suspected for an hour
+  first. Three independent paths each enumerated the failure shapes their author
+  had in mind: *the install discarded both streams and its exit code*;
+  **`fetch-4i`'s `pdftotext` branch was the only error path that destroyed an
+  entry and incremented no counter**, so the per-shard tally said `download=5`
+  while 3,448 filings were wiped; and `audit-data`'s completeness line knew two
+  `e` codes where the store carried three. ***A SUPPRESSED COMMAND IS AN
+  UNINSTRUMENTED COMMAND***, and `|| true` on an install buys nothing a version
+  probe does not buy better. **When adding an error branch to a loop that reports
+  a tally, ask what the SIBLING branches do with the tally** — the same shape as
+  asking what the sibling guards do with the quote. And **an enumeration of
+  failure shapes goes stale exactly like a vocabulary**: derive it from the `e`
+  codes present in the store, not from memory. Fixed with `apt-get update`, an
+  un-redirected install, a version probe of every binary the job calls, the
+  missing counter, and an `extraction-failures` HIGH at **0.1%** — a tenth of the
+  download threshold, because a 403 PRESERVES the stored entry and an extraction
+  failure DESTROYS it. Both controls run (quiet store 0, #604's shape FIRES).
+  `docs/accuracy-log.md` 2026-10-09 (06:5xZ).
 
 ## The gap method (2026-09-03) — diagnose at parse time, not by re-download
 

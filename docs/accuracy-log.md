@@ -7,6 +7,125 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-09 (06:5xZ) — RUN #604 READ NONE OF THE UNIVERSE AND REPORTED 99.7% COVERAGE: an `apt-get install` with no `update`, and three instruments that each enumerated the wrong failure shapes
+
+### What was wrong
+
+**Run #604 — the v203 full re-parse — downloaded 68,865 filings, read ZERO of
+them, and every instrument said it was healthy.** prep succeeded. All twenty
+parse shards succeeded, in normal wall clock. The RUN COMPLETENESS line read
+*"dominant pv covers 99.7%; 48 download failures (0.07%)"*. The only thing that
+caught it was the publish gate in the merge job:
+
+```
+confident -60033, match -43211, vesting -52994, lineups -59684  ⚠ REGRESSED
+```
+
+so **nothing was committed and no bad data reached a reader.** But v203 was the
+obvious suspect and is **innocent** — `trace-filing` parses Amgen under v203 at
+33 rows / ratio 0.995 / CONFIDENT — and the hour spent suspecting it was spent
+because three separate reporting paths had each been written to enumerate the
+failure shapes their author had in mind.
+
+**The two exact identities are what made it diagnosable.** 69,046 − 181 =
+68,865, and 60,182 − 149 = 60,033. The only survivors were the acks whose
+**download 403'd** — because a 403 preserves the stored entry (the v37
+protection) and so was the one failure mode that did not destroy data.
+
+### The cause
+
+Both apt steps in `build-data.yml` read:
+
+```yaml
+sudo apt-get install -y -q poppler-utils tesseract-ocr >/dev/null 2>&1 || true
+```
+
+with **no `apt-get update`**, so the package indexes were whatever the runner
+image shipped. `apt-get install` is **ATOMIC**: prep, which needs only
+`poppler-utils`, happened to succeed, while parse, which asks for two packages,
+installed **NEITHER** — so `pdftotext` was absent on every one of the twenty
+parse jobs. `>/dev/null 2>&1` discarded the reason and `|| true` discarded the
+exit code, so the job carried on.
+
+***The shard log's entire trace of this was two lines, and neither of them is an
+error:***
+
+```
+05:17:44  tesseract/pdftoppm missing — OCR fallback disabled
+05:17:47  work list: 3453 filings to (re)parse at parser v203 (matrix shard 0/20)
+05:30:35  wrote results-0.json: 3453 entries
+05:30:35  failures this shard: download=5
+```
+
+The first line names the OCR binaries and **not `pdftotext`**, because the OCR
+probe was the only toolchain check anyone had written. The last line is the
+second defect.
+
+### Three reporting failures, all fixed
+
+**(1) The install discarded both streams and its exit code.** Now
+`apt-get update -qq`, then an un-redirected install with no `|| true`, then a
+version probe of every binary the job will call (`pdftotext -v`, `pdftoppm -v`,
+`tesseract -v`; prep probes `pdftotext` alone). A missing toolchain now fails
+the job in its first thirty seconds instead of silently consuming twenty shards
+and an hour of wall clock.
+
+**(2) `fetch-4i`'s `pdftotext` branch was the only error path that destroyed an
+entry and incremented no counter.** Every sibling path bumps `failCounts`; this
+one `record()`ed a non-confident entry and returned, so the per-shard tally read
+`download=5` while 3,448 filings had been wiped. ***A failure that is not
+counted is a failure that did not happen, as far as every downstream number is
+concerned.***
+
+**(3) `audit-data`'s RUN COMPLETENESS line counted `download` and the pv
+distribution and nothing else.** It now counts `e === "pdftotext"` as
+**UNREADABLE**, prints the share beside the download share, and raises a HIGH at
+**0.1% — deliberately a tenth of the download threshold**, because the two are
+not the same severity: *a download 403 PRESERVES the stored entry while an
+extraction failure DESTROYS it*, so the coverage line after an extraction
+failure describes a store those filings have dropped out of.
+
+### What prevents it
+
+- The toolchain probe, which makes the absent binary a **job failure** rather
+  than a log line about different binaries.
+- `extraction-failures` as a HIGH, with **both controls run**, because *a check
+  that prints 0 on a quiet store has not been tested*: negative — the healthy
+  store reads `0 UNREADABLE (0.00%)` and HIGH stays at the baseline 4; positive
+  — in a detached worktree with 99.74% of acks marked `e:"pdftotext"` to replay
+  #604's shape exactly, the flag **FIRES** and HIGH goes to 5.
+- The publish gate, which is the only thing that worked and is worth naming as
+  such. It is a backstop on the *store*, not on the *run*, and it fired four
+  hours and twenty minutes after the run began.
+
+### The reusable rule
+
+***A SUPPRESSED COMMAND IS AN UNINSTRUMENTED COMMAND, AND `|| true` ON AN
+INSTALL BUYS NOTHING THAT A PROBE DOES NOT BUY BETTER.*** The redirect was
+presumably there to keep the log tidy and the `|| true` to survive a transient
+mirror hiccup — and together they converted a hard, instantly-diagnosable
+failure into a silent one that cost four hours of wall clock and an hour of
+wrongly suspecting the version under test.
+
+***AND AN ERROR PATH THAT INCREMENTS NO COUNTER IS INVISIBLE TO EVERY CHECK
+BUILT ON THE COUNTERS.*** This is the sibling of the recorded `#244/#246`
+lesson — there the outer `catch` labelled every exception `download` and the
+reason was computed and discarded on every run ever made. The fix then was to
+make the program SAY what happened. **This is the same defect one layer out: the
+program said what happened and nothing added it up.** The habit that follows is
+mechanical — when adding an error branch to a loop that reports a tally, ask what
+the *sibling* branches do with the tally, exactly as the v202 lesson asks what
+the sibling guards do with the quote.
+
+***AND AN ENUMERATION OF FAILURE SHAPES GOES STALE THE WAY A VOCABULARY DOES.***
+`audit-data` knew two shapes; the store carried three. This file already records
+*a count keyed on a VOCABULARY measures the vocabulary* for published names —
+the same is true of a health check's list of things that can go wrong, and the
+cure is the same: derive the enumeration from the data (`e` codes present in the
+store) rather than writing it from memory.
+
+---
+
 ## 2026-10-09 (04:xxZ) — v203: `Employer-money vesting: Immediate` PUBLISHED OVER A QUOTE THAT CONTRADICTS IT — 123 plans / 59,316 participants, and 29 of them gain the REAL schedule out of the same filing
 
 ### What was wrong
