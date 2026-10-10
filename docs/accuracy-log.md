@@ -52786,3 +52786,63 @@ Fidelity's cheapest Freedom class. So the page names the specific share class by
 SYMBOL and then prices it with a category average — a sharper form of the
 owner-gated one-ticker-two-fees item: not two fees for one symbol, but a fee
 that ignores the class the symbol just identified.
+
+## 2026-10-10 (19:1xZ) — the identical-line run is 19, not 3, and the irreproducible "51.2% / 34" is TWO key-set definitions with one half label-swapped
+
+**Verdict first: #630 is an incremental no-op hour.** The last three trail lines
+are byte-identical on every key — `confident` 60,182, `entries` 65,495, `match`
+43,312, `vesting` 53,023, HIGH 4, warn 556, `pv` 203 at 99.9%, and **`dl` 93
+unchanged**, so the EFAST2 bucket did not grow. It committed `9ae69533` to main
+and **fast-forwarded the dev branch itself** — the shipped `build-data.yml:305`
+automation, observed a third time, so the adoption chore was `git merge
+--ff-only` and nothing more.
+
+**Re-deriving the identical-line run, as the register requires, gives 19 — not
+the recorded 3.** Over 431 trail lines, date excluded: **current run 19 on ALL
+keys and 19 on SHARED keys**, longest in the trail 35 / 38, consecutive pairs
+identical 240/430 = 55.8% and 244/430 = 56.7%. Nineteen consecutive merges with
+a byte-identical coverage line is itself a fact worth having: every ship since
+v203 landed has been display- or build-side with `PARSER_VERSION` at 203, so a
+quiet store is the expected state and not a stall.
+
+**Two controls ran before the answer and both behaved:** a line is
+self-identical under both key sets, and the **pv-introduction pair at line 375
+reads `ALL false / SHARED true`** — the asymmetry the register warns about,
+now demonstrated rather than asserted.
+
+***AND THE RECORDED IRREPRODUCIBILITY IS NOW DIAGNOSED. The missing dimension is
+the DATE FIELD, which neither the original claim nor its correction names.***
+`d` is on every line and changes at every midnight — the trail spans **56
+distinct dates** — so including it forces a difference at every day boundary
+for free. All four combinations:
+
+| key set | current | longest | pairs identical |
+|---|---|---|---|
+| ALL, date EXCLUDED | 19 | 35 | 55.8% |
+| SHARED, date EXCLUDED | 19 | 38 | 56.7% |
+| ALL, date INCLUDED | 10 | **14** | **48.8%** |
+| SHARED, date INCLUDED | 10 | 15 | 49.8% |
+
+**The date-INCLUDED longest run of 14 / 15 brackets the correction's recorded
+13 / 14** (the gap is the 45 lines added since), so that correction was a
+date-INCLUSIVE measurement and said so nowhere.
+
+***And the original "51.2% identical / 48.8% move, longest streak 34" resolves
+into two different measurements, one of them label-swapped.*** Date-included
+ALL-keys is **48.8% identical and 51.2% moved** — the recorded pair with
+identical and moved the wrong way round — while the recorded streak of **34**
+matches the date-EXCLUDED 35. So the statistic took its PERCENTAGE from a
+date-inclusive comparison, inverted it, and its STREAK from a date-exclusive
+one. That is exactly why the later correction could try four key-set definitions
+and report that *"nothing lands on 51.2% / 34"*: **no single definition can
+produce both halves, because the two halves never came from one.**
+
+**The reusable part is one step past the recorded rule.** The register already
+says *the statistic is dominated by WHICH KEYS are compared, so quoting it
+without naming the key set is meaningless.* This adds that **a key set is not
+fully named by "all" or "shared"** — whether a TIMESTAMP field is in it moves
+the streak by 2.5x, and a trail line carries one. ***A composite statistic whose
+halves come from different definitions is irreproducible under every single
+definition, which reads as an arithmetic error and is really a provenance
+error.*** The way to catch it is to vary one dimension at a time and look for
+each half separately, rather than searching for a definition that yields both.

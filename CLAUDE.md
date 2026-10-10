@@ -870,22 +870,37 @@ extra entries are self-clearing `reparse-loss` findings raised from
 `losses-triage.txt`, a run ARTIFACT that exists only in CI. *A metric that
 differs between CI and local is a question about the inputs, not the store.*
 
-**THE IDENTICAL-LINE RUN, RE-DERIVED 2026-10-04 18:4xZ AND NEVER INCREMENTED: 3
-on all keys, 3 on shared keys**, over 386 trail lines. *A count carried forward
-by increment is not a measurement* — if a number in this file advances every
-cycle, re-derive it (compare the trail tail under BOTH key sets, because the
-`pv` field added at #565 breaks a naive all-keys comparison across its own
-introduction).
-**AND THE "longest identical streak 34 / 51.2% of pairs identical" RECORDED IN
-THE ALWAYS-ON MACHINERY SECTION COULD NOT BE REPRODUCED — do not quote it.**
-Measured over the record's own 373-pair window, four key-set definitions give
-**44.8% to 75.1% identical and longest streaks of 13 to 66**: all keys 44.8% /
-13, shared keys 45.6% / 14, confident+match+vesting 67.8% / 66, `confident`
-alone 75.1% / 66. Nothing lands on 51.2% / 34. ***The statistic is dominated by
-WHICH KEYS are compared — a 5x spread in the streak — so quoting it without
-naming the key set is meaningless***, which is the reusable part and why the
-current run above names both sets. The 48.8%-move claim built on it inherits the
-same problem.
+**THE IDENTICAL-LINE RUN, RE-DERIVED 2026-10-10 19:1xZ AND NEVER INCREMENTED:
+19 on all keys, 19 on shared keys, DATE EXCLUDED**, over 431 trail lines
+(longest in the trail 35 / 38; pairs identical 55.8% / 56.7%). The recorded
+figure was **3** on 2026-10-04, so this is a re-derivation and not a bump —
+*a count carried forward by increment is not a measurement.* Nineteen
+consecutive merges with a byte-identical line is the EXPECTED state, not a
+stall: every ship since v203 landed is display- or build-side with
+`PARSER_VERSION` at 203. Compare under BOTH key sets, because the `pv` field
+added at #565 breaks a naive all-keys comparison across its own introduction —
+**asserted, not assumed: the pair at line 375 reads `ALL false / SHARED true`.**
+**AND THE IRREPRODUCIBLE "longest streak 34 / 51.2% identical" IS NOW
+DIAGNOSED — THE MISSING DIMENSION IS THE DATE FIELD, which neither the claim
+nor its own correction named.** `d` is on every line and the trail spans **56
+distinct dates**, so including it forces a difference at every midnight for
+free; it moves the longest streak by **2.5x**. All four combinations, 2026-10-10:
+ALL/date-excluded 19 · 35 · 55.8%; SHARED/excluded 19 · 38 · 56.7%;
+**ALL/date-INCLUDED 10 · 14 · 48.8%**; SHARED/included 10 · 15 · 49.8%.
+The correction's recorded 13 / 14 is bracketed by the date-INCLUDED 14 / 15, so
+it was a date-inclusive measurement throughout. ***And the original pair splits
+into two different measurements with one half LABEL-SWAPPED:*** date-included
+ALL-keys is **48.8% identical / 51.2% moved** — the recorded "51.2% identical /
+48.8% move" the wrong way round — while the recorded streak **34** matches the
+date-EXCLUDED 35. No single definition can yield both halves because they never
+came from one, which is exactly why four definitions were tried and *"nothing
+lands on 51.2% / 34"*.
+***So: a key set is NOT fully named by "all" or "shared" — say whether a
+TIMESTAMP field is in it.*** And **a composite statistic whose halves come from
+different definitions is irreproducible under every single definition, which
+reads as an arithmetic error and is really a provenance error**; find each half
+separately rather than hunting one definition that yields both.
+`docs/accuracy-log.md` 2026-10-10 (19:1xZ).
 
 **COMPLETENESS TEST:** one dominant pv covering ≥97% of acks plus a small
 old-version tail. A second large pv cohort means a PARTIAL store (`audit-data`
