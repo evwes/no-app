@@ -52958,3 +52958,120 @@ VALUE stays printed and keeps counting toward the menu total, exactly as
 `subtotal (not a holding)` rows do today, so one plan's menu will still show a
 $312,024 line at 27.9%; withdrawing it from the total moves every percentage on
 the page and is a second change.
+
+## 2026-10-10 (20:3xZ) — SHIPPED: the attachment's own DATE HEADER stops being published as a holding, and the zero on the other surface turned out to be a POSITION
+
+**What was wrong.** G4s Secure Solutions (Guam) published `December` as a holding
+at **27.90% of its whole menu** on **$312,024**; Tnn Guam at 18.86%, United
+Cerebral Palsy of Southern Arizona at 14.43%, Guam Xray at 9.41%, and Community
+Media Group's copy was typed **`Mutual fund`**. Found by the 19:08 draw, sized in
+that cycle, shipped in this one.
+
+**WHAT MAKES IT UNARGUABLE IS THE VALUE AND NOT THE NAME.** All 63 stored
+bare-`December` rows carry **$312,024 ± 1 — the same figure in 63 unrelated
+filings**, which no holding can be, and the amount **TRACKS THE FILING YEAR**:
+
+| plan year | values |
+|---|---|
+| 2023 | $312,023 |
+| 2024 | **$312,024 ×48**, $312,023 ×4, $312,025 ×2, $342,024 |
+| 2025 | **$312,025 ×8**, $172,026, $624,049 |
+
+So the cell is `December 31, 2024` with the day welded to the year as a
+comma-grouped amount and the month read as the holding's name. Three entries were
+read in full context and each sits in the middle of an ordinary menu — Maria
+College's row 8 between `TIAA Real Estate` and `CREF Bond Market R1`; Guam Xray's
+row 1 above two real `DRT Select Target Date Profile` trusts.
+
+**DELIVERED, measured through both copies of `renderRow` with origin/main's OWN
+app.js as the baseline** — read through `apppath`'s documented override, not a
+snapshot of my working tree, because *a before/after is only as honest as the
+claim that nothing else moved*: **62 rows / 62 plans / 47,749 ppl / $19,205,495,
+and `shownType` is the ONLY cell that moves** — ticker 0, fee 0, name 0, pct 0,
+value 0. **Three rows had a FALSE VEHICLE TYPE withdrawn** (`Mutual fund` ×2,
+`Pooled separate account` ×1). The narrowing is a superset by construction (the
+predicate's first condition is that the CLEANED name is a bare month) and is
+**discharged on a 1-in-300 sample of everything excluded — 6,917 rows differing
+on 0**. The must-see pin is keyed BY ACK and not by the string `December`, which
+63 plans file.
+
+**THE PREDICATE TAKES NO EXTERNAL INPUT, WHICH IS THE WHOLE SAFETY.** It does not
+look the plan year up — the VALUE must itself spell a date, some day 1-31
+concatenated with a plausible four-digit year equalling the amount exactly
+(`"31" + "2024" === "312024"`). A guard keyed on the plan year would be reading a
+field the function is never given, which is the recorded rule that *a guard's
+claim must be keyed on a witness that can see the class of change it is
+describing.*
+
+**BOTH CONDITIONS ARE LOAD-BEARING, by leave-one-out over the whole store rather
+than by argument.** The VALUE SHAPE ALONE reaches real holdings whose amount
+happens to read as a date — `Vanguard Target Retirement 2065` at $252,179 (=
+25/2179), `FID FDM IDX 2060 IPR` at $62,009, `Schwab Target 2055 Fund` at
+$72,095, `Fidelity Freedom Index 2015 Fund` at $32,093 — so a value-only arm
+would withdraw genuine target-date rows. The MONTH NAME ALONE over-reaches by
+exactly **2 rows** whose value is not a date (The Elkin Company $342,024, Randall
+Reilly Talent $624,049), and both are REFUSED because their cause is unread: *a
+month-named row is not thereby a date row.*
+
+**FULL MONTH NAMES ONLY, DELIBERATELY.** The live population is `December` ×63,
+`August` ×2, `September` ×1 and **no abbreviation**, so adding `Dec`/`Aug` would
+be an unmeasured widening onto three-letter tokens that are also share-class and
+ticker fragments — *an arm real in principle and inert on the data is untested
+machinery*, applied before the arm was written rather than after.
+
+**NOTHING BEYOND THE LABEL IS SUPPRESSED, AND THAT IS MEASURED RATHER THAN
+CONSERVATIVE.** All 62 rows publish NO ticker and NO fee today, so adding this to
+the fee or symbol gates would be machinery with an empty population. The VALUE
+stays printed and keeps counting toward the menu total, exactly as a
+`subtotal (not a holding)` row does; withdrawing it moves every percentage on the
+page and is a second change, named as residue rather than smuggled in.
+
+**THE LABEL GOES AHEAD OF `namelessRow` IN THE `shownType` CHAIN** because it is
+the stronger true statement: *"the filing names no specific fund"* is true of
+`December` and tells the reader nothing about the $312,024 beside it, which is a
+welded day and year rather than money. ***A row that names nothing and a row that
+IS a date are two classes, and one label cannot serve both*** — the same
+distinction this record already draws between a row naming nothing and a row
+whose name we cut in half.
+
+***AND THE 0 CHANGED CRAWLABLE PAGES IS A POSITION, NOT A DEAD CALL SITE — this
+is the part worth reusing.*** A full regeneration of all 5,000 pages moved **no
+file**, which is either an empty population or a broken wiring, and the recorded
+rule for a zero is to pin a positive fixture before believing it. Both halves
+were answered rather than one assumed:
+
+- **Three of the 62 plans ARE in the page set** — Illinois Independent Colleges
+  (3,934 ppl), TMC Healthcare (7,079), Connecticut Association of Independent
+  Schools (2,188) — so "none of them has a page" was FALSE and would have been
+  the comfortable reading.
+- `build-seo-pages.mjs:118` prints **`entry.funds.slice(0, 12)`**, and their date
+  rows sit at **index 39, 23 and 34** of their own entries. The rows are 0.06%,
+  0.09% and 0.13% of their menus, so they are nowhere near the printed twelve.
+- The wiring is proved live by **SLICING the generator's own label line out of
+  the source** and evaluating it on three real members (all three fire) plus a
+  real holding (does not). A retyped probe would have tested my memory of the
+  line; the slice tests the line.
+
+So the surface is wired, correct, and currently reaches zero readers for a
+documented display reason — and `TOP_N` is assets-ranked and reshuffles on every
+DOL refresh, so the population is not permanently empty. ***A measurement of what
+a page publishes must apply every condition the page applies — and the row LIMIT
+is one of those conditions***, which is a new member of a rule this record has
+already met on the serving condition and the publish gate.
+
+**Canonical in `lib-disclose.mjs`** with both halves (`dateHeaderDate` and the
+boolean) travelling together, because the arithmetic IS the rule and a copy whose
+year prefix or day bound had been retyped would agree on every December row and
+disagree only on the four real target-date holdings. **SLICED into app.js by
+`gen-generic-twin.mjs`** rather than typed, with the new end marker added to
+`MARK_ENDS` newest-first. **The twin cross-check takes PAIRS rather than names**
+— a bare-string probe could not reach the half that does the work, which is the
+miss the bank-deposit probes already record — and it additionally asserts that
+the twin **DECIDES** rather than agreeing by being inert in both copies, the
+recorded trap that a broken arm and an inert arm read the same zero.
+
+`PARSER_VERSION` stays 203. Local gates green: `fund-er-test`,
+`no-identity-test`, `slice-vq --check`, `sec-tickers-test`, `house-core-test`,
+`fund-note-test`, `stamp-assets --check` and `smoke-test`; app.js carries 0
+exports, which is the check that a sliced block has not left an `export` inside a
+classic script.

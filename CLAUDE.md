@@ -1590,31 +1590,44 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
-- **FOUND BY THE 19:08 DRAW, SIZED NOT SHIPPED — THE ATTACHMENT'S OWN DATE
-  HEADER PUBLISHED AS A HOLDING AT A FABRICATED $312,024: 62 rows / 62 plans /
-  47,749 ppl / $19,205,495, 0 already qualified, 0 tickers, 0 fees.** All 63
+- **SHIPPED 2026-10-10 20:3xZ — THE ATTACHMENT'S OWN DATE HEADER STOPS BEING
+  PUBLISHED AS A HOLDING: 62 rows / 62 plans / 47,749 ppl / $19,205,495, and
+  `shownType` is the ONLY cell that moves** (ticker 0 / fee 0 / name 0 / pct 0 /
+  value 0), of which **3 rows had a FALSE VEHICLE TYPE withdrawn** (`Mutual
+  fund` ×2, `Pooled separate account` ×1). G4s Secure Solutions (Guam)
+  publishes `December` at **27.90% of its whole menu**, Tnn Guam 18.86%, United
+  Cerebral Palsy of Southern Arizona 14.43%. `isDateHeaderRow` canonical in
+  `lib-disclose.mjs`, SLICED into app.js by `gen-generic-twin.mjs`, imported by
+  `build-seo-pages`; `PARSER_VERSION` stays 203.
+  **WHAT MAKES IT UNARGUABLE IS THE VALUE, NOT THE NAME:** all 63 stored
   bare-`December` rows carry **$312,024 ± 1 — the same figure in 63 unrelated
-  filings**, and the amount TRACKS THE FILING YEAR (2023 -> $312,023, 2024 ->
-  $312,024 ×48, 2025 -> $312,025 ×8), so the cell is `December 31, 2024` with
-  the day welded to the year as a comma-grouped amount and the month read as the
-  name. G4s Secure Solutions (Guam) publishes it at **27.90% of its whole
-  menu**, Tnn Guam 18.86%, United Cerebral Palsy of Southern Arizona 14.43%, and
-  Community Media Group's copy is typed **`Mutual fund`**.
-  **THE PREDICATE TAKES NO EXTERNAL INPUT, which is why it is safe:** it does
+  filings** — and the amount TRACKS THE FILING YEAR (2023 -> $312,023, 2024 ->
+  $312,024 ×48, 2025 -> $312,025 ×8), so the cell is `December 31, 2024` with the
+  day welded to the year as a comma-grouped amount.
+  **THE PREDICATE TAKES NO EXTERNAL INPUT, which is the whole safety:** it does
   not look the plan year up — the VALUE must itself spell a date (some day 1-31
   concatenated with a four-digit year equalling the amount exactly) AND the
-  cleaned name must be a bare month, a closed twelve-word vocabulary that cannot
-  go stale. **BOTH conditions are load-bearing by leave-one-out over the whole
-  store:** the value shape alone reaches real holdings (`Vanguard Target
-  Retirement 2065` at $252,179 = 25/2179, `Schwab Target 2055 Fund` at $72,095),
-  and the month name alone over-reaches by 2 rows whose value is not a date,
-  both REFUSED since their cause is unread. Blocked only on the time to do it
-  properly: the label is a NEW CLAIM naming what the row is (*a guard and the
-  claim it licenses are one change*), both surfaces need it, the twin must be
-  SLICED, and a frontend change must re-derive the cache-buster.
+  cleaned name must be a bare month. **BOTH conditions are load-bearing by
+  leave-one-out over the whole store:** the value shape alone reaches real
+  holdings (`Vanguard Target Retirement 2065` at $252,179 = 25/2179, `Schwab
+  Target 2055 Fund` at $72,095), and the month name alone over-reaches by 2 rows
+  whose value is not a date, both REFUSED since their cause is unread.
+  **FULL MONTH NAMES ONLY** — the live population is December ×63 / August ×2 /
+  September ×1 and no abbreviation, so `Dec` would be an unmeasured widening.
+  ***AND THE 0 CHANGED CRAWLABLE PAGES IS A POSITION, NOT A DEAD CALL SITE —
+  the reusable half.*** A full regeneration moved no file, and the comfortable
+  reading ("none of them has a page") is FALSE: **3 of the 62 plans ARE in the
+  top-5,000 set** (Illinois Independent Colleges, TMC Healthcare, Connecticut
+  Association of Independent Schools) and **`build-seo-pages.mjs:118` prints
+  `entry.funds.slice(0, 12)`** while their date rows sit at index **39, 23 and
+  34**. The wiring is proved live by SLICING the generator's own label line out
+  of the source and evaluating it on three real members (all fire) plus a real
+  holding (does not). ***A measurement of what a page publishes must apply every
+  condition the page applies — and the ROW LIMIT is one of them***, a new member
+  of the rule already met on the serving condition and the publish gate.
   **Named residue:** the VALUE stays printed and counting toward the menu total,
-  as `subtotal (not a holding)` rows do today; withdrawing it moves every
-  percentage on the page and is a second change.
+  as `subtotal (not a holding)` rows do; withdrawing it moves every percentage
+  on the page and is a second change. `docs/accuracy-log.md` 2026-10-10 (20:3xZ).
 - **THE ONE-TOKEN PUBLISHED NAME — SIZED 2026-10-10 19:4xZ AT 5,259 rows / 2,947
   plans / ~6,983,334 ppl / $37,241,376,590 (unqualified, not loan or employer
   stock), of which only 20 publish a ticker and 104 a fee — AND IT IS NOT ONE
