@@ -1439,6 +1439,51 @@ function fundTickerInfo(name, type) {
   /* Every spelling worth looking up, base expansion first. The RAW filed name
    * is still tested separately below — a variant only ever ADDS a spelling. */
   const vs = expandFundVariants(name);
+  /* `EUPAC` IS AMERICAN FUNDS' OWN ABBREVIATION OF ITS OWN FUND, AND IT IS
+   * EXPANDED HERE RATHER THAN IN `expandFundVariants` ON PURPOSE (2026-10-10).
+   * The shared list already carries `EUROPAC -> EuroPacific` and `AF_HOUSE`
+   * already lists `eupac`, so the mechanism and the token were both in the
+   * file; the candidate looked like one entry beside its own sibling.
+   *
+   * BUT THE SHARED LIST IS UPSTREAM OF BOTH TABLES — `fundER` expands with the
+   * same function — so putting it there moves 806 FEE cells beside 681
+   * symbols: 748 from the house-wide 0.4 to the fund-specific 0.46, and 58
+   * from nothing to 0.46. One of those 58 is typed `Separate account` (Rusken
+   * Packaging's `EUPAC R6 (American)`, $386,538 / 1.18% of its menu), where
+   * the symbol column correctly refuses the vehicle and the fee column would
+   * not. *Ask which tables a normalisation feeds before calling a name repair
+   * single-celled*, and *a fee is SOURCED, never derived.* So the expansion
+   * lives in the TICKER resolver alone: `vs` feeds only `hit`, `pooled` tests
+   * the RAW name, and `fundER` never sees it — no fee cell can move BY
+   * CONSTRUCTION, measured at 0 of 737.
+   *
+   * `EUPAC` MEANS EXACTLY ONE THING, checked over the whole population and not
+   * a sample: all 274 distinct published names carrying it are American Funds
+   * / Capital Group / Great Gray EuroPacific Growth. Two filers spell it out
+   * in the same cell (`EUROPACIFIC GROWTH (EUPAC-R3)`) and one carries the
+   * house's own `RERHX`.
+   *
+   * THE EXPANSION WRITES `EuroPacific Growth` AND NOT `EuroPacific`, which is
+   * 94 further rows: `American Eupac R6` (the house word truncated to
+   * `American`), `Am Funds EUPAC R6 Fund`, `American Finds EUPAC R6` (the
+   * filer's typo). All 94 were read and all 94 state the class.
+   *
+   * THE SEC MATCHER CANNOT REACH THIS: `resolveHolding` returns null for BOTH
+   * spellings, so `gen-sec-tickers`'s `secAsk` — where the last two name
+   * repairs went — is the wrong stage. *There are two resolvers, and the stage
+   * follows the one that can answer.* `lookupTicker` already resolves the
+   * spelled-out `American Funds EuroPacific Growth Fund R6` to RERGX, which is
+   * the control that the blank is ours.
+   *
+   * ONE-DIRECTIONAL AND MEASURED through `scripts/apppath.mjs` over every
+   * published+served row: 737 rows / 733 acks / 942,088 participants /
+   * $1,685,895,634 gain RERGX — ticker lost 0, swapped 0, ASTERISKED 0, fee 0,
+   * name 0, shownType 0, and 9,203 sampled non-`EUPAC` rows differing on 0.
+   * Every gaining row's filed name STATES `R6` (0 of 737 do not), so the
+   * assertion is licensed by the filing itself and not by this table; none is
+   * typed a non-registered vehicle (549 `Mutual fund`, 188 blank); and a
+   * seeded uniform draw of 24 reads 24 of 24 correct. */
+  if (/\bEUPAC\b/i.test(name)) vs.push(name.replace(/\bEUPAC\b/gi, "EuroPacific Growth"));
   const hit = (re) => re.test(name) || vs.some((v) => re.test(v));
   // "Tr" (never "TRP", which is the T. Rowe Price manager abbreviation) is a
   // recordkeeper-shortened "Trust" when it carries a trailing trust-class

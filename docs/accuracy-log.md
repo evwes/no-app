@@ -53160,3 +53160,95 @@ two candidate shapes are both nameable: price the fee half with the pooled test
 or accept 0.4 → 0.46 as the table's own more specific figure and withhold only
 the 58 gains. The ticker half is unambiguous on its own evidence and is held
 only because the one list entry cannot be split from the fee.
+
+## 2026-10-10 (23:1xZ) — `EUPAC` SHIPPED AS A TICKER-ONLY REPAIR: 737 rows / 942,088 ppl gain RERGX and NOT ONE FEE CELL MOVES
+
+**The 22:0xZ entry held this on one row's fee and recorded two remedies. The
+one that shipped is neither of them, and the reason is the stage.** That entry
+measured the candidate as *one list entry beside its own sibling* in
+`expandFundVariants` — and `fundER` expands with the same function, so 806 fee
+cells moved beside 681 symbols: 748 from the house-wide **0.4** to the
+fund-specific **0.46**, and 58 from nothing to 0.46, one of them typed
+`Separate account`. The recorded remedies were *price the fee half with the
+`pooled` predicate* (which is `fundER(name)` — a function with **no `type`
+parameter at all**, so it cannot see a vehicle, and giving it one is the
+owner-gated fee-pre-emption family) or *withhold only the 58 gains* (which the
+shared list cannot express, because the expansion happens before either table
+is consulted).
+
+***THE THIRD SHAPE IS TO MOVE THE EXPANSION DOWN A LEVEL.*** `fundTickerInfo`
+builds its own `vs` and feeds it only to `hit`; `pooled` tests the RAW name;
+`fundER` is a different function with a different expansion call. So one line
+inside `fundTickerInfo` reaches the ticker table and **nothing can reach the
+fee table by construction** — not by a guard that might be incomplete, but
+because the string the fee path sees is untouched. *When a normalisation feeds
+two tables and only one of them should move, the fix is not a guard on the
+second table — it is to normalise at the consumer rather than at the source.*
+
+**SHIPPED FIGURES, measured through both copies of the page's own `renderRow`
+over every published+served row, baseline the working tree and candidate the
+same file with that one line added through `apppath`'s `funder` override:**
+
+| | |
+|---|---|
+| TICKER gained | **737 rows / 733 acks / 942,088 ppl / $1,685,895,634** |
+| symbol | **RERGX** on all 737 |
+| ASTERISKED (comparable) | **0** |
+| ticker lost / swapped | **0 / 0** |
+| **FEE moved** | **0** |
+| name / shownType moved | **0 / 0** |
+| control, 1-in-200 of non-`EUPAC` rows | 9,203 sampled, **0 differing** |
+| must-see pin (Insperity, keyed BY ACK) | fires |
+
+Insperity Holdings (**229,666 ppl**) stops publishing `American Funds EUPAC
+Fund (R6)` at **$201,678,847 / 2.19% of its menu** with no symbol; Brown &
+Brown $63,611,965, Timken $50,539,847, UCB Holdings at 5.00% of its menu.
+
+**THE ASSERTION IS LICENSED BY THE FILING AND NOT BY THIS TABLE: 0 of 737
+gaining rows fail to state the `R6` class.** That is the whole population, not
+a sample, and it is the condition the record requires before an assertion
+ships — the owner-gated wrong-share-class defect arrives exactly where a
+resolver supplies a class the filer never stated. **And none is typed a
+non-registered vehicle** (549 `Mutual fund`, 188 blank, 0 trust / separate
+account / annuity), so *a symbol can be right for the fund and wrong for the
+VEHICLE* is checked rather than assumed. A seeded uniform draw of 24 reads
+**24 of 24 correct**.
+
+**THE EXPANSION WRITES `EuroPacific Growth` WHERE THE HELD CANDIDATE WROTE
+`EuroPacific`, AND THAT IS 94 FURTHER ROWS — A DIFFERENT POPULATION, SO ALL 94
+WERE READ.** They are the house word truncated to `American Eupac R6` (×60-odd,
+the largest Moore & Van Allen at $23,305,854 / 5.27%), `Am Funds EUPAC R6
+Fund`, the filer's typo `American Finds EUPAC R6` ($13,038,089), the recorded
+two-letter prefixes `SS American Eupac R6` and `GM American Eupac R6`, and two
+welded rows whose fund half is intact and whose tail is a type caption plus a
+CUSTODIAN (`EUPAC R6 Fund Registered Investment Company BlackRock`,
+`MUTUAL FUNDS, AT FAIR VALUE Am Funds EUPAC R6 Fund`). Every one states R6.
+*A count that rises when a replacement string lengthens is measuring a new
+population, not more of the old one.*
+
+**WHAT THE HELD MEASUREMENT GOT RIGHT AND IS WORTH KEEPING:** `EUPAC` means
+exactly one thing, checked over the whole population — all 274 distinct
+published names carrying it are American Funds / Capital Group / Great Gray
+EuroPacific Growth, two filers spell it out in the same cell and one carries
+the house's own `RERHX`. The SEC matcher is the wrong resolver here
+(`resolveHolding` returns null for both spellings), and `lookupTicker` already
+answered the spelled-out name, which is the control that the blank was ours.
+
+**ONE SURFACE BY CONSTRUCTION:** `build-seo-pages.mjs` has 0 references to
+`fund-er`, `lookupTicker` or `fundTickerInfo`, so the crawlable pages publish no
+symbol column and the regenerate-and-diff control is INAPPLICABLE rather than
+skipped. `PARSER_VERSION` stays 203. Gates: `fund-er-test` (109 must-resolve,
+40 must-not-resolve, 19 must-blank-fee, 18 must-keep-fee, 28 must-equal-fee, 0
+failures), `no-identity-test`, `slice-vq --check`, `sec-tickers-test`,
+`house-core-test`, `fund-note-test`, `stamp-assets --check` and `smoke-test` all
+green; `fund-er.js` restamped `38f37b96 -> b2c2e3f3`.
+
+**STILL OPEN, AND NARROWER THAN THE HELD ENTRY LEFT IT.** The fee half is not
+shipped and is not withdrawn: 405 of the 737 gaining rows still publish the
+house-wide **0.4** where RERGX costs about 0.46, and 332 publish nothing. Both
+are the pattern table being imprecise rather than wrong about a vehicle, and
+moving them is the owner-gated fee family — *a fee is SOURCED, never derived*,
+and `data/fund-facts.json` holds no RERGX figure. Rusken Packaging's
+`EUPAC R6 (American)` separate-account row, which held the whole item, is now
+**untouched in both columns**: its ticker correctly stays null and its fee
+stays null, which is the honest state.
