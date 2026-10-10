@@ -51639,3 +51639,43 @@ the file you are looking for. Stamp re-derived (`e64f1146` -> `63da561e`),
 supply, and the 194 rows / 178 plans / 488,810 ppl this repair newly makes the
 matcher answer as a **COMPARABLE**, which belongs with the owner-gated
 comparable half.
+
+## 2026-10-10 (06:3xZ) — the 06:07 draw: a HOUSE CONTRACTION blocking the same resolver the apostrophe repair just unblocked, with the control in the same menu
+
+**Peet's Coffee & Tea (4,982 ppl) publishes `Vanguard Ext Mk Index Inst Fd` ·
+issuer `Vanguard Group` · typed `Mutual fund` at $7,242,209 — 5.6% of its menu —
+with NO ticker and a fee of 0.1**, where Vanguard Extended Market Index
+Institutional (VIEIX) really costs about 0.05. The blocker is the filer's
+CONTRACTIONS (`Ext Mk` for Extended Market, `Inst` for Institutional), so this
+is the class the 06:1xZ ship just repaired for apostrophes, reached by a
+different mechanism that repair cannot touch.
+
+***THE CONTROL IS IN THE SAME MENU AND IS WHAT MAKES THE GAP OURS.*** Seven
+sibling rows filed `Vanguard Tgt Rmt <year> Inv Fund` resolve **VFORX, VTHRX,
+VFIFX, VTIVX, VTTHX, VTWNX and VTTVX, asserted at 0.08** — correctly, because
+the registry registers exactly one class (`Investor Shares`) for those series,
+which is the recorded one-class property working in our favour rather than
+against it. So the resolver reads this issuer and these contractions on one row
+and refuses the next.
+
+**UNSIZED DELIBERATELY.** A contraction vocabulary is the shape this record has
+already measured as harmful when guessed: expanding `inv.` -> `Investment` gave
+**9 false positives of 21 rows**, because `2040 INV` is a target-date fund's
+INVESTOR share class. So this needs the registry as the witness — the same
+`registrantAttested` discipline the SEC arm already uses — and not a wider
+screen. *A fix for one phrasing of a class is not a fix for the class*, met here
+on an abbreviation rather than a wording.
+
+**ALSO IN THAT MENU, honest coverage rather than a false claim:** `NYLI Winslow
+Lg Cap Gr I` · issuer `MainStay Funds` publishes no ticker and no fee. NYLI is
+New York Life Investments, the name MainStay was renamed to, so this is the
+Oppenheimer/Spartan RETIRED-BRAND shape where *a rename is a FACT that must be
+SOURCED, never inferred.*
+
+**AND THE SECOND DRAWN PLAN IS THE MACHINERY WORKING, which is worth recording
+because a draw that only ever finds defects is not measuring.** Insight Global
+(**37,561 ppl**, 34 funds, ratio 0.990) publishes eight `FID FRDM INX <vintage>
+T` rows as collective trusts with **no ticker and no fee** — `noPublicPrice`
+holding exactly as designed — and `FID 500 INDEX` resolves **FXAIX at 0.015**, a
+house abbreviation the resolver does reach. Nothing on that page is a false
+claim.

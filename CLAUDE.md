@@ -2659,6 +2659,32 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   missing fee at all but a broken name that one resolver survives; UNSIZED, and
   sizing it means asking both resolvers for every row whose name differs from
   another plan's spelling of the same resolved symbol.
+  **AND THE CONVERSE HALF HAS A NAMED LIVE INSTANCE FROM THE 06:07 DRAW — A
+  HOUSE CONTRACTION, NOT AN APOSTROPHE: Peet's Coffee & Tea (4,982 ppl)
+  publishes `Vanguard Ext Mk Index Inst Fd` · iss `Vanguard Group` · typed
+  `Mutual fund` at $7,242,209, 5.6% of its menu, with NO ticker and a fee of
+  0.1** where Vanguard Extended Market Index Institutional (VIEIX) really costs
+  about 0.05. The blocker is the filer's CONTRACTIONS — `Ext Mk` for Extended
+  Market, `Inst` for Institutional — so it is the 06:1xZ apostrophe class under
+  a different mechanism, and the apostrophe repair cannot reach it.
+  ***The control is in the same menu and it is what makes the gap OURS:*** seven
+  sibling rows filed `Vanguard Tgt Rmt <year> Inv Fund` resolve VFORX / VTHRX /
+  VFIFX / VTIVX / VTTHX / VTWNX / VTTVX **asserted at 0.08**, correctly, because
+  the registry registers exactly one class (`Investor Shares`) for those series.
+  So the resolver reads this issuer and these contractions on one row and not the
+  next. **UNSIZED on purpose:** a contraction vocabulary is the shape this record
+  has twice measured as harmful when guessed (`inv.` -> `Investment` gave 9 false
+  positives of 21 rows, because `2040 INV` is an INVESTOR share class), so it
+  needs the registry as the witness and not a wider screen.
+  **ALSO IN THAT MENU, honest coverage and a RENAME:** `NYLI Winslow Lg Cap Gr I`
+  · iss `MainStay Funds` publishes no ticker and no fee — NYLI is New York Life
+  Investments, which MainStay was renamed to, so it is the Oppenheimer/Spartan
+  retired-brand shape where *a rename is a FACT that must be SOURCED.*
+  **And the draw's second plan is the machinery WORKING, which is the half worth
+  recording too:** Insight Global (37,561 ppl) publishes eight `FID FRDM INX
+  <vintage> T` collective trusts with no ticker and NO fee (`noPublicPrice`
+  holding), and `FID 500 INDEX` -> FXAIX at 0.015 — a house abbreviation the
+  resolver does reach. `docs/accuracy-log.md` 2026-10-10 (06:1xZ).
 - The `iShares` abbreviated-name family: 11,334 of 13,927 published rows / 7.24M
   ppl publish no ticker while 7,947 publish a fee. Usable as a defect measure
   because the brand names REGISTERED ETFs, so a blank is a matcher gap and never
