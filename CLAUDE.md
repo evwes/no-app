@@ -1269,6 +1269,36 @@ published cells:
   High-Yield`), so the suffix misses 16%. One draw row belongs to the 15:5xZ
   welded-table-row class instead (California Community Foundation's `W436# …
   $41.891700 951.5792`). `docs/accuracy-log.md` 2026-10-09 (21:4xZ).
+- **REFUTED 2026-10-10 01:4xZ, DO NOT REBUILD IT — the `noPublicPrice`
+  "bypass" is the comparable DESIGN and the disclosure is already shipped.**
+  `app.js:4073` reads `star ? info.er : (noPublicPrice ? null : fundERRow(f))`,
+  so the COMPARABLE branch takes `info.er` unconditionally and only the
+  pattern-table branch is gated — a real asymmetry, sized at **45,067 rows /
+  6,959 plans / 34,282,495 ppl / $1,455,409,472,270** (of 306,730
+  `noPublicPrice` and 46,669 asterisked rows; **0.08 on 19,586 rows** is the
+  `Vanguard Target Retirement <vintage> Trust II` family, within half a basis
+  point of its real cost). Largest: Bank of America `INSTITUTIONAL 500 INDEX
+  TRUST` VFIAX\* 0.04 on $12.36B / 250,040 ppl; Microsoft `Fidelity Growth
+  Company Pool Class S` FDGRX\* 0.61 on $8.2B.
+  ***AND IT IS NOT A DEFECT:*** `app.js:4254` already prints, on any report with
+  a starred row, *"it has no ticker and no published expense ratio, because its
+  fee is negotiated by the plan … the plan's trust class is normally CHEAPER
+  than the retail fee shown, so read it as a ceiling, not the plan's price"* —
+  which names the provenance, the direction and the epistemic status, so FDGRX's
+  0.61 as a CEILING is true. **The converse of a recorded rule: *a guard and the
+  claim it licenses are one change* is written about SHIPPING one; when AUDITING
+  a guard that appears bypassed, read the claim the page makes on the bypassed
+  branch BEFORE sizing it as a defect.* I had the mechanism, the population and
+  $1.46T before reading one sentence of the template.
+  **Both surfaces checked:** report `starred` is set in the row loop and read in
+  the same template so the footnote cannot go missing; the crawlable pages carry
+  no footnote AND **no per-fund expense ratio at all** (the only `expense ratio`
+  strings in `build-seo-pages.mjs` are prose that admin fees are separate), so
+  no surface publishes a comparable fee undisclosed.
+  **WHAT SURVIVES is a TETHER, not a fix:** 45,067 rows / 34.3M ppl measurably
+  depend on that one `fund-note` paragraph and its "normally cheaper … a
+  ceiling" wording, and **nothing tests it** — the largest disclosure
+  dependency on the record. `docs/accuracy-log.md` 2026-10-10 (01:4xZ).
 - Stable value / guaranteed accounts publishing a fabricated ER: 4,669 rows /
   **7,389,704 ppl**, 4,571 of them at exactly 0.35.
   **AND ITS CLEANEST SUB-CASE IS SIZED AND AWAITING A DECISION — FOUND BY THE

@@ -77,6 +77,38 @@ const trustOpaquePlan = byAssets.find((r) =>
   !g(r, "sf") && ((bootBits[rowOf.get(r)] || 0) & 131072));
 if (!trustUnlinkedPlan) fail("could not pick a trust-held-but-UNLINKED specimen — no live plan carries 65536 without 131072");
 if (!trustOpaquePlan) fail("could not pick a trust-linked-but-OPAQUE specimen — no live plan carries bit 131072");
+/* THE COMPARABLE CEILING, 2026-10-10. `app.js:4073` is
+ * `star ? info.er : (noPublicPrice ? null : fundERRow(f))` — the comparable
+ * branch takes the registered fund's expense ratio UNCONDITIONALLY, so a
+ * collective trust with no published fee of its own publishes a retail one.
+ * Measured: 45,067 published+served rows / 6,959 plans / 34,282,495
+ * participants / $1.46T (Bank of America's `INSTITUTIONAL 500 INDEX TRUST`
+ * VFIAX* 0.04 on $12.4B; Microsoft's `Fidelity Growth Company Pool Class S`
+ * FDGRX* 0.61 on $8.2B).
+ *
+ * That is CORRECT, and it is correct only because of one paragraph: the page
+ * says the holding has no published expense ratio, that the number is the
+ * registered equivalent's, and that the trust class is normally CHEAPER so the
+ * figure is a CEILING rather than the plan's price. Withdraw or weaken that
+ * sentence and 34.3M participants are reading a retail fee as their trust's
+ * cost with nothing to say otherwise — so it is the largest disclosure
+ * dependency on this record, and nothing tested it until now.
+ *
+ * Chosen by a PROPERTY THE PLAN HAS (its published shard carries a row whose
+ * own filed type is the one `noPublicPrice` reads) rather than by a remembered
+ * ack, for the reason the loan specimen above gives. The page assertion then
+ * re-derives whether a star actually rendered, so this cannot pass vacuously
+ * if the resolver stops reaching the family. */
+const NPP_FIND = (f) => !!(f.cit || /collective trust|pooled separate/i.test(String(f.type || "")));
+const comparablePlan = byAssets.find((r) => {
+  const ack = g(r, "ack");
+  if (!ack || g(r, "sf") || !((idx[ack] || 0) & 1)) return false;
+  try {
+    const e = JSON.parse(readFileSync(`data/lineups/${shardOf(ack)}.json`, "utf8"))[ack];
+    return !!(e && (e.funds || []).some(NPP_FIND));
+  } catch { return false; }
+});
+if (!comparablePlan) fail("could not pick a comparable-fee specimen — no published menu carries a collective-trust row");
 
 const server = spawn("python3", ["-m", "http.server", String(PORT)], { stdio: "ignore" });
 try {
@@ -183,6 +215,24 @@ try {
     if (c.er !== "\u2014")
       fail(`participant-loan: ${JSON.stringify(c.name)} publishes an expense ratio (${JSON.stringify(c.er)}) — a loan has none`);
   }
+
+  /* A STARRED FEE MUST CARRY ITS CEILING. Asserted on the PAGE and in both
+   * directions: the starred rows are counted first, so if the resolver stops
+   * reaching this family the test FAILS as unexercised rather than passing with
+   * nothing to check — the shape that let a `-6-` arm sit inert and a
+   * hand-built fixture bless a false zero. */
+  const tC = await openPlan(comparablePlan, "comparable-ceiling");
+  const starCells = await page.evaluate(() => [...document.querySelectorAll(".fund-ticker")]
+    .map((x) => x.innerText.trim()).filter((s) => s.endsWith("*")));
+  if (!starCells.length)
+    fail("comparable-ceiling: specimen rendered no asterisked ticker — the specimen no longer exercises the comparable branch");
+  const cFlat = tC.replace(/\s+/g, " ");
+  if (!/no published expense ratio/i.test(cFlat))
+    fail("comparable-ceiling: page publishes a comparable fee without saying the holding has no published expense ratio");
+  if (!/normally\s*cheaper/i.test(cFlat))
+    fail("comparable-ceiling: the comparable note no longer states the DIRECTION (the trust class is normally cheaper)");
+  if (!/ceiling, not the plan's price/i.test(cFlat))
+    fail("comparable-ceiling: the comparable note no longer calls the retail fee a CEILING rather than the plan's price");
 
   const t4 = await openPlan(aggPlan, "filed-in-aggregate");
   if (!/in aggregate/i.test(t4))

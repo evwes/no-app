@@ -51022,3 +51022,92 @@ and the state still holds. The honest form is *"main is ahead" is a question
 about the DATA, answered by the structural diff, and the timing of the two runs
 tells you nothing* — with the trail's unique-line count as the ten-second
 version before the full diff.
+
+## 2026-10-10 (01:4xZ) — REFUTED: the `noPublicPrice` "bypass" is the comparable DESIGN, already disclosed as a CEILING — 45,067 rows / 34,282,495 ppl / $1.46T that are NOT a defect
+
+**Found by the 01:07 draw and refuted by reading the sentence the page prints.**
+Carnival Corporation (4,597 ppl) publishes six `T. Rowe Price <vintage>
+Retirement Trust F` rows **flagged `noPublicPrice` and carrying fees of
+0.53–0.62**, which reads as a suppressor being bypassed. The mechanism is real
+and is one line — `app.js:4073`:
+
+```js
+: star ? info.er : (noPublicPrice ? null : fundERRow(f));
+```
+
+The COMPARABLE branch takes `info.er` **unconditionally**; only the
+pattern-table branch is gated. So a collective trust resolving to an asterisked
+comparable publishes the registered fund's expense ratio while the same trust
+resolving to nothing publishes none.
+
+**SIZED, because the asymmetry is genuine: 45,067 rows / 6,959 plans /
+34,282,495 participants / $1,455,409,472,270**, out of 306,730 `noPublicPrice`
+rows and 46,669 asterisked rows over all 1,721,920 published+served rows.
+Largest members: Bank of America's `INSTITUTIONAL 500 INDEX TRUST` **VFIAX\* at
+0.04 on $12,356,027,442** (250,040 ppl), Microsoft's `Vanguard S&P 500 Index
+Trust` $10.3B, IBM's `Large Company Index` $9.7B, Google's `Target Retirement
+Trust 2050` VFIFX\* 0.08 on $9.1B, Wells Fargo's `State Street S&P 500 Index K
+NL` SSSYX\* 0.02 on $9.0B, Microsoft's `Fidelity Growth Company Pool Class S`
+**FDGRX\* at 0.61 on $8.2B**. The fee distribution is dominated by **0.08 on
+19,586 rows** — the `Vanguard Target Retirement <vintage> Trust II` family,
+whose real institutional cost is within about half a basis point of it.
+
+***AND IT IS NOT A DEFECT, because the claim the page makes about those cells
+was already written beside the guard.*** `app.js:4254` prints, on any report
+carrying a starred row:
+
+> ***Comparable fund.** That holding is a collective trust or separate account —
+> it has no ticker and no published expense ratio, because its fee is negotiated
+> by the plan. The fund shown is its registered equivalent, so you can look up
+> what it holds; the plan's trust class is normally **cheaper** than the retail
+> fee shown, so read it as a ceiling, not the plan's price.*
+
+That sentence says exactly what `noPublicPrice` means (no published expense
+ratio), names the number's provenance (the registered equivalent), and states
+its DIRECTION and epistemic status (normally cheaper; a ceiling, not the price).
+So FDGRX's 0.61 standing over Microsoft's Fidelity Growth Company Pool is a
+TRUE statement, and the 0.04 over Bank of America's institutional S&P 500 trust
+is a true ceiling too. **The branch that looks like a bypass is the design, and
+the disclosure is shipped.**
+
+**THE RULE, and it is the converse of one already on this record.** The file
+says *a guard and the claim it licenses are one change* — written about SHIPPING
+a guard. The converse is what I needed: ***when auditing a guard that appears
+bypassed, read the claim the page makes on the bypassed branch BEFORE sizing it
+as a defect***, because a disclosure can make a bypass correct. I had the
+mechanism, the population and $1.46T before I read one sentence of the
+template, and the sentence settled it in the opposite direction. Fourth instance
+of *read the shipped guard — and the COMMENT, and now the COPY — not only the
+code path*.
+
+**AND THE OTHER SURFACE IS CLEAN, which was the one thing that could have made
+this real.** The report's `starred` is set inside the row loop (`app.js:3937`)
+and read in the same template, so the footnote cannot go missing where a starred
+row renders. The crawlable pages carry **no comparable footnote at all** — and
+they also publish **no per-fund expense ratio at all**: the only `expense ratio`
+strings in `build-seo-pages.mjs` are prose stating that admin fees are separate
+from fund expense ratios. So there is no surface publishing a comparable-derived
+fee without the ceiling disclosure. *Had the static surface printed those fees,
+34.3M participants would have been reading a retail fee as a trust's price with
+nothing to say otherwise* — which is why the second surface was worth checking
+rather than assuming.
+
+**WHAT SURVIVES, and it is a tether rather than a fix:** 45,067 rows / 34.3M
+participants now measurably depend on that one `<p class="fund-note">` being
+present and on its "normally cheaper … a ceiling" wording staying true. Nothing
+tests it. It is the largest disclosure dependency on the record, and
+`smoke-test` asserts explanation rows elsewhere, so pinning this one is cheap
+and not yet done.
+
+**A NOTE ON THE INSTRUMENT, reusable.** The first pass rendered all 1,721,920
+rows and did not finish in the foreground. `noPublicPrice` is computed at
+`app.js:3746` from `f.cit` and `f.type`, and `renderRow` is handed
+`{...fd, name}`, so **both fields pass through untouched and testing them on the
+STORED row reproduces the flag exactly rather than supersetting it** — one cheap
+field test plus a single render per candidate. The script asserts that exactness
+(`if (npp !== nppCheap) throw`) rather than claiming it, and the assertion held
+across all 306,730 flagged rows. *A narrowing that can be proved EXACT is
+better than one that must be discharged as a superset*, and this is the first
+one here where the shipped predicate's inputs were available unmodified.
+Carnival was pinned as a must-SEE ahead of the count (12 rows) after last
+cycle's false zero.
