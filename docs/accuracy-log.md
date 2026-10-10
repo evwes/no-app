@@ -51514,3 +51514,128 @@ row whose name omits the house where a sibling in the same menu includes it*,
 and the in-menu sibling is a witness this record has already caught being
 contaminated by the same damage, so it needs the orientation discipline rather
 than a wider screen.
+
+## 2026-10-10 (06:1xZ) — SHIPPED: an apostrophe-elided share class left a STRAY LETTER and the matcher refused the whole row — 318 rows / 292 plans / ~897,000 ppl gain an ASSERTED symbol, and the apostrophe hypothesis I "refuted" two hours earlier was refuted for ONE resolver and TRUE for the other
+
+**Found by working the 04:4xZ draw item honestly and discovering that my own
+entry for it was wrong in three places.**
+
+### The mechanism, attributed to a single token
+
+`norm("Inst'l Shares")` is **`"institutional l shares"`** — the expansion is
+already in the matcher's own normaliser, and it leaves a **one-letter token**
+behind. That token is an unexplained leftover, so `resolveHolding` declines the
+row entirely. Measured by varying one thing at a time on the same series:
+
+| filed string | matcher |
+|---|---|
+| `Vanguard Institutional Index Fund Institutional Shares` | **VINIX** comparable |
+| `Vanguard Institutional Index Fund Inst'l Shares` | **nothing at all** |
+| `Vanguard 500 Index Fund Admiral Shares` (positive control) | VFIAX **asserted** |
+
+So this was never a registry gap. `sec-funds.json` registers **VINIX** as
+`VANGUARD INSTITUTIONAL INDEX FUNDS :: Vanguard Institutional Index Fund`, class
+**Institutional Shares** — exactly the class H&P's filing states — and one stray
+letter stood between.
+
+### MY 04:4xZ ENTRY WAS WRONG IN THREE PLACES, and each is a recorded rule
+
+**(1) "THE APOSTROPHE HYPOTHESIS IS REFUTED" is true of `lookupTicker` and FALSE
+of the SEC matcher.** That measurement expanded the apostrophe and asked the
+PAGE's resolver, which gains 0 because its pattern table tolerates the
+apostrophe already (647 of those rows resolve today). The matcher does not.
+***There are two resolvers, and a hypothesis refuted through one is untested
+through the other*** — the recorded "a claim about readers must name which
+display path" rule, met on the resolver instead of the surface.
+
+**(2) "THE CONTROL PROVES `lookupTicker` READS THIS ISSUER, SO THE BLANK IS
+OURS" conflated the two chains.** The sibling that resolves VTIAX resolves it
+through `fund-er.js`'s pattern table; the matcher refuses it too. And asked
+properly, **`resolveHolding` uses the issuer only when it IS the bare house** —
+`iss "Vanguard"` answers, `iss "Vanguard Fiduciary Trust"` does not — so the
+custodian words block house supply, which is a SECOND and separate defect,
+sized nowhere and not shipped.
+
+**(3) THE SERIES CAN NEVER ASSERT, so "shippable one-directional coverage" was
+right for the wrong reason.** `Vanguard Institutional Index Fund Institutional
+Shares` comes back **COMPARABLE even with the class stated exactly as
+registered**, because the word `Institutional` is inside the SERIES name and the
+class token is therefore ambiguous between series and class. The shipped
+generator emits assertions only, so H&P's own motivating row **still publishes
+no ticker** — the fix I shipped reaches 318 other rows and not the one that
+found it. *A class spotted through one row is not sized by that row*, and a
+motivating case can be outside its own repair.
+
+**AND MY PROBE'S GUESSED ROW SHAPE NEARLY PUBLISHED "THE REGISTRY IS SILENT".**
+`sec-funds.json` rows are `[registrant :: series, ticker, "class", className]`,
+so a screen reading `r[2]` as the series name compares against the literal
+string `"class"` and returns **0 rows for every query**. I printed "total: 0"
+twice and was one sentence from recording that the registry does not hold VINIX.
+What caught it was asking for the TICKER instead — a second query whose answer
+was already known. ***A guessed SHAPE fails as a clean zero where a guessed
+field NAME throws***, which is the `loadStatus()` lesson one more time, and the
+reason `lib-schema` exists for the stores that have a loader. `sec-funds.json`
+has none.
+
+### What shipped, and why it sits where it does
+
+One candidate-list append in `gen-sec-tickers.mjs`'s `secAsk`: after the two
+spellings it already tries (as filed, then cleaned), it tries the
+apostrophe-repaired spellings of both the name and the issuer.
+**ADDITIVE BY CONSTRUCTION** — a row that resolves today resolves first and
+identically, and a repaired spelling is consulted only where every existing
+spelling came back empty.
+
+**NOT in `norm`, deliberately.** `merge-4i` shares that function to write
+`ftk`, which `lookupTicker` consults **FIRST**, so a change there can take a
+symbol AWAY as readily as add one. The generator's arm runs last and only fills
+a blank. *The same data through the same matcher has opposite loss profiles at
+the two stages*, which this record earned once already.
+
+**FOUR SPELLINGS, EACH ITS OWN RULE:** `Inst'l` is institutional and `Int'l` is
+INTERNATIONAL, so one "drop the apostrophe" rule would conflate them.
+
+### Measured through the real generator
+
+`GAIN an ASSERTED symbol` **4,664 rows -> 2,230 plans / 3,213,379 ppl**, from
+4,346 / 1,938 / 2,316,219 — a delta of **318 rows / 292 plans / ~897,000
+participants**. **SWAPS 0, LOSSES 0** (the generator's own counters), and the
+shipped table diffed key by key: **ADDED 176, REMOVED 0, CHANGED 0**, with
+**0 added keys lacking an apostrophe form** — so the change reached exactly its
+own mechanism and nothing else.
+
+**MY PRE-MEASUREMENT OVER-PREDICTED BY ~25% ON PARTICIPANTS** (324 rows /
+1,199,200 ppl registered against 318 / ~897,000 delivered), because the sizing
+screen did not apply the generator's pooled-vehicle refusal or its
+`the page never asks` gate. *A measurement of what a page PUBLISHES must apply
+every condition the page applies, in order* — recorded, and still costing a
+quarter.
+
+**26 added keys were drawn uniformly (seeded) and READ: 26 of 26 correct.**
+`Gov't Bond R5` -> ABTIX, `VICTORY TRIVALENT INT'L SMALL-CAP R6` -> MSSIX,
+`Vanguard Real Estate Index Inst'l` -> VGSNX, `FID Int'l Index` -> FSPSX,
+`PIMCO Int'l Bond Fund (U.S. Dollar-Hedged) Institutional Class` -> PFORX.
+**The control that the class token is READ rather than ignored is one house's
+own pair:** `Empower US Gov't Securities Fund Inst` -> **MXDQX** and the same
+fund's `… Inv` -> **MXGMX**, two classes resolving to two symbols.
+
+**ONE SURFACE BY CONSTRUCTION, asserted not inherited:** `build-seo-pages.mjs`
+has **0** references to any ticker resolver, so the crawlable pages cannot move
+and the regenerate-and-diff control is inapplicable rather than skipped. **The
+FEE cannot move either, read off the shipped expression:** `er` takes
+`star ? info.er : fundERRow(f)` and this arm always returns
+`comparable: false`, so `star` stays false and the fee stays name-keyed.
+
+**AND THE CACHE-BUSTER WORRY WAS UNFOUNDED, which is worth recording because I
+nearly filed it as a defect.** `stamp-assets.mjs` mentions four filenames in
+its COMMENT and derives its actual asset list **from `index.html` itself**, so
+`sec-tickers.js` has been covered all along; a `grep` for the filename finds
+nothing and the implementation is general. *Read the shipped guard's SURFACE,
+not its description* — including when the description is a comment that predates
+the file you are looking for. Stamp re-derived (`e64f1146` -> `63da561e`),
+`sec-tickers-test` OK, smoke test green.
+
+**STILL OPEN from this, both unsized:** the custodian-words blocker on house
+supply, and the 194 rows / 178 plans / 488,810 ppl this repair newly makes the
+matcher answer as a **COMPARABLE**, which belongs with the owner-gated
+comparable half.

@@ -375,6 +375,46 @@ for (const r of d.rows) {
 const servedBy = (m) => servedLineup(m, INDEX).ack;
 
 const secCache = new Map();
+/* AN APOSTROPHE-ELIDED SHARE CLASS LEAVES A STRAY LETTER AND THE MATCHER THEN
+ * REFUSES THE WHOLE ROW — 2026-10-10 (05:3xZ).
+ *
+ * `norm("Inst'l Shares")` is `"institutional l shares"`: the expansion is
+ * already in `norm`, and it leaves a one-letter token behind. That token is an
+ * unexplained leftover, so `resolveHolding` declines — measured, the same
+ * series answers `VINIX*` when the class is spelled out and NOTHING when it is
+ * filed as `Inst'l`. So this is not a registry gap; the answer is in the file
+ * and one stray letter stands between.
+ *
+ * FOUR SPELLINGS, EACH ITS OWN RULE, because they are not one class of
+ * abbreviation: `Inst'l` is institutional and `Int'l` is INTERNATIONAL, and a
+ * single "drop the apostrophe" rule would conflate them. Measured over
+ * published+served rows the page resolves nothing for: 1,247 carry one, and
+ * repairing the spelling makes the matcher newly answer on **324 rows / 304
+ * plans / 1,199,200 participants ASSERTED** plus 194 / 178 / 488,810 comparable
+ * — and only the asserted half can ship, because this generator emits
+ * assertions and the comparable half is the owner's call.
+ *
+ * APPENDED AFTER the existing candidates and never substituted for them, so the
+ * change is ADDITIVE BY CONSTRUCTION: a row that resolves today resolves first
+ * and identically, and a repaired spelling can only ever be consulted where
+ * every existing spelling already came back empty. That is the loss profile
+ * this record prefers and the reason it sits here rather than in `norm` —
+ * `merge-4i` shares that function to write `ftk`, which is consulted FIRST by
+ * `lookupTicker` and so can take a symbol AWAY as readily as add one.
+ *
+ * The issuer is expanded too, because `resolveHolding` reads it. */
+const APOS_EXPAND = [
+  [/\bInst'l\b/gi, "Institutional"],
+  [/\bInt'l\b/gi, "International"],
+  [/\bGov't\b/gi, "Government"],
+  [/\bNat'l\b/gi, "National"],
+];
+const aposExpand = (s) => {
+  let o = String(s == null ? "" : s);
+  for (const [re, to] of APOS_EXPAND) o = o.replace(re, to);
+  return o;
+};
+
 function secAsk(nameRaw, nameClean, iss) {
   const k = `${iss}\u0000${nameRaw}\u0000${nameClean}`;
   if (secCache.has(k)) return secCache.get(k);
@@ -382,8 +422,16 @@ function secAsk(nameRaw, nameClean, iss) {
   /* the same order `lookupTicker` tries: the name as filed, then the cleaned
    * one. Asking only the cleaned name loses rows whose markers the registry
    * tolerates; asking only the raw one loses rows the cleaner repairs. */
+  const tries = [];
+  for (const n of (nameRaw === nameClean ? [nameRaw] : [nameRaw, nameClean])) tries.push([n, iss]);
+  /* then, and only then, the apostrophe-repaired spellings */
+  const issX = aposExpand(iss);
   for (const n of (nameRaw === nameClean ? [nameRaw] : [nameRaw, nameClean])) {
-    const r = resolveHolding(idx, n, iss);
+    const nX = aposExpand(n);
+    if (nX !== n || issX !== iss) tries.push([nX, issX]);
+  }
+  for (const [n, is] of tries) {
+    const r = resolveHolding(idx, n, is);
     if (r) { out = r; break; }
   }
   secCache.set(k, out);

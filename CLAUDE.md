@@ -3109,6 +3109,54 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   positive fixture from the DATA before believing any zero*, and note the rule
   was met in my own INSTRUMENT's output column, which is the harder place to see
   it. `docs/accuracy-log.md` 2026-10-10 (00:3xZ).
+- **SHIPPED 2026-10-10 06:1xZ — AN APOSTROPHE-ELIDED SHARE CLASS LEFT A STRAY
+  LETTER AND THE MATCHER REFUSED THE WHOLE ROW: 318 rows / 292 plans /
+  ~897,000 ppl gain an ASSERTED symbol.** `norm("Inst'l Shares")` is
+  **`"institutional l shares"`** — the expansion is already in the matcher's
+  normaliser and leaves a ONE-LETTER token, an unexplained leftover, so
+  `resolveHolding` declines. Same series: class spelled out -> VINIX,
+  filed as `Inst'l` -> **nothing**. Never a registry gap — `sec-funds.json`
+  registers VINIX as exactly the `Institutional Shares` class the filing states.
+  One candidate-list append in `gen-sec-tickers.mjs`'s `secAsk`, **ADDITIVE BY
+  CONSTRUCTION** (the repaired spelling is consulted only where every existing
+  spelling came back empty), and **NOT in `norm`** because `merge-4i` shares it
+  to write `ftk`, which `lookupTicker` consults FIRST — *the same data through
+  the same matcher has opposite loss profiles at the two stages.* Four
+  spellings, each its own rule: `Inst'l` is institutional, `Int'l` is
+  INTERNATIONAL. Measured through the real generator: ASSERTED 4,664 rows /
+  2,230 plans / 3,213,379 ppl (from 4,346 / 1,938 / 2,316,219), **SWAPS 0,
+  LOSSES 0**, table diffed key by key **ADDED 176 / REMOVED 0 / CHANGED 0** with
+  **0 added keys lacking an apostrophe form**. 26 keys drawn uniformly and read,
+  **26 of 26 correct**; the control that the class token is READ is one house's
+  own pair, `Empower US Gov't Securities Fund Inst` -> MXDQX beside `… Inv` ->
+  MXGMX. One surface by construction (`build-seo-pages` has 0 ticker-resolver
+  refs); fee cannot move (`star` stays false). `PARSER_VERSION` stays 203.
+  **THREE CLAIMS IN THE ENTRY BELOW ARE WRONG and each is a recorded rule.**
+  (1) *"the apostrophe hypothesis is REFUTED"* is true of `lookupTicker` and
+  **FALSE of the SEC matcher** — ***there are two resolvers, and a hypothesis
+  refuted through one is untested through the other.*** (2) *"the control proves
+  `lookupTicker` reads this issuer"* conflated the chains: the sibling resolves
+  through `fund-er.js`, the matcher refuses it too, and **`resolveHolding` uses
+  the issuer only when it IS the bare house** (`Vanguard` answers, `Vanguard
+  Fiduciary Trust` does not) — the custodian words are a SECOND defect, unsized.
+  (3) **the series can NEVER assert** — `Institutional` sits inside the SERIES
+  name so the class token is ambiguous and the answer is always a comparable, and
+  the generator ships assertions only, so **H&P's own motivating row still
+  publishes no ticker**: *a motivating case can be outside its own repair.*
+  **AND MY PROBE'S GUESSED ROW SHAPE NEARLY PUBLISHED "THE REGISTRY IS
+  SILENT":** `sec-funds.json` rows are `[registrant :: series, ticker, "class",
+  className]`, so reading `r[2]` as the series compares against the literal
+  `"class"` and returns **0 for every query**. ***A guessed SHAPE fails as a
+  clean zero where a guessed field NAME throws*** — the `loadStatus()` lesson
+  again, and `sec-funds.json` has no `lib-schema` loader.
+  **AND `stamp-assets.mjs` COVERS `sec-tickers.js` ALL ALONG** — it names four
+  files in its COMMENT and derives its real list from `index.html`, so a grep for
+  the filename finds nothing and the implementation is general. *Read the shipped
+  guard's SURFACE, not its description*, including when the description is an
+  older comment. **Still open, unsized:** the custodian blocker, and 194 rows /
+  488,810 ppl this repair newly makes the matcher answer as a COMPARABLE, which
+  belongs with the owner-gated comparable half. `docs/accuracy-log.md`
+  2026-10-10 (06:1xZ).
 - **FOUND BY THE 04:07 DRAW, SIZED NOT SHIPPED — THE HOUSE IS ONLY IN THE
   ISSUER CELL: no ticker and a generic fee, with the CONTROL IN THE SAME MENU.**
   Helmerich & Payne (8,479 ppl) publishes `Institutional Index Fund Inst'l
