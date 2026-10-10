@@ -41,7 +41,7 @@ import { isNamelessFundRow, isLoanDescriptionRow, isAnnuityContractRow,
   isLoanAnswerRow, isLoanVocabularyRow, isLoanAccountRow, isBankDepositRow,
   employerStockSymbolOk, sponsorNameKey, trustScheduleDMenu,
   hasNoFundIdentity, isLabelOnlyName, isSentenceRow, isNonIssuerCell,
-  isScheduleHCaption, cleanFiledName } from "./lib-disclose.mjs";
+  isScheduleHCaption, cleanFiledName, isDateHeaderRow } from "./lib-disclose.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const lib = readFileSync(ROOT + "scripts/lib-4i.mjs", "utf8");
@@ -302,6 +302,20 @@ const lace = dis.indexOf("\n}\n", dis.indexOf("export function isLoanAccountRow(
 if (lace < 3) throw new Error("gen-generic-twin: isLoanAccountRow moved in lib-disclose");
 const loanacct = dis.slice(lacs, lace).replace(/^export /gm, "");
 
+/* the DATE-HEADER rule, VERBATIM: one constant and two functions (2026-10-10).
+ * It is a TWO-CELL test — the filed name against the row's VALUE — so both
+ * halves must travel together, and the arithmetic is the rule: a retyped
+ * `<day><year>` loop whose year prefix or day bound drifted would flag a
+ * different set of rows and nothing anywhere would notice, because the class is
+ * 62 rows in a 1.7M-row store. `dateHeaderDate` travels beside the boolean
+ * because it is what the boolean is, and slicing one without the other is how a
+ * caller ends up re-deriving the parse from memory. */
+const dhs = dis.indexOf("const MONTH_NAME = ");
+if (dhs < 0) throw new Error("gen-generic-twin: MONTH_NAME moved in lib-disclose");
+const dhe = dis.indexOf("\n}\n", dis.indexOf("export function isDateHeaderRow(")) + 3;
+if (dhe < 3) throw new Error("gen-generic-twin: isDateHeaderRow moved in lib-disclose");
+const dateheader = dis.slice(dhs, dhe).replace(/^export /gm, "");
+
 const block = `  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND.
    * lib-4i derives these patterns from GENERIC_TYPE_NAME by asserted
    * replacements, so they are DERIVED and transcribing one is the move this
@@ -378,6 +392,8 @@ ${trustmenu.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoTrustScheduleDMenu = trustScheduleDMenu;  // read by the smoke test only
 ${loanacct.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoLoanAccountRow = isLoanAccountRow;  // read by the smoke test only
+${dateheader.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
+  window.__wampoDateHeaderRow = isDateHeaderRow;  // read by the smoke test only
 `;
 
 /* THE END MARKER MUST BE THE BLOCK'S LAST LINE. It was `__wampoGenericName`
@@ -395,6 +411,7 @@ const MARK_S = "  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND."
  * moved and the old tail stayed — so the list only ever grows, and the cut must
  * be made at the LAST marker present, not the first one found. */
 const MARK_ENDS = [
+  "  window.__wampoDateHeaderRow = isDateHeaderRow;  // read by the smoke test only\n",
   "  window.__wampoLoanAccountRow = isLoanAccountRow;  // read by the smoke test only\n",
   "  window.__wampoTrustScheduleDMenu = trustScheduleDMenu;  // read by the smoke test only\n",
   "  window.__wampoSponsorNameKey = sponsorNameKey;  // read by the smoke test only\n",
@@ -489,6 +506,8 @@ vm.runInContext(block
     "globalThis.__td = trustScheduleDMenu;")
   .replace("window.__wampoLoanAccountRow = isLoanAccountRow;  // read by the smoke test only",
     "globalThis.__lac = isLoanAccountRow;")
+  .replace("window.__wampoDateHeaderRow = isDateHeaderRow;  // read by the smoke test only",
+    "globalThis.__dh = isDateHeaderRow;")
   .replace(/^\s{2}/gm, ""), ctx);
 const names = ["Mutual funds", "Mutual Fund Shares", "Sub-total: Registered Investment Companies",
   "Commingled funds", "Pooled separate account funds", "Collective trust funds",
@@ -1017,6 +1036,31 @@ const loanAcctNames = ["Other United States - USD &&&KROGER LOAN ASSET",
 for (const n of loanAcctNames) if (ctx.__lac(n) !== isLoanAccountRow(n)) {
   bad++; console.log(`  LOAN-ACCOUNT DRIFT ${JSON.stringify(n)} twin=${ctx.__lac(n)} lib=${isLoanAccountRow(n)}`);
 }
+/* THE DATE-HEADER PROBES ARE PAIRS, not names (2026-10-10): the predicate reads
+ * the row's VALUE as well, and a bare-string probe could not reach the half
+ * that does the work — the same miss the bank-deposit note below records. Both
+ * directions, and the FALSE side is where the twin could drift silently: the
+ * `<day><year>` arithmetic is the rule, so a copy whose year prefix or day
+ * bound had been retyped would still agree on every December row and disagree
+ * only on the four real target-date holdings. */
+const dateRows = [["DECEMBER", 312024], ["December", 312024], ["December", 312023],
+  ["December", 312025], ["August", 172026], ["September", 312024],
+  /* must stay FALSE */ ["December", 342024], ["DECEMBER", 624049],
+  ["December", 312024.37], ["December", 0], ["December", -312024],
+  ["Vanguard Target Retirement 2065", 252179], ["FID FDM IDX 2060 IPR", 62009],
+  ["Schwab Target 2055 Fund", 72095], ["Fidelity Freedom Index 2015 Fund", 32093],
+  ["December Street Partners Fund", 312024], ["Dec", 312024], ["", 312024],
+  ["December", null], ["December", "312024"]];
+for (const [n, v] of dateRows) if (ctx.__dh(n, v) !== isDateHeaderRow(n, v)) {
+  bad++; console.log(`  DATE-HEADER DRIFT ${JSON.stringify(n)} @ ${v} twin=${ctx.__dh(n, v)} lib=${isDateHeaderRow(n, v)}`);
+}
+/* and the twin must actually DECIDE rather than agree by being inert in both
+ * copies — the recorded trap that a broken arm and an inert arm read the same
+ * zero, here applied to a cross-check that would pass if both sides returned
+ * false for everything. */
+if (!ctx.__dh("December", 312024) || ctx.__dh("December", 342024)) {
+  bad++; console.log("  DATE-HEADER TWIN DECIDES NOTHING — it agrees with lib-disclose while answering the same way on both sides");
+}
 /* THE BANK-DEPOSIT PROBES ARE ROWS AS OF 2026-10-02, not names — the predicate
  * reads the ISSUER cell as well, and every probe here was a bare string, so
  * not one of them would have reached the issuer half or the money-market-
@@ -1213,4 +1257,4 @@ for (const [t, own, zero, wantN, why] of trustMenuCases) {
   if (!over || over.share !== 1) { bad++; console.log(`  TRUST-MENU share must clamp at 1, got ${over && over.share}`); }
 }
 if (bad) { console.error(`generated with ${bad} DRIFT — do not commit`); process.exit(1); }
-console.log(`generated; twin agrees with lib-4i on ${names.length} names, with lib-disclose on ${rows.length} rows, ${loans.length} loan-description names, ${annuityRows.length} annuity-contract rows, ${guarFeeNames.length} guarantee-only fee names, ${investmentContractRows.length} investment-contract rows, ${mistypedStockRows.length} mistyped-employer-stock rows and ${mistypedStockFeeNames.length} mistyped-stock fee names and ${issuerFeeCases.length} issuer-priced fee cases, ${citNames.length} collective-trust names and ${loanAnsNames.length} loan-answer names and ${loanVocabNames.length} loan-vocabulary names and ${loanAcctNames.length} loan-account names and ${bankDepNames.length} bank-deposit names and ${espCases.length} employer-stock provenance cases, ${noIdNames.length} no-identity names and ${labelNames.length} label-only names and ${sentNames.length} sentence names and ${issCells.length} issuer-cell strings and ${capNames.length} caption names, and both composed gates over all ${names.length} names`);
+console.log(`generated; twin agrees with lib-4i on ${names.length} names, with lib-disclose on ${rows.length} rows, ${loans.length} loan-description names, ${annuityRows.length} annuity-contract rows, ${guarFeeNames.length} guarantee-only fee names, ${investmentContractRows.length} investment-contract rows, ${mistypedStockRows.length} mistyped-employer-stock rows and ${mistypedStockFeeNames.length} mistyped-stock fee names and ${issuerFeeCases.length} issuer-priced fee cases, ${citNames.length} collective-trust names and ${loanAnsNames.length} loan-answer names and ${loanVocabNames.length} loan-vocabulary names and ${loanAcctNames.length} loan-account names and ${bankDepNames.length} bank-deposit names and ${espCases.length} employer-stock provenance cases, ${noIdNames.length} no-identity names and ${labelNames.length} label-only names and ${sentNames.length} sentence names and ${issCells.length} issuer-cell strings and ${capNames.length} caption names and ${dateRows.length} date-header rows, and both composed gates over all ${names.length} names`);

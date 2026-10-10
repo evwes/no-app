@@ -2848,6 +2848,101 @@ for (const [s, why] of [
   throw new Error(`lib-disclose: isScheduleHCaption would qualify ${JSON.stringify(s)} (${why}) — it names something, fix the predicate rather than the control`);
 }
 
+/* THE ATTACHMENT'S OWN DATE HEADER, PUBLISHED AS A HOLDING WITH A FABRICATED
+ * VALUE — 2026-10-10, found by the 19:08 draw.
+ *
+ * 62 published-and-served rows / 62 plans / 47,749 participants / $19,205,495.
+ * G4s Secure Solutions (Guam) publishes `December` at **27.90% of its whole
+ * menu**, Tnn Guam at 18.86%, United Cerebral Palsy of Southern Arizona at
+ * 14.43%, and Community Media Group's copy is typed `Mutual fund`.
+ *
+ * WHAT MAKES IT UNARGUABLE IS NOT THE NAME, IT IS THE VALUE. All 63 stored
+ * bare-`December` rows carry **$312,024 ± 1 — the same figure in 63 unrelated
+ * filings**, which no holding can be, and the amount TRACKS THE FILING YEAR:
+ * plan year 2023 -> $312,023, 2024 -> $312,024 ×48, 2025 -> $312,025 ×8. So the
+ * cell is `December 31, 2024` with the day welded to the year as a
+ * comma-grouped amount and the month read as the holding's name. Three entries
+ * were read in full context and each sits in the middle of an ordinary menu —
+ * Maria College's row 8 between `TIAA Real Estate` and `CREF Bond Market R1`.
+ *
+ * THE PREDICATE TAKES NO EXTERNAL INPUT, WHICH IS THE WHOLE SAFETY. It does not
+ * look the plan year up: the VALUE must itself spell a date, some day 1-31
+ * concatenated with a plausible four-digit year equalling the amount exactly
+ * (`"31" + "2024" === "312024"`). A harness that needed the plan year would be
+ * reading a field this function is never given, and the recorded rule is that a
+ * guard must be keyed on a witness it can actually see.
+ *
+ * BOTH CONDITIONS ARE LOAD-BEARING, by leave-one-out over the whole store
+ * rather than by argument. The VALUE SHAPE ALONE reaches real holdings whose
+ * amount happens to read as a date — `Vanguard Target Retirement 2065` at
+ * $252,179 (= 25/2179), `FID FDM IDX 2060 IPR` at $62,009, `Schwab Target 2055
+ * Fund` at $72,095, `Fidelity Freedom Index 2015 Fund` at $32,093 — so a
+ * value-only arm would withdraw genuine target-date rows. The MONTH NAME ALONE
+ * over-reaches by exactly 2 rows whose value is not a date (The Elkin Company
+ * $342,024, Randall Reilly Talent $624,049), and those two are REFUSED because
+ * their cause is unread: a month-named row is not thereby a date row.
+ *
+ * FULL MONTH NAMES ONLY, DELIBERATELY. The live population is `December` ×63,
+ * `August` ×2, `September` ×1 and no abbreviation; adding `Dec`/`Aug` would be
+ * an unmeasured widening onto three-letter tokens that are also share-class and
+ * ticker fragments. *An arm real in principle and inert on the data is untested
+ * machinery.*
+ *
+ * NOTHING IS SUPPRESSED BEYOND THE LABEL, and that is measured rather than
+ * conservative: all 62 rows publish NO ticker and NO fee today, so adding this
+ * to the fee or symbol gates would be machinery with an empty population. The
+ * VALUE stays printed and keeps counting toward the menu total, exactly as a
+ * `subtotal (not a holding)` row does — withdrawing it moves every percentage
+ * on the page and is a second change. */
+const MONTH_NAME = /^(?:january|february|march|april|may|june|july|august|september|october|november|december)$/i;
+export function dateHeaderDate(name, value) {
+  if (!MONTH_NAME.test(String(name == null ? "" : name).trim())) return null;
+  const n = Number(value);
+  if (!Number.isFinite(n) || n <= 0) return null;
+  /* a real amount may carry cents; a welded `<day><year>` never does */
+  if (Math.abs(n - Math.round(n)) > 0.004) return null;
+  const s = String(Math.round(n));
+  for (let day = 1; day <= 31; day++) {
+    const ds = String(day);
+    if (!s.startsWith(ds)) continue;
+    const ys = s.slice(ds.length);
+    if (!/^(?:19|20|21)\d\d$/.test(ys)) continue;
+    return { day, year: Number(ys) };
+  }
+  return null;
+}
+export function isDateHeaderRow(name, value) {
+  return !!dateHeaderDate(name, value);
+}
+/* Asserted at import, both directions, and the must-SEE cases are real filed
+ * pairs because an arm that is BROKEN and an arm that is INERT report the same
+ * zero. Every must-KEEP case is a measured SINGLE-PROTECTION case: the first
+ * four are real rows the VALUE condition is the only thing refusing, the next
+ * two are real rows the MONTH condition is the only thing refusing. */
+for (const [nm, v, why] of [
+  ["DECEMBER", 312024, "Guam Xray — the row read in full context, 9.41% of its menu"],
+  ["December", 312024, "G4s Secure Solutions (Guam) at 27.90% of its whole menu, and 47 more"],
+  ["December", 312023, "a plan year 2023 filing — the year TRACKS, which is the diagnosis"],
+  ["December", 312025, "a plan year 2025 filing, 8 rows"],
+  ["August", 172026, "the one non-December member whose value is date-shaped"],
+]) if (!isDateHeaderRow(nm, v)) {
+  throw new Error(`lib-disclose: isDateHeaderRow no longer reaches ${JSON.stringify(nm)} @ ${v} (${why}) — the arm is inert, fix it rather than shipping a quiet guard`);
+}
+for (const [nm, v, why] of [
+  ["Vanguard Target Retirement 2065", 252179, "= 25/2179 — a REAL holding; the month condition is the ONLY protection"],
+  ["FID FDM IDX 2060 IPR", 62009, "= 6/2009 — likewise"],
+  ["Schwab Target 2055 Fund", 72095, "= 7/2095 — likewise"],
+  ["Fidelity Freedom Index 2015 Fund", 32093, "= 3/2093 — likewise"],
+  ["December", 342024, "The Elkin Company — a month name whose value is NOT a date; the value condition is the ONLY protection"],
+  ["DECEMBER", 624049, "Randall Reilly Talent — likewise, and its cause is unread so it is refused"],
+  ["December", 312024.37, "cents — a welded day and year cannot carry them"],
+  ["December", 0, "a zero-value row says nothing"],
+  ["December Street Partners Fund", 312024, "a real name that merely STARTS with a month"],
+  ["Dec", 312024, "the abbreviation is deliberately out of the vocabulary — unmeasured"],
+]) if (isDateHeaderRow(nm, v)) {
+  throw new Error(`lib-disclose: isDateHeaderRow would qualify ${JSON.stringify(nm)} @ ${v} (${why}) — fix the predicate rather than the control`);
+}
+
 export function isNamelessFundRow(f, cleanedName, isGenericName) {
   const type = String((f && f.type) || "");
   const name = String(cleanedName || (f && f.name) || "");

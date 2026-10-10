@@ -10,7 +10,7 @@
  * EIN-PN (stable forever, no orphans when a sponsor renames). */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { matchQuoteOk, vestingQuoteOk, quoteTrim, accelerationOnlyVesting } from "./lib-quote.mjs";
-import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow, hasNoFundIdentity, isLoanDescriptionRow, isLoanAnswerRow, isLoanMaturityRow, isLoanVocabularyRow, isLoanAccountRow, isDirectionCaptionRow, isOfficeListRow, isPageBreakCaptionRow, isLabelOnlyName, isSentenceRow, isNonIssuerCell, captionFiledType, trustShareBound, trustScheduleDMenu } from "./lib-disclose.mjs";
+import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow, hasNoFundIdentity, isLoanDescriptionRow, isLoanAnswerRow, isLoanMaturityRow, isLoanVocabularyRow, isLoanAccountRow, isDateHeaderRow, isDirectionCaptionRow, isOfficeListRow, isPageBreakCaptionRow, isLabelOnlyName, isSentenceRow, isNonIssuerCell, captionFiledType, trustShareBound, trustScheduleDMenu } from "./lib-disclose.mjs";
 import { isGenericTypeName } from "./lib-4i.mjs";
 
 const BASE = "https://evwes.github.io/no-app"; // becomes the custom domain when DNS lands
@@ -304,6 +304,18 @@ for (const r of d.plans.slice(0, TOP_N)) {
        * recordkeeper's loan accounting sub-account. lib-disclose.mjs carries
        * the measurement and the four filings that supply the label. */
       + (isParticipantLoanRow(nm) || isLoanAnswerRow(nm) || isLoanMaturityRow(nm) || isLoanVocabularyRow(nm) || isLoanAccountRow(nm) ? " — participant loans, not a menu choice" : "")
+      /* THE ATTACHMENT'S OWN DATE HEADER — 2026-10-10. A TWO-CELL test, so the
+       * row's VALUE is passed, and it goes BEFORE the nameless phrase for the
+       * reason app.js's `shownType` puts it before `namelessRow`: "names no
+       * specific fund" is true of `December` and says nothing about the
+       * $312,024 beside it, which is a welded day and year rather than money.
+       * This page prints the value in the next column with no type cell to
+       * qualify it, so the row has to say what it IS in the only cell it has —
+       * the same reasoning as the loan description and the caption above.
+       * lib-disclose.mjs carries the measurement: 62 rows / 62 plans / 47,749
+       * participants, and the amount TRACKS THE FILING YEAR, which is what
+       * makes it a date rather than a holding. */
+      + (isDateHeaderRow(nm, f.value) ? " — a date from the filing's table, not a holding" : "")
       + (nameless ? " — the filing names no specific fund" : "");
     /* A SCHEDULE H ASSET-CLASS CAPTION, WHOSE ONLY PROTECTION ON THE REPORT IS A
      * COLUMN THIS PAGE DOES NOT HAVE — 2026-10-09. 70 rows / 54 pages / 801,791

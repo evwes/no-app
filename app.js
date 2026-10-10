@@ -2348,6 +2348,28 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
   }
 
   window.__wampoLoanAccountRow = isLoanAccountRow;  // read by the smoke test only
+  const MONTH_NAME = /^(?:january|february|march|april|may|june|july|august|september|october|november|december)$/i;
+  function dateHeaderDate(name, value) {
+    if (!MONTH_NAME.test(String(name == null ? "" : name).trim())) return null;
+    const n = Number(value);
+    if (!Number.isFinite(n) || n <= 0) return null;
+    /* a real amount may carry cents; a welded `<day><year>` never does */
+    if (Math.abs(n - Math.round(n)) > 0.004) return null;
+    const s = String(Math.round(n));
+    for (let day = 1; day <= 31; day++) {
+      const ds = String(day);
+      if (!s.startsWith(ds)) continue;
+      const ys = s.slice(ds.length);
+      if (!/^(?:19|20|21)\d\d$/.test(ys)) continue;
+      return { day, year: Number(ys) };
+    }
+    return null;
+  }
+  function isDateHeaderRow(name, value) {
+    return !!dateHeaderDate(name, value);
+  }
+
+  window.__wampoDateHeaderRow = isDateHeaderRow;  // read by the smoke test only
 
   /* A SCHEDULE H PARTICIPANT-DIRECTION CAPTION IS NOT A HOLDING — the rule,
    * the Microsoft row that found it ($6,602,388,247 = 8.6% of a 50-row menu),
@@ -3825,6 +3847,14 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
        * ticker or a fee, so only a false claim is withdrawn. */
       const loanAcctRow = isLoanAccountRow(f.name || "");
       const loanRow = LOAN_ROW.test(f.name || "") || descLoanRow || loanAnsRow || loanMatRow || loanVocabRow || loanAcctRow;
+      /* THE ATTACHMENT'S OWN DATE HEADER — the generated twin's call site. The
+       * rule, the 63-row value distribution that diagnoses it and the
+       * leave-one-out on both conditions are in scripts/lib-disclose.mjs. It is
+       * a TWO-CELL test, so the VALUE is passed: 62 published rows / 62 plans /
+       * 47,749 participants, G4s Secure Solutions (Guam) at 27.90% of its whole
+       * menu. Measured: 0 of the 62 publish a ticker or a fee, so nothing is
+       * suppressed and the ONLY cell that moves is the shown type. */
+      const dateHeaderRow = isDateHeaderRow(f.name || "", f.value);
       /* AN INSURANCE ANNUITY CONTRACT TYPED `Mutual fund` — the rule and its
        * whole safety argument live in scripts/lib-disclose.mjs; this is the
        * generated twin's call site. It suppresses the ticker and the fee for
@@ -4117,6 +4147,13 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
       const filedType = mistypedStock ? "" : (f.type || "");
       const shownType = descLoanRow ? "Not a menu choice"
         : loanRow ? "Participant loans — not a menu choice"
+        /* AHEAD of `namelessRow` because it is the STRONGER true statement, and
+         * because the claim is about the VALUE as much as the name: "the filing
+         * names no specific fund" is true of `December` and tells the reader
+         * nothing about the $312,024 beside it, which is a welded day and year
+         * rather than money. A row that names nothing and a row that is a date
+         * are two classes, and one label cannot serve both. */
+        : dateHeaderRow ? "Date from the filing's table — not a holding"
         : namelessRow ? "Filing names no specific fund"
         : annuityRow ? "Annuity contract"
         : contractRow ? "Investment contract"
