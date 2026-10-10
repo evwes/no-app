@@ -2104,6 +2104,42 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   fund it has already named by symbol.** Direction: where a row resolves to a ticker, the fee belongs to THAT
   fund. **GATED** — hundreds of thousands of fee cells, and a fee is SOURCED,
   never derived.
+  **AND THE `FXAIX` EXAMPLE ABOVE IS NO LONGER HYPOTHETICAL — the 09:07 draw of
+  2026-10-10 named the pair plan to plan.** Ross Stores (**66,413 ppl**, ratio
+  0.985) publishes `Fidelity 500 Index Fund` -> **FXAIX at 0.015**; Ramaco
+  Resources (1,197 ppl, ratio **1.000**) publishes `500 Index`
+  [iss `Fidelity Investments`] -> **FXAIX at 0.03**. Ramaco's `Mid Cap Index` ->
+  **FSMDX at 0.1** is the second confirmation. Both pages are honest about the
+  SYMBOL; it is the FEE that disagrees. `docs/accuracy-log.md` 2026-10-10
+  (10:2xZ).
+- **FOUND BY THE 09:07 DRAW, UNSIZED — A WELD ON AN EM-DASH.** Ross Stores
+  publishes three rows shaped `<CAPTION-OR-ENTITY>—<fund>`: `STABLE RETURN
+  FUND—Galliard Stable Return Fund X` (8.4% of its menu / $97,481,952),
+  `Putnam Investment Mgmt Co.—Putnam Sm Cap` ($30,790,959, fund half TRUNCATED
+  to `Sm Cap`), and `POOLED SEPARATE ACCOUNT—Capital Group EUPAC E Separate A…`
+  ($28,951,190, where the leading run is **the TYPE CELL's own label**). All
+  three publish no ticker and no fee. The shipped trustee-weld arm is anchored
+  on `LEADING_HOUSE` patterns at a SPACE boundary, so a caption on the left of
+  an EM-DASH is a different shape — the welded-type-caption and welded-trustee
+  families met on a punctuation mark, which is *a fix for one phrasing of a
+  class is not a fix for the class* again. **Legibility only on the same page,
+  and the resolvers are working underneath it:** eight rows read `Vanguard
+  Group-Vgd Trgt Rtmt <vintage> Trust II Fd` — house welded with a HYPHEN, product
+  contracted — and every one still resolves its correct asterisked comparable at
+  0.08 with `noPublicPrice` set. `docs/accuracy-log.md` 2026-10-10 (10:2xZ).
+- **NAMED 2026-10-10, NOT FIXED — `sec-tickers.js` HAS NO STALENESS GATE.**
+  `gen-sec-tickers.mjs` implements `--check` (exit 1 if the asset is stale) and
+  **it is wired into no workflow**, so a change to the generator can land beside
+  a table it did not produce. `stamp-assets --check` catches a stale STAMP and
+  cannot catch a stale TABLE — the stamp is derived from the asset's own
+  content, so a stale table ships with a perfectly matching stamp. This is the
+  twin-drift shape that has cost this project four browser twins, and the reason
+  it is not simply wired in is cost: a regen walks 1,721,920 published rows and
+  takes ~25 minutes, which does not belong in `site-test`. The cheap version is
+  a gate that recomputes only the keys a DIFF of the generator could move, or a
+  periodic job rather than a per-push one. Until then the discipline is manual:
+  **a commit touching `gen-sec-tickers.mjs` or `match-sec-tickers.mjs` must
+  regenerate and commit the table in the same commit.**
 - Double render: one holding published TWICE at an identical value under two
   spellings where BOTH rows resolve to the same ticker — 1,217 groups / 2,434
   rows / 515 entries / $943,251,783. 85 `lineup-overshoot` menus carry one and

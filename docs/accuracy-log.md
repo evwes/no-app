@@ -51894,3 +51894,54 @@ And the attribution harness reported 2,946 kept where production keeps 2,983,
 because its platform set carried the hypothetical `prudential` a pin had
 supplied: *a harness that perturbs the state it measures reports on the
 perturbation.*
+
+## 2026-10-10 (10:2xZ) — the 09:07 draw: ONE SYMBOL, TWO PUBLISHED FEES, named plan to plan, and a menu welded on an EM-DASH
+
+Seeded participant-weighted draw (`--seed 1010101`), two plans, both read.
+
+**THE QUEUED `ONE TICKER, TWO FEES` ITEM IS CONFIRMED LIVE WITH PLANS AND
+PEOPLE ATTACHED, and the register's own hypothetical example is the real pair.**
+Ross Stores (**66,413 ppl**, 28 funds, ratio 0.985) publishes
+`Fidelity 500 Index Fund` -> **FXAIX at 0.015**; Ramaco Resources (1,197 ppl, 31
+funds, ratio **1.000**) publishes `500 Index` [iss `Fidelity Investments`] ->
+**FXAIX at 0.03**. Same resolved symbol, **the cost decided by how much of the
+name the filer typed** — the ticker comes from a resolver and the fee from a
+NAME-pattern table. Ramaco's `Mid Cap Index` -> **FSMDX at 0.1** is the second
+confirmation, against the 0.025 the fuller name prices.
+Both pages are honest about the SYMBOL; it is the FEE that disagrees. **GATED:**
+hundreds of thousands of fee cells, and *a fee is SOURCED, never derived.* The
+direction remains the recorded one — where a row resolves to a ticker, the fee
+belongs to THAT fund.
+
+**NEW AND UNSIZED, from Ross's menu — a weld on an EM-DASH rather than a space.**
+Three rows publish `<CAPTION-OR-ENTITY>—<fund>`: `STABLE RETURN FUND—Galliard
+Stable Return Fund X` (8.4% / $97,481,952), `Putnam Investment Mgmt
+Co.—Putnam Sm Cap` ($30,790,959, and the fund half is TRUNCATED to `Sm Cap`),
+and `POOLED SEPARATE ACCOUNT—Capital Group EUPAC E Separate A…` ($28,951,190,
+where the leading run is the TYPE CELL's own label). All three publish no ticker
+and no fee. The shipped trustee-weld arm is anchored on `LEADING_HOUSE` patterns
+and a space boundary, so an em-dash delimiter with a CAPTION on the left is a
+different shape; it is the welded-type-caption and welded-trustee families met
+on a new separator. *A fix for one phrasing of a class is not a fix for the
+class*, now on a punctuation mark.
+
+**LEGIBILITY ONLY, and the resolvers are working underneath it:** eight rows
+read `Vanguard Group-Vgd Trgt Rtmt <vintage> Trust II Fd` — the house welded on
+with a HYPHEN and the product contracted — and every one resolves its correct
+asterisked comparable (~VTTHX, ~VTIVX, ~VFORX, ~VFIFX, ~VTHRX, ~VFFVX, ~VTTVX)
+at 0.08 with `noPublicPrice` set, which is the design the 01:4xZ entry closed as
+correct. So this menu carries the contraction class AND the welded-house class
+and still publishes the right symbols.
+
+**ALSO NAMED, both recorded classes:** Ramaco publishes
+`Empower Annuity Insurance Company` as a holding NAME, typed `Mutual fund`, at
+$778,229 with no issuer — the bare-ENTITY-as-a-holding class; and
+`International Index` [iss `Geode Capital Management, LLC`] publishes **no
+ticker and a fee of 0.1**, the ticker/fee asymmetry, where Geode is Fidelity's
+index sub-adviser.
+
+**NOTHING ON EITHER PAGE IS A FALSE CLAIM**, which is worth recording because a
+draw that only ever finds defects is not measuring: the Putnam Retirement
+Advantage collective trusts correctly publish no fee, Ross's Galliard stable
+value correctly publishes none, and both menus' ratios (1.000 and 0.985) are
+sound.
