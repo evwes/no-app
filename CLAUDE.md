@@ -1590,6 +1590,42 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **FOUND BY THE 20:08 DRAW, MEASURED END TO END AND HELD ON ONE ROW'S FEE —
+  `EUPAC`, THE HOUSE'S OWN ABBREVIATION OF ITS OWN FUND. The candidate is ONE
+  list entry and it moves 1,005 published rows / 1,008 plans / 1,604,748 ppl /
+  $2,899,167,598: TICKER gained 681 (every one RERGX, 0 asterisked, 0 lost, 0
+  swapped), FEE changed `0.4 -> 0.46` on 748 and GAINED `null -> 0.46` on 58,
+  name 0 / shownType 0**, control 9,203 non-`EUPAC` rows differing on 0.
+  Insperity Holdings (**231,912 ppl**) publishes `American Funds EUPAC Fund
+  (R6)` at **$201,678,847 / 2.2% of its menu** with no ticker and 0.4, and the
+  control is that `lookupTicker` ALREADY answers `American Funds EuroPacific
+  Growth Fund R6` -> **RERGX**, so the blank is OURS.
+  **THE STAGE IS `fund-er.js`, NOT `secAsk`:** `resolveHolding` returns null for
+  BOTH spellings, so the last two ships' route cannot reach this — *there are
+  two resolvers and the stage follows the one that can answer.* The file already
+  carries `[/\bEUROPAC\b/gi, "EuroPacific"]` at line 555 in a list whose own
+  comment records the discipline (and refuses `INV`), and `AF_HOUSE` at 762
+  **already lists `eupac`**, so the candidate is one entry beside its sibling.
+  **`EUPAC` MEANS ONE THING, checked over the WHOLE population:** all **274**
+  distinct published names carrying it are American Funds / Capital Group /
+  Great Gray EuroPacific Growth; two filers spell it out in the same cell and
+  one carries `RERHX`. All 24 gaining rows drawn uniformly state **R6/R-6**, and
+  the 782 that gain nothing are the resolver being RIGHT (`R3`/`R4`/`R5E`, a
+  bare `Eupac Fund`, Great Gray's collective trusts).
+  **HELD ON THE RECORDED ASYMMETRY, ONE NAMED ROW:** of the 58 fee GAINS one is
+  typed **`Separate account`** — Rusken Packaging's `EUPAC R6 (American)`,
+  $386,538 / 1.18%, `flags -` so no shipped suppressor reaches it — and its
+  **TICKER correctly stays null** (0 of the 681 gains are a pooled vehicle). So
+  the symbol column refuses the vehicle and the fee column would not, which is
+  the owner's gate: *a fee is SOURCED, never derived.*
+  ***THE FEE HALF IS BIGGER THAN THE TICKER HALF AND CANNOT BE SPLIT THERE:***
+  806 cells against 681, because the spelling list is **UPSTREAM OF BOTH**
+  tables — *ask which tables a normalisation feeds before calling a name repair
+  single-celled.* **And my sizing over-predicted the gain by 21%** (821 by asking
+  `lookupTicker` directly where `renderRow` gates first). Two nameable remedies:
+  price the fee half with the `pooled` predicate `fund-er.js:1451` already
+  carries, or withhold only the 58 gains. Candidate preserved; `PARSER_VERSION`
+  stays 203. `docs/accuracy-log.md` 2026-10-10 (22:0xZ).
 - **SHIPPED 2026-10-10 20:3xZ — THE ATTACHMENT'S OWN DATE HEADER STOPS BEING
   PUBLISHED AS A HOLDING: 62 rows / 62 plans / 47,749 ppl / $19,205,495, and
   `shownType` is the ONLY cell that moves** (ticker 0 / fee 0 / name 0 / pct 0 /

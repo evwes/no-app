@@ -53075,3 +53075,88 @@ recorded trap that a broken arm and an inert arm read the same zero.
 `fund-note-test`, `stamp-assets --check` and `smoke-test`; app.js carries 0
 exports, which is the check that a sliced block has not left an `export` inside a
 classic script.
+
+## 2026-10-10 (22:0xZ) — THE HOUSE'S OWN ABBREVIATION OF ITS OWN FUND: `EUPAC`, 681 ticker gains measured and HELD on one row's fee
+
+**Found by the 20:08 draw.** Insperity Holdings (**231,912 participants**, and
+already this record's largest named instance of the gated wrong-share-class
+item) publishes `American Funds EUPAC Fund (R6)` at **$201,678,847, 2.2% of its
+menu**, with NO ticker and a generic **0.4** fee. `EUPAC` is American Funds'
+own abbreviation of EuroPacific Growth, and **the control is that
+`lookupTicker` already answers the spelled-out name** — `American Funds
+EuroPacific Growth Fund R6` → **RERGX** — so the blank is ours and not a
+registry gap.
+
+**AND THE SEC MATCHER IS THE WRONG RESOLVER HERE, which is why both halves had
+to be asked:** `resolveHolding` returns null for BOTH spellings, so
+`gen-sec-tickers`'s `secAsk` — where the last two name repairs went — cannot
+reach this at all. The answer lives in `fund-er.js`'s own `FUND_TICKER` table.
+*There are two resolvers, and the stage follows the one that can answer.*
+
+**THE FILE ALREADY HAD THE MECHANISM AND ALREADY KNEW THE TOKEN.**
+`fund-er.js:555` carries `[/\bEUROPAC\b/gi, "EuroPacific"]` in a
+spelling-expansion list whose own comment records the discipline (*"each one
+names a fund the table ALREADY carries — so these are spelling gaps, not
+missing funds"*, with `INV` explicitly refused), and `AF_HOUSE` at line 762
+**already lists `eupac`** as an American Funds house token. So the candidate is
+ONE list entry beside its own sibling, not a new vocabulary.
+
+**`EUPAC` MEANS EXACTLY ONE THING, checked over the WHOLE population rather
+than a sample: all 274 distinct published names carrying it are American Funds
+/ Capital Group / Great Gray EuroPacific Growth.** Two filers spell it out in
+the same cell (`EUROPACIFIC GROWTH (EUPAC-R3)`, `Europacific Growth Fund-R3
+(EUPAC-R3)`) and one carries the house's own symbol (`American Funds Eupac R5E
+- RERHX`). The population is **1,626 published+served rows / 1,617 plans /
+2,533,273 ppl / $4,845,224,792**, of which 23 publish a ticker today and 748 a
+fee.
+
+**PRICED THROUGH BOTH COPIES OF `renderRow`** — baseline the working tree,
+candidate the same file with one line added through `apppath`'s documented
+`funder` override, so one thing varies between two runs:
+
+| | |
+|---|---|
+| rows whose published cells move | **1,005 / 1,008 plans / 1,604,748 ppl / $2,899,167,598** |
+| TICKER gained | **681**, every one **RERGX**, **0 asterisked** |
+| ticker lost / swapped | **0 / 0** |
+| FEE changed `0.4 -> 0.46` | **748** |
+| FEE gained `null -> 0.46` | **58** |
+| name / shownType moved | **0 / 0** |
+| control, 1-in-200 of non-`EUPAC` rows | 9,203 sampled, **0 differing** |
+
+Must-see pin (Insperity, keyed BY ACK) moves. All 24 gaining rows drawn
+uniformly state **R6/R-6** in the filed name, so the assertion is licensed by
+the filing's own stated class; the 782 rows that gain nothing are the resolver
+being RIGHT (`R3`, `R4`, `R5E`, a bare `Eupac Fund` with no class, and Great
+Gray's collective trusts).
+
+***AND THE FEE HALF IS BIGGER THAN THE TICKER HALF, WHICH MY SIZING NEVER
+LOOKED AT.*** 806 fee cells move against 681 symbols. The expansion reaches
+`fund-er.js:430` (`american funds.*europacific` → 0.46) as well as the ticker
+table, because **the spelling list is UPSTREAM OF BOTH**, so a name repair
+there cannot be ticker-only by construction. *Ask which tables a normalisation
+feeds before calling a name repair single-celled.*
+
+**AND MY OWN SIZING OVER-PREDICTED THE TICKER GAIN BY 21%** — it read 821 rows
+by asking `lookupTicker` directly where `renderRow` applies its own gates
+first, so the published figure is **681**. *A count of what the predicate
+answers is not a count of what the page prints*, recorded and met again.
+
+**HELD, NOT SHIPPED, ON ONE NAMED ROW — and it is the recorded asymmetry
+exactly.** Of the 58 rows that would GAIN a fee, one is typed **`Separate
+account`**: Rusken Packaging's `EUPAC R6 (American)`, $386,538 / 1.18% of its
+menu, `flags -` so no shipped suppressor reaches it. Its **TICKER correctly
+stays null** — 0 of the 681 ticker gains are typed separate account or
+collective trust, so the vehicle refusal works on the symbol — **and the FEE
+would newly publish a registered mutual fund's 0.46 on a pooled vehicle.** One
+row is small; the principle is the owner's gate, because *a fee is SOURCED,
+never derived* and a separate account is not the fund it invests in. A second
+`Separate account` row sits in the 748 that move 0.4 → 0.46, where the
+fabrication is pre-existing and only its value changes.
+
+**So the next cycle ships this once the vehicle question is settled**, and the
+two candidate shapes are both nameable: price the fee half with the pooled test
+`fund-er.js:1451` already carries (the same predicate `gen-sec-tickers` slices),
+or accept 0.4 → 0.46 as the table's own more specific figure and withhold only
+the 58 gains. The ticker half is unambiguous on its own evidence and is held
+only because the one list entry cannot be split from the fee.
