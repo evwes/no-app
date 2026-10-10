@@ -52626,3 +52626,44 @@ key — a pin on the index would have tested (1) and (2) instead.
 have shown it** — ADDED/REMOVED/CHANGED read 1,653/0/0 and every fixture was
 green with the defect in. *A diff cannot tell a wanted change from an unwanted
 one.*
+
+## 2026-10-10 (17:4xZ) — the 16:08 draw: the largest unidentified holding by dollars on this record, and qualifying it would be FALSE
+
+Seeded participant-weighted draw (`--seed 17082026`), 3 plans: Oak View Group,
+**RTX Corporation (214,241 ppl)**, and a third.
+
+**RTX publishes `INCOME FUND` at 18.2% of its menu — $10,090,388,393 — type
+`—`, no ticker, no fee, and unqualified.** That is the largest single
+unidentified holding by dollars this record has named. Its neighbours on the
+same page: `REAL ESTATE INV TRST` 1.2% / $676,797,861, and `103-12 ENTITIES`
+$264,534,462 — the latter being the `103-12 investment entities` caption residue
+the register already holds open, now with a dollar figure.
+
+**NO SHIPPED PREDICATE REACHES ANY OF THEM, and that is RIGHT rather than a
+gap.** Asked directly, `isGenericTypeName`, `hasNoFundIdentity`,
+`isLabelOnlyName` and `isSentenceRow` all return false for `INCOME FUND`,
+`REAL ESTATE INV TRST`, `US Equity Fund`, `International Growth Fund` and
+`Mid Cap Equity` (controls fired in both directions first). ***`International
+Growth Fund` is Vanguard's actual registered series name and `US Equity Fund`
+is a real JP Morgan product, so "the filing names no specific fund" would be a
+FALSE claim about them*** — and a predicate wide enough to catch `INCOME FUND`
+catches those too. *A row that names nothing and a row that names a product
+without naming its registrant are two classes, and one label cannot serve
+both.*
+
+So the harm here is **coverage, not a false claim**: the symbol and the fee are
+missing, nothing wrong is published. It belongs with the owner-gated bare-house
+family and with the 10:4xZ custodian/contraction class, not with the nameless
+guards. Oak View Group's own instance is the same shape with the house in the
+ISSUER cell and a fee published anyway — `US Equity Fund` · iss `JP Morgan` at
+12.3% / $21,414,031 with **er 0.44 and no ticker**, which is the recorded
+asymmetry: the fee table answers where the ticker table refuses. Unsized
+deliberately; sizing it means asking both resolvers for every row whose house
+appears only in the issuer cell, which the 10:4xZ `houseCore` work has now
+partly closed and partly left open on truncated cells.
+
+Machinery working on the same page, worth recording because it is the control:
+RTX's `Managed account holdings (3348 positions)` at 60.8% is correctly
+described rather than named, its six collective trusts all carry
+`noPublicPrice` and correctly publish no fee, and the brokerage window carries
+`brokRow`.
