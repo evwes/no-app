@@ -51945,3 +51945,75 @@ draw that only ever finds defects is not measuring: the Putnam Retirement
 Advantage collective trusts correctly publish no fee, Ross's Galliard stable
 value correctly publishes none, and both menus' ratios (1.000 and 0.985) are
 sound.
+
+## 2026-10-10 (11:5xZ) — a cross-reference to another page of the filing, published inside the fund name: 24 rows / 5 plans / 203,158 ppl / $40,384,714,416, the largest display defect by dollars on this record
+
+**SHIPPED.** `cleanFiledName` (canonical `lib-disclose.mjs`, hand-maintained twin
+in `app.js`) strips a parenthetical that opens with a REFERRING VERB. IBM
+publishes `Expanded Choice - Select Funds (refer to Exhibit A - investments)` at
+**15.5% of its menu / $9,855,559,291** and `Total Stock Market Index (refer to
+Exhibit P - investments)` at 15.4%; Farmers Group publishes three `(See Detail)`
+rows. 32 candidates, **24 names changed, ticker / fee / asterisk / shown type all
+0, 0 cleaned to empty**, 3 crawlable pages, `PARSER_VERSION` stays 203.
+
+**IT IS FURNITURE, NOT A NAME, AND THE NAME AROUND IT IS REAL** — the
+parenthetical points at an exhibit the reader of this page cannot see, the same
+family as the page numbers and running headers `quoteTrim` strips from a quote.
+So the remedy is a STRIP and not a qualification: *a row that names nothing and a
+row carrying furniture beside its name are two classes.*
+
+**ANCHORED ON THE VERB, never on a bare parenthetical**, because an ordinary
+parenthetical is the shape of almost every correct fund name and this record has
+already discarded a 2,720-row class for keying on "a closing paren with two words
+after it". Five must-NOT-strip fixtures pin it (`PIMCO International Bond Fund
+(U.S. Dollar-Hedged) Ins`, `(ACWI EX US)`, `Dodge & Cox Stock Fund (X)`,
+`BLACKROCK SP 500 IDX (IS)`, `CREF Stock Account (R1)`).
+
+**THE PAGE CARRIED ITS OWN CONTROL, which is the half that matters:** on
+`953685934-001` the arm cleans `Separate Investment Stable Value Fund Fixed
+Income Securities (See Detail)` and leaves **`Metwest Total Return Bond Fund
+(Class B)` two rows below it** and `Managed Account Holdings (557 Positions)`
+exactly as filed. *The row that did NOT change is evidence about the rows that
+did.* IBM's `Expanded Choice - Select Funds` keeps its own internal hyphen.
+
+**THE ONE PRICED ROW WAS CHECKED RATHER THAN ASSUMED:** Farmers Group's `Farmers
+Active Stable Value Fund (See Detail)` publishes **0.35 on $238,423,816** — a
+named live instance of the owner-gated fabricated stable-value fee — and the fee
+does not move. Withdrawing it is the owner's call, not this arm's.
+
+**MY FIRST BASELINE WAS WRONG AND ITS FIGURE WAS RIGHT BY LUCK.** I compared
+against the RAW name with control characters stripped, which credits every other
+arm's work to this one — ***the differential-run lesson from this morning's
+`wrapRepair` ship, skipped the same day I recorded it.*** Rebuilt by writing the
+shipped module into `scripts/` with exactly ONE line neutered, so its own
+relative imports still resolve and the two runs vary one thing. The figures came
+back **identical**, so nothing published moves — but the claim is now earned
+rather than assumed. *A before/after is only as honest as the claim that nothing
+else moved.*
+
+**AND THE CLASS WAS FOUND BY REFUTING MY OWN QUEUE ENTRY FROM ONE CYCLE AGO.**
+That entry named an EM-DASH WELD. Screened on the dash the class is **3,406 rows
+/ 2,905,549 ppl** and is dominated by `<FUND> — <SHARE CLASS>`, **correct as
+filed**: 1,506 publish a ticker, including `Vanguard Institutional Index Fund —
+Plus Shares` -> VINIX 0.02 and `JPMorgan Large Cap Growth Fund — Class R6` ->
+JLGMX 0.44. ***A count keyed on a character measures the character.*** Narrowed:
+a TYPE CAPTION on the left is **57 rows / 19 plans / 122,284 ppl /
+$476,272,437** (47 publishing neither ticker nor fee), and it SPLITS — `Common
+stock — The Branch Group, Inc.` at 75% is EMPLOYER STOCK, `Mutual Funds—TIAA-CREF`
+at 56% names no fund at all, `Collective trust fund—Putnam Large Cap Growth Class
+R` strips to a real fund — so three remedies, not one. An ENTITY on the left reads
+229 rows and is **contaminated**: my insurer/trustee vocabulary matched `company`
+and `management` INSIDE funds' own names (`Fidelity Growth Company Fund – Class K`
+-> FDGRX, correct), *a count keyed on a vocabulary measuring the vocabulary*.
+Neither ships; both are recorded as split rather than counted in.
+
+**THE TWIN IS READ THROUGH `scripts/apppath.mjs`, not hand-sliced:** app.js's
+`cleanFiledName` calls closure helpers (`despaceKerned`), so lifting the one
+function out THREW. *Before building an instrument, ask whether the project
+already has one.* The twin agrees on every fixture and on a **1,721,888-row
+discharge** of the non-candidates (every 7th), which tests the claim that a name
+without a referring parenthetical cannot change — *a narrowing is a claim and
+must be tested.*
+
+**STILL OPEN, named:** 8 of the 32 candidates move no cell, cause undiagnosed;
+and the two em-dash sub-buckets above.

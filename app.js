@@ -1044,6 +1044,15 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
      * scripts/lib-disclose.mjs holds the measurement and how three earlier
      * attempts at that price each reported on the query. */
     s = s.replace(/\s*\(\s*\)\s*/g, " ").replace(/\s{2,}/g, " ").trim();
+    /* A CROSS-REFERENCE TO ANOTHER PAGE OF THE FILING, published inside the
+     * fund name: IBM's `Total Stock Market Index (refer to Exhibit P -
+     * investments)` at 15.4% of its menu. 32 rows / 206,458 ppl / $40.95B.
+     * Anchored on the REFERRING VERB and never on a bare parenthetical, which
+     * is the shape of almost every correct fund name. The twin of
+     * scripts/lib-disclose.mjs, which holds the measurement and the one priced
+     * row whose fee must not move. */
+    s = s.replace(/\s*\((?:please\s+)?(?:refer\s+to|see|as\s+(?:shown|described)\s+in)\b[^)]*\)/gi, " ")
+      .replace(/\s{2,}/g, " ").trim();
     // OCR noise glued to the END: stray quote / trademark glyphs ("Trust II
     // CIT ”", "R6 ™", "…Fund®" — 674 plans / 1.08M ppl / 4,454 rows on the
     // v138 store) and a footnote letter or fragment after a share-class or

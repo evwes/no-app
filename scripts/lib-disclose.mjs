@@ -812,6 +812,39 @@ export function cleanFiledName(name) {
    * nothing. A positive control that PRINTS what it got — `{"tk":"FXAIX"}`,
    * `0.015` — is what caught both. */
   s = s.replace(/\s*\(\s*\)\s*/g, " ").replace(/\s{2,}/g, " ").trim();
+  /* A CROSS-REFERENCE TO ANOTHER PAGE OF THE FILING, PUBLISHED INSIDE THE FUND
+   * NAME — 2026-10-10, found by narrowing the 09:07 draw's em-dash class.
+   *
+   * International Business Machines publishes `Expanded Choice - Select Funds
+   * (refer to Exhibit A - investments)` at 15.5% of its menu —
+   * $9,855,559,291 — and `Total Stock Market Index (refer to Exhibit P -
+   * investments)` at 15.4%, `Total International Stock Market Index` at 9.5%,
+   * `Small/Mid-Cap Stock Index`, `Inflation Protected Bond`, `Total Bond
+   * Market`. Whole class: 32 published+served rows / 8 plans / 206,458
+   * participants / $40,951,582,144 — the largest display defect by dollars on
+   * this record, and 31 of the 32 publish no ticker and no fee.
+   *
+   * The parenthetical is DOCUMENT FURNITURE: it points at an exhibit the
+   * reader of this page cannot see, so it carries no information here and is
+   * the same family as the page numbers and running headers `quoteTrim`
+   * already strips from a published quote. The NAME around it is real, which
+   * is why this is a strip and not a qualification — *a row that names nothing
+   * and a row carrying furniture beside its name are two classes.*
+   *
+   * ANCHORED ON THE REFERRING VERB, never on a bare parenthetical: an
+   * ordinary parenthetical is the shape of almost every correct fund name
+   * (`PIMCO International Bond Fund (U.S. Dollar-Hedged) Ins`), and this
+   * record has already discarded a 2,720-row class for keying on "a closing
+   * paren with two words after it". So the vocabulary is `refer to`, `see`,
+   * `as shown in`, `as described in` — a pointer to elsewhere in the document.
+   *
+   * THE ONE PRICED ROW IS CHECKED RATHER THAN ASSUMED: Farmers Group's
+   * `Farmers Active Stable Value Fund (See Detail)` publishes 0.35 on
+   * $238,423,816 — itself a named instance of the owner-gated fabricated
+   * stable-value fee — and the strip must leave that fee exactly where it is,
+   * because withdrawing it is the OWNER's decision and not this arm's. */
+  s = s.replace(/\s*\((?:please\s+)?(?:refer\s+to|see|as\s+(?:shown|described)\s+in)\b[^)]*\)/gi, " ")
+    .replace(/\s{2,}/g, " ").trim();
   // OCR noise glued to the END: stray quote / trademark glyphs ("Trust II
   // CIT ”", "R6 ™", "…Fund®" — 674 plans / 1.08M ppl / 4,454 rows on the
   // v138 store) and a footnote letter or fragment after a share-class or
