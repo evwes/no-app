@@ -49,8 +49,21 @@
  * `docs/accuracy-log.md` 2026-10-10 (01:4xZ) sized the dependency.
  */
 import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
 
-const APP = process.env.APP_PATH || "/home/user/no-app/app.js";
+/* RESOLVED FROM THIS FILE'S OWN LOCATION, NEVER FROM AN ABSOLUTE PATH.
+ * The first version of this test defaulted to `/home/user/no-app/app.js` and
+ * site-test #189 died on it: `ENOENT ... open '/home/user/no-app/app.js'` from
+ * `/home/runner/work/no-app/no-app/scripts/fund-note-test.mjs`. That is the
+ * trap CLAUDE.md already records in capitals — *never hardcode the sandbox path
+ * in anything CI runs* — written there after `map-test.mjs`'s
+ * `cwd: "/home/user/no-app"` made Node report `spawn python3 ENOENT` and sent
+ * the first reading of that failure at the runner image. **This one was cheaper
+ * only because the message named the path instead of a binary**, so the two
+ * instances differ in how long they mislead, not in the defect. The repo root
+ * is this file's parent's parent, which is true in both places. */
+const APP = process.env.APP_PATH || join(dirname(dirname(fileURLToPath(import.meta.url))), "app.js");
 const src0 = readFileSync(APP, "utf8");
 
 /* ---- extract the paragraph, so a COMMENT can never satisfy a claim ----
