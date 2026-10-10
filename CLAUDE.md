@@ -2945,9 +2945,47 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   is damaged is not a witness to which side the damage is on*, and the first
   where the witness is INTERNAL** — adjacency is what pinned the orientation for
   `collapseSelfRepeat`, and *being inside one name removes the contamination
-  problem, not the orientation problem.* Needs the orientation test the
-  mid-name-house entry prescribes, plus a third candidate set for the rotation
-  family. `PARSER_VERSION` stays 203.
+  problem, not the orientation problem.*
+  **THE PRESCRIBED ORIENTATION TEST IS REFUTED FOR THIS CLASS BY CONSTRUCTION,
+  AND THE ORDER-SENSITIVE REPLACEMENT IS VALIDATED — PILOTED 2026-10-10 02:4xZ
+  ON THIS 276-ROW CLASS DELIBERATELY, BECAUSE EVERY MEMBER HAD BEEN READ** and
+  the oracle's answers could be scored against known ground truth rather than
+  against their own plausibility. The register prescribes *build both
+  candidates, let the shipped resolver say which is the fund, abstain where both
+  answer*. Built exactly that, asking BOTH shipped resolvers: **0 wrong but 5
+  ABSTENTIONS of 6 pinned cases, and of the 12 rows it acts on 5 are WRONG and
+  ALL 5 ARE ROTATIONS** (Matheny -> `Shares Vanguard Small Cap Index Admiral`;
+  Cava -> `Class K Fidelity U.S. Bond Index Fund`, both resolving cleanly and
+  neither a name). ***A TOKEN-SET MATCHER IS ORDER-BLIND, AND `X mid X` STRIPS
+  TO `mid X` OR `X mid` — THE SAME MULTISET MINUS ONE COPY OF `X`*** — so the
+  resolver answers identically on both sides (ITW `NOSIX*` twice, Gnc `SSSYX*`
+  twice) or on neither, and the abstentions are not caution but the only output
+  the design can produce. The orientation question is about ORDER and the oracle
+  discards order. Third and sharpest face of the recorded rule: the file already
+  says *a resolver gain is evidence the string reaches a fund, not evidence it
+  reaches THIS fund*, and this adds ***a resolver answer is not evidence the
+  string is a NAME at all.*** It may still work for the mid-name-house PARENT,
+  where `house + tail` and `house + lead` are genuinely different token sets.
+  **WHAT WORKS IS VERBATIM ATTESTATION AS ANOTHER ACK'S WHOLE FILED NAME** — no
+  plan files the rotated spelling as its whole name, so it sees exactly what the
+  resolver cannot. It exposed the floor hazard in textbook form: **Cava won on
+  ONE attestation, which is another damaged copy** (*a floor of ONE lets a
+  single damaged row license the same damage elsewhere*), and **Arden abstained
+  because TWO damaged copies attested its rotation**. At **floor 3 / ratio 10:
+  70 rows / 61 plans / 85,237 ppl** (48 lead, 22 tail), abstains on 206 of 276,
+  **0 rotations in the acted set, and all four hard pinned cases abstain**
+  (Charles River, Union Savings, Gnc, ConEd). Sensitivity: floor 5 gives 67 /
+  51,185, ratio infinity gives 68 / 84,509 — not balanced on either constant.
+  **ALL 70 READ**, which the 7-of-12 shows is necessary: ITW's $1,060,028,326
+  row becomes `NT COLLECTIVE S&P500 INDEX FUND-DC-NON LENDING (TIER J)`, eight
+  `American Funds <vintage> Target Date Fund R6` rows drop a trailing
+  `American Funds`, and **`Admiral Shares Vanguard Windsor II Admiral Shares` ->
+  `Vanguard Windsor II Admiral Shares` KEEPS ITS NUMERAL**, the recorded hazard
+  that cost a wrong fund name once and the first fixture the repair must pin.
+  **Residue, cosmetic and named: 4 rows keep a dangling separator** — check
+  whether `lib-disclose`'s existing end-anchored dangling-tail arm already
+  reaches them before adding a trim. `PARSER_VERSION` stays 203 — display-side.
+  `docs/accuracy-log.md` 2026-10-10 (02:4xZ).
   **AND THE CLASS I FIRST BUILT DOES NOT EXIST — my own draw's print made it.**
   `draw-published` printed `JSON.stringify(x).slice(0, n)`, cutting INSIDE the
   quotes and dropping the CLOSING QUOTE, so a complete name read as one the

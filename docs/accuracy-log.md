@@ -51111,3 +51111,104 @@ better than one that must be discharged as a superset*, and this is the first
 one here where the shipped predicate's inputs were available unmodified.
 Carnival was pinned as a must-SEE ahead of the count (12 rows) after last
 cycle's false zero.
+
+## 2026-10-10 (02:4xZ) — the PRESCRIBED orientation oracle is REFUTED for the wrapping class (a token-set resolver is ORDER-BLIND), and the order-sensitive replacement is validated at 70 rows / 85,237 ppl
+
+**Piloted the orientation test on the 276-row wrapping duplication rather than
+the 26,553-row parent, deliberately, because every member of the small class
+had been read** — so the oracle's answers could be scored against known ground
+truth instead of against their own plausibility. Pinned before the count, from
+that read: LEAD stray = Illinois Tool Works / Charles River / Cook Group /
+Union Savings; TAIL stray = Gnc Holdings; ROTATION (neither strip is a name) =
+Consolidated Edison.
+
+### The prescribed design is refuted, and the reason is structural
+
+The register prescribes, for both this class and the mid-name-house parent:
+*build both candidates, let the shipped resolver say which is the fund, and
+ABSTAIN where both answer* (plus a second abstention where the differing token
+is a share-class designation). Built exactly that, asking BOTH shipped
+resolvers — `fundTickerInfo` for the report and `resolveFiledTicker` for the
+SEC matcher — and scored:
+
+* **0 WRONG and 5 ABSTENTIONS on the 6 pinned cases.** It is safe and nearly
+  useless here.
+* **Of the 12 rows it does act on, 5 are WRONG — and all 5 are ROTATIONS.**
+  Matheny's `Index Admiral Shares Vanguard Small Cap Index Admiral` becomes
+  `Shares Vanguard Small Cap Index Admiral`; Cava's `Index Fund Class K
+  Fidelity U.S. Bond Index Fund` becomes `Class K Fidelity U.S. Bond Index
+  Fund`. Both resolve cleanly and neither is a name.
+
+***THE CAUSE IS THAT A TOKEN-SET MATCHER IS ORDER-BLIND, AND IN A WRAPPING
+DUPLICATION THE TWO CANDIDATES ARE TOKEN-EQUIVALENT BY CONSTRUCTION.*** `X mid
+X` strips to `mid X` or `X mid` — the same multiset minus one copy of `X` — so
+the resolver answers identically for both (ITW reads `NOSIX*` on each side, Gnc
+`SSSYX*` on each side) or for neither. The abstentions are not caution, they
+are the only output the design can produce. And the converse is the same
+defect: `Shares Vanguard Value Index Fund Admiral` carries every correct token
+in the wrong order and resolves perfectly. **The orientation question is about
+ORDER and the oracle discards order.**
+
+This is the third and sharpest face of a recorded rule. The file already says
+*a resolver gain is evidence the string reaches a fund, not evidence it reaches
+THIS fund.* The wrapping class adds: ***a resolver answer is not evidence the
+string is a NAME at all.*** So the prescription, inherited from the
+mid-name-house entry, is **inapplicable to the wrapping class by
+construction** — it may still work for the parent, where `house + tail` and
+`house + lead` are genuinely different token sets, but it can never work here.
+
+### The order-sensitive replacement, validated
+
+Swap the witness for an EXACT, order-sensitive one: does the candidate appear
+**verbatim (normalised) as some OTHER ack's whole filed name**? No plan files
+the rotated spelling as its whole name, so this sees exactly what the resolver
+cannot. It abstained on 3 of the 4 rotations immediately — and then showed the
+recorded floor hazard in textbook form: **Cava won on ONE attestation**, which
+is another damaged copy, *a floor of ONE lets a single damaged row license the
+same damage elsewhere*; and Arden ABSTAINED because **two** damaged copies
+attested its rotation.
+
+With a floor of 3 and a 10x ratio between the two sides:
+
+| | |
+|---|---|
+| **acts on** | **70 rows / 61 plans / 85,237 ppl** (48 lead, 22 tail) |
+| abstains | 206 of 276 |
+| rotations in the acted set | **0** |
+| pinned hard cases acted on | **0** (Charles River, Union Savings, Gnc, ConEd all abstain) |
+
+Sensitivity: floor 5 / ratio 10 gives 67 rows / 51,185 ppl; floor 3 / ratio
+infinity gives 68 / 84,509 — so the population is not balanced on the knife
+edge of either constant.
+
+**ALL 70 WERE READ, which is what the earlier 7-of-12 shows is necessary.**
+Illinois Tool Works' $1,060,028,326 row becomes `NT COLLECTIVE S&P500 INDEX
+FUND-DC-NON LENDING (TIER J)`; Cook Group `New York Life Guaranteed Interest
+Account`; Essential Utilities `T. Rowe Price Stable Value Common Trust Fund`;
+the eight `American Funds <vintage> Target Date Fund R6` rows drop their
+trailing `American Funds`; `Capital Group Europacific Growth Fund (Capital
+Group)`, `American Funds Bond Fund of America (American Funds)` and `Goldman
+Sachs Mid Cap Value (Goldman Sachs)` drop a parenthetical repeat. **And
+`Admiral Shares Vanguard Windsor II Admiral Shares` -> `Vanguard Windsor II
+Admiral Shares` keeps its numeral**, which is the recorded hazard that cost a
+wrong fund name once and is the first fixture this repair must pin.
+
+**RESIDUE, cosmetic and named: 4 rows keep a dangling separator** —
+`T. Rowe Price Blue Chip Growth -`, `American Beacon Large Cap Value Fund - |`,
+`Mutual of America Life Insurance Company -` ×2. The orientation is right and
+the output carries the separator the duplicate used to hide. Before adding a
+trim, check whether `lib-disclose`'s existing end-anchored dangling-tail arm
+already reaches it — *read the shipped guard before pricing a cost it may
+already stop.*
+
+**NOT SHIPPED THIS CYCLE, and that is the sequence rather than a stall.** This
+is a NAME repair, so it moves which share class the resolvers reach and can
+cross `ID_ONLY` row membership; the record's gate set is canonical placement in
+`lib-disclose` with a SLICED app.js twin, a whole-store diff through both
+copies of `renderRow` on name/tk/er/star/shownType, the crawlable pages
+regenerated and the changed ones READ (the Windsor II defect passed every count
+and only the page caught it), per-condition single-protection fixtures for the
+floor, the ratio, the 3-token middle and the 5-character run, then stamp,
+smoke-test and the `site-test` conclusion. What this cycle establishes is the
+design and the population, measured and read, so the ship starts from evidence.
+`PARSER_VERSION` stays 203 — display-side.
