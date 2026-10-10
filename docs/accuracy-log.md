@@ -52262,3 +52262,135 @@ elsewhere, which is the witness a repair would need. Its row 7, `Vanguard
 Windsor II Fund - Admiral Fund` under `Fiduciary Trust Company`, resolves VWNAX
 correctly because the NAME carries the house — the control that the issuer cell
 is the only thing missing.
+
+## 2026-10-10 (14:3xZ) — the comparable-fee footnote is tethered, and my own gate was red for one run on the trap this file records in capitals
+
+**SHIPPED: `scripts/fund-note-test.mjs`, wired into `site-test`.** The 01:4xZ
+entry sized an apparent defect and refuted it: **45,067 published rows / 6,959
+plans / 34,282,495 ppl / $1,455,409,472,270** publish a comparable's expense
+ratio, and what makes that honest is ONE paragraph naming the fee's provenance,
+its DIRECTION and its status as a ceiling. ***So the largest disclosure
+dependency on this record was carried by one paragraph's wording with no test
+anywhere.*** A reword dropping `cheaper` or `ceiling` turns 45,067 labelled
+approximations into 45,067 unlabelled retail fees, and no count, no whole-store
+diff and no smoke test would say a word.
+
+**TWO THINGS ARE CHECKED, because the disclosure fails in two unrelated ways
+and only one is about words.** Each load-bearing clause is its own assertion
+(the mark explained, the vehicle named, the absence stated, the provenance
+given, the shown fund called an *equivalent* and not the holding, the direction,
+the ceiling), so a reword dropping exactly one fails BY NAME. Then the CHAIN:
+`starred` is declared at app.js:3735, set at 3946 inside the row callback and
+read at 4263 — 528 lines apart — and **breaking any link leaves the asterisks
+printing with the footnote gone, which is worse than either state**, because the
+reader sees a mark with no referent and a retail fee with no caveat. The
+eager-evaluation link is pinned too: `list.map` being eager is the only reason
+the template can read a flag the callback sets, so making `rows` lazy would
+empty the footnote while every other link still looked right.
+
+**EVERY CHECK CARRIES ITS OWN MUTATION CONTROL and the suite exits 1 if a
+control PASSES** — 11 checks, 11 controls, each re-run against a copy with that
+one clause deleted or that one link broken. Plus two input controls: a
+nonexistent path exits non-zero rather than passing quietly, and a file with no
+paragraph reports 11 failures. **The paragraph is EXTRACTED before the claims
+are tested, which is not fussiness:** app.js's own comments contain `normally
+CHEAPER` (line ~3749, about a different defect), so a file-wide grep for the
+direction word would have passed against a file whose reader-facing paragraph
+had been deleted.
+
+**AND IT WENT RED IN CI ON ITS FIRST RUN, ON THE TRAP THIS FILE RECORDS IN
+CAPITALS.** I defaulted the input to `/home/user/no-app/app.js`, so site-test
+**#189 failed**: `ENOENT: no such file or directory, open
+'/home/user/no-app/app.js'` from `/home/runner/work/no-app/no-app/scripts/
+fund-note-test.mjs`. It passed locally and could never have passed in CI.
+*Never hardcode the sandbox path in anything CI runs* is written here after
+`map-test.mjs`'s `cwd: "/home/user/no-app"` made Node report `spawn python3
+ENOENT` and sent the first reading at the runner image, hiding ten consecutive
+red runs. ***This instance was cheap only because the message named the PATH
+instead of a BINARY — the two differ in how long they mislead, not in the
+defect.*** Fixed by resolving from `import.meta.url`, controlled three ways:
+from the repo root, from `/` for cwd-independence, and from a different root
+with the runner's layout copied into it. **#190 `success`, all 13 steps green.**
+**And #189 is its own lesson restated from the inside:** step 10 of 14 went red
+and steps 11-14 were **SKIPPED** — the stamp check, the Playwright install, the
+smoke test and the map test did not run at all, so *a red gate early in a job is
+not one failure, it is a job that stopped, and everything after it is unverified
+rather than passing.*
+
+**#628's VERDICT: an incremental no-op hour — every key on the coverage line
+identical**, `dl` 93 unchanged (so the EFAST2 bucket did not grow), pv 203 at
+99.9%, HIGH at the baseline 4. Both refs came back at `0b4a79a8` because the
+merge job fast-forwarded the dev branch itself, so there was no adoption chore —
+the shipped automation the 2026-10-09 correction describes, observed a second
+time.
+
+### The 14:08 draw: stating a registered share class makes the matcher answer WORSE than stating none
+
+Seeded draw of 2 (`--seed 10101408`): Kaleida Health (11,638 ppl), Xcel Energy
+(14,084 ppl). Both carry the same new finding.
+
+**Xcel publishes `Vanguard Developed Market Index Institutional Plus` at
+$212,086,744 — 6.5% of its menu — with NO ticker and a 0.05 pattern fee**, while
+`Vanguard Mid-Cap Index Fund Institutional Plus Shares` two rows above resolves
+**VMCPX** and two collective trusts resolve correct asterisked comparables. The
+registry HAS the fund: `VANGUARD TAX-MANAGED FUNDS :: Vanguard Developed Markets
+Index Fund`, class **Institutional Plus Shares = VDIPX**.
+
+**THE MECHANISM IS ISOLATED BY VARYING ONLY THE CLASS PHRASE, and it is three
+behaviours rather than one gap:**
+
+| class stated on the registered series | `resolveHolding` |
+|---|---|
+| *(none)* | `VDVIX*` comparable |
+| `Admiral Shares` | **VTMGX** asserted ✓ |
+| `Investor Shares` | **VDVIX** asserted ✓ |
+| `Institutional Shares` | `VDVIX*` — the INVESTOR class's comparable, where **VTMNX** is exactly registered |
+| `Institutional Plus Shares` | **null** |
+| `ETF Shares` | **null** |
+
+***So a filing that states its share class — the thing that should sharpen a
+comparable into an assertion — gets null instead, or a different class's
+comparable.*** Confirmed on a second series (`Vanguard Mid-Cap Index Fund`:
+bare `VIMSX*`, `Admiral Shares` VIMAX, `Institutional Plus Shares` **null**), so
+it is not one fund. Same shape as the shipped 06:1xZ apostrophe fix, where
+`Inst'l Shares` normalised to a one-letter token and the leftover made
+`resolveHolding` decline the whole row — here the leftover is `plus` / `etf`,
+which the series name does not contain.
+
+**UPPER BOUND, labelled as one: 128 published+served rows / 80 plans /
+1,462,765 ppl / $5,988,260,564 publish no symbol while stating one of the
+refused class phrases, and 107 of them publish a pattern-table FEE.** It is an
+upper bound and not a measurement because it cannot say the class phrase is the
+only blocker on each row — `fund-er.js` may be silent for its own reasons.
+Must-see pin caught (Xcel's row is in it); cheap exact pre-filter ahead of the
+render, a superset because the cleaner only removes. Members are overwhelmingly
+real funds stating a registered class: `Vanguard Developed Markets Index Fund
+Institutional Plus Shares` ×10, `Vanguard Emerging Markets Stock Index Fund
+Institutional Plus` ×10, `Vanguard Real Estate Index Fund ETF Shares` ×4. One
+member is `922908371 VANGUARD EXT MKT INDX-INST+`, a CUSIP welded on plus the
+`INST+` spelling the 07:3xZ entry already records as **correct as filed**.
+
+**NOT SHIPPED, and the stage is the point:** the refusal is in
+`match-sec-tickers.mjs`, which `merge-4i` SHARES to write `ftk` — consulted
+FIRST by `lookupTicker` — so a change there can take a symbol away as readily as
+add one. The safe stage is `gen-sec-tickers.mjs`'s `secAsk` candidate list,
+additive by construction, exactly where the apostrophe fix went. And before any
+ship, the recorded vehicle lesson applies: a seeded draw must print each row's
+TYPE beside its answer, because a symbol can be right for the fund and wrong for
+the vehicle and no count can see it.
+
+**TWO MORE NAMED INSTANCES from the same draw, each confirming a standing
+item.** Kaleida publishes `Vanguard Index Institutional Fund` at $97,656,747
+(13.6% of its menu) with no symbol and a 0.1 fee — **the SEC matcher resolves it
+`VINIX*` and the page does not**, because the shipped arm carries assertions
+only, so it sits in the owner-gated comparable half. And Kaleida's `American
+EuroPacific Growth Fund R6` publishes **RERGX with no fee**, a THIRD spelling of
+the pair the register already names (Pvh `America EuroPacific Growth R6` → RERGX
+blank; Mediacom's full name → RERGX and 0.46) — the ticker resolver tolerating
+damage the fee table does not.
+
+**And my own probe repeated a recorded trap: `sec-funds.json` is an OBJECT
+(`{generated, source, count, funds}`), not a bare array**, so reading it as one
+gave `arr is not iterable`. The register already warns that this file has no
+`lib-schema` loader and that a guessed SHAPE fails where a guessed field name
+throws; it threw loudly here, which is the lucky direction.

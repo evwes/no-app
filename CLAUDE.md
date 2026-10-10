@@ -1314,10 +1314,31 @@ published cells:
   no footnote AND **no per-fund expense ratio at all** (the only `expense ratio`
   strings in `build-seo-pages.mjs` are prose that admin fees are separate), so
   no surface publishes a comparable fee undisclosed.
-  **WHAT SURVIVES is a TETHER, not a fix:** 45,067 rows / 34.3M ppl measurably
-  depend on that one `fund-note` paragraph and its "normally cheaper … a
-  ceiling" wording, and **nothing tests it** — the largest disclosure
-  dependency on the record. `docs/accuracy-log.md` 2026-10-10 (01:4xZ).
+  **WHAT SURVIVED WAS A TETHER, NOT A FIX — AND IT IS NOW SHIPPED (2026-10-10
+  14:3xZ): `scripts/fund-note-test.mjs`, wired into `site-test`.** 45,067 rows /
+  34.3M ppl rested on that one `fund-note` paragraph with nothing testing it.
+  **Two things are checked, because the disclosure fails two unrelated ways:**
+  each load-bearing clause is its OWN assertion (mark explained, vehicle named,
+  absence stated, provenance given, shown fund called an *equivalent*,
+  direction, ceiling) so a reword dropping exactly one fails by name; and the
+  `starred` CHAIN — declared 3735, set 3946 inside the row callback, read 4263 —
+  because ***breaking a link leaves the asterisks printing with the footnote
+  gone, which is worse than either state.*** The eager-evaluation link is pinned
+  too: `list.map` being eager is the only reason the template can read a flag
+  the callback sets. 11 checks, 11 mutation controls, and the suite **exits 1 if
+  a control PASSES**; the paragraph is EXTRACTED first, because app.js's own
+  comments contain `normally CHEAPER` and a file-wide grep would pass against a
+  file whose paragraph had been deleted. CI-safe by construction (reads app.js
+  alone), which is the property `merge-name-test` lacks.
+  **IT WENT RED ON ITS FIRST CI RUN ON THE TRAP THIS FILE RECORDS IN CAPITALS:**
+  I defaulted the input to `/home/user/no-app/app.js` and #189 died `ENOENT …
+  open '/home/user/no-app/app.js'`. ***Cheap only because the message named the
+  PATH instead of a BINARY*** — `map-test.mjs`'s `spawn python3 ENOENT` hid ten
+  red runs. Fixed via `import.meta.url`, controlled from the repo root, from `/`
+  and from a different root with the runner's layout; **#190 green, all 13
+  steps.** And #189 restated the other rule from the inside: step 10 of 14 red
+  meant steps 11-14 **SKIPPED** — stamp check, Playwright, smoke and map test
+  never ran. `docs/accuracy-log.md` 2026-10-10 (01:4xZ) and (14:3xZ).
 - Stable value / guaranteed accounts publishing a fabricated ER: 4,669 rows /
   **7,389,704 ppl**, 4,571 of them at exactly 0.35.
   **AND ITS CLEANEST SUB-CASE IS SIZED AND AWAITING A DECISION — FOUND BY THE
@@ -2119,6 +2140,49 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   exactly the loosening of "superset" that stops the matcher crossing funds —
   this record already measured a guessed contraction vocabulary at **9 false
   positives of 21 rows**. `docs/accuracy-log.md` 2026-10-10 (12:3xZ).
+- **FOUND BY THE 14:08 DRAW, SIZED NOT SHIPPED — STATING A REGISTERED SHARE
+  CLASS MAKES THE MATCHER ANSWER WORSE THAN STATING NONE. Upper bound 128
+  published+served rows / 80 plans / 1,462,765 ppl / $5,988,260,564 publishing
+  no symbol, 107 of them publishing a pattern-table FEE.** Xcel Energy (14,084
+  ppl) publishes `Vanguard Developed Market Index Institutional Plus` at
+  **$212,086,744 / 6.5% of its menu** with no ticker and 0.05, while
+  `Vanguard Mid-Cap Index Fund Institutional Plus Shares` two rows above
+  resolves **VMCPX**. The registry HAS it: `VANGUARD TAX-MANAGED FUNDS ::
+  Vanguard Developed Markets Index Fund`, class **Institutional Plus Shares =
+  VDIPX**.
+  **THREE BEHAVIOURS, isolated by varying ONLY the class phrase on one
+  registered series** — bare `VDVIX*`; `Admiral Shares` -> **VTMGX asserted**;
+  `Investor Shares` -> **VDVIX asserted**; `Institutional Shares` -> `VDVIX*`,
+  the INVESTOR class's comparable where **VTMNX** is exactly registered;
+  `Institutional Plus Shares` -> **null**; `ETF Shares` -> **null**. ***So the
+  thing that should sharpen a comparable into an assertion gets null instead, or
+  a different class's comparable.*** Confirmed on a second series (Mid-Cap: bare
+  `VIMSX*`, Admiral VIMAX, Institutional Plus **null**), so it is not one fund.
+  Same shape as the shipped 06:1xZ apostrophe fix — an unexplained leftover
+  (`plus` / `etf`) makes `resolveHolding` decline the whole row.
+  **THE BOUND IS LABELLED, not a measurement:** it cannot say the class phrase
+  is the only blocker per row, since `fund-er.js` may be silent for its own
+  reasons. Must-see pin caught; cheap exact pre-filter, a superset because the
+  cleaner only removes. Members are real funds stating a registered class
+  (`… Developed Markets Index Fund Institutional Plus Shares` ×10,
+  `… Emerging Markets Stock Index Fund Institutional Plus` ×10,
+  `… Real Estate Index Fund ETF Shares` ×4); one is
+  `922908371 VANGUARD EXT MKT INDX-INST+`, whose `INST+` the 07:3xZ entry
+  already records as **correct as filed**.
+  **THE STAGE IS THE POINT:** the refusal lives in `match-sec-tickers.mjs`,
+  which `merge-4i` SHARES to write `ftk` — consulted FIRST by `lookupTicker` —
+  so a change there can take a symbol away as readily as add one. The safe stage
+  is `gen-sec-tickers.mjs`'s `secAsk` candidate list, additive by construction,
+  where the apostrophe fix went. Before any ship, a seeded draw must print each
+  row's TYPE beside its answer: *a symbol can be right for the fund and wrong
+  for the vehicle and no count can see it.*
+  **TWO MORE NAMED INSTANCES from the same draw.** Kaleida Health (11,638 ppl)
+  publishes `Vanguard Index Institutional Fund` at $97,656,747 / 13.6% of its
+  menu with no symbol and 0.1 — **the SEC matcher resolves it `VINIX*` and the
+  page does not**, the shipped arm carrying assertions only, so it is the
+  owner-gated comparable half. And its `American EuroPacific Growth Fund R6`
+  publishes **RERGX with no fee**, a THIRD spelling of the recorded Pvh/Mediacom
+  pair. `docs/accuracy-log.md` 2026-10-10 (14:3xZ).
 - **AND THE SAME DRAW NAMED A TRUNCATED ISSUER CELL houseCore CANNOT REACH:
   Orlando Health, 55,514 ppl**, publishes `500 Index Fund` · iss
   **`Management Trust Company`** at **0.03 on $230,782,728, 12.3% of its
