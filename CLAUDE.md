@@ -1590,6 +1590,33 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **FOUND BY THE 00:08 DRAW — THE TIGHTEST WITNESS YET FOR THE OWNER-GATED
+  WRONG-SHARE-CLASS ITEM: ONE SHARE CLASS, FOUR SPELLINGS, THREE VERDICTS ON ONE
+  SCREEN.** Gundersen Lutheran Administrative Services (**12,092 ppl**, 63
+  funds, ratio 0.988) publishes, with every symbol read out of
+  `sec-funds.json`:
+  `Vanguard Institutional Index Instl Pl` -> **VINIX asserted at 0.02 on
+  $492,903,694 / 17.4% of its menu**, where `Instl Pl` is Institutional **Plus**
+  = **VIIIX** (WRONG CLASS); `Vanguard Extended Market Index Fund Instl Plus
+  1860` -> **VEMPX**, which IS Institutional Plus (correct);
+  `Vanguard Interm-Term Bond Idx InstlPls` -> **no ticker** and a 0.06 fee,
+  where Institutional Plus is **VBIUX** and registered (gap).
+  ***THE CONTROL IS THE ROW BELOW, not a sibling plan:*** spelled out, the class
+  resolves correctly; truncated, the Institutional class is published as fact;
+  welded, nothing. One menu, one product family, and the only thing that varies
+  is how many characters the filer typed — so the 14:3xZ framing (*stating a
+  class makes the matcher answer worse than stating none*) is narrower than the
+  truth: **the verdict is decided by the SPELLING.** Still OWNER-GATED.
+  **THE FEE HALF IS ON THE SAME MENU'S LARGEST ROW:**
+  `Vanguard Russell 1000 Gr-Ins` publishes **VRGWX with NO fee** on
+  $519,250,935 / **18.3%** — the recorded symbol-without-a-fee asymmetry at half
+  a billion dollars on one row, because `fundER` is a NAME table and `Gr-Ins` is
+  not a spelling it carries.
+  **NAMED, UNSIZED, new small shape:** `… Instl Plus **1860**` carries a
+  trailing four-digit FUND CODE welded onto the name — harmless on that row
+  (VEMPX resolves) but it is a digit run that is neither a vintage nor a count,
+  which is exactly the distinction the leading-count arm's safety rests on.
+  `docs/accuracy-log.md` 2026-10-11 (00:3xZ).
 - **SHIPPED 2026-10-11 00:1xZ — A FRACTIONAL LEADING UNIT COUNT: 999 published
   rows / 92 plans / 74,127 ppl / $3,118,130,006**, TICKER gained **16** / lost 0
   / swapped 0, FEE 0/0/0, `shownType` 6 (every one a TRUE qualification gained),

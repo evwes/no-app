@@ -53429,3 +53429,59 @@ all unchanged. Attributed the recorded way, by the producing run's `head_sha` �
 **#630's is `1f5a3b4c`, the mirrored EUPAC commit** — and the registration said
 ticker-only, so the two ticker keys moving and nothing else is the prediction
 holding rather than a coincidence.
+
+## 2026-10-11 (00:3xZ) — THE 00:08 DRAW: ONE SHARE CLASS, FOUR SPELLINGS, THREE DIFFERENT VERDICTS ON ONE SCREEN
+
+Seeded participant-weighted draw (`--seed 11102026`, 3 picks) over the 60,070
+published menus reaching 100,151,069 participants.
+
+**GUNDERSEN LUTHERAN ADMINISTRATIVE SERVICES (12,092 ppl, 63 funds, ratio
+0.988) IS AN INTERNALLY-CONTROLLED INSTANCE OF THE RECORDED
+`Institutional Plus` ITEM, AND IT SHARPENS IT.** The 14:3xZ entry says *stating
+a registered share class makes the matcher answer worse than stating none*.
+This menu says something narrower and more damning: **the verdict is decided by
+the SPELLING, and our own page gives three different answers for one share
+class on one screen.** Every symbol below is read out of `sec-funds.json`, not
+recalled.
+
+| filed name | published | registry says | verdict |
+|---|---|---|---|
+| `Vanguard Institutional Index Instl Pl` | **VINIX** asserted, 0.02, **$492,903,694 / 17.4%** | `Instl Pl` = Institutional **Plus** = **VIIIX** | **WRONG CLASS, ASSERTED** |
+| `Vanguard Extended Market Index Fund Instl Plus 1860` | **VEMPX** 0.05, $295,919,190 | VEMPX **is** Institutional Plus | correct |
+| `Vanguard Interm-Term Bond Idx InstlPls` | **no ticker**, 0.06, $149,079,066 | Institutional Plus = **VBIUX**, registered | gap |
+| `Vanguard Russell 1000 Gr-Ins` | **VRGWX** asserted, **no fee**, $519,250,935 / 18.3% | VRGWX is the only non-ETF class | correct symbol, missing fee |
+
+***THE CONTROL IS NOT A SIBLING PLAN OR ANOTHER STORE — IT IS THE ROW BELOW.***
+`Instl Plus` spelled out resolves the Institutional Plus class correctly, so
+the registry has the answer and the resolver can reach it; `Instl Pl`
+truncated gets the **Institutional** class published as fact, and `InstlPls`
+welded gets nothing. One menu, one product family, three behaviours, and the
+only thing that varies is how many characters the filer typed. That is the
+tightest witness this record has for the class, and it belongs to the
+**OWNER-GATED** wrong-share-class item — a session must not start it unasked.
+
+**AND THE FEE HALF IS HERE TOO, on the menu's single largest holding.**
+`Vanguard Russell 1000 Gr-Ins` publishes **VRGWX with no fee at all** on
+$519,250,935 — 18.3% of the menu — which is the recorded 91,423-row
+symbol-without-a-fee asymmetry at half a billion dollars on one row. The symbol
+is right; `fundER` is a NAME-pattern table and `Gr-Ins` is not a spelling it
+carries.
+
+**NAMED AND UNSIZED, a new small shape:** `Vanguard Extended Market Index Fund
+Instl Plus **1860**` carries a trailing four-digit FUND CODE welded onto the
+name. It is harmless here — the row resolves VEMPX correctly — but it is a
+digit run inside a published name that is neither a vintage nor a count, and
+the leading-count arm's whole safety argument is about telling those apart.
+
+**The other two picks are the machinery working, which is the half worth
+recording too.** Cook Children's Health Care System (12,520 ppl) resolves its
+whole Vanguard target-date ladder at 0.08, `Fidelity 500 Index` -> FXAIX at
+0.015, `Fidelity Mid Cap Index` -> FSMDX at 0.025, and its brokerage window is
+correctly typed and unpriced. **Morguard Management (213 ppl) is the stronger
+control: its filing is a SCANNED document read through OCR** (`digitized from
+scanned pages via OCR` in its own source line) and it still resolves twenty-odd
+symbols through house ABBREVIATIONS — `TRP RETIREMENT 2030 I` -> TRFHX,
+`FID 500 IND` -> FXAIX, `VANGUARD MID CAP INDEX - ADM` -> VIMAX,
+`DFA US SM CAP PORTFOLIO INST` -> DFSTX — with its `INVESCO STABLE ASSET -
+ADPZ` collective trust correctly carrying `noPublicPrice` and publishing no
+fee.
