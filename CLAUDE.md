@@ -681,6 +681,25 @@ costs a night.
   `node scripts/lib-schema.mjs --selftest`. **Corollary rule:** a number that
   comes out suspiciously round, uniform, or exactly zero is reporting on the
   query, not the data — check the query before publishing it.
+- **AND ITS "MATCHED PAIR" NOTE CANNOT SEE MERGE-SIDE CODE — CORRECTED
+  2026-10-10.** The note compares `PARSER_VERSION` to the store's dominant `pv`,
+  but `merge-4i.mjs` carries six NAME-REPAIR arms that rewrite the store at
+  MERGE time and move no version, so for a change to that file the equality
+  holds **by construction** and the claim is unearned rather than checked.
+  Measured: main took the self-wrapping-duplication code beside a store whose
+  shard 10 still carried `LENDING (TIER J) NT COLLECTIVE S&P500 …`, under a
+  message saying the data was not stale. Benign there (one improvement behind,
+  not wrong) and NOT in general — a merge-side arm that WITHDRAWS a false claim
+  would mirror with the claim still live. Fixed by SEPARATING the two classes
+  rather than widening the test, because the block's own comment records that
+  warning on every data-code mirror was wrong on the normal path and *a check
+  wrong on the normal path is worse than no check*. ***A guard's claim must be
+  keyed on a witness that can see the class of change it is describing.*** And
+  the find came from a wrong prediction: I expected a REFUSAL (the in-flight
+  guard is scoped to a run on **main**, and that run was on dev, so it was right
+  to pass) — *a guard that answers differently than expected is a reason to read
+  what it SAID, not only whether it fired.* `docs/accuracy-log.md` 2026-10-10
+  (04:2xZ).
 - **Mirror ONLY with `bash scripts/mirror.sh`.** It refuses when main carries a
   commit the branch lacks (the daily schedule commits data straight to main)
   and when local disagrees with origin, and prints what a force push would

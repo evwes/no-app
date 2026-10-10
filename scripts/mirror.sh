@@ -156,16 +156,46 @@ echo "mirrored: $BEFORE -> $(git rev-parse --short origin/main)"
 # who has dismissed it four times dismisses the fifth, when it is right. So
 # compare the mirrored code's PARSER_VERSION to the mirrored store's dominant
 # pv, and warn only when the store really is behind.
+# AND `PARSER_VERSION` IS SILENT ABOUT MERGE-SIDE CODE — found 2026-10-10 by a
+# mirror whose own prediction was wrong. `merge-4i.mjs` carries six NAME REPAIR
+# arms that rewrite the store at merge time and move no version at all, so for
+# a change to that file the equality below holds BY CONSTRUCTION and the
+# "matched pair" claim is unearned. Measured on the self-wrapping-duplication
+# ship: main took the new code beside a store still carrying
+# `LENDING (TIER J) NT COLLECTIVE S&P500 …`, and this block said the data was
+# not stale. Benign there — the store was one improvement behind, not wrong —
+# but a merge-side arm that WITHDREW a false claim would be mirrored with the
+# claim still live under a message saying the pair matched.
+#
+# So the two classes are separated and each is told only what its own witness
+# can establish. A parse-side change has `PARSER_VERSION` to compare; a
+# merge-side change has nothing stored to compare against, and saying so is the
+# honest answer. It still does not cry wolf: the next merge — the dev dispatch
+# or the main cron — applies the arms, which is the normal path and not an
+# action the operator must take. *A guard's claim must be keyed on a witness
+# that can see the class of change it is describing.*
 if [ -n "$CHANGED" ]; then
   PV_CODE=$(sed -n 's/^export const PARSER_VERSION = \([0-9]*\);.*/\1/p' scripts/lib-4i.mjs | head -1)
   PV_STORE=$(node scripts/store-pv.mjs 2>/dev/null | cut -d' ' -f1)
+  PARSE_SIDE=$(echo "$CHANGED" | grep -v 'merge-4i\.mjs' | grep -v '^[[:space:]]*$' || true)
+  MERGE_SIDE=$(echo "$CHANGED" | grep 'merge-4i\.mjs' || true)
   echo
   echo "  NOTE: this mirror changed data-producing code:"
   echo "$CHANGED" | sed 's/^/      /'
-  if [ -n "$PV_CODE" ] && [ "$PV_CODE" = "$PV_STORE" ]; then
-    echo "  The store mirrored alongside it was produced BY that code"
+  if [ -n "$MERGE_SIDE" ]; then
+    echo "  merge-4i.mjs is MERGE-side: its name-repair arms rewrite the store at"
+    echo "  merge time and move no version, so PARSER_VERSION cannot tell you"
+    echo "  whether the mirrored store already reflects this change. It very"
+    echo "  likely does NOT — the store was written by the previous merge."
+    echo "  The next merge (dev dispatch, or the main cron) applies it; nothing"
+    echo "  to do, but do not read the line below as covering this file."
+  fi
+  if [ -z "$PARSE_SIDE" ]; then
+    :
+  elif [ -n "$PV_CODE" ] && [ "$PV_CODE" = "$PV_STORE" ]; then
+    echo "  The parse-side code mirrored alongside it produced this store"
     echo "  (PARSER_VERSION $PV_CODE, dominant store pv $PV_STORE), so main holds a"
-    echo "  MATCHED pair and its data is NOT stale. No run on main is needed."
+    echo "  MATCHED pair and its parsed data is NOT stale. No run on main is needed."
   else
     echo "  main's DATA was produced by DIFFERENT code — PARSER_VERSION is"
     echo "  ${PV_CODE:-unknown} and the store's dominant pv is ${PV_STORE:-unknown} — so it is stale."

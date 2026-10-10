@@ -51394,3 +51394,57 @@ requirement is what keeps it intact. This arm must never undo that.
 `PARSER_VERSION` stays **203**: a merge-side repair like its five siblings, so
 no re-parse and no bump. `confident` 60,182, CONFIDENCE DIFF +0 / −0, degraded
 swaps 0 on both runs.
+
+## 2026-10-10 (04:2xZ) — `mirror.sh` CLAIMED A MATCHED CODE/STORE PAIR IT CANNOT SEE: `PARSER_VERSION` is silent about merge-side code
+
+**Found by a mirror whose own prediction was wrong, which is the only reason it
+was found at all.** Mirroring the self-wrapping-duplication ship, I predicted
+`mirror.sh` would REFUSE — the commit changes `scripts/merge-4i.mjs`, a
+data-producing file, and run #623 was in flight. It did not refuse, and the
+refusal condition is right not to: that guard is scoped to a run in flight **on
+main**, and #623 is on the dev branch. Reading the guard's condition rather than
+the rule's summary of it settled that in one line, as it did on 2026-10-09.
+
+**But the NOTE it printed instead is the defect:** *"The store mirrored
+alongside it was produced BY that code (PARSER_VERSION 203, dominant store pv
+203), so main holds a MATCHED pair and its data is NOT stale."*
+
+***IT IS NOT A MATCHED PAIR, AND THE WITNESS CANNOT SEE THE DIFFERENCE.***
+`merge-4i.mjs` carries six NAME-REPAIR arms that rewrite the store at MERGE
+time and move no version at all, so for a change to that file `PV_CODE ==
+PV_STORE` holds **by construction** and the claim is unearned rather than
+checked. Verified on main directly rather than argued: `git grep` on
+`origin/main`'s own store finds the DUPLICATED form
+`LENDING (TIER J) NT COLLECTIVE S&P500 …` still present in shard 10, beside a
+`merge-4i.mjs` that repairs it.
+
+**Benign in this instance and not in the general case.** Here the store is one
+improvement behind, not wrong, and the next merge applies it. But a merge-side
+arm whose job is to WITHDRAW a false claim — which is what most of this
+record's display and name work does — would be mirrored with the false claim
+still live, under a message stating the pair matched. *A guard's claim must be
+keyed on a witness that can see the class of change it is describing.*
+
+**THE FIX KEEPS THE REASON THE CHECK WAS NARROWED IN THE FIRST PLACE.** The
+block's own comment records that until 2026-10-03 it warned after EVERY mirror
+touching data-producing code and was therefore wrong on the normal path — and
+*a check that is wrong on the normal path is worse than no check, because an
+operator who has dismissed it four times dismisses the fifth.* So the two
+classes are now SEPARATED instead of the test being widened: a parse-side
+change gets the `PARSER_VERSION` comparison it has a witness for, and a
+merge-side change is told plainly that no stored version can answer the
+question, that the store very likely does not yet reflect the change, and that
+the next merge applies it with nothing for the operator to do. No new wolf.
+
+**Controlled three ways, because a message that cannot be shown to fire on its
+own case and to stay SILENT on the others is not a check:** `merge-4i.mjs`
+alone shows the merge note and NOT the matched claim (the case that was wrong);
+`lib-4i.mjs` alone with versions agreeing shows ONLY the matched claim (the
+normal path, unchanged); both files with versions disagreeing shows the merge
+note AND the stale warning.
+
+*And the shape of the find is worth more than the fix: I predicted a refusal,
+got a pass, and the interesting thing was not that my prediction was wrong but
+that the message explaining the pass was making a claim of its own.* A guard
+that answers differently than expected is a reason to read what it SAID, not
+only whether it fired.
