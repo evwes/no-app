@@ -52033,3 +52033,52 @@ filing's own words; stripping it would change what the filing said, and
 `quoteTrim` is deliberately LEADING-only for that reason. **0 fund names keep a
 referring parenthetical**, so the arm is complete on its own surface. Recorded
 rather than queued: this is a class examined and left, not a gap.
+
+## 2026-10-10 (12:5xZ) — the 11:08 draw: Walmart's page is honest end to end, and a ONE-WORD generic plural publishes as a fund name on 13 rows / 226,410 ppl
+
+Seeded participant-weighted draw, two plans, both read.
+
+**WALMART, 1,996,659 PARTICIPANTS — THE LARGEST PLAN IN THE UNIVERSE — PUBLISHES
+NOTHING FALSE.** 42 funds, ratio 0.952. Every collective trust carries
+`noPublicPrice` and correctly publishes no ticker and no fee (the BlackRock
+`… Non-Lendable Fund` ladder at 28.1% / $15,822,151,755 down to 2.7%), employer
+stock resolves **WMT** under `stockRow`, and the managed account reads `Managed
+account holdings (492 positions)`, which is honest about being a count rather
+than a fund. *A draw that only ever finds defects is not measuring.*
+**ONE named instance, of a recorded class:** row 8 publishes
+**`Fiera Asset Management USA`** — a FIRM name with no product — at
+**$1,773,620,398, 3.2% of the menu**, to 1,996,659 readers. That is the
+bare-HOUSE-name-as-a-holding class (5,752 rows / 8,370,934 ppl), and this is its
+largest named instance; the recorded position stands, that replacing the identity
+column's own text is a claim and not a repair.
+
+**SENECA FOODS (9,461 ppl) GAVE THE FINDING, AND IT IS SIZED: 13 published+served
+rows / 13 plans / 226,410 ppl / $50,787,467 publish a ONE-WORD GENERIC PLURAL as
+the fund name, UNQUALIFIED.** `annuities` ×6, `Equities` ×3, `contracts`/
+`Contracts` ×2 and kin — Home Depot Puerto Rico's `Equities` at **20.5% of its
+whole menu**, Rock-It Cargo's `Annuities` at 18.3%, Washington Financial Bank's
+at 14.2%, Seneca's at 2.0% / $5,852,117. **The shipped guard does not reach
+them:** Seneca's row renders `namelessRow: false` with `shownType "—"`, so
+`hasNoFundIdentity` — the display-only predicate built for exactly "a published
+name with no fund in it" — is blind to a bare generic PLURAL. **The control that
+makes it a gap rather than a design: 18 of the 31 one-word names ARE qualified**,
+so the guard reaches some tokens and misses `annuities`, `equities` and
+`contracts`.
+**IT IS NOT A FREE WIDENING, and the hazard is on this record already:**
+`merge-4i.mjs:1394` guards its share repair with `isGenericTypeName(head) ||
+hasNoFundIdentity(head)`, so widening `hasNoFundIdentity` **silently refuses more
+NAME REPAIRS** at merge time — and `isGenericTypeName` must never be widened at
+all, because the parser's region selection reads it. So the ship needs the
+merge-side population measured before the display-side gain, which is the
+opposite order from every display fix this week. **And 2 of the 13 need nothing:**
+`Annuities` typed `Stable value / GIC` and `Equities` typed `Company stock`
+already carry an informative type cell, so the shippable core is the 11 whose
+type reads `—`.
+**Also on Seneca's page, both already-recorded classes:** five
+`Fidelity Freedom Index <vintage> Fund` rows typed `Mutual fund` publish **0.12
+with NO ticker** while `Fidelity 500 Index Fund` one row below resolves
+**FXAIX at 0.015** — the matcher reaches one Fidelity name and not the Freedom
+Index ladder, and the unstated share class puts the symbol in the owner-gated
+COMPARABLE half; and the employer-stock row `Seneca Foods Unitized Stock Fund
+Employer Stock` carries `stockRow` with **no ticker**, a coverage gap in the
+employer-stock map rather than a false claim.
