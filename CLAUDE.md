@@ -2089,6 +2089,47 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   worse on $86.8M. The guard that stops that is `isGenericTypeName(head) ||
   hasNoFundIdentity(head)`, the display's own composition. `docs/accuracy-log.md`
   2026-10-03 (12:4xZ) and (13:2xZ).
+- **OWNER-GATED, FOUND BY THE 12:08 DRAW — ONE FUND, SIX SHARE CLASSES, ONE
+  FEE: 336 published+served rows / 338 plans / 575,826 ppl / $1,629,147,725,
+  of which 314 publish a fee and EVERY ONE publishes `er 0.04`**, the ADMIRAL
+  number, while the filings state six different classes of the one Vanguard
+  Total Stock Market fund — `IP`/`Inst Plus` is **VSMPX at ~0.02**,
+  `IS`/`Institutional` is **VITSX at ~0.03**, `ETF` is **VTI at ~0.03**, only
+  `Admiral` is VTSAX at ~0.04, and the bare rows state no class at all.
+  **LARGEST NAMED INSTANCE: Lockheed Martin, 180,780 ppl**, publishes
+  `VANGUARD TOTAL STOCK MARKET ETF` at 0.04 on $39,167,756; HNI Corporation's
+  `… IP` is **$160,693,465 / 10.28% of its menu** priced at roughly double its
+  real cost; Glenmede 25.68% of its whole menu, Bryn Mawr 29.67%, Eight Eleven
+  27.35%, Boston University ×2 (38,740 ppl between them).
+  **THE ENTRY POINT WAS A MISSING TICKER AND THE CAUSE IS A DROPPED SERIES
+  WORD.** Datadog files six `Vanguard <X> Admiral Fund` rows; five resolve and
+  `Vanguard Total Stock Market Admiral Fund` publishes 0.04 with NO symbol,
+  because `sec-funds.json` registers VTSAX under `Vanguard Total Stock Market
+  **Index** Fund` and the filer omitted `Index`, so the matcher's superset arm
+  fails on a missing SERIES token where `Vanguard 500 Index Admiral Fund` keeps
+  it and resolves `superset+class`. **AND THE RECORDED ASYMMETRY IS INVERTED:
+  the FEE table reaches this name and the TICKER table refuses it** — 0.04 is
+  VTSAX's genuine Admiral ER, so our two tables disagree about whether we know
+  the fund and the one that "knows" it is the one that must never infer.
+  **The fee half is the share-class fee family** — *a fee is SOURCED, never
+  derived*, `fund-facts.json` holds no VSMPX/VITSX/VTI figures, so the honest
+  move is to WITHDRAW rather than re-price. **The ticker half is
+  one-directional and the classes are STATED** (the ASSERTED bucket), but its
+  only remedy is re-inserting a structural word the filer dropped, which is
+  exactly the loosening of "superset" that stops the matcher crossing funds —
+  this record already measured a guessed contraction vocabulary at **9 false
+  positives of 21 rows**. `docs/accuracy-log.md` 2026-10-10 (12:3xZ).
+- **AND THE SAME DRAW NAMED A TRUNCATED ISSUER CELL houseCore CANNOT REACH:
+  Orlando Health, 55,514 ppl**, publishes `500 Index Fund` · iss
+  **`Management Trust Company`** at **0.03 on $230,782,728, 12.3% of its
+  menu**, no ticker, and `U.S. Bond Index Fund` under the same cell at 0.06.
+  The cell is `Fidelity Management Trust Company` with the **HOUSE WORD
+  TRUNCATED AWAY**, so the 10:4xZ reduction has no manager token left to
+  reduce — a different mechanism from the custodian-words class it fixed. The
+  store attests the full spelling elsewhere, which is the witness a repair
+  needs; the control is row 7 of the same menu, `Vanguard Windsor II Fund -
+  Admiral Fund` under `Fiduciary Trust Company`, resolving VWNAX because the
+  NAME carries the house. Unsized.
 - **ONE TICKER, TWO FEES — 231 of 1,280 published tickers / 354,753 rows /
   $1.91T**, over all 599,250 rows publishing both a symbol and a fee. The ticker
   comes from a resolver and the fee from a NAME-pattern table, so one fund
