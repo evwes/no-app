@@ -23,6 +23,7 @@ on:
             "sec-tickers.js", "scripts/sec-tickers-test.mjs",
             "scripts/gen-sec-tickers.mjs", "scripts/house-core-test.mjs",
             "scripts/apppath.mjs", "scripts/match-sec-tickers.mjs",
+            "scripts/fund-note-test.mjs",
             "plans-list.json", "plans-index.json", "map-points.json"]
   workflow_dispatch:
 
@@ -98,6 +99,19 @@ jobs:
       # refresh cannot redden it with nothing wrong.
       - name: Issuer-cell reduction — the platform refusals still hold
         run: node scripts/house-core-test.mjs
+      # The comparable-fee footnote is the largest disclosure dependency on the
+      # record: 45,067 published rows / 34,282,495 participants /
+      # $1,455,409,472,270 publish a comparable's expense ratio, and what makes
+      # that honest rather than wrong is ONE paragraph naming the fee's
+      # provenance, its DIRECTION and its status as a ceiling. Microsoft's
+      # `Fidelity Growth Company Pool Class S` publishes FDGRX's 0.61 on $8.2B;
+      # read as a ceiling that is true, and with the paragraph reworded it is a
+      # retail fee presented as the plan's price. A reword drops no count and no
+      # diff would say a word, so this asserts each clause separately AND the
+      # three-link `starred` chain -- break a link and the asterisks still print
+      # with the footnote gone, which is worse than either state.
+      - name: Comparable-fee disclosure — the footnote and its chain are intact
+        run: node scripts/fund-note-test.mjs
       # index.html cache-busts its assets with a query string, and that string
       # was typed by hand until 2026-10-02 -- when it was found SEVENTEEN DAYS
       # stale, with app.js and fund-er.js both changed that same day. A
