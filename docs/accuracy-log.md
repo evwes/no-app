@@ -52017,3 +52017,19 @@ must be tested.*
 
 **STILL OPEN, named:** 8 of the 32 candidates move no cell, cause undiagnosed;
 and the two em-dash sub-buckets above.
+
+**CONTROL RESIDUE DIAGNOSED 2026-10-10 12:1xZ — the 3 surviving referring
+parentheticals are published QUOTES, and leaving them is the right answer.**
+A whole-`p/` grep after the mirror read 4,949 pages still carrying an ordinary
+parenthetical (the positive control that the removals were targeted) and **3
+still matching the referring pattern**: Regeneron's `… classified as
+"nonparticipant-directed" (refer to Note 4)`, a vesting quote's `(see "Vesting
+provisions and distributions")`, and a match formula's `… 50% of the next 5% of
+compensation contributed by an eligible employee (see Note 9)`. All three sit
+inside a published QUOTE, which `cleanFiledName` does not touch and should not.
+***A QUOTE IS VERBATIM FILING TEXT WHERE A NAME IS A LABEL WE COMPOSE*** — so
+furniture beside a name is ours to remove and a pointer inside a sentence is the
+filing's own words; stripping it would change what the filing said, and
+`quoteTrim` is deliberately LEADING-only for that reason. **0 fund names keep a
+referring parenthetical**, so the arm is complete on its own surface. Recorded
+rather than queued: this is a class examined and left, not a gap.

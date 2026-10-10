@@ -2112,7 +2112,61 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   **FSMDX at 0.1** is the second confirmation. Both pages are honest about the
   SYMBOL; it is the FEE that disagrees. `docs/accuracy-log.md` 2026-10-10
   (10:2xZ).
-- **FOUND BY THE 09:07 DRAW, UNSIZED — A WELD ON AN EM-DASH.** Ross Stores
+- **THE 09:07 DRAW'S EM-DASH ENTRY IS REFUTED BY ITS OWN SIZING, AND WHAT IT
+  SURFACED INSTEAD IS SHIPPED — see the cross-reference entry below.** Screened
+  on the dash the class is **3,406 rows / 840 plans / 2,905,549 ppl** and is
+  dominated by `<FUND> — <SHARE CLASS>`, **correct as filed**: 1,506 rows publish
+  a TICKER, including `Vanguard Institutional Index Fund — Plus Shares` -> VINIX
+  0.02 and `JPMorgan Large Cap Growth Fund — Class R6` -> JLGMX 0.44. ***A count
+  keyed on a character measures the character*** — met on a punctuation mark this
+  time. **The two narrowed sub-buckets are NOT shipped and each SPLITS:** a TYPE
+  CAPTION left of the dash is 57 rows / 19 plans / 122,284 ppl / $476,272,437 (47
+  publishing neither ticker nor fee) and needs THREE remedies, because `Common
+  stock — The Branch Group, Inc.` at 75% is EMPLOYER STOCK, `Mutual Funds—TIAA-CREF`
+  at 56% names no fund at all, and `Collective trust fund—Putnam Large Cap Growth
+  Class R` strips to a real fund; an ENTITY left of the dash reads 229 rows and is
+  **CONTAMINATED**, because an insurer/trustee vocabulary matches `company` and
+  `management` INSIDE funds' own names (`Fidelity Growth Company Fund – Class K`
+  -> FDGRX, correct) — *a count keyed on a vocabulary measures the vocabulary.*
+  `docs/accuracy-log.md` 2026-10-10 (11:5xZ).
+- **SHIPPED 2026-10-10 11:5xZ — A CROSS-REFERENCE TO ANOTHER PAGE OF THE FILING,
+  PUBLISHED INSIDE THE FUND NAME: 24 rows / 5 plans / 203,158 ppl /
+  $40,384,714,416 — the largest display defect by DOLLARS on this record.**
+  IBM publishes `Expanded Choice - Select Funds (refer to Exhibit A -
+  investments)` at **15.5% of its menu / $9,855,559,291** and `Total Stock
+  Market Index (refer to Exhibit P - investments)` at 15.4%; Farmers Group
+  publishes three `(See Detail)` rows. 32 candidates, 24 names changed,
+  **ticker / fee / asterisk / shown type all 0**, 0 cleaned to empty, 3 crawlable
+  pages all read; `PARSER_VERSION` stays 203. Canonical in `cleanFiledName`
+  (`lib-disclose.mjs`) with the HAND-MAINTAINED app.js twin updated beside it.
+  **A STRIP AND NOT A QUALIFICATION:** the parenthetical points at an exhibit the
+  reader of this page cannot see, so it is FURNITURE — the family `quoteTrim`
+  already strips from a quote — and the name around it is real. *A row that names
+  nothing and a row carrying furniture beside its name are two classes.*
+  **ANCHORED ON THE REFERRING VERB, never a bare parenthetical** (this record
+  discarded a 2,720-row class for keying on "a closing paren with two words
+  after it"), with five must-NOT-strip pins.
+  **THE PRICED ROW IS CHECKED, NOT ASSUMED:** Farmers' `Farmers Active Stable
+  Value Fund (See Detail)` publishes **0.35 on $238,423,816**, a named live
+  instance of the owner-gated fabricated stable-value fee, and the fee does not
+  move — withdrawing it is the OWNER's call.
+  **MY FIRST BASELINE WAS WRONG AND ITS FIGURE WAS RIGHT BY LUCK** — compared
+  against the RAW name, which credits every other arm's work to this one, *the
+  differential-run lesson skipped the same day it was recorded.* Rebuilt by
+  writing the shipped module into `scripts/` with ONE line neutered; figures came
+  back identical, so the claim is now earned. Re-measured again after #627 and
+  **identical a third time.**
+  **PAGE CONTROLS, both directions:** `Metwest Total Return Bond Fund (Class B)`
+  sits two rows below a change and is untouched; across all pages **4,949 still
+  carry an ordinary parenthetical** and **0 fund names keep a referring one**.
+  The 3 pages that still match the pattern are **published QUOTES** (Regeneron's
+  `(refer to Note 4)`, a vesting quote, a match formula's `(see Note 9)`) and are
+  **correctly untouched: a quote is VERBATIM filing text where a name is a label
+  we compose**, so stripping a mid-sentence pointer from a quote would change
+  what the filing said. **Named residue:** 8 of the 32 candidates move no cell,
+  cause undiagnosed. `docs/accuracy-log.md` 2026-10-10 (11:5xZ).
+- **ORIGINAL ENTRY, kept because it is what was predicted — FOUND BY THE 09:07
+  DRAW, UNSIZED — A WELD ON AN EM-DASH.** Ross Stores
   publishes three rows shaped `<CAPTION-OR-ENTITY>—<fund>`: `STABLE RETURN
   FUND—Galliard Stable Return Fund X` (8.4% of its menu / $97,481,952),
   `Putnam Investment Mgmt Co.—Putnam Sm Cap` ($30,790,959, fund half TRUNCATED
