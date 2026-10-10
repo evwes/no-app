@@ -50976,3 +50976,49 @@ Income`, where the stray run is at the FRONT **only** and the name's own tail is
 `Income` — attested by the undamaged sibling `Capital Group 2020 Target Date
 Retirement Income` in the same menu. It is pinned must-NOT-SEE here precisely
 because detecting it needs the sibling witness the record has closed.
+
+## 2026-10-10 (01:1xZ) — the "MAIN IS AHEAD" dichotomy is not TEMPORAL, and my prediction from the recorded rule was wrong
+
+The 2026-10-09 (03:0xZ) entry splits "main is ahead" into a CONCURRENT case
+(same `pv`, same extracts, minutes apart -> the same data twice -> adopt one
+side and converge) and a SUCCESSIVE case (the recorded hazard -> rebase main's
+data commit in, or the mirror discards fresh filings). This cycle met a pair
+that is **unambiguously successive and still the same data twice.**
+
+**#618 ran 00:10:36 -> 00:23:04 on the dev branch; #619 ran 00:57:28 -> 01:08:46
+on main — 34 minutes after #618 had already finished**, so there is no overlap
+to appeal to. From the recorded rule I predicted main might hold filings dev
+lacked, and said so before measuring. **The structural diff refuted it on every
+key:**
+
+* `plans-all` 112,652 rows both sides, **0 only-on-main, 0 only-on-dev**
+* `lineups-status` 69,046 acks, **0 / 0 / 0** only-main / only-dev / DIFFERENT,
+  with **byte-identical pv maps** (203 ×68,953 plus the recorded ~93-row tail)
+* `mtias` / `plans-list` / `plans-index` / `fee-percentiles` **identical** once
+  `generated`/`at` are stripped
+* the coverage trail **422 lines on both sides with 0 unique either way** — so
+  the two runs appended the SAME LINE, which is the cheapest tell available
+* `store-diff.mjs` against main: rows added 0, removed 0, confidence gained 0,
+  lost 0, quiet movers 0
+
+***So the discriminator is not whether the runs OVERLAPPED, it is whether the
+DOL EXTRACTS MOVED between them.*** On a quiet hour they do not, and two runs
+an hour apart re-derive each other byte for byte; on a refresh hour two
+*concurrent* runs could in principle straddle it. Timing is not evidence in
+either direction, and the recorded rule's own remedy is what saved it: **run the
+structural diff, always** — it is the only thing that distinguishes the cases,
+and it is one script.
+
+**Converged the recorded way for the equal case:** `git reset --hard
+origin/main` and a `--force-with-lease` push of the DEV branch (lease pinned to
+`76c9bc64`), so both refs land on `765e3719`. Lossless because the duplicate was
+PROVED rather than assumed, and it spends no force-push on main — the mirror
+check stays armed for an hour where the stores really do differ.
+
+**The sharpening, and it is the sort that only shows up by being wrong once:** a
+rule that names a CAUSE ("concurrent runs") where the real variable is a STATE
+("the extracts did not move") will mispredict exactly when the cause is absent
+and the state still holds. The honest form is *"main is ahead" is a question
+about the DATA, answered by the structural diff, and the timing of the two runs
+tells you nothing* — with the trail's unique-line count as the ten-second
+version before the full diff.

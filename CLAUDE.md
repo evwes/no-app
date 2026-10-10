@@ -3772,6 +3772,26 @@ These outlived the versions that produced them. The accuracy log has the case.
   meanings and told readers a filing had been withdrawn when the failure was
   ours; a check re-implemented a lookup and published 65% false findings into a
   watched metric, which teaches the operator to skip the line.
+- **"MAIN IS AHEAD" IS A QUESTION ABOUT THE DATA, NOT ABOUT THE TIMING —
+  CORRECTED 2026-10-10 BY A PAIR THAT REFUTED MY PREDICTION.** The entry below
+  splits the hazard into CONCURRENT (the same data twice) and SUCCESSIVE (main
+  may hold fresh filings), and **#618 (00:10-00:23, dev) against #619
+  (00:57-01:08, main) is unambiguously successive — 34 minutes after #618
+  FINISHED — and still the same data twice.** I said main might hold filings dev
+  lacked before measuring; the structural diff answered 0 on every key
+  (`plans-all` 112,652 rows 0/0, `lineups-status` 69,046 acks 0/0/0 with
+  byte-identical pv maps, four stores identical once `generated` is stripped,
+  the trail **422 lines both sides with 0 unique either way** — so both runs
+  appended the SAME LINE — and `store-diff` 0 added / 0 removed / 0 gained /
+  0 lost). ***The discriminator is whether the DOL EXTRACTS MOVED, not whether
+  the runs overlapped***, and on a quiet hour two runs an hour apart re-derive
+  each other byte for byte. **Timing is not evidence in either direction: run
+  the structural diff, always** — the trail's unique-line count is the
+  ten-second version. *A rule that names a CAUSE where the real variable is a
+  STATE mispredicts exactly when the cause is absent and the state still holds.*
+  Converged the recorded way (`git reset --hard origin/main` + force-with-lease
+  on the DEV branch, lease pinned), lossless because the duplicate was PROVED,
+  and it spends no force-push on main. `docs/accuracy-log.md` 2026-10-10 (01:1xZ).
 - **"MAIN IS AHEAD" HAS TWO CASES AND ONLY ONE IS A REBASE (2026-10-09).** The
   recorded hazard — rebase main's data commit in or the mirror discards fresh
   filings — is written for a SUCCESSIVE run. When the dev run and the scheduled
