@@ -3486,6 +3486,82 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   **Still open:** 194 rows / 488,810 ppl this repair newly makes the matcher
   answer as a COMPARABLE, which belongs with the owner-gated comparable half.
   `docs/accuracy-log.md` 2026-10-10 (06:1xZ).
+- **SHIPPED 2026-10-10 16:4xZ — A BARE REGISTERED NAME NOW MEANS THE BARE
+  CLASS: 8,308 published rows / 5,432,225 ppl gain an ASSERTED symbol**
+  (11,105 -> **19,413** rows, 5,599,670 -> **11,031,895** ppl, 3,499 ->
+  **7,414** plans), table 5,749 -> **7,350** keys, **ADDED 1,601 / REMOVED 0 /
+  CHANGED 0, SWAPS 0, LOSSES 0**; `PARSER_VERSION` stays 203, one surface
+  (`build-seo-pages` has 0 ticker-resolver refs), fee cannot move (`star` stays
+  false). Cost: the table every visitor downloads goes 53,173 -> **64,520 bytes
+  gzipped**. 24 keys drawn uniformly and read, **24 of 24 correct**.
+  Oracle Corporation (101,985 ppl) filed `Fidelity Worldwide Fund` and the page
+  published NOTHING on $410,529,000, because `resolveHolding` answers **FWAFX**
+  — the `Fidelity ADVISOR Worldwide Fund: Class A`, a different product line
+  sold with a load — as a COMPARABLE, which this table never ships. Same for
+  Magellan (FMAGX published as FMAEX\*), `Fidelity Low-Priced Stock Fund`
+  (FLPSX as FLPCX\*), `T. Rowe Price Large-Cap Value`.
+  **THE PRINCIPLE WAS ALREADY SHIPPED ONE LEVEL UP:** `match-sec-tickers.mjs:1286`
+  narrows a one-word class statement to the class stating only that word,
+  commented *"a more specific class is a different class, and it is not what a
+  bare mention selects."* The same sentence with "one" replaced by "no" is this
+  arm. The condition is structural — `why === "exact+ambiguous"` means the filed
+  token set EQUALS the series', so **the filed name equals that class's
+  registered name token for token.**
+  **THE LOAD-BEARING CONTROL IS INTERNAL AND IT HOLDS:** the hazard is a 401(k)
+  holding `Class K` and filing the plain name, and filers state it constantly —
+  `FID MID CAP STOCK K6` (28 rows / 239,368 ppl), `FID EQUITY INCOME K` ,
+  `T. Rowe Price Large-Cap Value Fund I Class`, `… Fund Class K6`, `Class Z` —
+  every one carrying an extra token and so outside the arm BY CONSTRUCTION. **A
+  bare spelling is a statement about the class by omission.**
+  **THREE CONDITIONS, EACH WITH A MEASURED BLOCKING POPULATION (42 / 13 / 52
+  keys) AND A SINGLE-PROTECTION PIN DRAWN FROM THE DATA.** An assertion of mine
+  had to FIRE before I believed the second: my sizing compared `className` to
+  the series name with `norm` and read **0** series carrying more than one
+  un-designated class, where the arm keys on `tokens` and **42 do** — *a
+  population measured through one normalisation is not the population a repair
+  runs under*, the `wrapRepair` lesson eleven hours later.
+  ***AND READING THOSE 42 REFUTED A CONCLUSION I HAD ALREADY WRITTEN INTO THE
+  SHIPPED COMMENT.*** From 127 rows read I recorded that a `Fund`/`Portfolio`
+  difference is only the filer's wording (`State Street Aggregate Bond Index
+  Fund` -> SSAFX `… Portfolio`; `Fidelity Real Estate Investment Fund` ->
+  FRESX). For **T. Rowe Price it is a different registered product**:
+  `… Equity Income Fund` is **PRFDX** and `… Equity Income Portfolio` is
+  **QAAHCX**, a variable-annuity portfolio, and the same pair exists for
+  Mid-Cap Growth (RPMGX/QAMWEX), Blue Chip (TRBCX/QAAAJX), Equity Index 500
+  (PREIX/QAAGTX), International Stock (PRITX/QAAGYX), All-Cap Opportunities
+  (PRWAX/QAOSWX). ***A screen that finds its own conclusion in every member it
+  reads has not been shown the members that would refute it*** — all 127 were
+  houses where the two words coincide.
+  ***THE THIRD CONDITION WAS FOUND BY THE SEEDED DRAW AND BY NOTHING ELSE.***
+  The first regen shipped 19,564 rows with ADDED/REMOVED/CHANGED at 1,653/0/0
+  and every fixture green, and one of its 24 drawn keys was a defect:
+  `iss "GQG Partners" · name "Emerging Markets Equity"` -> **TEMUX**, registrant
+  **MORGAN STANLEY PATHWAY FUNDS**. `idx.bySeries` keys on the series TOKEN KEY,
+  so `emerging markets equity` holds FIVE classes across THREE registrants; the
+  resolver answers GuideStone's **GEMZX\*** and exactly one class is
+  un-designated, so conditions (1) and (2) PASSED and the promotion crossed
+  registrants on a row naming a third manager. **My comment on condition (1)
+  overclaimed:** the tie test catches the cross-registrant collapse only where
+  SEVERAL are un-designated and therefore tie (`Stock Index Fund` = VSTIX +
+  HSTIX + NOSIX); where ONE registrant of several has it, there is no tie and
+  the test is silent. ***A condition that catches one instance of a hazard is
+  not a condition against the hazard.*** Fixed by requiring the promoted class
+  to share the REGISTRANT of the resolver's own answer, read off `idx.byTicker`.
+  **23 of 24 were correct, so no count and no diff could have shown it.**
+  **AND MY SIZING UNDER-PREDICTED BY 22% ON ROWS:** it asked `resolveHolding`
+  only the RAW and CLEANED spellings where `secAsk` asks four (raw, cleaned,
+  apostrophe-expanded, issuer-core-reduced) — *a harness that asks a subset of
+  the spellings production asks measures the subset.* Its FIRST figure was also
+  wrong by 2.9x on dollars (9,368 rows / $39.9B) because its ten largest members
+  were typed `Collective trust`, which `pooledRow` refuses: *a symbol can be
+  right for the fund and wrong for the vehicle*, visible only because the type
+  cell was printed.
+  **TETHERED IN CI AND DELIBERATELY NOT IN THE GENERATOR:** the generator's five
+  import-time control blocks read the LIVE `sec-funds.json`, so a registry
+  refresh can make them stale — the `merge-name-test` shape. `sec-tickers-test`
+  instead asserts the COMMITTED table (`Fidelity Worldwide Fund` -> **FWWFX**,
+  `comparable === false`), so a later regen that stops producing it reddens CI.
+  `docs/accuracy-log.md` 2026-10-10 (16:4xZ).
 - **SHIPPED 2026-10-10 10:4xZ — THE ISSUER CELL'S CUSTODIAN WORDS BLOCKED THE
   HOUSE IT CARRIES: 6,441 published rows / 1,674 plans / 2,386,291 ppl gain an
   ASSERTED symbol** (4,664 -> 11,105 rows, 3,213,379 -> 5,599,670 ppl), table

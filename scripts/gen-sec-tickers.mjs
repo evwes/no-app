@@ -270,6 +270,228 @@ function distinctiveWords(s) {
  * PERMISSION, so a leak returns the decision to the matcher's own judgment,
  * which is the status quo. A false REFUSAL costs a correct symbol, which is
  * why that is the direction measured and read. */
+/* ---------- A BARE REGISTERED NAME MEANS THE BARE CLASS ----------
+ *
+ * Oracle Corporation (101,985 participants) files `Fidelity Worldwide Fund`
+ * and the page publishes NOTHING on $410,529,000, because the matcher answers
+ * **FWAFX**, the `Fidelity ADVISOR Worldwide Fund: Class A` — a comparable, and
+ * this generator ships assertions only. The registry carries a class whose
+ * registered name IS `Fidelity Worldwide Fund`, ticker **FWWFX**, and the
+ * filing names exactly that string.
+ *
+ * The mechanism is `match-sec-tickers.mjs:1306`: with no class word in the
+ * filed name `hintsOf` is empty, the class filter is skipped entirely, and the
+ * representative falls to `uniq.find(c => c.hint === "a")` — which for every
+ * Fidelity retail fund is the ADVISOR product line, a different product sold
+ * with a load.
+ *
+ * ***THE PRINCIPLE IS ALREADY SHIPPED ONE LEVEL UP.*** `match-sec-tickers.mjs`
+ * line 1286 narrows a one-word class statement to the class stating only that
+ * word, and its comment reads *"a more specific class is a different class, and
+ * it is not what a bare mention selects."* The same sentence with "one"
+ * replaced by "no" is this arm: **a filing stating NO class word means the
+ * class that states none** — and the registry says which class that is, for
+ * 376 multi-class series, with **0 series carrying more than one** such class,
+ * so there is never a tie to break.
+ *
+ * THE CONDITION IS STRUCTURAL, NOT A VOCABULARY. `why === "exact+ambiguous"`
+ * means the filed name's TOKEN SET EQUALS the series' token set — the `exact`
+ * arm's own standard — so the filed name carries no word beyond the series
+ * name, and the un-designated class's registered name IS the series name.
+ * Together: **the filed name equals that class's registered name, token for
+ * token.** That is an identification by the exact arm's own standard, not an
+ * inference about an unstated class.
+ *
+ * THE LOAD-BEARING CONTROL IS THAT FILERS SAY SO WHEN THEY HOLD ANOTHER CLASS,
+ * and it is internal. The whole hazard is a 401(k) holding `Class K` — the
+ * retirement-plan class — and filing the fund's plain name. Measured over the
+ * universe's own spellings for these families, filers state it constantly and
+ * in many forms: `FID MID CAP STOCK K6` (28 rows / 239,368 ppl), `FID MID CAP
+ * STOCK K` (21 / 87,680), `Fidelity Mid-Cap Stock Fund Class K`, `FID EQUITY
+ * INCOME K6` (23 / 104,231), `Fidelity Equity Income Fund - Class K`,
+ * `T. Rowe Price Large-Cap Value Fund I Class` (4 / 60,124), `TRP LARGE-CAP
+ * VAL I`, `Fidelity Freedom Blend 2050 Fund Class K6`, `… Class Z`. Every one
+ * carries an extra token and is therefore outside this arm BY CONSTRUCTION.
+ * **So a bare spelling is a statement about the class by omission.**
+ *
+ * TWO CONDITIONS SELECT THE CLASS, AND AN ASSERTION OF MINE HAD TO FIRE BEFORE
+ * I BELIEVED THE SECOND. My sizing compared `className` to the series name with
+ * `norm` and reported **0** series carrying more than one un-designated class;
+ * the arm keys on `tokens`, which filters NOISE — `fund`, `portfolio`,
+ * `account` — and under THAT comparison **42 series carry more than one**.
+ * *A population measured through one normalisation is not the population a
+ * repair runs under.*
+ *
+ * ***AND READING THE 42 REFUTED THE VEHICLE CONCLUSION I HAD ALREADY WRITTEN
+ * HERE.*** I had recorded that a `Fund`/`Portfolio` difference is only the
+ * filer's wording, measured over 127 rows — `State Street Aggregate Bond Index
+ * Fund` -> SSAFX `… Index Portfolio`, `Fidelity Real Estate Investment Fund` ->
+ * FRESX `… Investment Portfolio` — and for those houses it is. For T. Rowe
+ * Price it is a DIFFERENT REGISTERED PRODUCT: `T. Rowe Price Equity Income
+ * Fund` is **PRFDX** and `T. Rowe Price Equity Income Portfolio` is
+ * **QAAHCX**, a variable-annuity portfolio, and the same pair exists for
+ * Mid-Cap Growth (RPMGX / QAMWEX), Blue Chip Growth (TRBCX / QAAAJX), Equity
+ * Index 500 (PREIX / QAAGTX), International Stock (PRITX / QAAGYX) and All-Cap
+ * Opportunities (PRWAX / QAOSWX). My 127-row screen read only houses where the
+ * words coincide and never looked at the counter-population. *A screen that
+ * finds its own conclusion in every member it reads has not been shown the
+ * members that would refute it.*
+ *
+ * So the vehicle question is answered by REFUSING the series, not by trusting
+ * the words: (1) exactly one class of the series may be TOKENS-equal to the
+ * series key — where a `Fund` and a `Portfolio` edition both are, a bare filed
+ * name cannot choose between them and *a guess about the class is a guess about
+ * the FEE*; and (2) that class must also be NORM-equal to the series name, so a
+ * series whose only token-equal class is spelled with the other vehicle noun is
+ * refused rather than asserted. Condition (1) catches the generic series name
+ * that collapses across registrants ONLY where several of them are
+ * un-designated and therefore tie — `Stock Index Fund` holds VSTIX, HSTIX and
+ * NOSIX, `Core Bond Fund` holds VCBDX and NOCBX, and VCBDX is the very symbol
+ * the issuer-cell arm's pinned VALIC hazard turned on. Where ONE registrant of
+ * several has the un-designated class there is no tie, and condition (3) below
+ * is the only thing standing between this arm and a cross-registrant
+ * assertion.
+ *
+ * The dangerous vehicle words are refused upstream and independently:
+ * `resolveHolding`'s own `pooled` test and this file's sliced `pooledRow` both
+ * read the NAME for `trust`/`commingled`/`pool`.
+ *
+ * `registrantAttested` still runs on the promoted symbol, and `pooledRow` still
+ * runs before it, so this arm adds no exemption: it changes WHICH class of an
+ * already-identified series is the answer, and nothing else.
+ *
+ * AND THE ANSWER IS READ OFF `sec.series`, NEVER OFF THE FILED NAME. Sizing it
+ * by looking the series up from the filed tokens read Universal Health
+ * Services' `Equity-Income Fund` / issuer `Vanguard` — which resolves the
+ * VANGUARD series — against a different registrant's series `Equity Income
+ * Portfolio`, and would have published **GEQIX** for a Vanguard holding. The
+ * resolver uses the issuer cell and a name-keyed lookup cannot, so the two
+ * reach different series on the same row. */
+const BARE_CLASS = new Map();            // series token key -> the un-designated class
+{
+  /* `tokens` is not exported, so it is SLICED from the matcher the way this
+   * file already slices `pooledRow` from fund-er.js — a transcription of a
+   * shipped expression rots as the expression grows, and NOISE has grown. */
+  const ms = readFileSync(`${ROOT}/scripts/match-sec-tickers.mjs`, "utf8");
+  const mN = ms.match(/const NOISE = new Set\(\[[\s\S]*?\]\);/);
+  const mT = ms.match(/const tokens = \(s\) => [^\n]+;/);
+  if (!mN || !mT) throw new Error("gen-sec-tickers: could not slice the matcher's NOISE/tokens — refusing to guess");
+  const tok = new Function("norm", `${mN[0]}\n${mT[0]}\nreturn tokens;`)(norm);
+  if (tok("Fidelity Worldwide Fund").join(" ") !== "fidelity worldwide")
+    throw new Error("gen-sec-tickers: the sliced tokens() does not behave as expected");
+  const keyOf = (s) => tok(String(s || "")).join(" ");
+  let multi = 0, refusedTie = 0, refusedSpelling = 0;
+  for (const [k, list] of idx.bySeries) {
+    if (list.length < 2) continue;
+    multi++;
+    const sn = list[0].series || "", sk = keyOf(sn);
+    if (!sk) continue;
+    /* (1) exactly one class token-equal to the series key */
+    const bare = list.filter((c) => keyOf(c.className) === sk);
+    if (bare.length > 1) { refusedTie++; continue; }
+    if (bare.length < 1) continue;
+    /* (2) and spelled the same, so the other vehicle noun is not accepted */
+    if (norm(bare[0].className) !== norm(sn)) { refusedSpelling++; continue; }
+    BARE_CLASS.set(k, bare[0]);
+  }
+  console.error(`bare-class index: ${BARE_CLASS.size} of ${multi} multi-class series usable; refused ${refusedTie} for a Fund/Portfolio or cross-registrant TIE, ${refusedSpelling} because the only token-equal class is spelled with another vehicle noun`);
+  /* assert what IS invariant — the pin's series must resolve to exactly one —
+   * rather than a premise about the whole file that turned out to be false */
+  if (!BARE_CLASS.size) throw new Error("gen-sec-tickers: the bare-class index is empty — the registry or the key has moved, refusing to write");
+  BARE_CLASS.keyOf = keyOf;
+}
+/* Promote an ambiguous answer to the series' un-designated class. Returns the
+ * ORIGINAL answer unchanged in every other case, so it is additive by
+ * construction and can never take a symbol away. */
+function bareClassPromote(sec) {
+  if (!sec || !sec.comparable || sec.why !== "exact+ambiguous") return sec;
+  const b = BARE_CLASS.get(BARE_CLASS.keyOf(sec.series || ""));
+  if (!b || b.ticker === sec.ticker) return sec;
+  /* (3) THE PROMOTED CLASS MUST BELONG TO THE SAME REGISTRANT AS THE ANSWER
+   * THE RESOLVER GAVE, AND ONLY A SEEDED DRAW FOUND THIS.
+   *
+   * `idx.bySeries` is keyed on the series TOKEN KEY, so several registrants'
+   * series collapse into one list. The key `emerging markets equity` holds
+   * FIVE classes across THREE registrants: Morgan Stanley Pathway's TEMUX,
+   * Morgan Stanley VIF's MSMBX/MEMEX, and GuideStone's GEMYX/GEMZX. The
+   * resolver answers **GEMZX\*** — honestly hedged, because the class is
+   * ambiguous — and exactly one class in that list is un-designated, TEMUX, so
+   * conditions (1) and (2) both PASS and the promotion crossed from GuideStone
+   * to Morgan Stanley. On a real row filed `Emerging Markets Equity` with
+   * issuer **`GQG Partners`** — a third manager again — the page would have
+   * ASSERTED a Morgan Stanley symbol.
+   *
+   * ***My own comment on condition (1) overclaimed and the draw is what caught
+   * it.*** I wrote that the tie test "also disposes of the generic series name
+   * that collapses across registrants", and for `Stock Index Fund` (VSTIX,
+   * HSTIX, NOSIX) it does — because ALL THREE are un-designated, so they tie.
+   * Where only ONE registrant of several has an un-designated class there is no
+   * tie to find, and the test is silent. *A condition that catches one instance
+   * of a hazard is not a condition against the hazard* — and 23 of the 24 keys
+   * drawn were correct, so no count and no sample average would have shown it.
+   *
+   * The registrant is read off `idx.byTicker`, which is the index's own record
+   * of who the symbol belongs to, so this needs no new source. */
+  const be = idx.byTicker.get(String(b.ticker).toUpperCase());
+  const se = idx.byTicker.get(String(sec.ticker).toUpperCase());
+  if (!be || !se || norm(be.entity || "") !== norm(se.entity || "")) return sec;
+  return { ...sec, ticker: b.ticker, comparable: false, why: sec.why + "+bare",
+    className: b.className };
+}
+{
+  /* controls in both directions, each a case where the condition under test is
+   * the ONLY thing deciding the verdict */
+  const must = resolveHolding(idx, "Fidelity Worldwide Fund", "");
+  if (!must || !must.comparable || must.why !== "exact+ambiguous" || must.ticker !== "FWAFX")
+    throw new Error(`gen-sec-tickers: BARE-CLASS PIN — "Fidelity Worldwide Fund" should answer FWAFX* exact+ambiguous, got ${must && must.ticker}${must && must.comparable ? "*" : ""} (${must && must.why}); the matcher has moved`);
+  const got = bareClassPromote(must);
+  if (got.ticker !== "FWWFX" || got.comparable)
+    throw new Error(`gen-sec-tickers: BARE-CLASS PIN — the promotion should assert FWWFX, got ${got.ticker}${got.comparable ? "*" : ""}`);
+  /* must NOT fire: a filing that STATES a class reaches a `+class` answer and
+   * is not ambiguous at all, so the arm must leave it exactly as it was */
+  const stated = resolveHolding(idx, "Fidelity Mid-Cap Stock Fund Class K", "");
+  if (stated && bareClassPromote(stated).ticker !== stated.ticker)
+    throw new Error("gen-sec-tickers: BARE-CLASS CONTROL — a filing stating Class K must not be promoted");
+  /* must NOT fire: a SUPERSET match is not `exact`, so the filed name carries a
+   * word the series does not and the token-equality premise does not hold */
+  for (const n of ["Fidelity Advisor Worldwide Fund", "Fidelity Worldwide Index Fund"]) {
+    const r = resolveHolding(idx, n, "");
+    if (r && r.why === "exact+ambiguous" && bareClassPromote(r).ticker !== r.ticker)
+      throw new Error(`gen-sec-tickers: BARE-CLASS CONTROL — ${JSON.stringify(n)} is not a bare registered name and must not be promoted`);
+  }
+  /* SINGLE-PROTECTION CASES FOR THE TWO SELECTION CONDITIONS, drawn FROM the
+   * 42 the assertion caught rather than imagined — the record's rule is to
+   * measure a guard's blocking population over the live data, and a case
+   * protected twice proves neither.
+   *
+   * (1) THE TIE. `T. Rowe Price Equity Income Fund` is token-equal to BOTH
+   *     PRFDX (the fund) and QAAHCX (the variable-annuity portfolio), so the
+   *     series must be refused outright. Only condition (1) blocks it:
+   *     PRFDX is norm-equal to the series name, so (2) would pass it. */
+  if (BARE_CLASS.has(BARE_CLASS.keyOf("T. Rowe Price Equity Income Fund")))
+    throw new Error("gen-sec-tickers: BARE-CLASS CONTROL (1) — the T. Rowe Price Equity Income Fund/Portfolio TIE must be refused; PRFDX and QAAHCX are different registered products");
+  /* (2) THE SPELLING. `Wireless Portfolio` has one class token-equal to its key
+   *     under a DIFFERENT vehicle noun. Only condition (2) can block a series
+   *     whose single token-equal class is spelled the other way. */
+  for (const s of ["Wireless Portfolio", "Stock Index Fund", "Core Bond Fund", "GROWTH FUND"])
+    if (BARE_CLASS.has(BARE_CLASS.keyOf(s)))
+      throw new Error(`gen-sec-tickers: BARE-CLASS CONTROL (2) — ${JSON.stringify(s)} must be refused; a generic or cross-vehicle series has no unique un-designated class`);
+  /* (3) THE REGISTRANT. `Emerging Markets Equity Fund` passes (1) and (2) — one
+   *     un-designated class, spelled the same — and the resolver's own answer
+   *     is GuideStone's GEMZX while that class is Morgan Stanley's TEMUX. Only
+   *     condition (3) blocks it, which is why it is pinned by the ANSWER and
+   *     not by the index: `BARE_CLASS` legitimately holds this key. */
+  {
+    const r = resolveHolding(idx, "Emerging Markets Equity Fund", "");
+    if (!r || !r.comparable || r.why !== "exact+ambiguous")
+      throw new Error(`gen-sec-tickers: BARE-CLASS CONTROL (3) — the cross-registrant pin no longer answers exact+ambiguous (got ${r && r.ticker}, ${r && r.why}); re-choose it from the data`);
+    if (!BARE_CLASS.has(BARE_CLASS.keyOf("Emerging Markets Equity Fund")))
+      throw new Error("gen-sec-tickers: BARE-CLASS CONTROL (3) — the pin must be in BARE_CLASS, or it tests (1)/(2) instead of (3)");
+    if (bareClassPromote(r).ticker !== r.ticker)
+      throw new Error(`gen-sec-tickers: BARE-CLASS CONTROL (3) — "Emerging Markets Equity Fund" must NOT be promoted across registrants (${r.ticker} -> ${bareClassPromote(r).ticker})`);
+  }
+}
+
 function registrantAttested(ticker, filedName, iss) {
   const ents = entitiesByTicker.get(ticker) || [];
   if (!ents.length) return false;                 // a symbol we cannot attribute at all
@@ -656,7 +878,9 @@ for (let s = 0; s < 64; s++) {
       /* the f.tk guard: renderRow would publish it the moment `info` is null,
        * so this arm must never make `info` non-null there */
       if (f.tk) { ftkHeld++; continue; }
-      const sec = secAsk(f.nameRaw, f.name, f.iss || "");
+      /* `let`, because the bare-class promotion below rebinds it. It returns a
+       * NEW object rather than mutating, which matters: `secAsk` is cached. */
+      let sec = secAsk(f.nameRaw, f.name, f.iss || "");
       if (!sec) { blank++; continue; }
       /* the vehicle question, asked of the name the page prints AND of the
        * filing's own type cell, before the asserted/comparable split — because
@@ -669,6 +893,11 @@ for (let s = 0; s < 64; s++) {
         continue;
       }
       const key = `${f.iss || ""}\u0000${f.nameRaw || f.name || ""}`;
+      /* AFTER the vehicle question and BEFORE the asserted/comparable split: a
+       * bare registered name names the un-designated class. Additive by
+       * construction — it returns the original answer in every other case —
+       * and `registrantAttested` below still runs on whatever it returns. */
+      sec = bareClassPromote(sec);
       if (sec.comparable) {
         gainComp++;
         compKeys.add(key);

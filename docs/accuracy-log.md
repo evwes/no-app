@@ -52475,3 +52475,154 @@ bare-series ambiguity, so what it needs is a way to tell a class STATED from a
 class word inside the SERIES NAME — which the index can answer, because it holds
 the series name and can be asked whether the word is already part of it. That is
 a different and better instrument than a wider hint table. Left unbuilt.
+
+## 2026-10-10 (16:4xZ) — A BARE REGISTERED NAME NOW MEANS THE BARE CLASS: the page stopped answering `Fidelity Magellan Fund` with the ADVISOR fund's Class A
+
+**What was wrong.** Oracle Corporation (101,985 participants) files `Fidelity
+Worldwide Fund` and the page published **nothing** on $410,529,000, because
+`resolveHolding` answers **FWAFX** — the `Fidelity ADVISOR Worldwide Fund:
+Class A`, a different product line sold with a load — marked `comparable`, and
+`gen-sec-tickers.mjs` ships assertions only. The registry carries a class whose
+registered name IS `Fidelity Worldwide Fund`, ticker **FWWFX**, and the filing
+names exactly that string. The same shape held for Magellan (FMAGX published as
+FMAEX\*), `Fidelity Low-Priced Stock Fund` (FLPSX as FLPCX\*), `Fidelity Total
+Bond Fund`, `Fidelity Blue Chip Growth`, `T. Rowe Price Large-Cap Value`.
+
+**The mechanism** is `match-sec-tickers.mjs:1306`: with no class word in the
+filed name `hintsOf` is empty, the class filter is skipped entirely, and the
+representative falls to `uniq.find(c => c.hint === "a")`, which for every
+Fidelity retail fund is the Advisor line.
+
+**THE PRINCIPLE WAS ALREADY SHIPPED ONE LEVEL UP.** `match-sec-tickers.mjs:1286`
+narrows a one-word class statement to the class stating only that word, and its
+comment reads *"a more specific class is a different class, and it is not what a
+bare mention selects."* The same sentence with "one" replaced by "no" is this
+arm: **a filing stating NO class word means the class that states none.**
+
+**The load-bearing control is internal and it holds.** The whole hazard is a
+401(k) holding `Class K` — the retirement-plan class — and filing the fund's
+plain name. Measured over the universe's own spellings for these families,
+filers state it constantly: `FID MID CAP STOCK K6` (28 rows / 239,368 ppl),
+`FID MID CAP STOCK K` (21 / 87,680), `Fidelity Mid-Cap Stock Fund Class K`,
+`FID EQUITY INCOME K6` (23 / 104,231), `Fidelity Equity Income Fund - Class K`,
+`T. Rowe Price Large-Cap Value Fund I Class` (4 / 60,124), `TRP LARGE-CAP VAL
+I`, `Fidelity Freedom Blend 2050 Fund Class K6`, `… Class Z`. **Every one
+carries an extra token and is therefore outside the arm BY CONSTRUCTION**, so a
+bare spelling is a statement about the class by omission.
+
+**AN ASSERTION OF MINE HAD TO FIRE BEFORE I BELIEVED THE SECOND CONDITION.** My
+sizing compared `className` to the series name with `norm` and reported **0**
+series carrying more than one un-designated class. The arm keys on `tokens`,
+which filters NOISE — `fund`, `portfolio`, `account` — and under THAT comparison
+**42 series carry more than one**. *A population measured through one
+normalisation is not the population a repair runs under* (the `wrapRepair`
+lesson, verbatim, eleven hours later).
+
+***AND READING THE 42 REFUTED A CONCLUSION I HAD ALREADY WRITTEN INTO THE
+SHIPPED COMMENT.*** I had recorded, from 127 rows read, that a `Fund`/
+`Portfolio` difference is only the filer's wording — `State Street Aggregate
+Bond Index Fund` → SSAFX `… Index Portfolio`, `Fidelity Real Estate Investment
+Fund` → FRESX `… Investment Portfolio`, `Baron Funds Small Cap` → BSCFX — and
+for those houses it is. For **T. Rowe Price it is a different registered
+product**: `T. Rowe Price Equity Income Fund` is **PRFDX** and `T. Rowe Price
+Equity Income Portfolio` is **QAAHCX**, a variable-annuity portfolio, and the
+same pair exists for Mid-Cap Growth (RPMGX / QAMWEX), Blue Chip Growth (TRBCX /
+QAAAJX), Equity Index 500 (PREIX / QAAGTX), International Stock (PRITX /
+QAAGYX) and All-Cap Opportunities (PRWAX / QAOSWX). ***A screen that finds its
+own conclusion in every member it reads has not been shown the members that
+would refute it*** — my 127 rows were all houses where the two words coincide,
+and the counter-population was never in the screen.
+
+**So the vehicle question is answered by REFUSING the series, not by trusting
+the words**, and both conditions have a measured blocking population:
+
+| condition | series refused |
+|---|---|
+| exactly one class TOKENS-equal to the series key | **42** (Fund/Portfolio pairs, and the cross-registrant collapse: `Stock Index Fund` holds VSTIX, HSTIX *and* NOSIX; `Core Bond Fund` holds VCBDX and NOCBX) |
+| that class also NORM-equal to the series name | **13** |
+| usable | **363** of 5,180 multi-class series |
+
+VCBDX is the very symbol the issuer-cell arm's pinned VALIC hazard turned on,
+so condition (1) is protecting a population this record has already been burned
+by. Four single-protection pins, all drawn FROM the 42 rather than imagined.
+
+**AND MY SIZING INSTRUMENT HAD THE SAME CLASS OF DEFECT, caught by reading
+members.** Keying the bare class off the FILED tokens read Universal Health
+Services' `Equity-Income Fund` · issuer `Vanguard` — which resolves the
+**Vanguard** series — against a different registrant's series `Equity Income
+Portfolio`, and would have published **GEQIX** for a Vanguard holding. The
+resolver uses the issuer cell and a name-keyed lookup cannot, so the two reach
+different series on the same row. ***The answer must be read off `sec.series`,
+never off the filed name.*** It also moved the figure by 1.4M participants,
+which no count would have flagged.
+
+**The first sizing was wrong by 2.9x on dollars for the recorded reason.** It
+read 9,368 rows / 8,178,933 ppl / $39.9B and its ten largest members were all
+typed **`Collective trust`** — Qualcomm's `Fidelity® OTC` at $1,301,116,038,
+Pfizer's SSGA index fund at $1,136,497,000, Accenture's at $946,555,980 — which
+`pooledRow` refuses before the asserted/comparable split. *A symbol can be right
+for the fund and wrong for the vehicle*, and it was visible only because the
+type cell was printed.
+
+**Shipped.** `bareClassPromote` in `gen-sec-tickers.mjs`, called after the
+vehicle question and before the asserted/comparable split, additive by
+construction (it returns the original answer in every case it does not fire);
+`registrantAttested` still runs on whatever it returns. One surface —
+`build-seo-pages.mjs` publishes no ticker column. The fee cannot move: the arm
+returns `comparable: false`, so `star` stays false and `er` stays name-keyed.
+`PARSER_VERSION` stays 203.
+
+**Tethered in CI, and deliberately not in the generator.** The generator's own
+four BARE-CLASS controls read the live `sec-funds.json`, so a registry refresh
+can make them stale — the `merge-name-test` shape this record says must stay out
+of CI. `sec-tickers-test.mjs` instead asserts the COMMITTED table: `Fidelity
+Worldwide Fund` must resolve **FWWFX** through the real `lookupTicker`, and
+`comparable === false`. If a later regen stops producing it, or produces it with
+an asterisk, CI goes red rather than a reader finding it.
+
+**DELIVERED, measured through the real generator and the table diffed key by
+key: `11,105 -> 19,413` published+served rows, `5,599,670 -> 11,031,895`
+participants, `3,499 -> 7,414` plans — so the arm is worth **8,308 rows /
+5,432,225 participants**. Table `5,749 -> 7,350` keys: **ADDED 1,601 /
+REMOVED 0 / CHANGED 0**, **SWAPS 0, LOSSES 0**. 24 keys drawn uniformly
+(seeded) and read: **24 of 24 correct** — every one a Fidelity retail fund
+under a Fidelity registrant whose `className` is its series name (FLPSX,
+FMAGX, FEQIX, FBALX, FXNAX, FCPGX, FRESX). Cost: the table every visitor
+downloads goes **53,173 -> 64,520 bytes gzipped**.
+
+**MY SIZING UNDER-PREDICTED BY 22% ON ROWS AND I CAN NAME WHY.** It read 6,823
+rows / 5,309,150 ppl because it asked `resolveHolding` only the RAW and CLEANED
+spellings; `secAsk` asks four — raw, cleaned, apostrophe-expanded, and the
+issuer cell reduced to its house core. *A harness that asks a subset of the
+spellings production asks measures the subset*, which is the same rule as
+asking the function the page calls with the argument the page passes, met on
+the number of calls rather than on the call.
+
+***AND A THIRD CONDITION WAS NEEDED, FOUND BY THE SEEDED DRAW AND BY NOTHING
+ELSE.*** The first regen shipped 19,564 rows and one of its 24 drawn keys was a
+defect: `iss "GQG Partners" · name "Emerging Markets Equity"` -> **TEMUX**,
+registrant **MORGAN STANLEY PATHWAY FUNDS**. `idx.bySeries` is keyed on the
+series TOKEN KEY, so the key `emerging markets equity` holds FIVE classes
+across THREE registrants — Morgan Stanley Pathway's TEMUX, Morgan Stanley VIF's
+MSMBX/MEMEX, and GuideStone's GEMYX/GEMZX. The resolver answers **GEMZX\***,
+honestly hedged; exactly one class in the list is un-designated, TEMUX, so
+conditions (1) and (2) both PASSED and the promotion crossed from GuideStone to
+Morgan Stanley on a row whose issuer names a THIRD manager.
+
+**My own comment on condition (1) overclaimed, and that is the reusable part.**
+I had written that the tie test "also disposes of the generic series name that
+collapses across registrants", and for `Stock Index Fund` (VSTIX, HSTIX, NOSIX)
+it does — because ALL THREE are un-designated and therefore tie. Where ONE
+registrant of several has the un-designated class there is no tie to find and
+the test is silent. ***A condition that catches one instance of a hazard is not
+a condition against the hazard.*** Fixed by requiring the promoted class to
+belong to the SAME REGISTRANT as the answer the resolver gave, read off
+`idx.byTicker` so it needs no new source; it cost **52 keys / 151 rows /
+158,489 ppl** and TEMUX is now absent from the table entirely. Pinned by the
+ANSWER rather than by the index, because `BARE_CLASS` legitimately holds that
+key — a pin on the index would have tested (1) and (2) instead.
+
+**23 of 24 were correct, so no count, no average and no whole-store diff would
+have shown it** — ADDED/REMOVED/CHANGED read 1,653/0/0 and every fixture was
+green with the defect in. *A diff cannot tell a wanted change from an unwanted
+one.*

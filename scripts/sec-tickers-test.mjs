@@ -55,6 +55,30 @@ if (PIN) {
   ok(!!hit && hit.comparable === false, "the pin's answer is ASSERTED, not a comparable");
 }
 
+/* (2b) THE BARE-CLASS ARM'S OWN CLAIM, pinned by ack-free key because it is the
+ * one gain in this table that turns on WHICH SHARE CLASS of an already-
+ * identified series is the answer. Oracle Corporation (101,985 participants)
+ * files `Fidelity Worldwide Fund` on $410,529,000 and the matcher answers
+ * FWAFX — the `Fidelity ADVISOR Worldwide Fund: Class A`, a different product
+ * line sold with a load — as a comparable, which this table never ships. The
+ * registry carries a class whose registered name IS `Fidelity Worldwide Fund`,
+ * FWWFX, and the filing names exactly that.
+ *
+ * THIS IS HERE AND NOT IN THE GENERATOR because the generator's own four
+ * BARE-CLASS controls read the LIVE `sec-funds.json`, so a registry refresh can
+ * make them stale — the `merge-name-test` shape the record says must stay out
+ * of CI. This assertion reads only the COMMITTED table and app.js, so it is a
+ * property of what shipped: if a later regen stops producing the key, or
+ * produces it with an asterisk, CI goes red instead of a reader finding it. */
+const BARE_KEY = "\u0000Fidelity Worldwide Fund";
+{
+  const hit = lookupTicker(rowFromKey(BARE_KEY));
+  ok(!!hit && hit.tk === "FWWFX",
+    `the bare-class arm still ships: "Fidelity Worldwide Fund" -> FWWFX (got ${hit ? hit.tk : "null"})`);
+  ok(!!hit && hit.comparable === false,
+    "...ASSERTED, never the Advisor class behind an asterisk");
+}
+
 /* (3) IT IS LAST: a row the page's own chain resolves must keep that answer. */
 const own = lookupTicker({ name: "Vanguard 500 Index Fund Admiral Shares",
   nameRaw: "Vanguard 500 Index Fund Admiral Shares", iss: "", type: "Mutual fund", value: 1 });
