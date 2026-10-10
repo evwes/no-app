@@ -51448,3 +51448,69 @@ got a pass, and the interesting thing was not that my prediction was wrong but
 that the message explaining the pass was making a claim of its own.* A guard
 that answers differently than expected is a reason to read what it SAID, not
 only whether it fired.
+
+## 2026-10-10 (04:4xZ) — FOUND BY THE 04:07 DRAW, SIZED NOT SHIPPED: a row whose house sits only in the ISSUER cell publishes no ticker and a generic fee, with the control in the SAME MENU — and my first hypothesis and my first pin were both wrong
+
+**Helmerich & Payne (8,479 ppl) publishes `Institutional Index Fund Inst'l
+Shares`, issuer `Vanguard Fiduciary Trust`, typed `Mutual fund`, at
+$118,760,710 — 13.0% of its menu — with NO TICKER and a fee of 0.1.** The fund
+is Vanguard Institutional Index Fund Institutional Shares, VINIX, whose real
+expense ratio is about 0.035, so the published 0.1 is a generic index-pattern
+estimate roughly 3x the truth on a row that names no fund.
+
+***THE CONTROL IS IN THE SAME MENU, WHICH IS WHAT MAKES THE BLANK OURS RATHER
+THAN THE FILING'S.*** Two sibling rows carry the IDENTICAL issuer cell and
+resolve perfectly: `Total International Stock Index Fund` publishes **VTIAX at
+0.09** on $42,047,570 and `Total Bond Market Index Fund` publishes **VBTLX at
+0.05** on $12,112,004. So `lookupTicker` demonstrably reads this issuer and
+reaches Vanguard funds through it; the question is why these rows specifically
+fail. Two shapes fail in that one menu:
+`Institutional Index Fund Inst'l Shares` with a CLEAN issuer, and
+`Extended Market Index Fund; Inst'l` / `Total International Bond Index Fund`
+whose issuer cell reads **`Company Admiral Shares Vanguard Fiduciary Trust`** —
+a column-shift WELD carrying a share-class designation, which the existing
+`weldRepair(f.iss, ISS_EV)` cannot reach because that arm repairs a lost SPACE
+and not a rotation. Every failing row publishes **0.1 or 0.06** against
+siblings at 0.02–0.09.
+
+### MY FIRST HYPOTHESIS WAS THE APOSTROPHE, AND IT IS REFUTED
+
+`Inst'l` looked like the blocker, so the screen expanded the apostrophe-elided
+forms as whole tokens — deliberately one rule per word, since `Inst'l` and
+`Int'l` mean DIFFERENT things and a single "apostrophe abbreviation" rule would
+be wrong. Over all **1,876 published+served rows** carrying one (`inst'l` 929,
+`int'l` 739, `gov't` 198, `nat'l` 28): **647 ALREADY publish a ticker, 1,229
+resolve nothing either way, and the expansion gains EXACTLY 0.** The zero is
+honest rather than a query artifact, and the 647 are why: the resolvers handle
+the apostrophe already. *A plausible mechanism read off one row is a guess with
+a citation* — the recorded rule, met again.
+
+### AND MY MUST-SEE PIN MATCHED THE WRONG ROW, WHICH IS A NEW FACE OF AN OLD RULE
+
+The pin was a regex on the NAME, and that name is filed by many plans, so it
+matched **Bway Corporation's** `Vanguard Institutional Index Fund Inst'l
+Shares` — which publishes **VINIX at 0.02** — and printed `must-see ok`. The
+screen looked scoped and was not; worse, the row it pinned is the OPPOSITE of
+the defect and turned out to be the external control. Re-pinned BY ACK, the
+Helmerich & Payne row appears and the picture above is what it shows. ***A pin
+keyed on a shared STRING does not identify a ROW: key it by ack.*** Sibling of
+*pin the motivating case as a fixture before measuring the class* — the pin
+existed and still did not protect, because it named the wrong thing.
+
+**It also hands the cause over for free:** Bway's name carries `Vanguard` and
+resolves; H&P's does not and fails, with the same share-class spelling. So the
+discriminator is the HOUSE's position — in the name versus only in the issuer
+cell — and not the abbreviation at all.
+
+**NOT SHIPPED, and the split is why.** The missing TICKER is one-directional
+coverage with an internal witness, which is the shippable half. The FEE is the
+owner-gated family — *a fee is SOURCED, never derived*, and 0.1 would have to be
+withdrawn rather than corrected, since `data/fund-facts.json` carries no VINIX
+figure. And the welded-issuer shape is a third thing again, needing a rotation
+arm on the issuer column that the record already refused once for the issuer
+cell on 2026-09-30, because the only repair available there was a strip and a
+strip truncates the firm. **UNSIZED beyond this menu:** the general class is *a
+row whose name omits the house where a sibling in the same menu includes it*,
+and the in-menu sibling is a witness this record has already caught being
+contaminated by the same damage, so it needs the orientation discipline rather
+than a wider screen.

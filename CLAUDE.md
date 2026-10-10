@@ -3109,6 +3109,38 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   positive fixture from the DATA before believing any zero*, and note the rule
   was met in my own INSTRUMENT's output column, which is the harder place to see
   it. `docs/accuracy-log.md` 2026-10-10 (00:3xZ).
+- **FOUND BY THE 04:07 DRAW, SIZED NOT SHIPPED — THE HOUSE IS ONLY IN THE
+  ISSUER CELL: no ticker and a generic fee, with the CONTROL IN THE SAME MENU.**
+  Helmerich & Payne (8,479 ppl) publishes `Institutional Index Fund Inst'l
+  Shares` · iss `Vanguard Fiduciary Trust` · typed `Mutual fund` at
+  **$118,760,710, 13.0% of its menu**, with NO ticker and **0.1** where VINIX
+  really costs ~0.035. ***The control is two rows away under the IDENTICAL
+  issuer:*** `Total International Stock Index Fund` publishes **VTIAX at 0.09**
+  and `Total Bond Market Index Fund` **VBTLX at 0.05** — so `lookupTicker`
+  demonstrably reads this issuer and the blank is OURS. Two shapes fail in that
+  one menu: a clean issuer with the house absent from the name, and an issuer
+  cell reading **`Company Admiral Shares Vanguard Fiduciary Trust`**, a
+  column-shift WELD carrying a share-class designation that `weldRepair(f.iss,
+  ISS_EV)` cannot reach (it repairs a lost SPACE, not a rotation).
+  **MY HYPOTHESIS WAS THE APOSTROPHE AND IT IS REFUTED:** over all 1,876
+  published+served rows carrying one (`inst'l` 929, `int'l` 739, `gov't` 198,
+  `nat'l` 28), **647 ALREADY publish a ticker, 1,229 resolve nothing either way,
+  and expanding it gains EXACTLY 0** — the resolvers handle it already, and the
+  647 are why the zero is honest rather than a query artifact.
+  **AND MY MUST-SEE PIN MATCHED THE WRONG ROW, printing `must-see ok` while the
+  screen was unscoped:** keyed on the NAME, which many plans file, it caught
+  **Bway Corporation's** copy — which publishes **VINIX at 0.02** and is the
+  external control, the OPPOSITE of the defect. ***A pin keyed on a shared
+  STRING does not identify a ROW: key it by ack.*** It also handed over the
+  cause for free — Bway's name carries `Vanguard` and resolves, H&P's does not
+  with the same share-class spelling, so the discriminator is the HOUSE's
+  POSITION and not the abbreviation. **Split three ways:** the missing ticker is
+  one-directional coverage with an internal witness (shippable); the FEE is the
+  owner-gated family, where 0.1 must be WITHDRAWN rather than corrected because
+  `fund-facts.json` has no VINIX figure; the welded issuer needs a rotation arm
+  the record refused once for that column, since the only repair there was a
+  strip and a strip truncates the firm. `docs/accuracy-log.md` 2026-10-10
+  (04:4xZ).
 - Unverified costs of the 15:0xZ Vanguard change, recorded as inferences: 386
   rows / 30,686 ppl newly ASSERT where the issuer names an insurance platform
   (against 1,575 rows that already assert that way — pre-existing, cause located
