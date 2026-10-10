@@ -51679,3 +51679,76 @@ T` rows as collective trusts with **no ticker and no fee** — `noPublicPrice`
 holding exactly as designed — and `FID 500 INDEX` resolves **FXAIX at 0.015**, a
 house abbreviation the resolver does reach. Nothing on that page is a false
 claim.
+
+## 2026-10-10 (07:3xZ) — CLOSED: the wrapping arm's "dangling separator" residue reaches NO reader, and trimming it would swap three tickers to a WRONG SHARE CLASS on $608,742,234
+
+**The queue item said: 4 rows keep a dangling separator, check whether
+`lib-disclose`'s existing end-anchored arm already reaches them before adding a
+trim. Asked properly, the answer is that there is nothing to ship — and the
+screen I built to ask it walked into a trap this file already records.**
+
+### The display already does it, on 91% of the population
+
+Over the whole store, **3,946 published and served rows carry a STORED name
+ending on a separator, and `H.clean` — the page's own cleaner — removes it on
+3,605 of them.** So the wrapping repair's residue is cosmetic in the store and
+invisible on the page: `Vanguard S&P 500 Index Trust,` already displays without
+the comma, `BNY MELLON STABLE VALUE PORTFOLIO:` without the colon. *Read the
+shipped guard before pricing a cost it may already stop* — and here the guard is
+upstream of the one I was about to extend.
+
+### The 390 that DO still dangle for a reader are a different class, and one family is CORRECT AS FILED
+
+Split by the trailing character, reader-facing:
+
+| char | rows | plans | ppl |
+|---|---|---|---|
+| `-` | 95 | 95 | 77,188 |
+| **`+`** | **89** | **32** | **269,872** |
+| `&` | 79 | 76 | 208,860 |
+| `/` | 61 | 26 | 118,793 |
+| `—` | 39 | 8 | 45,156 |
+| `\|` | 25 | 19 | 14,712 |
+| `,` | 2 | 2 | 2,750 |
+
+***THE `+` FAMILY IS NOT DEBRIS: `INST+` IS `Institutional Plus`, A SHARE
+CLASS.*** Priced through the page's own resolver, a trim would leave ticker
+gained 0 and lost 0 and **SWAP THREE**, every one onto a cheaper, different
+class, on **$608,742,234**:
+
+* Howmet Aerospace `VANGUARD INST INDEX-INST+` **VIIIX -> VINIX**, $249,406,048
+* Occidental Petroleum `VANGUARD MID CAP INDEX-INST+` **VMCPX -> VIMAX**, $233,557,619
+* Alcoa `VANGUARD INST INDEX-INST+` **VIIIX -> VINIX**, $125,778,567
+
+So the resolver is already reading `INST+` correctly as Institutional Plus, and
+a cosmetic trim would have manufactured the owner-gated wrong-share-class defect
+on three of the largest rows in the class. **This file already warned me:** *"`*`
+and `+` are party-in-interest markers and must NOT count as joiners — including
+them counted Darden's complete `Principal Fixed Income Guaranteed Option*+`."*
+I put `+` in the character class anyway. ***A recorded trap in a vocabulary is
+not protection against writing that vocabulary again*** — the cure is to price
+every candidate character through the resolver before reading the count, which
+is what caught it here, one line before the table.
+
+### And trimming the REST would hide the evidence of a different defect
+
+Ticker and fee move on 0 of the other 301 rows, so a trim is purely cosmetic
+there — and that is the argument against it rather than for it. This record
+already says a trailing dash on an otherwise complete name is the DOMINANT
+ending of the truncated-name class, so the separator is the only visible sign
+that the name was cut. *A visible artifact warns the reader; a wrong fund name
+reads as knowledge* — the Windsor II lesson, applied to a cosmetic change
+instead of a greedy one.
+
+### What survives is a NEW named class, not this one
+
+**The `&` family: 79 rows / 76 plans / 208,860 ppl of genuinely TRUNCATED
+names.** Paramount Global publishes `Evergreen &` on **$679,811,000** and
+Entergy `Fixed Income: Trusts &` on $330,746,216. The recorded position for a
+truncation is **reconstruction, not suppression** — qualifying the row would
+publish *"the filing names no specific fund"* about a filing that did name one —
+so this needs a witness and not a trim, and it is unsized beyond those two
+reads.
+
+`PARSER_VERSION` stays 203. Nothing shipped; one queue item closed, one trap
+re-met and priced, one class named.

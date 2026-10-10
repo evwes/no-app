@@ -3121,9 +3121,31 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   `American Funds`, and **`Admiral Shares Vanguard Windsor II Admiral Shares` ->
   `Vanguard Windsor II Admiral Shares` KEEPS ITS NUMERAL**, the recorded hazard
   that cost a wrong fund name once and the first fixture the repair must pin.
-  **Residue, cosmetic and named: 4 rows keep a dangling separator** — check
-  whether `lib-disclose`'s existing end-anchored dangling-tail arm already
-  reaches them before adding a trim. `PARSER_VERSION` stays 203 — display-side.
+  **RESIDUE CLOSED 2026-10-10 07:3xZ — IT REACHES NO READER, AND A TRIM WOULD
+  SWAP THREE TICKERS TO A WRONG SHARE CLASS ON $608,742,234.** Of 3,946
+  published+served rows whose STORED name ends on a separator, **`H.clean`
+  already removes it on 3,605** — so the wrapping arm's residue is cosmetic in
+  the store and invisible on the page. The 390 that still dangle for a reader
+  are a DIFFERENT class, and ***the `+` family (89 rows / 32 plans / 269,872
+  ppl) is CORRECT AS FILED: `INST+` is `Institutional Plus`, a SHARE CLASS.***
+  Priced through the page's own resolver a trim gains 0 and loses 0 tickers and
+  **SWAPS 3** — Howmet `VANGUARD INST INDEX-INST+` **VIIIX -> VINIX**
+  ($249,406,048), Occidental `VANGUARD MID CAP INDEX-INST+` **VMCPX -> VIMAX**
+  ($233,557,619), Alcoa VIIIX -> VINIX ($125,778,567) — every one onto a
+  cheaper, different class. **This file had already warned that `*` and `+` are
+  PARTY-IN-INTEREST markers and must not count as joiners, and I wrote `+` into
+  the character class anyway:** *a recorded trap in a vocabulary is not
+  protection against writing that vocabulary again* — price every candidate
+  character through the resolver before reading the count. **And trimming the
+  other 301 moves ticker and fee on 0, which argues AGAINST it:** a trailing
+  dash is this record's dominant ending for the TRUNCATED-name class, so the
+  separator is the only visible sign the name was cut — *a visible artifact
+  warns the reader; a wrong fund name reads as knowledge.* **NEW named class
+  from it, unsized: the `&` family, 79 rows / 76 plans / 208,860 ppl of real
+  truncations** (Paramount Global's `Evergreen &` on **$679,811,000**, Entergy's
+  `Fixed Income: Trusts &` on $330,746,216), where the recorded position is
+  RECONSTRUCTION and never suppression. `PARSER_VERSION` stays 203.
+  `docs/accuracy-log.md` 2026-10-10 (07:3xZ).
   `docs/accuracy-log.md` 2026-10-10 (02:4xZ).
   **AND THE CLASS I FIRST BUILT DOES NOT EXIST — my own draw's print made it.**
   `draw-published` printed `JSON.stringify(x).slice(0, n)`, cutting INSIDE the
