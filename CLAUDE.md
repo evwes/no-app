@@ -2140,7 +2140,46 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   exactly the loosening of "superset" that stops the matcher crossing funds —
   this record already measured a guessed contraction vocabulary at **9 false
   positives of 21 rows**. `docs/accuracy-log.md` 2026-10-10 (12:3xZ).
-- **FOUND BY THE 14:08 DRAW, SIZED NOT SHIPPED — STATING A REGISTERED SHARE
+- **REFUTED IN BOTH HALVES 2026-10-10 15:2xZ — DO NOT SHIP IT, AND THE THREE
+  CLAIMS BELOW ARE ALL WRONG** (*"one-directional"*, *"the ASSERTED bucket"*,
+  *"the safe stage is `secAsk`"*). **The gate is `CLASS_MARK`, a REGEX at
+  `match-sec-tickers.mjs:1127` (`if (!CLASS_MARK.test(w)) return null;`), NOT
+  `CLASS_WORDS`** — patching the set I guessed left the rows still null, and
+  token-ablation named the real one (`+"Admiral"` resolves VTMGX, a bare
+  `+"Plus"` or `+"ETF"` returns null). So `secAsk` cannot reach it either: the
+  candidate SPELLING is already the registered one, and the refusal lives in the
+  matcher that `merge-4i` SHARES to write `ftk`.
+  **THE `institutional plus` HINT ARM HARMS A CONTROL, and the harm and the
+  benefit are ONE mechanism:** it fixes `… Institutional Shares` (`VDVIX*` ->
+  **VTMNX** asserted, the right class) and simultaneously moves **`Vanguard
+  Institutional Index Fund` from an honest `VINIX*` to `VINIX` ASSERTED**,
+  because that series' own NAME carries `Institutional` and the arm cannot tell
+  a class STATED from a word inside the series name — silently choosing between
+  VINIX and VIIIX, which is the owner-gated wrong-class defect by a new route.
+  **`CLASS_MARK` ALONE SPLITS IT:** `Institutional Plus Shares` reaches only a
+  COMPARABLE **of the wrong (Investor) class**, the gated half; `ETF Shares`
+  ASSERTS (VNQ, VTI).
+  ***AND READING THE MEMBERS KILLED THE ETF HALF — IT LICENSES A WRONG FUND.***
+  Sized 826 published+served rows / 546 plans / 773,787 ppl / $377,951,662 with
+  the must-see pin passing and every control clean, and its LARGEST member is a
+  defect: **`Vanguard Mid-Cap Growth ETF` -> `VMGRX` asserted on 277 rows.** The
+  registry has two series in two registrants — `VANGUARD INDEX FUNDS ::
+  Vanguard Mid-Cap Growth **Index** Fund` = **VOT** (ETF Shares, correct on the
+  11 rows that spell `Index`) and `VANGUARD WHITEHALL FUNDS :: Vanguard Mid-Cap
+  Growth Fund` = **VMGRX**, an ACTIVE fund. ***The filer omits `Index`, and
+  excusing `etf` as a class marker deletes the one token that says ETF rather
+  than active fund*** — `etf` names a different VEHICLE, not a share class like
+  `Admiral`. Sharpest form yet of *a resolver gain is evidence the string
+  reaches a fund, not evidence it reaches THIS fund*, compounding the 12:3xZ
+  dropped-`Index` mechanism into a cross-registrant match.
+  **WHAT SURVIVES, narrower and needing no vocabulary:** the `Institutional
+  Shares` -> VTMNX gain is real and blocked only by the bare-series ambiguity,
+  so the instrument is a test of whether the class word is ALREADY PART OF THE
+  SERIES NAME — which the index can answer, since it holds that name. A wider
+  hint table is the wrong shape. Unbuilt. `docs/accuracy-log.md` 2026-10-10
+  (15:2xZ).
+- **ORIGINAL ENTRY, kept because it is what was predicted — FOUND BY THE 14:08
+  DRAW, SIZED NOT SHIPPED — STATING A REGISTERED SHARE
   CLASS MAKES THE MATCHER ANSWER WORSE THAN STATING NONE. Upper bound 128
   published+served rows / 80 plans / 1,462,765 ppl / $5,988,260,564 publishing
   no symbol, 107 of them publishing a pattern-table FEE.** Xcel Energy (14,084

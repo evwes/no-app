@@ -52394,3 +52394,84 @@ damage the fee table does not.
 gave `arr is not iterable`. The register already warns that this file has no
 `lib-schema` loader and that a guessed SHAPE fails where a guessed field name
 throws; it threw loudly here, which is the lucky direction.
+
+## 2026-10-10 (15:2xZ) — the class-phrase item is REFUTED IN BOTH HALVES, and my own queue entry was wrong on all three of its claims
+
+Last cycle queued this as *"one-directional, the classes are STATED (the
+ASSERTED bucket), the safe stage is `gen-sec-tickers.mjs`'s `secAsk`"*. Worked
+this cycle, **every one of those three claims is false**, and nothing ships.
+
+**THE GATE IS `CLASS_MARK`, A REGEX — NOT `CLASS_WORDS`, WHICH IS WHAT I
+GUESSED.** `premium` and `select` are in `CLASS_WORDS` and `plus`/`etf` are
+not, which looked like the whole story, so I patched that set — and the rows
+**still read null**. The real refusal is `match-sec-tickers.mjs:1127`'s leftover
+rule, `if (!CLASS_MARK.test(w)) return null;`. Token-ablation found it: built up
+from the bare registered series one word at a time, `+"Admiral"` resolves VTMGX
+and a bare `+"Plus"` or `+"ETF"` alone returns null. ***Read the shipped guard's
+SURFACE, not its description — including when the description is your own
+hypothesis about which set it consults.***
+
+**AND THE STAGE WAS WRONG TOO:** `secAsk` cannot reach this. The candidate
+SPELLING is fine — the filed name is the registered name — so no candidate list
+helps; the refusal is in the matcher's own vocabulary, which `merge-4i` SHARES
+to write `ftk`.
+
+**THE FIRST DRAFT HARMED A CONTROL, AND THE HARM AND THE BENEFIT ARE ONE
+MECHANISM.** Adding `institutional plus` to `CLASS_HINTS` ahead of the bare
+`institutional` arm — the pattern the file already uses twice, for
+`institutional select` and `institutional premium` — did fix the third behaviour
+recorded last cycle (`… Institutional Shares` moved `VDVIX*` → **VTMNX**
+asserted, the right class instead of the Investor class's comparable). **But it
+also moved `Vanguard Institutional Index Fund` from an honest `VINIX*`
+comparable to `VINIX` ASSERTED**, because that series' own NAME carries the word
+`Institutional` and the arm cannot tell a class STATED from a word inside the
+series name. VINIX and VIIIX are two classes of that series, so the change
+silently picks one for a filing that states none — the owner-gated wrong-class
+defect arriving by a new route, on one of the most common rows in these menus.
+The register already says of this family *"`Institutional` sits inside the
+SERIES name so the class token is ambiguous and the answer is always a
+comparable"*; my arm broke exactly that.
+
+**THEN `CLASS_MARK` ALONE SPLIT THE ITEM, and only the ETF half asserts.** With
+no hint change: `Institutional Plus Shares` reaches only a COMPARABLE **of the
+wrong class** (`VDVIX*`/`VIMSX*`, the Investor class, where VDIPX/VMCPX are
+exactly registered) — the owner-gated half — while `ETF Shares` ASSERTS
+(`Vanguard Real Estate Index Fund ETF Shares` → **VNQ**, `Total Stock Market …
+ETF Shares` → **VTI**, both `superset+class`) because `etf` is already a
+`CLASS_HINTS` arm. Every control held: the bare series, `Institutional Shares`
+and `Admiral Shares` all unchanged.
+
+**AND THEN READING THE MEMBER LIST KILLED THE ETF HALF — IT LICENSES A WRONG
+FUND, NOT A WRONG CLASS.** Sized at 826 published+served rows / 546 plans /
+773,787 ppl / $377,951,662 with the must-see pin passing, the single largest
+member is a defect: **`Vanguard Mid-Cap Growth ETF` → `VMGRX`, asserted, on 277
+rows** (239 + 19 + 19 across three spellings). The registry settles it — two
+different series in two different registrants:
+
+```
+VANGUARD INDEX FUNDS     :: Vanguard Mid-Cap Growth Index Fund   VOT    ETF Shares
+VANGUARD WHITEHALL FUNDS :: Vanguard Mid-Cap Growth Fund         VMGRX  Investor Shares
+```
+
+VOT is the index ETF the filer means — and it appears CORRECTLY on 11 rows that
+spell `Index`. VMGRX is an actively managed fund, a different strategy and a
+different fee. ***The filer omits `Index`, and excusing `etf` as a share-class
+marker deletes the one remaining token that says this is an ETF rather than the
+active fund*** — so the active fund absorbs the row. **`etf` is not a class
+marker in the sense `Admiral` is: it names a different VEHICLE.** That is *a
+resolver gain is evidence the string reaches a fund, not evidence it reaches
+THIS fund* in its sharpest form yet, and the same dropped-`Index` mechanism this
+morning's 12:3xZ entry recorded — here compounding into a cross-registrant
+match.
+
+**NOTHING SHIPS, and the counts and controls were all clean.** 826 rows, a
+passing must-see pin, every negative control unchanged, and 277 of the rows
+wrong. *A diff cannot tell a wanted change from an unwanted one — only reading
+the output can*, met on a resolver's own answers.
+
+**WHAT SURVIVES AS A QUEUE ITEM is narrower and needs no vocabulary:** the
+`Institutional Shares` → VTMNX improvement is real and is blocked only by the
+bare-series ambiguity, so what it needs is a way to tell a class STATED from a
+class word inside the SERIES NAME — which the index can answer, because it holds
+the series name and can be asked whether the word is already part of it. That is
+a different and better instrument than a wider hint table. Left unbuilt.
