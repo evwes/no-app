@@ -51752,3 +51752,145 @@ reads.
 
 `PARSER_VERSION` stays 203. Nothing shipped; one queue item closed, one trap
 re-met and priced, one class named.
+
+## 2026-10-10 (10:4xZ) — the issuer cell's custodian words blocked the house it carries: 6,441 published rows / 1,674 plans / 2,386,291 participants gain an asserted symbol, and the pinned platform hazard was found by reading rather than counting
+
+**SHIPPED.** `houseCore` in `scripts/gen-sec-tickers.mjs` reduces the issuer cell
+to the house the registry attests before asking the SEC matcher, as a candidate
+appended LAST. Asserted gains move **4,664 -> 11,105 rows**, 2,230 -> 3,904
+plans, **3,213,379 -> 5,599,670 participants**; the table moves 2,766 -> 5,749
+keys, **ADDED 2,983 / REMOVED 0 / CHANGED 0**, with **SWAPS 0 and LOSSES 0**.
+One surface by construction: `build-seo-pages.mjs` publishes no ticker column.
+The fee cannot move — `er = star ? info.er : fundERRow(f)` and this arm always
+returns `comparable: false`, so `star` stays false and the fee stays name-keyed.
+`PARSER_VERSION` stays 203.
+
+**TWO MECHANISMS, NOT ONE, and both were measured before anything was built.**
+`resolveFaithful` prepends the issuer IN FULL and hands the composed string to
+`resolve`, whose first act is to test that string for `\btrust\b`. So
+
+    iss "Vanguard Fiduciary Trust"         -> no answer
+    iss "Vanguard Fiduciary Trust Company" -> no answer
+    iss "Vanguard Group"                   -> no answer
+    iss "Vanguard"                         -> VINIX
+
+— mechanism one is **the CUSTODIAN's own word `Trust` making the row read as a
+collective trust**, which the matcher must never assert a fund for; mechanism two
+is plainer, `Group`/`Company`/`Fiduciary` left as unexplained leftover tokens.
+The reduction is **registry-attested rather than a vocabulary** (the longest
+leading 1-3 token phrase the registry registers as a manager, longest first, so
+`American Funds Fiduciary Trust` never cuts to a bare `american`), because this
+record has twice measured a guessed word list as harmful here.
+
+**THE HAZARD IS THIS RECORD'S PIN AND THE REDUCTION IS WHAT REMOVES ITS
+PROTECTION.** Unguarded, the arm newly ASSERTED a registered fund on **30 keys**
+whose issuer cell is `VALIC variable annuity accounts` and kin: `Core Bond Fund`
+-> VCBDX, `Stock Index Fund` -> VSTIX. The symbols are real VALIC Company I
+funds and the claim is still false, because the filer's own cell says the holding
+is a variable annuity SUB-ACCOUNT. ***What had been stopping them is the very
+leftover-token behaviour this arm exists to remove*** — `variable annuity
+accounts` were unexplained leftovers, so the superset arm declined. *An
+accidental protection cannot be removed without replacing it deliberately.*
+**NO COUNT COULD SEE IT:** swaps 0, losses 0, every fixture green, every added
+key's issuer genuinely reducing, and a seeded uniform draw of 26 reading **16 of
+16 correct**. It took a draw aimed at the sub-population by NAME — 75 of 3,018
+added keys whose issuer carries insurance or annuity vocabulary, all read.
+*A uniform draw over 3,018 keys will not reliably surface 30 of them.*
+
+**TWO REFUSALS SHIPPED, BOTH STRUCTURAL RATHER THAN BRAND VOCABULARIES**, each
+asking what the CELL IS SAYING and not which house it names:
+(2) the cell names SEVERAL FIRMS, slash-separated — **67 issuer cells / 404 store
+rows where it is the ONLY protection**, and its members are exactly the
+wrong-house shape it was written for (`Principal/BlackRock` -> `principal`,
+`Capital Group/American Funds` -> `capital group`, `BlackRock iShares/PGIM` ->
+`blackrock`, `Legg Mason/Western Asset` -> `legg mason`). Named cost: 176 rows of
+`FRANKLIN/TEMPLETON`, which is one house and is refused with them.
+(3) the **STORE ITSELF** attests the house as selling through a wrapper — where a
+house LEADS another cell that DOES declare a wrapper, a bare cell naming it is
+not evidence the plan holds the fund. It is `registrantAttested`'s discipline
+pointed at the issuer column, it needs no brand list, and it keeps working as
+brands are renamed. The live pre-pass extracts **3 houses from 1,506 declaring
+cells — `lincoln`, `college`, `valic`** — and the generator THROWS if it ever
+flags one of the ten houses the gain rests on.
+
+**THE CONTROL IS THE POINT, and it was run in both directions:** (3) flags
+`valic` and does NOT flag `fidelity`, `vanguard`, `principal`, `dimensional`,
+`american funds`, `american century`, `neuberger`, `schwab`, `prudential` or
+`new york`. *A test that also flagged those would be a worse instrument than the
+brand list it replaces.*
+
+**A THIRD REFUSAL I WROTE WAS DELETED AS DEAD CODE, AND THE PROOF IS COMPLETE
+RATHER THAN SAMPLED.** A vehicle-declaration refusal (`variable annuity`,
+`separate account`, `annuity account`) looked necessary and is **unreachable by
+construction**: such a cell either leads with a registered manager — in which
+case the pre-pass has already put that house in the set and (3) refuses it — or
+leads with none, and the loop returns null anyway. `houseCore` is a pure function
+of one string, so this is provable over the real input domain: evaluated both
+ways over all **15,685 distinct issuer cells** it fires on **136** and changes the
+answer on **0**. ***The pre-pass is SELF-PROTECTING*** — a declaring cell puts
+its own leading house into the set — which is why the refusal is unnecessary
+structurally and not by luck. The regex survives because the pre-pass needs it;
+the guard does not. *A condition unreachable by construction is worse than an
+inert one, because it reads as a guard and is dead code* — second instance in two
+days, after `wrapRepair`'s loop-bound condition, and the invariant is asserted in
+the tether rather than argued in a comment.
+
+**AND MY OWN FAILING PIN WAS TESTING AN INCONSISTENT WORLD — worth more than the
+condition it was guarding.** `Prudential Separate Account` failed its must-refuse
+pin because the harness hardcoded the platform set to `{valic}` while handing
+`houseCore` a cell that, in production, would have put `prudential` into that set
+itself. The pin was right about the semantics and the HARNESS was wrong about the
+world. ***When a guard reads a set that production DERIVES from its own input,
+a fixture must derive it the same way or it tests a state that cannot exist.***
+Sibling of *a before/after is only as honest as its "before"*, met on a set
+instead of a file.
+
+**ALSO REFUTED, AND IT CORRECTS TWO CLAIMS FROM MY OWN 04:4xZ AND 06:1xZ
+ENTRIES.** The 04:4xZ entry said *"the control proves `lookupTicker` reads this
+issuer"* and *"the discriminator is the HOUSE's POSITION"*. Asked directly, the
+SEC matcher returns nothing for BOTH the defect row and its two sibling controls
+— the siblings resolve through `fund-er.js`'s pattern table, not the matcher — so
+the position claim was about the wrong resolver and the real discriminator is the
+custodian words. **AND THE MOTIVATING ROW IS STILL OUTSIDE ITS OWN REPAIR:**
+Helmerich & Payne's `Institutional Index Fund Inst'l Shares` now resolves, but as
+**VINIX\*, a COMPARABLE**, and this generator ships assertions only. Second
+consecutive ship whose motivating case it cannot deliver — *the fix is real and
+the example that found it belongs to the gated half.* Peet's row does NOT move,
+correctly: its blocker is the house CONTRACTION, which confirms the two classes
+are distinct.
+
+**A BONUS THE QUEUE DID NOT PREDICT:** ~20 of the gains are the `NYLI` family
+(`NYLI Winslow Large Cap Growth R6` -> MLRSX, `NYLI MacKay High Yield Corporate
+Bond` -> MHYSX, `NYLI CBRE Real Estate R6` -> VREQX), which is the recorded
+retired-brand item from the 06:1xZ draw — MainStay renamed to New York Life
+Investments. *A rename is a FACT that must be SOURCED*, and `sec-funds.json`
+is the source: it registers the NYLI series.
+
+**THE 40 INSURANCE-ISSUER GAINS THAT SURVIVE WERE ALL READ, and the record's own
+rule settles them:** every one states a SHARE CLASS in its name (R6, Class I,
+Class A, R5, Instl, Investor Class), and **a separate account has no share
+class**, so the insurer is the platform and the symbol is right — `Lifetime
+Hybrid 2015 R6 Fund` [iss `Principal Life Insurance Company`] -> PLRRX, 14
+Principal keys with it.
+
+**THE COST, measured and not waved at:** the table every visitor downloads goes
+**180,933 -> 391,636 bytes raw, 31,621 -> 53,173 gzipped — about +21 KB gz** for
+2.39M participants' worth of symbols.
+
+**TETHERED: `scripts/house-core-test.mjs`**, wired into `site-test` beside the
+table's own tether. It SLICES the arm from the source and supplies its own
+**FROZEN** platform set, so its verdicts are a property of the code and a DOL
+refresh cannot redden it — the reason `merge-name-test.mjs` must stay out of CI,
+whose status has flipped three times on drift alone. 7 must-reduce, 8
+must-not-reduce, 2 single-protection mutations drawn FROM the store (never
+`VALIC/SunAmerica`, which is protected twice and would prove neither), and the
+unreachability invariant over six wrapper-declaring shapes.
+
+**AND TWO INSTRUMENT ERRORS OF MINE, both cheap and both recorded because they
+will recur.** A first baseline run was wrapped in `timeout 900` and piped to
+`tail -30`, so when the timeout killed it at 15 minutes it produced **nothing** —
+*a buffered pipe turns a killed run into no evidence at all; stream to a file.*
+And the attribution harness reported 2,946 kept where production keeps 2,983,
+because its platform set carried the hypothetical `prudential` a pin had
+supplied: *a harness that perturbs the state it measures reports on the
+perturbation.*

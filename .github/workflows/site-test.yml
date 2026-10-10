@@ -21,6 +21,7 @@ on:
             # the SEC ticker table, its consumer's harness, and the matcher
             # whose answers it carries
             "sec-tickers.js", "scripts/sec-tickers-test.mjs",
+            "scripts/gen-sec-tickers.mjs", "scripts/house-core-test.mjs",
             "scripts/apppath.mjs", "scripts/match-sec-tickers.mjs",
             "plans-list.json", "plans-index.json", "map-points.json"]
   workflow_dispatch:
@@ -88,6 +89,15 @@ jobs:
       # generator's own premise and, loaded, would make it write an empty table.
       - name: SEC ticker table — the generated answers still reach the page
         run: node scripts/sec-tickers-test.mjs
+      # The issuer-cell reduction that produces 2,983 of those keys. Its hazard
+      # is that the issuer cell routinely holds the CUSTODIAN or PLATFORM, so
+      # reducing a platform's cell to its house core asserts a registered fund
+      # on a row the filer says is a sub-account -- which it did, on 30 keys,
+      # before the refusals. The test slices the arm and supplies its own FROZEN
+      # platform set, so its verdicts are a property of the code and a DOL
+      # refresh cannot redden it with nothing wrong.
+      - name: Issuer-cell reduction — the platform refusals still hold
+        run: node scripts/house-core-test.mjs
       # index.html cache-busts its assets with a query string, and that string
       # was typed by hand until 2026-10-02 -- when it was found SEVENTEEN DAYS
       # stale, with app.js and fund-er.js both changed that same day. A

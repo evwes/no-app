@@ -415,6 +415,163 @@ const aposExpand = (s) => {
   return o;
 };
 
+/* A CUSTODIAN'S OWN WORDS IN THE ISSUER CELL BLOCK THE HOUSE THEY CARRY, AND
+ * THEY BLOCK IT TWO INDEPENDENT WAYS — measured, not reasoned:
+ *
+ *   iss "Vanguard Fiduciary Trust"         -> no answer
+ *   iss "Vanguard Fiduciary Trust Company" -> no answer
+ *   iss "Vanguard Group"                   -> no answer
+ *   iss "Vanguard"                         -> VINIX
+ *
+ * `resolveFaithful` prepends the issuer IN FULL and hands the composed string
+ * to `resolve`, whose first act is to test that string for `\btrust\b` and
+ * friends — so a custodian named `… Trust` makes the row read as a COLLECTIVE
+ * TRUST, which the matcher must never assert a registered fund for. That is
+ * mechanism one, and it is the custodian's word doing it, not the holding's.
+ * Mechanism two is plainer: `Group`, `Company`, `Fiduciary` are left as
+ * unexplained leftover tokens and the superset arm declines.
+ *
+ * THE REDUCTION IS REGISTRY-ATTESTED, NOT A VOCABULARY. This record has twice
+ * measured a guessed word list as harmful here (`inv.` -> `Investment` gave 9
+ * false positives of 21 rows), so the house core is the LONGEST leading 1-3
+ * token phrase of the issuer that the registry itself registers as a manager —
+ * exactly the shape `leadManager` already uses on the filed name. Longest
+ * first, so `American Funds Fiduciary Trust` reduces to `american funds` and
+ * never to a bare `american`.
+ *
+ * APPENDED LAST, so it is ADDITIVE BY CONSTRUCTION: a row that resolves under
+ * any existing spelling resolves first and identically, and the reduced issuer
+ * can only ever be consulted where every existing candidate came back empty.
+ * It returns null when the reduction changes nothing, so a bare-house issuer
+ * adds no candidate at all.
+ *
+ * THE HAZARD IS NAMED AND IS WHY THE MEASUREMENT MUST READ A DRAW RATHER THAN A
+ * COUNT: this record has three times found that the issuer cell routinely holds
+ * the CUSTODIAN rather than the manager, and reducing a custodian to its house
+ * core supplies a house the holding may not belong to. Reducing makes that
+ * failure MORE reachable, not less. */
+/* AND THE HAZARD IS NOT HYPOTHETICAL — IT WAS FOUND BY READING, AND THE
+ * REDUCTION IS WHAT REMOVES ITS PROTECTION.
+ *
+ * Unguarded, the arm newly ASSERTED a registered fund on 37 keys whose issuer
+ * cell is `VALIC variable annuity accounts` and kin: `Core Bond Fund` ->
+ * VCBDX, `Stock Index Fund` -> VSTIX. Those symbols are real VALIC Company I
+ * funds and the claim is still false, because the filer's own issuer cell says
+ * the holding is a variable annuity SUB-ACCOUNT — the plan does not hold the
+ * fund, it holds an account that invests in it, at the account's higher cost.
+ * `fund-er.js`'s pooled veto already carries that exact reasoning for VALIC.
+ *
+ * WHAT HAD BEEN STOPPING THEM IS THE MECHANISM THIS ARM EXISTS TO REMOVE: the
+ * words `variable annuity accounts` were unexplained leftover tokens, so the
+ * superset arm declined. The same leftover behaviour that blocks a legitimate
+ * house was accidentally blocking a platform's own declaration — so removing it
+ * cannot be done without replacing the protection deliberately.
+ *
+ * TWO REFUSALS, BOTH STRUCTURAL RATHER THAN BRAND VOCABULARIES — each asks what
+ * the CELL IS SAYING, not which house it names:
+ *
+ *  (1) the cell DECLARES A VEHICLE (`variable annuity`, `separate account`,
+ *      `annuity account`). That is a statement about the holding, not a company
+ *      name, which is why `Empower Annuity Insurance Co.` — a legal entity — is
+ *      deliberately NOT reached by it. IT IS NOT A GUARD: measured over the
+ *      store it changes no answer, because (3) or the loop already refuse
+ *      whatever it would. What it IS, is the DETECTOR the pre-pass for (3)
+ *      reads — one condition read twice, not two conditions.
+ *  (2) the cell names SEVERAL FIRMS, slash-separated (`VALIC/SunAmerica`,
+ *      `VALIC/T. Rowe Price/RCM/Wellington`). A manager cell holds one manager;
+ *      a platform-and-sub-adviser pair is a sub-account naming convention, and
+ *      reducing it to the first name supplies a house that is not the fund's.
+ *  (3) the STORE ITSELF attests the house as selling through a wrapper. A brand
+ *      token would have fixed the one case that survives (1) and (2) —
+ *      `Valic Corebridge`, 5 keys, no slash and no declaration — and a guessed
+ *      brand list is the shape this record has twice measured as harmful, and
+ *      is `fund-er.js`'s job rather than the matcher's. So the issuer column
+ *      answers instead: where the same house LEADS another cell that DOES
+ *      declare a wrapper, that house sells its funds through separate accounts
+ *      and a bare cell naming it is not evidence the plan holds the fund. It is
+ *      `registrantAttested`'s discipline pointed at the issuer column, and it
+ *      keeps working as brands are renamed.
+ *      Measured in BOTH directions over the store's 15,683 issuer cells: it
+ *      flags `valic` and does NOT flag `fidelity`, `vanguard`, `principal`,
+ *      `dimensional`, `american funds`, `american century`, `neuberger`,
+ *      `schwab`, `prudential` or `new york` — the ten houses the whole gain
+ *      rests on. A test that also flagged those would be a worse instrument
+ *      than the brand list it replaces, so the control is the point.
+ *      It is LEADING-ANCHORED, deliberately and with a named limit: a cell like
+ *      `Variable Annuity Prudential` puts the declaration first, so no house is
+ *      extracted and `prudential` is not flagged. The house that LEADS such a
+ *      cell is the one selling the wrapper, which is the claim we want.
+ *
+ * THE CONVERSE IS LEFT ALONE, on this record's own measured rule: an insurer in
+ * the issuer cell with a SHARE CLASS stated in the name is the retail fund and
+ * the symbol is right, because a separate account has no share class. So
+ * `Lifetime Hybrid 2015 R6 Fund` [iss `Principal Life Insurance Company`] ->
+ * PLRRX ships, and 14 Principal keys with it. */
+const ISS_DECLARES_VEHICLE = /\bvariable\s+annuit|separate\s+account|\bannuity\s+account/i;
+const PLATFORM_HOUSE = new Set();                         // filled by the pre-pass below
+const houseCore = (iss) => {
+  const raw = String(iss == null ? "" : iss);
+  /* NO REFUSAL HERE FOR A VEHICLE DECLARATION, and that is measured rather than
+   * an omission. A cell declaring a wrapper either leads with a registered
+   * manager — in which case the pre-pass has already put that house in
+   * PLATFORM_HOUSE and (3) refuses it — or leads with no manager, in which case
+   * the loop below finds nothing and returns null anyway. So the refusal is
+   * UNREACHABLE: evaluated both ways over all 15,685 distinct issuer cells in
+   * the store it fires on 136 and changes the answer on 0.
+   * A condition unreachable by construction is worse than an inert one, because
+   * it reads as a guard and is dead code. The regex survives because the
+   * PRE-PASS needs it; the guard does not. */
+  if (raw.includes("/")) return null;                     // (2) names several firms
+  const t = norm(iss).split(" ").filter(Boolean);
+  if (t.length < 2) return null;                   // already bare — nothing to reduce
+  for (let n = Math.min(3, t.length); n >= 1; n--) {
+    const p = t.slice(0, n).join(" ");
+    if (!idx.managers.has(p)) continue;
+    if (n === t.length) return null;               // no reduction is not a candidate
+    return PLATFORM_HOUSE.has(p) ? null : p;       // (3) store-attested platform
+  }
+  return null;
+};
+
+/* THE PRE-PASS FOR (3). It must complete before the main loop, because that
+ * loop is where `houseCore` is consulted — so this reads the issuer column of
+ * the lineup shards on its own. Cheap: the `iss` field only, no renderer.
+ * The house is taken with the SAME reduction, minus (1) and (2), so a house is
+ * judged on its own merits rather than being pre-refused by the conditions this
+ * one complements. */
+{
+  const lead = (iss) => {
+    const t = norm(iss).split(" ").filter(Boolean);
+    for (let n = Math.min(3, t.length); n >= 1; n--) {
+      const p = t.slice(0, n).join(" ");
+      if (idx.managers.has(p)) return p;
+    }
+    return null;
+  };
+  let cells = 0;
+  for (let s = 0; s < 64; s++) {
+    const f = `${ROOT}/data/lineups/${String(s).padStart(2, "0")}.json`;
+    if (!existsSync(f)) continue;
+    for (const e of Object.values(JSON.parse(readFileSync(f, "utf8")))) {
+      if (!e || !Array.isArray(e.funds)) continue;
+      for (const fd of e.funds) {
+        const i = String(fd.iss || "").trim();
+        if (!i || !ISS_DECLARES_VEHICLE.test(i)) continue;
+        cells++;
+        const h = lead(i);
+        if (h) PLATFORM_HOUSE.add(h);
+      }
+    }
+  }
+  /* assert the control rather than trust it: the houses the gain rests on must
+   * not be flagged, and a run where they are is a run that must not ship */
+  for (const h of ["fidelity", "vanguard", "principal", "dimensional", "american funds",
+                   "american century", "neuberger", "schwab", "prudential", "new york"]) {
+    if (PLATFORM_HOUSE.has(h)) throw new Error(`platform pre-pass flagged "${h}" — it carries the gain; refusing to write a table`);
+  }
+  console.error(`platform pre-pass: ${PLATFORM_HOUSE.size} house(s) attested as selling through a wrapper, from ${cells} declaring cell(s) — ${[...PLATFORM_HOUSE].join(", ")}`);
+}
+
 function secAsk(nameRaw, nameClean, iss) {
   const k = `${iss}\u0000${nameRaw}\u0000${nameClean}`;
   if (secCache.has(k)) return secCache.get(k);
@@ -422,13 +579,21 @@ function secAsk(nameRaw, nameClean, iss) {
   /* the same order `lookupTicker` tries: the name as filed, then the cleaned
    * one. Asking only the cleaned name loses rows whose markers the registry
    * tolerates; asking only the raw one loses rows the cleaner repairs. */
+  const names = nameRaw === nameClean ? [nameRaw] : [nameRaw, nameClean];
   const tries = [];
-  for (const n of (nameRaw === nameClean ? [nameRaw] : [nameRaw, nameClean])) tries.push([n, iss]);
+  for (const n of names) tries.push([n, iss]);
   /* then, and only then, the apostrophe-repaired spellings */
   const issX = aposExpand(iss);
-  for (const n of (nameRaw === nameClean ? [nameRaw] : [nameRaw, nameClean])) {
+  for (const n of names) {
     const nX = aposExpand(n);
     if (nX !== n || issX !== iss) tries.push([nX, issX]);
+  }
+  /* and last, the issuer cell reduced to the house the registry attests */
+  const issCore = houseCore(iss);
+  if (issCore) for (const n of names) {
+    tries.push([n, issCore]);
+    const nX = aposExpand(n);
+    if (nX !== n) tries.push([nX, issCore]);
   }
   for (const [n, is] of tries) {
     const r = resolveHolding(idx, n, is);

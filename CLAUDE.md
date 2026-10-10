@@ -3201,10 +3201,68 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   files in its COMMENT and derives its real list from `index.html`, so a grep for
   the filename finds nothing and the implementation is general. *Read the shipped
   guard's SURFACE, not its description*, including when the description is an
-  older comment. **Still open, unsized:** the custodian blocker, and 194 rows /
-  488,810 ppl this repair newly makes the matcher answer as a COMPARABLE, which
-  belongs with the owner-gated comparable half. `docs/accuracy-log.md`
-  2026-10-10 (06:1xZ).
+  older comment. **The custodian blocker is now SHIPPED — see the entry below.**
+  **Still open:** 194 rows / 488,810 ppl this repair newly makes the matcher
+  answer as a COMPARABLE, which belongs with the owner-gated comparable half.
+  `docs/accuracy-log.md` 2026-10-10 (06:1xZ).
+- **SHIPPED 2026-10-10 10:4xZ — THE ISSUER CELL'S CUSTODIAN WORDS BLOCKED THE
+  HOUSE IT CARRIES: 6,441 published rows / 1,674 plans / 2,386,291 ppl gain an
+  ASSERTED symbol** (4,664 -> 11,105 rows, 3,213,379 -> 5,599,670 ppl), table
+  2,766 -> 5,749 keys, **ADDED 2,983 / REMOVED 0 / CHANGED 0, SWAPS 0, LOSSES
+  0**; one surface by construction, fee cannot move (`star` stays false),
+  `PARSER_VERSION` stays 203. Cost: the table every visitor downloads goes
+  31,621 -> **53,173 bytes gzipped**.
+  **TWO MECHANISMS:** `resolveFaithful` prepends the issuer IN FULL, so a
+  custodian's own word `Trust` makes `resolve`'s `pooled` test read the row as a
+  COLLECTIVE TRUST (`Vanguard Fiduciary Trust` -> nothing, bare `Vanguard` ->
+  VINIX); and `Group`/`Company`/`Fiduciary` are left as unexplained leftovers.
+  The reduction is REGISTRY-ATTESTED (longest leading 1-3 token manager phrase,
+  longest first) and not a vocabulary.
+  **THE PINNED HAZARD FIRED AND ONLY READING FOUND IT: unguarded, the arm
+  asserted a registered fund on 30 keys whose issuer cell is `VALIC variable
+  annuity accounts`** (`Core Bond Fund` -> VCBDX). ***The accidental protection
+  it removed was the very leftover-token behaviour it exists to remove.*** Swaps
+  0, losses 0, every fixture green and a seeded uniform draw 16 of 16 correct —
+  it took a draw aimed at the sub-population BY NAME (75 keys whose issuer
+  carries insurance vocabulary, all read). *A uniform draw over 3,018 keys will
+  not reliably surface 30 of them.*
+  **TWO REFUSALS, BOTH STRUCTURAL:** the cell names SEVERAL FIRMS
+  (slash-separated) — **67 cells / 404 store rows where it is the only
+  protection**, members `Principal/BlackRock`, `Capital Group/American Funds`,
+  `BlackRock iShares/PGIM`, named cost 176 `FRANKLIN/TEMPLETON` rows; and the
+  **STORE ITSELF** attests the house as selling through a wrapper (3 houses from
+  1,506 declaring cells: `lincoln`, `college`, `valic`), which needs no brand
+  list and survives renames. The generator THROWS if the pre-pass ever flags one
+  of the ten houses the gain rests on, and the control was run both ways.
+  **A THIRD REFUSAL WAS DELETED AS DEAD CODE, PROVED NOT SAMPLED:** a
+  vehicle-declaration guard is UNREACHABLE because the pre-pass is
+  SELF-PROTECTING — a declaring cell puts its own leading house into the set.
+  `houseCore` is a pure function of one string, so over all **15,685 distinct
+  issuer cells it fires on 136 and changes the answer on 0.** Second instance in
+  two days of *a condition unreachable by construction is worse than an inert
+  one*, after `wrapRepair`.
+  ***AND MY FAILING PIN WAS TESTING AN INCONSISTENT WORLD:*** `Prudential
+  Separate Account` failed its must-refuse pin only because the harness
+  hardcoded the platform set while production DERIVES it from that very cell.
+  **When a guard reads a set production derives from its own input, a fixture
+  must derive it the same way or it tests a state that cannot exist.**
+  **CORRECTS TWO OF MY OWN CLAIMS:** 04:4xZ's *"the control proves
+  `lookupTicker` reads this issuer"* and *"the discriminator is the HOUSE's
+  POSITION"* are both about the WRONG RESOLVER — the SEC matcher returns nothing
+  for the defect row AND both sibling controls, which resolve through
+  `fund-er.js`. And H&P's motivating row now resolves **VINIX\*, a COMPARABLE**,
+  so it is outside its own repair — second consecutive ship of which that is
+  true. Peet's row correctly does NOT move (its blocker is the CONTRACTION).
+  **BONUS the queue did not predict:** ~20 gains are the `NYLI` family
+  (MLRSX/MHYSX/VREQX), closing the 06:1xZ retired-brand item — `sec-funds.json`
+  IS the source a rename needs. **The 40 surviving insurance-issuer gains were
+  all read** and every one states a SHARE CLASS, which the record's own rule
+  settles: a separate account has none.
+  **TETHERED: `scripts/house-core-test.mjs`** in `site-test`, slicing the arm and
+  supplying a FROZEN platform set so drift cannot redden it. 7 must-reduce, 8
+  must-not-reduce, 2 single-protection mutations drawn FROM the store (never
+  `VALIC/SunAmerica`, protected twice), plus the unreachability invariant.
+  `docs/accuracy-log.md` 2026-10-10 (10:4xZ).
 - **FOUND BY THE 04:07 DRAW, SIZED NOT SHIPPED — THE HOUSE IS ONLY IN THE
   ISSUER CELL: no ticker and a generic fee, with the CONTROL IN THE SAME MENU.**
   Helmerich & Payne (8,479 ppl) publishes `Institutional Index Fund Inst'l
