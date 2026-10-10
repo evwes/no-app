@@ -53252,3 +53252,67 @@ and `data/fund-facts.json` holds no RERGX figure. Rusken Packaging's
 `EUPAC R6 (American)` separate-account row, which held the whole item, is now
 **untouched in both columns**: its ticker correctly stays null and its fee
 stays null, which is the honest state.
+
+## 2026-10-10 (23:3xZ) — THE 23:08 DRAW: AN ASSERTED SHARE CLASS THE FILING CONTRADICTS, AND A UNIT COUNT WELDED IN FRONT OF A TYPE CAPTION
+
+Seeded participant-weighted draw (`--seed 10102026`, 3 picks) over the 60,070
+PUBLISHED menus reaching 100,151,069 participants. Two named defects and one
+confirmation of a recorded class; nothing shipped, and each is recorded with the
+mechanism rather than a label.
+
+**(1) AN ASSERTED SYMBOL OF THE WRONG SHARE CLASS, WHERE THE FILING STATES THE
+CLASS AND THE REGISTRY REGISTERS IT. The Guardian Life Insurance Company Of
+America (11,543 ppl across 3 member plans)** publishes `VANG SM CAP IDX INST`
+at **$53,756,155 / 2.6% of its menu** as **VSMAX, unasterisked**. Read out of
+`sec-funds.json` rather than recalled — `VANGUARD INDEX FUNDS :: Vanguard
+Small-Cap Index Fund` registers **NAESX** Investor, **VSMAX Admiral**,
+**VSCIX Institutional**, **VB** ETF and **VSCPX** Institutional Plus — so the
+filed `INST` is Institutional and the answer is **VSCIX**, while VSMAX is the
+ADMIRAL class: a different and dearer class published as fact. The route is
+`expandFundVariants`' own `INST -> Institutional` plus a bare Vanguard
+small-cap arm that asserts a class the name does not state, which
+`fund-er.js:785` records having corrected for the Institutional PLUS spelling
+and not for this one — ***a fix for one phrasing of a class is not a fix for
+the class***, met on a share class for the fourth time.
+**The same menu carries the converse one row away:** `VANG MD CP IDX IS PL`
+publishes **$68,124,970 / 3.3% with NO ticker and a 0.1 fee** where the registry
+registers `Vanguard Mid-Cap Index Fund` **Institutional Plus Shares = VMCPX**
+(real cost ~0.03) — the recorded 14:3xZ behaviour exactly, *stating a registered
+share class makes the matcher answer worse than stating none*, and now with a
+live instance in the same filing as its opposite. **UNSIZED on purpose:** the
+asserted half is one-directional and the gated half is not, so the measurement
+must split on `star` before anything ships.
+
+**(2) A UNIT COUNT WELDED IN FRONT OF A TYPE CAPTION, WITH THE REAL FUND IN THE
+ISSUER CELL. St Moritz Security Services (2,781 ppl)** publishes
+`1,341.08 Common/Collective Trust` at 2.3% and `45,931.70 Common/Collective
+Trust` at 1.6% — the published name is a NUMBER plus a generic caption and
+nothing else. **The count is demonstrably the unit count:** `45,931.70` against
+a value of **$45,932**, a $1-NAV stable asset, so the figure in the name is the
+units and not a second holding. The issuer cell holds the fund (`State Street
+S&P 500 Index Fund`, `Invesco Stable Asset`) and the resolver reaches `~SSSYX`
+through it, so the row is not unidentified — it is unreadable.
+**`lib-disclose:1380`'s count arm cannot reach it: that arm is a TRAILING count
+before `shares`/`units`, and this is a LEADING count before a caption** — the
+same shape the 00:3xZ ship handled at the other end of the string. ***A fix for
+one POSITION of a class is not a fix for the class.*** Unsized through the
+renderer; the honest remedy is the strip plus `isGenericTypeName` on what
+remains, since the residue is a bare caption and the issuer already names the
+fund.
+
+**(3) CONFIRMS THE RECORDED TICKER/FEE ASYMMETRY, with a third spelling.
+Carnival Corporation (4,597 ppl)** publishes `American EuroPacific Growth R6` ->
+**RERGX with NO fee** on $12,594,182, the `Funds` word lost from the house name
+— the Pvh/Mediacom shape for the fourth time, and now beside this cycle's own
+EUPAC ship, which gains the SYMBOL on 737 rows and deliberately leaves the fee
+alone. `MFS Mid Cap Value Fund Class R6` -> MVCKX with no fee is a second
+instance in the same menu. **And the machinery working is worth recording too:**
+Carnival's nine `T. Rowe Price <vintage> Retirement Trust F` rows all carry
+`noPublicPrice` and correctly publish an asterisked comparable, and its
+`Putnam Stable Value Fund` publishes NO fee — the honest answer, where
+Guardian's `STABLE VALUE` row publishes **0.35 on $200,097,498** and is a named
+live instance of the owner-gated fabricated stable-value class, the largest yet
+recorded by dollars on a single row of that family.
+Guardian also publishes `JPM US A LGCPCR CFA`, `SC US LG CAP VAL CIT` and
+`AS CORE BOND II EF2` — opaque custodian codes, the `code` bucket of the
+19:4xZ one-token class, correctly carrying neither ticker nor fee.

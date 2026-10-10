@@ -1590,6 +1590,51 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **FOUND BY THE 23:08 DRAW, UNSIZED — AN ASSERTED SYMBOL OF THE WRONG SHARE
+  CLASS WHERE THE FILING STATES THE CLASS AND THE REGISTRY REGISTERS IT.** The
+  Guardian Life Insurance Company Of America (**11,543 ppl** across 3 member
+  plans) publishes `VANG SM CAP IDX INST` at **$53,756,155 / 2.6% of its menu**
+  as **VSMAX, UNASTERISKED**. Read out of `sec-funds.json` and not recalled:
+  `VANGUARD INDEX FUNDS :: Vanguard Small-Cap Index Fund` registers NAESX
+  Investor, **VSMAX Admiral**, **VSCIX Institutional**, VB ETF and VSCPX
+  Institutional Plus — so the filed `INST` is Institutional, the answer is
+  **VSCIX**, and VSMAX is the dearer ADMIRAL class published as fact. Route:
+  `expandFundVariants`' `INST -> Institutional` plus a bare Vanguard small-cap
+  arm that asserts a class the name does not state, which `fund-er.js:785`
+  records correcting for the Institutional PLUS spelling and NOT this one —
+  ***a fix for one phrasing of a class is not a fix for the class***, on a
+  share class for the fourth time.
+  **THE CONVERSE IS ONE ROW AWAY IN THE SAME MENU:** `VANG MD CP IDX IS PL`
+  publishes **$68,124,970 / 3.3% with NO ticker and a 0.1 fee** where the
+  registry registers `Vanguard Mid-Cap Index Fund` Institutional Plus =
+  **VMCPX** (~0.03) — the recorded 14:3xZ *stating a registered share class
+  makes the matcher answer worse than stating none*, now with both halves in one
+  filing. **Split the measurement on `star` before anything ships:** the
+  asserted half is one-directional, the comparable half is the owner's.
+  `docs/accuracy-log.md` 2026-10-10 (23:3xZ).
+- **FOUND BY THE 23:08 DRAW, UNSIZED — A UNIT COUNT WELDED IN FRONT OF A TYPE
+  CAPTION, WITH THE REAL FUND IN THE ISSUER CELL.** St Moritz Security Services
+  (2,781 ppl) publishes `1,341.08 Common/Collective Trust` at 2.3% and
+  `45,931.70 Common/Collective Trust` at 1.6% — the published name is a NUMBER
+  plus a generic caption and nothing else. **The count is demonstrably the UNIT
+  count:** `45,931.70` against a value of **$45,932**, a $1-NAV stable asset, so
+  the figure is units and not a second holding. The issuer cell holds the fund
+  (`State Street S&P 500 Index Fund`, `Invesco Stable Asset`) and the resolver
+  reaches `~SSSYX` through it, so the row is not unidentified — it is unreadable.
+  **`lib-disclose:1380`'s count arm cannot reach it by POSITION: that arm takes a
+  TRAILING count before `shares`/`units` and this is a LEADING count before a
+  caption**, the 00:3xZ ship's shape at the other end of the string. ***A fix for
+  one POSITION of a class is not a fix for the class.*** Honest remedy is the
+  strip PLUS `isGenericTypeName` on what remains, since the residue is a bare
+  caption and the issuer already names the fund. `docs/accuracy-log.md`
+  2026-10-10 (23:3xZ).
+- **AND THE SAME DRAW NAMED THE LARGEST SINGLE-ROW INSTANCE YET OF THE
+  OWNER-GATED FABRICATED STABLE-VALUE FEE:** Guardian's `STABLE VALUE` row, type
+  cell `—`, publishes **0.35 on $200,097,498 / 9.7% of its menu** to 11,543
+  readers. The control is in the other drawn menu: Carnival's `Putnam Stable
+  Value Fund` is typed `Collective trust`, carries `noPublicPrice` and correctly
+  publishes NOTHING — so a BLANK type cell defeats the suppressor again, the
+  `gicRow` shape for the fifth time.
 - **SHIPPED 2026-10-10 23:1xZ — `EUPAC`, THE HOUSE'S OWN ABBREVIATION OF ITS OWN
   FUND: 737 published rows / 733 acks / 942,088 ppl / $1,685,895,634 gain
   **RERGX**, and NOT ONE FEE CELL MOVES** — asterisked 0, ticker lost/swapped
