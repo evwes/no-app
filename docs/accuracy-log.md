@@ -52737,3 +52737,52 @@ witness from OUTSIDE the issuer column — a registry of firm names, which is th
 `data/fund-facts.json` / `fund-facts` shape — because *a ticker is a FACT that
 must be SOURCED, never inferred*, and so is a trustee's name. Nothing shipped;
 `PARSER_VERSION` stays 203.
+
+## 2026-10-10 (18:5xZ) — the 18:08 draw: the attachment's own SECTION HEADING welded onto the first fund under it, on $1.7B of one plan
+
+Seeded participant-weighted draw (`--seed 18082026`), 3 plans.
+
+**NFL Player Second Career Savings Plan (11,630 ppl, 28 funds, ratio 1.081)
+publishes five rows whose name opens on the attachment's own MENU SECTION
+HEADING:**
+
+| | share | value | published name |
+|---|---|---|---|
+| 0 | 18.1% | $799,672,748 | `Underlying Target Date Funds SSgA S&P 500 Index` |
+| 1 | 12.0% | $530,050,775 | `Underlying Index Funds SSgA Russell All Cap Index Fund` |
+| 3 | 8.9% | $394,191,119 | `Domestic Large Cap Equity Fund SSgA S&P 500 Index` |
+| 10 | 2.8% | $122,148,113 | `Underlying Actively Managed and Specialty Funds Stable V…` |
+| 11 | 2.7% | $117,441,595 | `Domestic Small/Mid-Cap Equity Fund Wellington SMID Cap R…` |
+
+**This is a trap CLAUDE.md already lists as handled** — *"section headers must
+not glue into names"* sits in the 4i layout-trap list — so it is a leak in a
+documented guard rather than a new class. And it is NOT the two welded families
+already shipped: the trustee arm is anchored on `LEADING_HOUSE` patterns and
+`Underlying Target Date Funds` names no house, while the welded-type-caption
+family reads Schedule H TYPE labels and these are the plan's own MENU CATEGORY
+names. *A fix for one phrasing of a class is not a fix for the class*, met on
+the heading's provenance rather than its wording.
+
+**The witness is structural and in the data:** each heading is the lead of the
+FIRST row of its section and the sections are the menu's own categories, so the
+repeated-lead evidence is the one the 20:4xZ entry calls GUARANTEED where the
+lead is stray — which is why the orientation here is not in doubt (the heading
+is a category, never a fund) but the general in-menu-sibling witness still must
+not be reused. Unsized: sizing it means finding rows whose lead run is a
+category phrase attested as a bare row elsewhere in the SAME entry.
+
+**Two of the shipped guards are defeated by the same blank TYPE cell, for the
+fifth recorded time.** Every row in this plan carries type `—`, so row 10's
+stable-value holding publishes a fabricated **0.35** — a named live instance of
+the owner-gated 4,669-row item — and nothing type-reading can reach it.
+
+**And the second plan is the new arm's control from the other direction.**
+Pathway Vet Alliance (10,798 ppl) files nine `Fidelity Freedom <vintage> K6`
+rows and the page publishes **FZTKX / FJTKX / FCTKX / FHTKX / FWTKX / FVTKX /
+FGTKX / FDTKX** — the K6 class exactly as stated, which is the control that
+this morning's bare-class arm reads a STATED class rather than overriding it.
+**But all nine publish `er 0.5`**, a generic target-date estimate, where K6 is
+Fidelity's cheapest Freedom class. So the page names the specific share class by
+SYMBOL and then prices it with a category average — a sharper form of the
+owner-gated one-ticker-two-fees item: not two fees for one symbol, but a fee
+that ignores the class the symbol just identified.
