@@ -2891,6 +2891,43 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   hypothesis and still did not mean what it looked like — only the multi-class
   control turned it into the right claim.* `docs/accuracy-log.md` 2026-10-09
   (22:2xZ).
+- **FOUND BY THE 23:07 DRAW, SIZED NOT SHIPPED — A WRAPPING DUPLICATION
+  (`X … X`): 276 rows / 263 plans / 486,519 ppl / $2,604,062,045**, of which
+  **66 publish a TICKER, 65 a FEE and 6 are asterisked**. A published name whose
+  leading k-token run equals its own TRAILING k-token run with substantial text
+  between. **`collapseSelfRepeat` cannot reach it BY CONSTRUCTION, not by its
+  floors** — that arm needs the repeat to run FORWARD from the remainder's start
+  (`X X rest`), which is what keeps two vintages of one series intact, so for
+  `Trust TD2 Capital Group …` it asks whether the remainder starts with
+  `trusttd2` and it starts with `capitalgroup`. Lowering the 3-word/10-char
+  floors would still not reach it.
+  **THE DETECTOR IS SOUND AND THE REPAIR IS REFUSED, by reading every member.**
+  Both copies sit inside ONE name, so the evidence is not drawn from a sibling
+  the same column shift could have produced — the property the shipped arm's own
+  comment names as what makes duplication sound. ***That establishes the
+  DETECTOR and says nothing about the REPAIR.*** `X mid X` holds THREE
+  orientations: lead stray (ITW $1,060,028,326 / 24.8% / **NOSIX\***, Charles
+  River, Cook Group, Union Savings strip correctly); **TAIL stray** (Gnc
+  Holdings $26,738,712 / SSSYX\*, where stripping the lead removes the HOUSE);
+  and a **ROTATION** whose head appears at both ends, where NEITHER strip is a
+  name (Consolidated Edison $486,479,115 — the fund is `Vanguard Institutional
+  Total International Stock Market`). **Fourth instance of *a witness that a row
+  is damaged is not a witness to which side the damage is on*, and the first
+  where the witness is INTERNAL** — adjacency is what pinned the orientation for
+  `collapseSelfRepeat`, and *being inside one name removes the contamination
+  problem, not the orientation problem.* Needs the orientation test the
+  mid-name-house entry prescribes, plus a third candidate set for the rotation
+  family. `PARSER_VERSION` stays 203.
+  **AND THE CLASS I FIRST BUILT DOES NOT EXIST — my own draw's print made it.**
+  `draw-published` printed `JSON.stringify(x).slice(0, n)`, cutting INSIDE the
+  quotes and dropping the CLOSING QUOTE, so a complete name read as one the
+  parser had cut mid-word. I sized and fixtured "rotated and truncated", **both
+  fixtures PASSED** (hand-supplied siblings from the same misread string), and
+  the whole-store scan read **0** — the recorded *a broken arm and an inert arm
+  read the same zero*. **SHIPPED: `cut()` appends an explicit `…+N`.** *Pin a
+  positive fixture from the DATA before believing any zero*, and note the rule
+  was met in my own INSTRUMENT's output column, which is the harder place to see
+  it. `docs/accuracy-log.md` 2026-10-10 (00:3xZ).
 - Unverified costs of the 15:0xZ Vanguard change, recorded as inferences: 386
   rows / 30,686 ppl newly ASSERT where the issuer names an insurance platform
   (against 1,575 rows that already assert that way — pre-existing, cause located

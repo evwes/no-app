@@ -87,6 +87,28 @@ const ALL = argv.includes("--all");
 const SEED = flag("--seed", null);
 const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
 
+/* A TRUNCATED PRINT MUST SAY IT IS TRUNCATED — 2026-10-10, and this one cost a
+ * whole false defect class.
+ *
+ * Every field here used to print as `JSON.stringify(x).slice(0, n)`, which cuts
+ * INSIDE the quoted string and throws away the CLOSING QUOTE. Short values kept
+ * both quotes, so the output looked uniform — and a long name arrived as
+ * `shown "Trust TD2 Capital Group 2030 Target Date Retirement Trus`, which I
+ * read as a fund name the parser had cut off mid-word. The stored name is
+ * `… Retirement Trust TD2`, complete. I then sized, fixtured and nearly shipped
+ * a "rotated and truncated name" class that does not exist, and the whole-store
+ * scan reading 0 is what sent me back to the stored string.
+ *
+ * So: cut inside, then re-quote, then append an explicit marker. A value that
+ * was shortened can never again be mistaken for one that was not. The record
+ * already carries *a truncated print can turn a complete answer into a defect*
+ * from a 128-character window over filing text; this is the same rule met in
+ * my own instrument's output column, which is the harder place to see it. */
+function cut(x, n) {
+  const s = String(x == null ? "" : x);
+  return s.length <= n ? JSON.stringify(s) : JSON.stringify(s.slice(0, n)) + "…+" + (s.length - n);
+}
+
 /* a seeded PRNG, so a draw can be re-read rather than re-rolled */
 function rng(seed) {
   if (seed === null) return Math.random;
@@ -257,12 +279,15 @@ for (const p of picks) {
   const memAssets = p.mem.reduce((a, m) => a + Number(m.assets || 0), 0);
   const ratio = memAssets ? sum / memAssets : null;
   console.log(`\n${"=".repeat(96)}`);
+  /* `cut` is defined above; see its comment — a truncated print must SAY it is
+   * truncated, because this file's old `JSON.stringify(x).slice(0, n)` cut the
+   * closing quote off and a shortened name read as a complete one. */
   console.log(`${lead.sponsorName}  ein=${lead.ein} pn=${lead.pn}  ${p.ppl.toLocaleString()} ppl across ${p.mem.length} member plan(s)`);
   console.log(`ack ${p.ack}${p.published ? "" : "   [NOT PUBLISHED]"}  ${p.e.funds.length} funds`);
   console.log(`menu sum $${Math.round(sum).toLocaleString()} vs assetsEOY $${Math.round(memAssets).toLocaleString()}`
     + (p.mem.length > 1 ? ` summed over ${p.mem.length} member plans (lead alone: $${Number(lead.assets).toLocaleString()})` : "")
     + (ratio === null ? "" : `  ratio ${ratio.toFixed(3)}`));
-  console.log(`source: ${JSON.stringify(String(p.e.source || "").slice(0, 110))}`);
+  console.log(`source: ${cut(p.e.source, 110)}`);
   console.log("-".repeat(96));
   sorted.slice(0, ROWS).forEach((fd, i) => {
     const raw = String(fd.name).replace(/\s+(?:N\/R|\$?0\.00)$/i, "").trim();
@@ -271,8 +296,8 @@ for (const p of picks) {
     const pct = sum ? (+fd.value || 0) / sum * 100 : 0;
     const flags = Object.entries(v.flags || {}).filter(([, x]) => x).map(([k]) => k).join(",");
     console.log(`${String(i).padStart(2)} ${pct.toFixed(1).padStart(5)}% $${String(Math.round(+fd.value || 0).toLocaleString()).padStart(14)}  `
-      + `tk ${((v.star ? "~" : " ") + String(v.tk || "-")).padEnd(7)} er ${String(v.er ?? "-").padEnd(6)} type ${JSON.stringify(String(v.shownType || "")).slice(0, 24).padEnd(26)}`);
-    console.log(`        iss ${JSON.stringify(String(fd.iss || "").slice(0, 34)).padEnd(36)} shown ${JSON.stringify(String(v.name || nm).slice(0, 56))}`);
+      + `tk ${((v.star ? "~" : " ") + String(v.tk || "-")).padEnd(7)} er ${String(v.er ?? "-").padEnd(6)} type ${cut(v.shownType, 24).padEnd(26)}`);
+    console.log(`        iss ${cut(fd.iss, 34).padEnd(36)} shown ${cut(v.name || nm, 56)}`);
     if (flags) console.log(`        flags ${flags}`);
   });
   if (sorted.length > ROWS) console.log(`   ... ${sorted.length - ROWS} more rows`);

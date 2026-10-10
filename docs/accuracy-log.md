@@ -50873,3 +50873,106 @@ construction** and the regenerate-and-diff control is *inapplicable rather than
 skipped*. `stamp-assets` re-derived the `fund-er.js` cache-buster
 (`ba9e49a9 -> 38f37b96`) and `index.html` carries it; `--check` clean,
 smoke-test green.
+
+## 2026-10-10 (00:3xZ) — my own draw's print truncation manufactured a defect class that does not exist; fixing the print found a real one (276 rows / 486,519 ppl) whose repair is NOT shippable
+
+**SHIPPED: `cut()` in `scripts/draw-published.mjs`.** Every field printed as
+`JSON.stringify(x).slice(0, n)`, which cuts **inside** the quoted string and
+discards the **closing quote**. Short values kept both quotes so the column
+looked uniform, and a long name arrived as
+
+```
+shown "Trust TD2 Capital Group 2030 Target Date Retirement Trus
+```
+
+which I read as a fund name the parser had cut off mid-word. **The stored name
+is `Trust TD2 Capital Group 2030 Target Date Retirement Trust TD2` — complete.**
+Nothing was truncated but my own print. `cut()` now cuts inside, re-quotes, and
+appends an explicit `…+N`; verified on that exact row (`…+5`) with the
+untruncated siblings reading byte-identically as the positive control.
+
+***THE COST WAS A WHOLE FALSE CLASS, carried through sizing and fixtures.*** I
+built "a ROTATED name whose tail is cut off mid-word", argued its orientation was
+*settled by the truncation* (the final token being a proper prefix of the word
+its siblings carry), wrote must-SEE and must-NOT-SEE fixtures, **and both
+passed** — because I supplied the siblings by hand from the same misread string.
+The whole-store scan then read **0 rows**, which is the recorded signature *a
+broken arm and an inert arm read the same zero*, and the rule that saved it is
+the one that says what to do about that: **pin a positive fixture from the DATA
+before believing any zero.** Printing the real stored names for the real ack is
+what ended it in one run. The record already carries *a truncated print can turn
+a complete answer into a defect* from a 128-character window over filing text;
+this is the same rule met **in my own instrument's output column**, which is the
+harder place to see it because the instrument is the thing you are reading
+everything else through.
+
+### The real class: a WRAPPING duplication — detector sound, repair not
+
+Fixing the print exposed the actual shape, and it is genuinely new. Measured
+through `scripts/apppath.mjs` over all **1,721,920 published+served rows** with
+the publish gate and the serving condition applied: **276 rows / 263 plans /
+486,519 participants / $2,604,062,045**, of which **66 publish a TICKER, 65 a
+FEE and 6 are asterisked**.
+
+A published name whose **leading k-token run equals its own trailing k-token
+run**, with substantial text between (`X … X`). **The shipped
+`collapseSelfRepeat` cannot reach this BY CONSTRUCTION, not by its floors:**
+that arm requires the repeat to run FORWARD from the start of the remainder
+(`X X rest`) — which is exactly what keeps `Mfo Depot Lifepath 2030 Mfo Depot
+Lifepath 2045` intact — so for `Trust TD2 Capital Group …` it asks whether the
+remainder starts with `trusttd2` and it starts with `capitalgroup`. Lowering the
+3-word / 10-char floors the shipped comment flags as "a separate measurement"
+would still not reach it.
+
+**AND THE REPAIR IS REFUSED, BY READING ALL OF IT.** "Strip the leading copy"
+looked forced — both copies sit inside ONE name, so the evidence is not drawn
+from a sibling row the same column shift could have produced, which is the
+property the shipped arm's own comment names as what makes duplication sound.
+***That argument establishes the DETECTOR and says nothing about the REPAIR.***
+Of the fourteen largest rows, about six strip correctly and the rest are made
+worse or no better:
+
+| | strip-the-lead gives | |
+|---|---|---|
+| Illinois Tool Works, $1,060,028,326, 24.8%, **NOSIX\*** | `NT COLLECTIVE S&P500 INDEX FUND-DC-NON LENDING (TIER J)` | correct |
+| Charles River Laboratories, $78,123,399 | `Capital Group 2030 Target Date Retirement Trust TD2` | correct |
+| Cook Group, $43,624,655 | `New York Life Guaranteed Interest Account` | correct |
+| Union Savings Bank, $16,810,397, 37.7% | `Union Savings Bank Interest-Bearing Savings Account` | correct |
+| **Consolidated Edison, $486,479,115** | `Stock Market Vanguard Institutional Total International` | **wrong — a ROTATION** |
+| **Gnc Holdings, $26,738,712, 21.8%, SSSYX\*** | `S&P 500 Index Non-Lending Series Fund State Street` | **wrong — strips the HOUSE** |
+| Nordson, $111,323,804, 15.5%, NOSIX\* | `(Tier III Northern Trust S&P 500 Index Fund Non-Lending` | orphaned paren |
+| Acts Retirement, $26,326,472 | `K Columbia Balanced Fund, Class` | garbage |
+| Post Holdings, $21,232,910 | `Fund - Post Holdings, Inc. Common Stock` | wrong |
+
+**So `X mid X` holds at least THREE orientations and the detector distinguishes
+none of them:** (1) the LEAD is stray, so `mid X` is the name; (2) the TAIL is
+stray, so `X mid` is (GNC, where the trailing `State Street` is the duplicate and
+the leading one is the house); (3) the whole string is a **ROTATION** whose head
+now appears at both ends, where neither strip is a name — ConEd's fund is
+`Vanguard Institutional Total International Stock Market`, and stripping either
+end leaves a fragment.
+
+***This is the fourth instance of "a witness that a row is damaged is not a
+witness to which side the damage is on", and the first where the witness is
+INTERNAL to one name.*** The record closed the same-menu sibling witness for
+contamination — the stray text repeats down the menu *because* it is stray. A
+wrapping duplication is immune to that and **still ambiguous**, because
+adjacency is what pinned the orientation for `collapseSelfRepeat`: with the
+content between the copies EMPTY, one copy is redundant by definition; with it
+non-empty, which copy is furniture is a separate question the shape cannot
+answer. *Being inside one name removes the contamination problem, not the
+orientation problem.*
+
+**66 tickers and 65 fees ride on these rows**, including ITW's NOSIX\* on
+$1.06B, so a wrong strip moves published symbols rather than only legibility.
+**NOT SHIPPED.** It needs the orientation test the mid-name-house entry already
+prescribes — build both candidates, ask the shipped resolver which is a fund,
+and ABSTAIN where both answer or neither does — plus a third candidate set for
+the rotation family. `PARSER_VERSION` stays 203; nothing pre-registered.
+
+**NAMED RESIDUE, a different shape and deliberately out of the class:** the same
+Charles River menu files `Trust TD2 Capital Group 2025 Target Date Retirement
+Income`, where the stray run is at the FRONT **only** and the name's own tail is
+`Income` — attested by the undamaged sibling `Capital Group 2020 Target Date
+Retirement Income` in the same menu. It is pinned must-NOT-SEE here precisely
+because detecting it needs the sibling witness the record has closed.
