@@ -52846,3 +52846,115 @@ halves come from different definitions is irreproducible under every single
 definition, which reads as an arithmetic error and is really a provenance
 error.*** The way to catch it is to vary one dimension at a time and look for
 each half separately, rather than searching for a definition that yields both.
+
+## 2026-10-10 (19:4xZ) — THE ATTACHMENT'S OWN DATE HEADER PUBLISHED AS A HOLDING, AT A FABRICATED $312,024: 62 rows / 62 plans / 47,749 ppl, one at 27.9% of its whole menu
+
+**Found by the 19:08 draw, and not by looking for it.** The draw returned Cigna
+(88,684 ppl), whose menu publishes a bare **`PRIAC`** — Prudential Retirement
+Insurance and Annuity Company, the INSURER — as a holding on **$1,709,292,000,
+12.24%** of a $13.96B menu, typed `Separate account`, with no ticker, no fee and
+**no qualification at all**: `namelessRow` reads false. Two other rows of the
+same menu put the identical token in an ENTITY position
+(`MANAGEMENT, INC. HIGH YIELD BOND Account PRIAC`), so our own store already
+says what the string is.
+
+**SIZED ON STRUCTURE, NOT ON A VOCABULARY — a published fund name that is ONE
+WORD: 5,897 rows, of which the residue (unqualified, not a loan or employer
+stock) is 5,259 rows / 2,947 plans / ~6,983,334 ppl / $37,241,376,590**, with
+only **20 publishing a ticker and 104 a fee**, so the harm is the CLAIM almost
+everywhere. The structural claim is that a registered fund's name carries a
+house and a product, so one token names no fund by construction. Measured over
+all 1,721,920 published+served rows with the serving condition and the publish
+gate applied.
+
+**NARROWED BY A PROPERTY OF THE SCREEN, and the narrowing is EXACT rather than a
+superset.** The full-store render did not finish in nine minutes. The page cleans
+UPSTREAM of `renderRow` (`cleanCostMarkers` sets `f.name = cleanFiledName(f.nameRaw)`),
+so the shown name derives from `H.clean` of the raw cell: asking `H.clean` first
+costs one regex pass where `renderRow` costs the whole row. **Discharged rather
+than asserted** — the pre-filter admitted 116 rows whose SHOWN name is
+multi-token, all counted and excluded, and the must-see pin survives it.
+
+***AND MY OWN BUCKETING WAS REFUTED BY ITS OWN DRAW: A BUCKET KEYED ON CASE
+MEASURES THE CASE.*** I split the residue into `word` / `code` / `acronym` /
+`caption` / `month` / `welded` and wrote the welded test as
+`/^[A-Z][A-Z]{13,}$/` — ALL-CAPS — so `JPMorganSmartRetirementIncomeA`, which is
+a real fund whose spaces we lost, landed in `word` beside the genuine bare
+houses. A seeded uniform draw of eight from each bucket is what showed it; no
+count could. **So the one-token class is NOT shippable as one label**, because
+*a row that names nothing and a row whose name we MANGLED are two classes* and
+"the filing names no specific fund" is false for the second. Sub-populations as
+measured (ticker / fee counts beside each):
+
+| bucket | rows | plans | ppl | dollars | tk | fee |
+|---|---|---|---|---|---|---|
+| `word` (bare house or surname) | 2,795 | 1,984 | 4,299,472 | $9,774,475,756 | 5 | 90 |
+| `code` (custodian identifier) | 1,242 | 318 | 779,277 | $13,845,021,334 | 13 | 10 |
+| `acronym` | 786 | 548 | 2,239,353 | $8,209,464,821 | 0 | 3 |
+| `caption` | 335 | 319 | 557,544 | $5,182,451,402 | 0 | 0 |
+| `month` | 63 | 63 | 47,916 | $19,859,543 | 0 | 0 |
+| `welded` (ALL-CAPS only — undercounts) | 38 | 35 | 350,689 | $210,103,734 | 0 | 1 |
+
+`word` holds Lockheed's seven `ACI0099W6` / `MLL1` / `MLK3` rows' siblings and
+`Fidelity`, `Wellington`, `Macquarie`, `Columbia`, `Thornburg` — the recorded
+bare-HOUSE class. `code` is one custodian's internal fund numbering
+(`1TRB651`, `1ABSOWT`, `EUPAC-R5E`, `NJ7B`, `HI7K`). The largest single row in
+the whole residue is Food Lion's **`OTHER-STRATEGY` at 64.75% / $4,476,240,694 /
+239,586 ppl**, and Lockheed Martin (180,780 ppl) publishes **seven** opaque
+codes totalling over $6.2B.
+
+**AND THE SMALLEST BUCKET IS THE ONE THAT CAN SHIP, because it carries its own
+proof.** All 63 `month` rows are `December`/`DECEMBER` at **$312,024 ± 1 — the
+same figure in 63 unrelated filings**, which no holding can be. The hypothesis
+was a DATE, and the discriminating test is whether the amount TRACKS THE FILING
+YEAR, which a date does and a holding does not. Over the whole population of 66
+stored rows:
+
+| plan year | values |
+|---|---|
+| 2023 | $312,023 |
+| 2024 | **$312,024 x48**, $312,023 x4, $312,025 x2, $342,024 x1 |
+| 2025 | **$312,025 x8**, $172,026, $624,049 |
+
+So the cell is `December 31, 2024` — **the day welded to the year as a
+comma-grouped amount and the month read as the holding's name.** Three entries
+read in full context confirm it sits in the middle of an ordinary menu: Maria
+College's row 8 between `TIAA Real Estate` and `CREF Bond Market R1`; Guam
+Xray's row 1 above two real `DRT Select Target Date Profile` trusts.
+
+**THE PREDICATE TAKES NO EXTERNAL INPUT, WHICH IS WHY IT IS SAFE.** It does not
+look the plan year up: the VALUE must itself spell a date — some day 1-31
+concatenated with some plausible four-digit year must equal the amount exactly
+(`"31" + "2024" === "312024"`), AND the cleaned name must be a bare month. The
+twelve month names are a closed vocabulary that cannot go stale, unlike a brand
+list.
+
+**BOTH CONDITIONS ARE LOAD-BEARING, measured by leave-one-out over the whole
+store rather than argued.** The value shape ALONE reaches real holdings —
+`Vanguard Target Retirement 2065` at $252,179 (= 25/2179), `FID FDM IDX 2060
+IPR` at $62,009, `Schwab Target 2055 Fund` at $72,095, `Fidelity Freedom Index
+2015 Fund` at $32,093 and more, so a value-only arm would withdraw genuine
+target-date rows. The month name ALONE over-reaches by **2 rows** whose value is
+not a date (The Elkin Company $342,024, Randall Reilly Talent $624,049), and
+those two are REFUSED — conservatively, since their cause is unread.
+
+**REACH, as the page publishes it: 62 rows / 62 plans / 47,749 ppl /
+$19,205,495, 0 already qualified by any shipped arm, 0 tickers, 0 fees** (the
+bare-month population is 64 / 64 / 48,632 before the value condition). G4s
+Secure Solutions (Guam) publishes the date at **27.90% of its whole menu**, Tnn
+Guam at 18.86%, United Cerebral Palsy of Southern Arizona at 14.43%, and
+Community Media Group's copy is typed **`Mutual fund`** — a false vehicle type
+on a date.
+
+**NOT SHIPPED THIS CYCLE, deliberately.** The label is a new claim, so *a guard
+and the claim it licenses are one change*: the honest wording names what the row
+is rather than saying it names no fund, which would be true and uninformative.
+Both surfaces need it (`app.js`'s `shownType` chain and
+`build-seo-pages.mjs`'s label composition), the twin must be sliced rather than
+typed, and a frontend change must re-derive the cache-buster — more than the
+remaining cycle allows, and *a rushed ship past green gates* is how a wrong fund
+name reached readers once already. **Named residue for when it ships:** the
+VALUE stays printed and keeps counting toward the menu total, exactly as
+`subtotal (not a holding)` rows do today, so one plan's menu will still show a
+$312,024 line at 27.9%; withdrawing it from the total moves every percentage on
+the page and is a second change.

@@ -1590,6 +1590,54 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **FOUND BY THE 19:08 DRAW, SIZED NOT SHIPPED — THE ATTACHMENT'S OWN DATE
+  HEADER PUBLISHED AS A HOLDING AT A FABRICATED $312,024: 62 rows / 62 plans /
+  47,749 ppl / $19,205,495, 0 already qualified, 0 tickers, 0 fees.** All 63
+  bare-`December` rows carry **$312,024 ± 1 — the same figure in 63 unrelated
+  filings**, and the amount TRACKS THE FILING YEAR (2023 -> $312,023, 2024 ->
+  $312,024 ×48, 2025 -> $312,025 ×8), so the cell is `December 31, 2024` with
+  the day welded to the year as a comma-grouped amount and the month read as the
+  name. G4s Secure Solutions (Guam) publishes it at **27.90% of its whole
+  menu**, Tnn Guam 18.86%, United Cerebral Palsy of Southern Arizona 14.43%, and
+  Community Media Group's copy is typed **`Mutual fund`**.
+  **THE PREDICATE TAKES NO EXTERNAL INPUT, which is why it is safe:** it does
+  not look the plan year up — the VALUE must itself spell a date (some day 1-31
+  concatenated with a four-digit year equalling the amount exactly) AND the
+  cleaned name must be a bare month, a closed twelve-word vocabulary that cannot
+  go stale. **BOTH conditions are load-bearing by leave-one-out over the whole
+  store:** the value shape alone reaches real holdings (`Vanguard Target
+  Retirement 2065` at $252,179 = 25/2179, `Schwab Target 2055 Fund` at $72,095),
+  and the month name alone over-reaches by 2 rows whose value is not a date,
+  both REFUSED since their cause is unread. Blocked only on the time to do it
+  properly: the label is a NEW CLAIM naming what the row is (*a guard and the
+  claim it licenses are one change*), both surfaces need it, the twin must be
+  SLICED, and a frontend change must re-derive the cache-buster.
+  **Named residue:** the VALUE stays printed and counting toward the menu total,
+  as `subtotal (not a holding)` rows do today; withdrawing it moves every
+  percentage on the page and is a second change.
+- **THE ONE-TOKEN PUBLISHED NAME — SIZED 2026-10-10 19:4xZ AT 5,259 rows / 2,947
+  plans / ~6,983,334 ppl / $37,241,376,590 (unqualified, not loan or employer
+  stock), of which only 20 publish a ticker and 104 a fee — AND IT IS NOT ONE
+  CLASS.** A registered fund's name carries a house and a product, so one token
+  names no fund by construction. Found from Cigna (88,684 ppl) publishing a bare
+  **`PRIAC`** — the INSURER — on **$1,709,292,000 / 12.24%** of its menu with
+  `namelessRow` false, while two other rows of the same menu put that token in
+  an ENTITY position (`… Account PRIAC`). Largest single row: Food Lion's
+  `OTHER-STRATEGY` at **64.75% / $4,476,240,694 / 239,586 ppl**; Lockheed Martin
+  (180,780 ppl) publishes **seven** opaque custodian codes over $6.2B.
+  ***MY OWN BUCKETING WAS REFUTED BY ITS OWN DRAW — A BUCKET KEYED ON CASE
+  MEASURES THE CASE:*** the welded test was `/^[A-Z][A-Z]{13,}$/`, so
+  `JPMorganSmartRetirementIncomeA` — a real fund whose spaces we lost — landed
+  in the bare-house bucket, and a seeded uniform draw of eight per bucket is the
+  only thing that showed it. So a blanket label is refused: *a row that names
+  nothing and a row whose name we MANGLED are two classes.* Split: `word`
+  (bare house) 2,795 / 4,299,472 ppl · `code` (custodian identifier) 1,242 /
+  779,277 · `acronym` 786 / 2,239,353 · `caption` 335 / 557,544 · `month` 63 /
+  47,916 (the shippable item above) · `welded` 38 / 350,689 **and that last
+  figure UNDERCOUNTS for the case reason.** The `word` bucket is the recorded
+  bare-HOUSE class; the remainder needs the mangled-name population separated
+  from the names-nothing population first. `docs/accuracy-log.md` 2026-10-10
+  (19:4xZ).
 - **SHIPPED 2026-10-05 01:3xZ — A PUBLISHED QUOTE THAT OPENS ON THE
   ATTACHMENT'S PAGE NUMBER AND RUNNING HEADER: 1,890 quotes / 1,887 acks /
   6,096,337 ppl, 188 crawlable pages, 0 quotes GREW and 0 stopped being
