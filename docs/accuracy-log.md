@@ -52082,3 +52082,102 @@ Index ladder, and the unstated share class puts the symbol in the owner-gated
 COMPARABLE half; and the employer-stock row `Seneca Foods Unitized Stock Fund
 Employer Stock` carries `stockRow` with **no ticker**, a coverage gap in the
 employer-stock map rather than a false claim.
+
+## 2026-10-10 (12:2xZ) — the 8 undiagnosed cross-reference candidates: cause found, and the remedy the shape suggested is REFUTED on ~22 of 41
+
+**The obligation.** This morning's cross-reference ship (11:5xZ) closed with a
+named residue: *"8 of the 32 candidates move no cell, cause undiagnosed."* The
+operating protocol does not let that rest — *every unknown gets a diagnosed
+cause* — so this entry is that diagnosis, and it ends by refusing a ship.
+
+**CAUSE, exact and read off the shipped surface.** `cleanFiledName` ends
+`return /[A-Za-z]{3}/.test(s) ? s : String(name).trim();` — a result holding no
+three consecutive letters falls back to the RAW name. For all 8, the referring
+parenthetical IS the whole name (± a contract number), so the strip empties it
+and the guard hands the raw string back. The probe prints the control stripping
+(`Total Bond Market (refer to Exhibit E - investments)` → `Total Bond Market`)
+beside the 8 not stripping, so the uniform answer is the data's. The guard is
+CORRECT; the rows are simply not what that arm is for.
+
+**AND NO SHIPPED PREDICATE REACHES THEM**, with both controls passing
+(`isGenericName("shares")` true, `isGenericName("Vanguard 500 Index Fund
+Admiral Shares")` false): `hasNoFundIdentity`, `isGenericTypeName`,
+`isLabelOnlyName` and `isNamelessFundRow` all read **false** on all 8, and the
+page publishes 0 of 8 as qualified — against a live positive control (Acronis's
+bare `shares` → *"Filing names no specific fund"*). So qualifying them means a
+WIDENING, and the register's hazard applies: `merge-4i.mjs:1394` guards its
+share repair with `isGenericTypeName(head) || hasNoFundIdentity(head)`.
+
+**THEN THE FILING KILLED THE QUALIFICATION OUTRIGHT FOR THE LARGEST ROW.**
+IBM's `(refer to Exhibit M - investments)` is **$500,583,748 / 149,818 ppl**.
+The internal witness came first: of IBM's 19 exhibit-pointer rows, **18 carry a
+real fund name in front of the pointer** (Exhibits A, B, C, D, E, F, G, I, J,
+K, L, N, O, P, Q, R, S) and M alone does not. Downloaded and read, the filing
+says `Managed by Pacific Investment Management Company | High Yield and
+Emerging Markets Bond (refer to Exhibit M - investments) | 500,583,748` — a
+description cell WRAPPED across two lines, of which we kept only the second.
+***So "the filing names no specific fund" is definitively FALSE here: the
+filing names it, and the cut is ours.***
+
+**AND THE MECHANISM IS NAMEABLE, because the control is one row above it.**
+Exhibit I has the IDENTICAL two-line shape (`Managed by Pacific Investment` +
+`Total Bond Market (refer to Exhibit I -` / `Management Company` +
+`investments)`) and merges correctly — because its continuation,
+`investments)`, is INCOMPLETE. M's continuation, `(refer to Exhibit M -
+investments)`, is a SELF-CONTAINED parenthetical, so the merge heuristic sees a
+sufficient string and never prepends the first line. ***A wrapped description
+whose continuation line parses as complete is taken alone, and the real name is
+lost.*** That is a PARSER change needing a bump and a full re-parse: owner's
+call.
+
+**THE OTHER 7 SPLIT TWO MORE WAYS, each settled by the same sibling witness.**
+Ewing Irrigation's five `5PN-050NN (See Attached Statement)` rows
+($55,067,758 — **38.4% of its whole menu**, 1,733 ppl) carry `iss Merrill
+Lynch` and sit among 38 fully-named sibling rows: the contract NUMBER is an
+identifier and a statement is attached, so these name a CONTRACT, not nothing.
+Tencent America ($6,276,351 / 6.17%) and Vaisala ($4,939,871 / 5.17%) publish a
+bare `(See attachment)` among otherwise completely named Fidelity menus — the
+same cut-or-separate-schedule question, unresolved without those filings.
+
+**SIZED, AND THE GENERAL SHAPE IS NOT THE CLASS — 41 published+served rows /
+29 plans / 356,802 ppl / $1,727,812,828** whose PUBLISHED name is one balanced
+parenthetical and nothing else (must-see control: IBM's row is in it; cheap
+exact pre-filter on a raw `(`, a superset by construction because the cleaner
+only ever removes). **2 publish a ticker and 10 publish a fee**, and a blanket
+qualification would be false on roughly 22 of the 41:
+- **Sentry Insurance Company, 15 rows / 7,958 ppl** where the parenthetical IS
+  the fund name and the resolvers reach it — `(T. Rowe Price Equity Income
+  Fund)` → **PRFDX at 0.68**, `(Vanguard Institutional Index Fund)` at 0.02,
+  `(Vanguard Small-Cap Index Fund)` at 0.05. Legibility only; every claim true.
+  (`(Vanguad Mid-Cap Index Fund)` is the filer's own typo.)
+- **names we lost**: IBM (proven) and Health Care Service Corporation's
+  **`(EAIC)` at $733,228,663 — 19.10% of its menu, 40,491 ppl**, the class's
+  largest row by dollars and an acronym I cannot classify without its filing.
+- **real things in parentheses**: `(EQIX)` is Equinix's TICKER,
+  `(Personal Choice Retirement - PCRA)` is a real Schwab brokerage window,
+  `(formerly, Delaware Small Cap Value Fund)` names a fund by its former name,
+  and `(Loans)` ×2 / `(Partic ipant Loans)` belong to the loan machinery.
+- **genuine table debris**, the only honestly qualifiable subset:
+  `(balance forward from previous page)` at **49.12%** of Cades Schutte's menu,
+  `(at contract value)` at 30.60% of Keltec's, `(FOR THE YEAR ENDED)` 16.46%,
+  `(continued)` 13.22%, `(HELD AT YEAR END)` ×2, `(RESERVED)`, `(uncertified)`
+  ×2, `(In $ thousands)`, `(corrected in 2024)`, `(average return of 5.50%)`,
+  `(cash surrender value)`, `(Non-FBRIC)`.
+
+**NOT SHIPPED, and the refusal is the finding.** The debris subset is real and
+one-directional, but it is a VOCABULARY arm — *a count keyed on a vocabulary
+measures the vocabulary* — over 41 rows whose own member list contains all
+three of: a row naming nothing, a row whose name WE cut, and a row naming a
+real fund in parentheses. ***One label cannot serve those three***, and the two
+largest members by dollars must both be SPARED. Shipping the vocabulary would
+also require pricing a `hasNoFundIdentity` widening against `merge-4i:1394`, or
+a fourth display-only predicate on the `isLabelOnlyName` precedent. Queued with
+its members named so the next attempt starts from the data.
+
+**The reusable part.** *A shape that produces a clean, striking count can still
+be three classes wearing one costume, and only the member list says which.* The
+8 were reached by a strip; the strip's own guard refused them for the right
+reason; and the remedy the shape suggested — qualification — is false for the
+two rows carrying 190,309 of the 356,802 readers. I also repeated the recorded
+render-everything timeout and fixed it the recorded way, with an exact
+pre-filter that is a superset by construction rather than a sample.

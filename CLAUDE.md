@@ -2163,8 +2163,55 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   `(refer to Note 4)`, a vesting quote, a match formula's `(see Note 9)`) and are
   **correctly untouched: a quote is VERBATIM filing text where a name is a label
   we compose**, so stripping a mid-sentence pointer from a quote would change
-  what the filing said. **Named residue:** 8 of the 32 candidates move no cell,
-  cause undiagnosed. `docs/accuracy-log.md` 2026-10-10 (11:5xZ).
+  what the filing said. **RESIDUE DIAGNOSED 2026-10-10 12:2xZ — the cause is
+  `cleanFiledName`'s last line and the remedy the shape suggests is REFUTED.**
+  For all 8 the pointer IS the whole name (± a contract number), so the strip
+  empties it and `return /[A-Za-z]{3}/.test(s) ? s : String(name).trim();`
+  hands the raw string back — correct behaviour. No shipped predicate reaches
+  them (`hasNoFundIdentity`, `isGenericTypeName`, `isLabelOnlyName`,
+  `isNamelessFundRow` all false; the page qualifies **0 of 8** against a live
+  positive control), so qualifying them is a WIDENING against
+  `merge-4i.mjs:1394`. **THEN THE FILING KILLED QUALIFICATION FOR THE LARGEST
+  ROW:** IBM's `(refer to Exhibit M - investments)`, **$500,583,748 / 149,818
+  ppl**, is one of 19 exhibit pointers of which **18 carry a real fund name**,
+  and the filing reads `High Yield and Emerging Markets Bond (refer to Exhibit
+  M - investments)` — a description cell WRAPPED across two lines of which we
+  kept only the second, so *"names no specific fund" is FALSE and the cut is
+  OURS*. **The mechanism is nameable and its control is one row above it:**
+  Exhibit I has the identical two-line shape and merges because its
+  continuation (`investments)`) is INCOMPLETE, where M's is a SELF-CONTAINED
+  parenthetical — ***a wrapped description whose continuation parses as
+  complete is taken alone and the real name is lost.*** PARSER change, bump and
+  re-parse: owner's call. The other 7 split two ways by the same sibling
+  witness: Ewing's five `5PN-050NN (See Attached Statement)` rows (**38.4% of
+  its menu**, 1,733 ppl, `iss Merrill Lynch`, 38 named siblings) name a
+  CONTRACT by number; Tencent and Vaisala's bare `(See attachment)` sit among
+  fully-named Fidelity menus.
+  **SIZED AND THE SHAPE IS NOT THE CLASS — 41 published+served rows / 29 plans
+  / 356,802 ppl / $1,727,812,828** whose published name is one balanced
+  parenthetical and nothing else (must-see: IBM is in it), **2 publishing a
+  ticker and 10 a fee**, of which ~22 must be SPARED: **Sentry Insurance's 15
+  rows / 7,958 ppl where the parenthetical IS the fund name** and the resolvers
+  are right (`(T. Rowe Price Equity Income Fund)` -> **PRFDX at 0.68**,
+  `(Vanguard Institutional Index Fund)` at 0.02); names we lost (IBM, and
+  **HCSC's `(EAIC)` at $733,228,663 / 19.10% / 40,491 ppl**, the class's
+  largest by dollars and unclassifiable without its filing); and real things in
+  parentheses (`(EQIX)` is Equinix's TICKER, `(Personal Choice Retirement -
+  PCRA)` a real Schwab window, `(formerly, Delaware Small Cap Value Fund)` a
+  fund by its former name, `(Loans)` ×2 the loan machinery).
+  **QUEUED NOT SHIPPED — the only honestly qualifiable subset is table debris**
+  (`(balance forward from previous page)` at **49.12%** of Cades Schutte's
+  menu, `(at contract value)` 30.60%, `(FOR THE YEAR ENDED)` 16.46%,
+  `(continued)` 13.22%, `(HELD AT YEAR END)` ×2, `(RESERVED)`, `(uncertified)`
+  ×2, `(In $ thousands)`, `(corrected in 2024)`, `(average return of 5.50%)`,
+  `(cash surrender value)`, `(Non-FBRIC)`) and it is a VOCABULARY arm whose own
+  member list holds all three of a row naming nothing, a row whose name we cut
+  and a row naming a real fund — ***one label cannot serve those three***, and
+  the two largest members by dollars must both be spared. Needs the
+  `isLabelOnlyName` precedent (a fourth display-only predicate) or a priced
+  `hasNoFundIdentity` widening. ***A shape that produces a clean, striking
+  count can still be three classes wearing one costume, and only the member
+  list says which.*** `docs/accuracy-log.md` 2026-10-10 (11:5xZ) and (12:2xZ).
 - **ORIGINAL ENTRY, kept because it is what was predicted — FOUND BY THE 09:07
   DRAW, UNSIZED — A WELD ON AN EM-DASH.** Ross Stores
   publishes three rows shaped `<CAPTION-OR-ENTITY>—<fund>`: `STABLE RETURN
