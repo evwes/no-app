@@ -2229,10 +2229,41 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   The cell is `Fidelity Management Trust Company` with the **HOUSE WORD
   TRUNCATED AWAY**, so the 10:4xZ reduction has no manager token left to
   reduce — a different mechanism from the custodian-words class it fixed. The
-  store attests the full spelling elsewhere, which is the witness a repair
-  needs; the control is row 7 of the same menu, `Vanguard Windsor II Fund -
-  Admiral Fund` under `Fiduciary Trust Company`, resolving VWNAX because the
-  NAME carries the house. Unsized.
+  control is row 7 of the same menu, `Vanguard Windsor II Fund - Admiral Fund`
+  under `Fiduciary Trust Company`, resolving VWNAX because the NAME carries the
+  house.
+  **SIZED AND REFUTED 2026-10-10 18:3xZ — CLOSED, DO NOT REBUILD IT. The queue's
+  own prescription ("the store attests the full spelling elsewhere, which is the
+  witness a repair needs") is UNSOUND, and it cannot reach its own motivating
+  row.** Over all **13,203** distinct issuer cells on published+served rows:
+  12,209 are a proper suffix of no longer attested cell, **541 of exactly one**,
+  **453 of several** — and `Management Trust Company` is a suffix of **14**, so
+  the uniqueness condition correctly refuses Orlando Health itself.
+  **And the 541 "unambiguous" cells are dominated by a HARM.** The repair moves
+  an answer on 51 rows / 47 plans / 32,426 ppl / $115,600,347, of which
+  **nothing -> comparable 12 rows / 11,967 ppl, nothing -> asserted 4 / 818, and
+  COMPARABLE -> ASSERTED 35 rows / 17,718 ppl** — **all 35 from two welded cells
+  carrying a SHARE CLASS**, `"Class R6 Nomura"` (33) and `"Company Fund R6
+  Victory Capital Management Inc."` (2). Prepending those to a clean `Nomura`
+  cell manufactures a class the filing never stated: `DEVLX*` -> **DVZRX**,
+  `DCCAX*` -> **DCZRX**, `WMGAX*` -> **IGRFX** — the owner-gated
+  wrong-share-class defect by a new route, the same shape that killed the 15:2xZ
+  ETF half six hours earlier.
+  ***THE REUSABLE RULE: AN ATTESTED LONGER STRING IS NOT THEREBY A FULLER
+  NAME.*** The witness assumes the issuer column holds firm names at varying
+  completeness; it is contaminated by WELDS, and the pin's own candidate list
+  proves it with no query — `"Cash 1  Fidelity Management Trust Company"`,
+  `"M utual Funds Fidelity Management Trust Company"`, `"Managed income
+  portfolio Fidelity Management Trust Company"`, `"Assets certified by Fidelity
+  Management Trust Company"`. ***A column whose damage mode is WELDING cannot
+  witness its own completions.*** **The surviving 16 honest rows / ~12,800 ppl
+  are not worth an arm** (refusing a prefix carrying a `CLASS_MARK` or a
+  type-caption word would isolate them — `Prudential Financial` -> `PGIM
+  (Prudential Financial)`, `MetWest Funds` -> `TCW Metwest Funds`,
+  `TimesSquare` -> `AMG TimesSquare` — but the motivating row stays refused).
+  **Needs a witness from OUTSIDE the issuer column**: a registry of firm names,
+  i.e. the `fund-facts` shape, because a trustee's name is a FACT that must be
+  SOURCED. `docs/accuracy-log.md` 2026-10-10 (18:3xZ).
 - **ONE TICKER, TWO FEES — 231 of 1,280 published tickers / 354,753 rows /
   $1.91T**, over all 599,250 rows publishing both a symbol and a fee. The ticker
   comes from a resolver and the fee from a NAME-pattern table, so one fund

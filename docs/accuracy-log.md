@@ -52667,3 +52667,73 @@ RTX's `Managed account holdings (3348 positions)` at 60.8% is correctly
 described rather than named, its six collective trusts all carry
 `noPublicPrice` and correctly publish no fee, and the brokerage window carries
 `brokRow`.
+
+## 2026-10-10 (18:3xZ) — THE TRUNCATED ISSUER CELL IS REFUTED AND CLOSED: the store's own issuer column cannot witness a fuller firm name
+
+The 14:08 draw left this unsized and the register prescribed the obvious
+reconstruction. Sized, it is **net harmful and cannot reach its own motivating
+row**, and both halves of that are measured.
+
+**The class as queued.** Orlando Health (55,514 ppl) publishes `500 Index Fund`
+· iss **`Management Trust Company`** at 0.03 on $230,782,728, 12.3% of its
+menu, with no ticker — `Fidelity Management Trust Company` with the house word
+truncated away, so the 10:4xZ `houseCore` reduction has nothing left to reduce.
+The prescribed repair: the store attests the full spelling elsewhere, so prepend
+it.
+
+**THE ORIENTATION GENUINELY IS NOT IN DOUBT, which is why it looked shippable.**
+The three closed name-strip classes each needed a witness to which SIDE the
+damage was on; a reconstruction prepends what is missing and never chooses
+between two readings. So the recorded *a witness that a row is damaged is not a
+witness to which side the damage is on* does not bite here. **What bites is
+something else.**
+
+**(1) THE UNIQUENESS CONDITION REFUSES THE MOTIVATING ROW.** Over all **13,203**
+distinct issuer cells on published+served rows: 12,209 are a proper suffix of no
+longer attested cell, **541 of exactly one**, and **453 of several**.
+`Management Trust Company` is a suffix of **14** longer cells, so it is in the
+refused set. The pin is present and the count is honest — the measurement sees
+its motivating example and correctly declines it.
+
+**(2) AND THE 541 "UNAMBIGUOUS" CELLS ARE DOMINATED BY A HARM.** Asked through
+the real resolver, the repair moves an answer on **51 rows / 47 plans / 32,426
+ppl / $115,600,347** — and split by direction:
+
+| | rows | ppl |
+|---|---|---|
+| nothing -> COMPARABLE (hedged gain) | 12 | 11,967 |
+| nothing -> ASSERTED | 4 | 818 |
+| **COMPARABLE -> ASSERTED (the hazard)** | **35** | **17,718** |
+
+**All 35 come from two cells, and both carry a SHARE CLASS:** `"Class R6
+Nomura"` (33 rows) and `"Company Fund R6 Victory Capital Management Inc."` (2).
+Prepending those to a clean `Nomura` cell manufactures a class the filing never
+stated and moves an honest asterisked comparable to an assertion —
+`DEVLX*` -> **DVZRX**, `DCCAX*` -> **DCZRX**, `WMGAX*` -> **IGRFX**. That is the
+owner-gated wrong-share-class defect arriving by a new route, which is exactly
+the shape that killed the 15:2xZ ETF half six hours earlier.
+
+***THE REUSABLE RULE: AN ATTESTED LONGER STRING IS NOT THEREBY A FULLER NAME.***
+The witness assumes the store's issuer column holds firm names at varying
+completeness. It does not — it is contaminated by WELDS, and the pin's own
+candidate list proves it without a single query: `"Cash 1  Fidelity Management
+Trust Company"`, `"M utual Funds Fidelity Management Trust Company"`,
+`"Managed income portfolio Fidelity Management Trust Company"`, `"Assets
+certified by Fidelity Management Trust Company"`, `"Class R6 Nomura"`. So the
+unique longest superstring is as likely to be *debris plus the name* as a fuller
+name, and a reconstruction keyed on it imports the debris as fact. *A column
+whose damage mode is WELDING cannot witness its own completions.*
+
+**What survives is 16 rows / ~12,800 ppl and is not worth an arm.** Refusing any
+prefix carrying a class marker (`CLASS_MARK` is the ready-made vocabulary) or a
+type-caption word would leave the honest gains — `Prudential Financial` ->
+`PGIM (Prudential Financial)`, `MetWest Funds` -> `TCW Metwest Funds`,
+`TimesSquare` -> `AMG TimesSquare` — but the motivating row is still refused by
+the uniqueness condition, so the arm would ship a new contamination surface for
+sixteen rows and leave the class that prompted it untouched.
+
+**CLOSED, not paused.** Orlando Health's cell is a real defect and needs a
+witness from OUTSIDE the issuer column — a registry of firm names, which is the
+`data/fund-facts.json` / `fund-facts` shape — because *a ticker is a FACT that
+must be SOURCED, never inferred*, and so is a trustee's name. Nothing shipped;
+`PARSER_VERSION` stays 203.
