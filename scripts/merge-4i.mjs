@@ -980,6 +980,104 @@ function stripIssuerLead(iss) {
     }
     return best;
   };
+  /* A NAME THAT CONTAINS ITSELF AT BOTH ENDS — `X … X` — 2026-10-10 (03:4xZ).
+   *
+   * `Admiral Shares Vanguard Windsor II Admiral Shares`, `LENDING (TIER J) NT
+   * COLLECTIVE S&P500 INDEX FUND-DC-NON LENDING (TIER J)`, `American Funds
+   * 2030 Target Date Fund R6 American Funds`. A wrapped line is re-joined with
+   * one end's run duplicated at the other, so the published name carries the
+   * same token run twice with the fund in between.
+   *
+   * `collapseSelfRepeat` CANNOT REACH IT BY CONSTRUCTION, not by its floors.
+   * That arm needs the repeat to run FORWARD from the remainder's start
+   * (`X X rest`) — which is what keeps two VINTAGES of one series intact — so
+   * for `Trust TD2 Capital Group 2030 … Trust TD2` it asks whether the
+   * remainder starts with `trusttd2` and it starts with `capitalgroup`.
+   * Lowering its 3-word / 10-character floors would still not reach this.
+   *
+   * THE DETECTOR IS SOUND FOR A REASON THE SIBLING ARMS DO NOT HAVE, and it
+   * still says nothing about the REPAIR. Both copies sit inside ONE name, so
+   * the evidence is not drawn from a sibling the same column shift could have
+   * produced — the contamination that killed the same-menu witness on
+   * 2026-10-03. But `X mid X` holds THREE orientations: the LEAD is stray
+   * (ITW), the TAIL is stray (`… Fund R6 American Funds`, where stripping the
+   * lead removes the HOUSE), or it is a ROTATION whose head appears at both
+   * ends and NEITHER strip is a name. *A witness that a row is damaged is not
+   * a witness to which side the damage is on* — fifth instance, and the first
+   * where the witness is internal to the name.
+   *
+   * THE PRESCRIBED ORACLE IS REFUTED AND THE REASON IS STRUCTURAL. The record
+   * prescribes, for this class and for the mid-name-house parent: build both
+   * candidates and let the shipped resolver say which is the fund. Piloted on
+   * the 276 display-name rows, where every member had been read: 0 wrong but 5
+   * abstentions of 6 pinned cases, and of the 12 rows it acts on 5 are WRONG
+   * and ALL 5 ARE ROTATIONS. ***A token-set matcher is ORDER-BLIND, and `X mid
+   * X` strips to `mid X` or `X mid` — the same multiset minus one copy of
+   * `X`*** — so the resolver answers identically on both sides (ITW reads
+   * `NOSIX*` twice) or on neither. `Shares Vanguard Value Index Fund Admiral`
+   * carries every correct token in the wrong order and resolves perfectly: *a
+   * resolver answer is not evidence the string is a NAME at all.* The oracle
+   * may still work for the parent, where the two candidates are genuinely
+   * different token sets.
+   *
+   * SO THE WITNESS IS ORDER-SENSITIVE AND EXACT: does the surviving candidate
+   * stand alone as some other plan's WHOLE filed name? No plan files the
+   * rotated spelling as its whole name, which is exactly what the resolver
+   * cannot see. `Vanguard Windsor II Admiral Shares` stands alone 27 times,
+   * `New York Life Guaranteed Interest Account` 47, `Fidelity U.S. Bond Index
+   * Fund` 1,906. That is `whole`, the same map the three arms above read, and
+   * only the merge holds it.
+   *
+   * THE FLOOR IS THE WHOLE PROTECTION AND IT IS PRICED AT 61 ROWS — a floor of
+   * one lets a single damaged row license the same damage elsewhere, measured
+   * on the pilot where `Class K Fidelity U.S. Bond Index Fund` won on ONE
+   * attestation that was itself another damaged copy. What the floor refuses
+   * here is mostly a DIFFERENT family: `Money market fund - Fidelity
+   * Government Money Market Fund` is a welded TYPE CAPTION, whose lead strip
+   * leaves a dangling separator and whose remainder is attested once. Refusing
+   * a repair is the safe direction and that family wants its own arm.
+   *
+   * THE RATIO REFUSES 0 ROWS ON THIS STORE and is labelled rather than
+   * presented as protection — the same honesty the class-rotation arm's
+   * punctuation condition is given. It cannot bite because every row the floor
+   * admits has the opposite side attested 0 or 1 times; it is kept because the
+   * pilot found a row where two damaged copies attested a rotation, which is
+   * the shape it exists for, and because a later lowering of the floor would
+   * re-open it. Priced both ways: floor alone 93 rows, ratio alone 154, both
+   * 93, detector alone 154.
+   *
+   * 93 rows / 79 plans / 131,723 participants, every one published AND served,
+   * and ALL 93 WERE READ — 0 rotations in the acted set, because the surviving
+   * side is attested as a whole filed name by construction. `Admiral Shares
+   * Vanguard Windsor II Admiral Shares` -> `Vanguard Windsor II Admiral
+   * Shares` KEEPS ITS NUMERAL, which is the hazard that cost a wrong fund name
+   * once and is this arm's first fixture. */
+  const WRAP_FLOOR = 3, WRAP_RATIO = 10;
+  const wrapRepair = (name) => {
+    const w = String(name || "").trim().split(/\s+/).filter(Boolean);
+    /* longest run first: a shorter run is a prefix of the same duplication and
+     * would leave part of the stray copy behind */
+    for (let k = Math.floor((w.length - 3) / 2); k >= 2; k--) {
+      const lead = w.slice(0, k).join(" "), tail = w.slice(w.length - k).join(" ");
+      const a = ck(lead).replace(/ /g, "");
+      if (a.length < 5) continue;                      // two tiny tokens are not a run
+      if (a !== ck(tail).replace(/ /g, "")) continue;   // the duplication itself
+      /* "substantial text between the copies" needs NO condition: the loop
+       * bound `k <= floor((n-3)/2)` already forces `n - 2k >= 3`, with
+       * equality at the largest k. A first draft carried the test anyway and
+       * `wrap-repair-test` could not build a case where it was the only
+       * protection — because production cannot reach one. A condition
+       * unreachable by construction is worse than an inert one: it reads as a
+       * guard and is dead code, so the invariant is asserted in the test
+       * across name lengths instead of restated here. */
+      const stripLead = w.slice(k).join(" "), stripTail = w.slice(0, w.length - k).join(" ");
+      const aL = whole.get(nk(stripLead)) || 0, aT = whole.get(nk(stripTail)) || 0;
+      if (aL >= WRAP_FLOOR && aL >= aT * WRAP_RATIO) return stripLead;
+      if (aT >= WRAP_FLOOR && aT >= aL * WRAP_RATIO) return stripTail;
+      return null;                                      // ABSTAIN, do not try a shorter run
+    }
+    return null;
+  };
   /* A BROKEN FONT SHIFTED A RUN OF THE NAME BY +29 — 2026-10-01 (15:4xZ).
    *
    * The PDF's cmap is offset, so every character of a run arrives 29 code
@@ -1394,8 +1492,9 @@ function stripIssuerLead(iss) {
     if (isGenericTypeName(head) || hasNoFundIdentity(head)) return null;   // and it must name a fund
     return head;
   };
-  let weld = 0, caps = 0, rot = 0, ciph = 0, bang = 0, iweld = 0, vrep = 0, srep = 0;
+  let weld = 0, caps = 0, rot = 0, ciph = 0, bang = 0, iweld = 0, vrep = 0, srep = 0, wrap = 0;
   const weldAcks = new Set(), capsAcks = new Set(), rotAcks = new Set(), ciphAcks = new Set(), bangAcks = new Set();
+  const wrapAcks = new Set();
   const iweldAcks = new Set(), vrepAcks = new Set(), srepAcks = new Set();
   for (let i = 0; i < SHARDS; i++)
     for (const [ack, e] of Object.entries(buckets[i])) {
@@ -1437,6 +1536,14 @@ function stripIssuerLead(iss) {
          * name repaired this run is attested in its damaged form either way */
         const rrep = rotRepair(f.name);
         if (rrep) { f.name = rrep; rot++; rotAcks.add(ack); continue; }
+        /* the self-wrapping duplication, asked after the rotation because both
+         * are whole-name operations and this one is the narrower claim: the
+         * rotation MOVES a designation the registry names, where this one
+         * REMOVES a run the name already carries twice. Measured as disjoint
+         * from all three arms above rather than assumed — of the 93 rows this
+         * repairs, 0 are claimed by any of them. */
+        const wrep = wrapRepair(f.name);
+        if (wrep) { f.name = wrep; wrap++; wrapAcks.add(ack); continue; }
         /* asked LAST and only of a name no arm above touched. The three above
          * all require the damaged form to be attested or unattested as ASCII
          * words; a ciphered run contains a control character, which `whole`
@@ -1461,6 +1568,7 @@ function stripIssuerLead(iss) {
   if (weld) console.log(`lost-space repair: ${weld} rows across ${weldAcks.size} plans`);
   if (caps) console.log(`all-caps lost-space repair: ${caps} rows across ${capsAcks.size} plans`);
   if (rot) console.log(`class-rotation repair: ${rot} rows across ${rotAcks.size} plans`);
+  if (wrap) console.log(`self-wrapping-duplication repair: ${wrap} rows across ${wrapAcks.size} plans`);
   if (ciph) console.log(`cipher-run repair: ${ciph} rows across ${ciphAcks.size} plans`);
   if (bang) console.log(`ocr-bang repair: ${bang} rows across ${bangAcks.size} plans`);
 }

@@ -2921,8 +2921,102 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   hypothesis and still did not mean what it looked like — only the multi-class
   control turned it into the right claim.* `docs/accuracy-log.md` 2026-10-09
   (22:2xZ).
-- **FOUND BY THE 23:07 DRAW, SIZED NOT SHIPPED — A WRAPPING DUPLICATION
-  (`X … X`): 276 rows / 263 plans / 486,519 ppl / $2,604,062,045**, of which
+- **SHIPPED 2026-10-10 04:0xZ AS `wrapRepair` IN `merge-4i.mjs` — THE
+  SELF-WRAPPING DUPLICATION: 93 stored rows / 78 acks / 79 plans / 131,723 ppl,
+  of which 62 rows / 53 plans / 84,286 ppl / $1,205,433,011 are READER-FACING.**
+  Ticker gained/lost/swapped **0/0/0**, fee **2 gained** / 0 lost / 0 changed,
+  asterisk 0, shown type 0, row membership 0; 2 crawlable pages, both read;
+  20,096-row control differing on 0. Illinois Tool Works' **$1,060,028,326** row
+  (24.8% of its menu) stops publishing `LENDING (TIER J) NT COLLECTIVE S&P500
+  INDEX FUND-DC-NON LENDING (TIER J)`; six `American Funds <vintage> Target Date
+  Fund R6` rows drop a trailing `American Funds` by STRIP-TAIL, where stripping
+  the lead would have removed the HOUSE; and **`Admiral Shares Vanguard Windsor
+  II Admiral Shares` -> `Vanguard Windsor II Admiral Shares` KEEPS ITS
+  NUMERAL**, the hazard that cost a wrong fund name once. `PARSER_VERSION` stays
+  203 — a merge-side repair like its five siblings, so no re-parse and no bump.
+  **DO NOT CARRY 93 AS A READER FIGURE: `cleanFiledName` HAD ALREADY UNDONE 31
+  OF THEM** — it carries its own leading-class-designation strip, so `Class R-6
+  EuroPacific Growth Fund Class R-6` already displayed correctly. Sixth instance
+  of *a STORED field is not a PUBLISHED one*, and the first where what had
+  already fixed it was a display CLEANER rather than a competing arm.
+  **BOTH FEE GAINS ARE A NAMED INSTANCE OF A QUEUED CLASS:** Dental
+  Intelligence's `International Growth Fund Admiral Shares` gains 0.26 **while
+  its ticker VWILX does not move** — the symbol resolved through the damaged name
+  and the fee did not, which is the register's own *the ticker resolver tolerates
+  damage the fee table does not* asymmetry, repaired as a side effect.
+  **MY FIRST BEFORE/AFTER MEASURED THE HARNESS — a standalone merge is NOT its
+  own baseline.** Snapshot + one merge run reported **2,645 changed names and
+  18,907 changed NON-NAME fields** for an arm that touches 93 rows and only
+  names: the committed store carries 65,479 acks and a standalone merge derives
+  **65,495**, so the run is not a no-op against a CI-written tree. ***The fix is
+  a DIFFERENTIAL RUN and it is exact rather than careful:*** merge twice from one
+  committed baseline, once with the call site neutered to `null`, so whatever
+  standalone does differently cancels. It then read 93 / 0 / 0 / 0 with
+  1,730,838 rows byte-identical — **and supplied the DISJOINTNESS control for
+  free.** *A before/after is only as honest as the claim that nothing else moved;
+  earn it by varying ONE thing between two runs, not by trusting a snapshot.*
+  **AND THE PAGE FOUND WHAT NO COUNT COULD:** directly below ITW's repaired row
+  sits `Lending (Tier J) Mfb Nt Collective Msci Acwi Ex-Us Index Fund - Dc - Non`
+  at **$458,253,330**, carrying the IDENTICAL stray prefix and correctly NOT
+  repaired — its tail is `- Dc - Non`, so there is no duplication to witness.
+  That is the shifted-menu class the mid-name-house entry still owes an
+  orientation test, and the two shapes sit one row apart on one page. Named
+  residue, not a gap in this arm.
+  **THREE OF THE QUEUE ENTRY'S OWN PRESCRIPTIONS DID NOT SURVIVE THE ATTEMPT.**
+  (1) **THE STAGE.** It read *"canonical in `lib-disclose` with a SLICED app.js
+  twin"* and that is IMPOSSIBLE: the validated witness is an attestation map
+  over all 65,495 lineup entries and **the browser holds ONE plan's shard**, so
+  it belongs where the other five name repairs live, reading the `whole` map
+  already built there. ***Fourth instance of a queued prescription being wrong
+  about WHERE rather than about WHAT*** — and the tell needed no run, since *the
+  witness names the data it needs and the data says which stage can ask.*
+  (2) **THE POPULATION.** The pilot detected on `H.clean(name)`; the merge sees
+  `f.name` raw, keys by `nk` (punctuation KEPT) over CONFIDENT entries only.
+  Three differences at once, so **do not carry 70 rows / 85,237 ppl** — the
+  class is 455 rows and the gate acts on 93 / 131,723, a third more people.
+  *A population measured through one normalisation is not the population a
+  repair runs under.* Both must-see pins survived the change of normalisation.
+  (3) **THE RATIO REFUSES ZERO ROWS HERE and the floor is the whole
+  protection.** Priced both ways: floor alone 93, ratio alone 154, both 93,
+  detector alone 154 — so the floor blocks 61 and the ratio cannot bite, every
+  admitted row having the opposite side attested 0 or 1. Kept and **labelled
+  decorative**, as the class-rotation arm labels its punctuation condition,
+  because the pilot found the shape it exists for and a lower floor re-opens it.
+  **What the floor refuses is a DIFFERENT family, named not swept in:** `Money
+  market fund - Fidelity Government Money Market Fund` ×14 is a welded TYPE
+  CAPTION whose lead strip leaves a dangling separator and whose remainder is
+  attested once; it wants its own arm.
+  **AND A CONDITION I WROTE WAS UNREACHABLE BY CONSTRUCTION — the loop bound
+  `k <= floor((n-3)/2)` ALREADY forces `n - 2k >= 3`**, so the "substantial text
+  between" test could never fire. `wrap-repair-test` could not build a case
+  where it was the only protection, *not because the probe was poor but because
+  production cannot reach one* — the `ExxonMobil` trap in its purest form.
+  ***A condition unreachable by construction is worse than an inert one: it
+  reads as a guard and is dead code.*** Deleted; the invariant is ASSERTED over
+  name lengths 5..60 instead. The first three probes failed too, every one
+  protected twice **by the loop bound rather than by the condition it pinned** —
+  *build a single-protection case against the loop's reachable range, not
+  against the condition's text.*
+  **`scripts/wrap-repair-test.mjs` IS CI-SAFE WHERE `merge-name-test` CANNOT
+  BE:** it SLICES the arm out of the source and supplies **its own FROZEN
+  attestation map**, so DOL drift cannot flip it — that file reads every pin off
+  live attestations and has changed status three times on drift alone, and a
+  gate that reddens on a refresh with nothing wrong is the habitually-red gate
+  that hid ten `site-test` failures. 5 must-fire, 5 must-not-fire (the vintage
+  pair `… 2050 Trust II … 2055 Trust II` among them, which
+  `collapseSelfRepeat`'s forward-prefix rule exists to spare), 3
+  single-protection mutations, the invariant.
+  **Measured through the REAL merge: `self-wrapping-duplication repair: 93 rows
+  across 78 plans`, the same 93 predicted — which is also the DISJOINTNESS
+  control**, since the count would not agree if any arm above it in the chain
+  claimed a row. `confident` 60,182 unchanged, CONFIDENCE DIFF +0/−0, degraded
+  swaps 0. **ALL 93 READ and 0 are rotations**, structurally rather than
+  statistically: the surviving side is attested as a whole filed name ≥3 times,
+  so it IS a name by construction — which is exactly what the order-blind
+  resolver could not establish. `docs/accuracy-log.md` 2026-10-10 (03:4xZ).
+- **ORIGINAL SIZING, kept because it is what was predicted — A WRAPPING
+  DUPLICATION (`X … X`): 276 rows / 263 plans / 486,519 ppl / $2,604,062,045**,
+  of which
   **66 publish a TICKER, 65 a FEE and 6 are asterisked**. A published name whose
   leading k-token run equals its own TRAILING k-token run with substantial text
   between. **`collapseSelfRepeat` cannot reach it BY CONSTRUCTION, not by its

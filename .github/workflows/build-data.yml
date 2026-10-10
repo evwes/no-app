@@ -89,6 +89,15 @@ jobs:
           node scripts/schc-item1-test.mjs
           node scripts/schd-name-test.mjs
           node scripts/match-formula-test.mjs
+      # merge-side name repairs. This one CAN live in CI where
+      # merge-name-test.mjs cannot: it slices the arm out of merge-4i.mjs and
+      # feeds it a FROZEN attestation map, so a DOL refresh cannot flip its
+      # verdicts. merge-name-test reads every pin off the live store and has
+      # changed status three times on drift alone — and a gate that reddens on
+      # a refresh with nothing wrong is the habitually-red gate that hid ten
+      # site-test failures.
+      - name: Name-repair gate (self-wrapping duplication)
+        run: node scripts/wrap-repair-test.mjs
       - name: Download and process DOL Form 5500 datasets
         run: node scripts/build-data.mjs
       - name: Plan parse shards

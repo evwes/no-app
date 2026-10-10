@@ -51212,3 +51212,185 @@ floor, the ratio, the 3-token middle and the 5-character run, then stamp,
 smoke-test and the `site-test` conclusion. What this cycle establishes is the
 design and the population, measured and read, so the ship starts from evidence.
 `PARSER_VERSION` stays 203 — display-side.
+
+## 2026-10-10 (04:0xZ) — SHIPPED: the self-wrapping duplication, 93 stored rows / 62 reader-facing / 84,286 ppl — and the queued prescription was wrong about the STAGE, the WITNESS and the POPULATION
+
+**The 02:4xZ entry above established the design and left the ship for this
+cycle. Three of its own prescriptions did not survive the attempt, a condition
+I wrote turned out unreachable, and my first before/after harness measured the
+harness. Each of those is the useful part.**
+
+### (1) THE STAGE. It cannot be a display repair, because the witness is the whole store
+
+That entry wrote the gate set as *"canonical in `lib-disclose` with a SLICED
+app.js twin"*, and that is **impossible** for this repair. The validated witness
+is *does the surviving candidate stand alone as some OTHER plan's whole filed
+name*, which needs an attestation map over all 65,495 lineup entries — and the
+browser holds ONE plan's shard. So it belongs where the other five name repairs
+already live: `merge-4i.mjs`, whose `whole` map is exactly this evidence and was
+already built for the lost-space, all-caps and class-rotation arms. One
+`wrapRepair` arm in that chain, reading a map that was already there.
+
+***FOURTH INSTANCE OF A QUEUED PRESCRIPTION BEING WRONG ABOUT WHERE RATHER THAN
+ABOUT WHAT*** (`fb-vanished` impossible, the vesting ranking aimed at a stage
+the candidates never reach, the accelerated-vesting demotion harmful for the
+bulk, this). The tell needed no run: *the witness names the data it needs, and
+the data says which stage can ask the question.* It also reads on the recorded
+rule from the other side — *before adding a source, ask what the pipeline
+already reads and throws away* — because nothing new had to be computed at all.
+
+### (2) THE POPULATION. The stored name is a different population from the display name
+
+The pilot detected on `H.clean(name)` and keyed its map on the cleaned string
+over every entry. The merge sees `f.name` raw, keys `whole` by `nk` (trim +
+lowercase, **punctuation kept**), over **confident** entries only. Three
+differences at once, so **do not carry the pilot's 70 rows / 85,237 ppl**:
+re-derived under the merge's own conventions the class is **455 rows** and the
+gate acts on **93**. *A population measured through one normalisation is not the
+population a repair will run under*, and the answer is to re-measure, not to
+carry the figure across. Both must-see fixtures were pinned ahead of that count
+and both survived the change of normalisation.
+
+### (3) THE RATIO REFUSES NOTHING HERE, and the floor is the whole protection
+
+Priced both ways over the real population: **floor alone 93 rows, ratio alone
+154, both 93, detector alone 154.** The floor blocks 61 and ***the ratio blocks
+ZERO*** — it cannot bite, because every row the floor admits has the opposite
+side attested 0 or 1 times. On the pilot's cleaned-name population it DID work
+(Cava won on one attestation that was itself another damaged copy; Arden
+abstained because two damaged copies attested its rotation), so it is kept and
+**labelled decorative rather than presented as protection** — the same honesty
+the class-rotation arm gives its punctuation condition — and because a lower
+floor re-opens the shape it exists for.
+
+**What the floor refuses is mostly a DIFFERENT FAMILY, named not swept in:**
+`Money market fund - Fidelity Government Money Market Fund` and kin are a welded
+TYPE CAPTION whose lead strip leaves a dangling separator and whose remainder is
+attested once. Refusing is the safe direction; that family wants its own arm.
+
+### A CONDITION I WROTE WAS UNREACHABLE BY CONSTRUCTION, and the test is what said so
+
+The first draft carried `if (w.length - 2 * k < 3) continue;` — "substantial
+text between the copies". **The loop bound is `k <= floor((n-3)/2)`, which
+already forces `n - 2k >= 3`, with equality at the largest k, so the condition
+can never fire.** `wrap-repair-test` could not build a case where it was the
+only protection — not because the probe was poor but because production cannot
+reach one, which is the `ExxonMobil` trap in its purest form. ***A condition
+unreachable by construction is worse than an inert one: it reads as a guard and
+is dead code.*** Deleted, and the invariant is ASSERTED in the test over name
+lengths 5..60 instead of restated in the arm.
+
+The other three probes failed too, all for one reason: **each was protected
+twice, every one of them by the LOOP BOUND rather than by the condition it was
+meant to pin.** `Some Fund attested twice only` has five tokens, so `k >= 2`
+never runs and the floor was never consulted. *Build a single-protection case
+against the loop's reachable range, not against the condition's text.*
+
+### MY FIRST BEFORE/AFTER MEASURED THE HARNESS: a standalone merge is not its own baseline
+
+I snapshotted `data/lineups`, ran `node scripts/merge-4i.mjs`, and diffed. It
+reported **2,645 changed names, 18,907 changed NON-NAME fields, 127 moved row
+counts and 18 new acks** — for an arm that touches 93 rows and nothing but
+names. The committed store carries 65,479 acks and a standalone merge derives
+**65,495**, so the run is not a no-op against a CI-written tree and the
+difference swamped the signal.
+
+***THE FIX IS A DIFFERENTIAL RUN, AND IT IS EXACT RATHER THAN CAREFUL:*** run
+the merge twice from the same committed baseline, once with the arm's call site
+neutered to `null` and once as shipped. Whatever a standalone merge does
+differently is then identical on both sides and cancels. The diff came back
+**93 changed names, 0 changed non-name fields, 0 acks either way, 0 moved row
+counts, 1,730,838 rows byte-identical.** *A before/after is only as honest as
+the claim that nothing else moved, and the cheap way to earn that claim is to
+vary one thing between two runs rather than to trust a snapshot.*
+
+That also supplied the **disjointness control** for free: the arm repairs 93
+rows and 0 are claimed by the lost-space, all-caps, cipher, bang or
+class-rotation arms above it in the chain, because the two runs otherwise agree
+row for row.
+
+### The outcome through every cell the page renders
+
+Measured through `scripts/apppath.mjs`, the tracked harness, on the differential
+pair — and narrowed by a property of the change in a way that is a **superset by
+construction, not a sample**: the only rows that can move are the ones whose
+stored name differs, and a name-level diff of both whole stores settles which
+those are without rendering anything. The first attempt rendered all 1,721,920
+rows twice and did not finish.
+
+| | |
+|---|---|
+| stored names repaired | **93** rows / 79 plans / **131,723** ppl / $1,231,852,130 |
+| **reader-facing** (displayed name moves) | **62** rows / 53 plans / **84,286** ppl / $1,205,433,011 |
+| ticker gained / lost / swapped | **0 / 0 / 0** |
+| fee gained / lost / changed | **2 / 0 / 0** |
+| asterisk · shown type · row membership | **0 · 0 · 0** |
+| control: untouched rows rendered from both stores | 20,096, differing on **0** |
+
+***THE READER-FACING FIGURE IS 62 AND NOT 93 BECAUSE `cleanFiledName` HAD
+ALREADY UNDONE 31 OF THEM*** — it carries its own leading-class-designation
+strip, so `Class R-6 EuroPacific Growth Fund Class R-6` already displayed
+correctly and the store repair changes nothing a reader sees. The stored fix is
+still worth having (the store is what `merge-4i`'s SEC resolution reads, and it
+is the honest record of the filing), but the two numbers answer different
+questions and the merge log's 93 is the store-side one. Recorded instance
+number six of *a STORED field is not a PUBLISHED one*, and the first where the
+thing that had already fixed it was a display cleaner rather than a competing
+arm.
+
+**BOTH FEE GAINS ARE IMPROVEMENTS AND THEY ARE A NAMED INSTANCE OF A QUEUED
+CLASS.** Insitro's `High Yield Bond Portfolio Class K` gains 0.5 on $531,156;
+Dental Intelligence's `International Growth Fund Admiral Shares` gains 0.26 on
+$89,341 **while its ticker VWILX does not move** — the symbol resolved through
+the damaged name and the fee did not, which is exactly the register's *the
+ticker resolver tolerates damage the fee table does not* asymmetry, repaired
+here as a side effect rather than aimed at.
+
+### ALL 93 WERE READ, 0 are rotations, and the PAGE named the residue
+
+The design's strength is structural rather than statistical: the surviving side
+is attested as a whole filed name at least three times, so it IS a name by
+construction — which is precisely what the order-blind resolver could not
+establish. Illinois Tool Works' **$1,060,028,326** row (24.8% of its menu)
+becomes `NT COLLECTIVE S&P500 INDEX FUND-DC-NON LENDING (TIER J)`; Cook Group's
+$43,624,655 becomes `New York Life Guaranteed Interest Account`; Essential
+Utilities `T. Rowe Price Stable Value Common Trust Fund`; six `American Funds
+<vintage> Target Date Fund R6` rows drop a trailing `American Funds` by
+STRIP-TAIL, where stripping the lead would have removed the house; and
+**`Admiral Shares Vanguard Windsor II Admiral Shares` -> `Vanguard Windsor II
+Admiral Shares` KEEPS ITS NUMERAL** — the hazard that cost a wrong fund name
+once, and this arm's first fixture.
+
+**The crawlable pages were regenerated from BOTH stores and diffed: 2 pages
+move, and both were read.** Essential Utilities and Illinois Tool Works, each
+correct. *The page is the artifact* — and it found something no count could:
+directly below ITW's repaired row sits `Lending (Tier J) Mfb Nt Collective Msci
+Acwi Ex-Us Index Fund - Dc - Non` at **$458,253,330**, carrying the IDENTICAL
+stray prefix and correctly NOT repaired, because its tail is `- Dc - Non` and
+there is no duplication to witness. That is the shifted-menu class the
+mid-name-house entry records as still needing the orientation test, and here the
+two shapes sit one row apart on one page. **Named residue, not a gap in this
+arm.**
+
+### The tether is CI-safe on purpose, which `merge-name-test` cannot be
+
+`scripts/wrap-repair-test.mjs` SLICES the arm and its two constants out of
+`merge-4i.mjs` and evaluates them with `whole`, `nk` and `ck` injected — *a
+harness that reproduces a shipped construction from memory measures the memory*
+— and supplies **its own frozen attestation map**. That is the whole difference
+from `merge-name-test.mjs`, which reads every pin's verdict off live store
+attestations and has therefore flipped status three times on DOL drift alone; a
+gate that reddens on a refresh with nothing wrong is the habitually-red gate
+that hid ten `site-test` failures. 5 must-fire cases with their exact output, 5
+must-not-fire, 3 single-protection mutations, and the loop-bound invariant.
+Exits 0 in under a second, so it is wired into **build-data's prep**, beside the
+ingest gate, where it fails fast before the download.
+
+**The must-NOT-fire that matters is the one the detector exists to spare:**
+`Vanguard Target Retirement 2050 Trust II Vanguard Target Retirement 2055 Trust
+II` is TWO VINTAGES of one series, and `collapseSelfRepeat`'s forward-prefix
+requirement is what keeps it intact. This arm must never undo that.
+
+`PARSER_VERSION` stays **203**: a merge-side repair like its five siblings, so
+no re-parse and no bump. `confident` 60,182, CONFIDENCE DIFF +0 / −0, degraded
+swaps 0 on both runs.
