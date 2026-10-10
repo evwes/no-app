@@ -653,6 +653,16 @@ try {
     "Co-op Stable Asset Fund (continued)",
     "Common/Collective Trust Funds (Continued) T. Rowe Price Retire 2030 Trust Fund",
     "Continued from previous page",
+    /* THE FRACTIONAL LEADING COUNT — 2026-10-11. The hand-maintained twin and
+     * the module both have to carry the optional `(?:\.\d+)?`, and before this
+     * ship NEITHER did; a drift here means one copy strips a collective
+     * trust's unit count and the other publishes it as part of the name. Two
+     * must-strip cases (a bare type caption and a real fund the count was
+     * hiding) and the two vintage decoys the anchor exists for. */
+    "1,341.08 Common/Collective Trust",
+    "118,732.04 Fidelity Freedom 2035 K6",
+    "2045.00 Target Date Fund",
+    "1,341.08 Trust",
   ];
   const nameGot = await page.evaluate((cs) => {
     if (typeof window.__wampoCleanFiledName !== "function") return null;
@@ -2630,7 +2640,18 @@ try {
      * Optics' filing says Windsor **II** (VWNFX) -- a DIFFERENT FUND. Both are
      * left exactly as filed: a visible bar is an artifact a reader can see,
      * where a wrong fund name reads as knowledge. */
-    ["9,186.596 shares Vanguard Windsor || Fund", "9,186.596 shares Vanguard Windsor || Fund"],
+    /* THE `want` HERE LOST ITS LEADING COUNT ON 2026-10-11 AND THE BAR IS WHAT
+     * THIS PIN ASSERTS. The leading-count arm took an INTEGER count only, so
+     * this fractional one was unreachable and the `want` carried the count by
+     * accident rather than by assertion. Settled by MEASUREMENT against
+     * origin/main's own `cleanFiledName` rather than by argument: the integer
+     * sibling added below ALREADY cleans to `shares Vanguard Windsor || Fund`
+     * there, so a leading-`shares` remainder is the shipped behaviour of this
+     * arm and not something the fraction introduced. Both rows still keep
+     * `||`, which is the numeral and the only thing this pin was written for.
+     * The leading unit NOUN is named residue with its own arm still unbuilt. */
+    ["9,186.596 shares Vanguard Windsor || Fund", "shares Vanguard Windsor || Fund"],
+    ["9,186 shares Vanguard Windsor || Fund", "shares Vanguard Windsor || Fund"],
     ["Principal SmallCap Value || Separate Account-Z", "Principal SmallCap Value || Separate Account-Z"],
     /* a head ENDING in a designation word keeps the letter reading, because
      * that is what the trailing-bar arm already does on the 293 rows of that

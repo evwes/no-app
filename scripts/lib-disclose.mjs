@@ -1609,7 +1609,48 @@ export function cleanFiledName(name) {
   // a leading count is comma-grouped or five-plus digits; a four-digit lead
   // is a target-date VINTAGE ("2045 Fund") and stays — the first draft took
   // 13,000 vintage-led rows with it, caught by the store-wide count
-  const lead = s.replace(/^(?:\d{1,3}(?:,\d{3})+|\d{5,})\s+(?=[A-Za-z].*\s\S)/, "").trim();
+  /* AND THE SAME LEADING COUNT WITH A FRACTION — 2026-10-11 (00:1xZ).
+   *
+   * The arm below was `(?:\d{1,3}(?:,\d{3})+|\d{5,})\s+`, so for St Moritz
+   * Security Services' `1,341.08 Common/Collective Trust` the comma group
+   * matched `1,341` and the required `\s+` then had to match `.08 `. It did
+   * not. ***A COLLECTIVE TRUST'S UNITS ARE HELD TO TWO OR MORE DECIMALS, so
+   * the fractional form is the NORMAL one for exactly the vehicle whose rows
+   * carry a bare type caption*** — `a fix for one phrasing of a class is not a
+   * fix for the class`, met this time on a DECIMAL POINT.
+   *
+   * 999 published+served rows / 92 plans / 74,127 participants /
+   * $3,118,130,006. Vistra Operations publishes `1,475,016.774 Class E shares`
+   * at 17.52% of its menu ($406,765,376) and seven more `Class T shares` rows;
+   * El Paso Electric four `common/collective trust units` rows.
+   *
+   * THE VINTAGE HAZARD IS UNTOUCHED, BY CONSTRUCTION: the fraction is optional
+   * and the integer part still has to be comma-grouped or five-plus digits, so
+   * a four-digit target-date vintage (`2045 Fund`) cannot reach it with or
+   * without a decimal — which is what the first draft of the integer arm got
+   * wrong at a cost of 13,000 rows.
+   *
+   * MEASURED through BOTH copies of the page's own `renderRow` with each copy
+   * cleaning the row through ITS OWN cleaner first, as `cleanCostMarkers` does:
+   * TICKER gained 16, lost 0, swapped 0; FEE gained/lost/changed 0; shown type
+   * moved on 6, every one a TRUE qualification gained (`Collective trust` ->
+   * `Filing names no specific fund`); row membership 0 (no cleaned name crosses
+   * `ID_ONLY` in either direction) and 0 names emptied, which the arm's own
+   * three-letter guard already guarantees. 11,178 sampled non-candidate rows
+   * differ on 0. All 16 ticker gains are a real fund the count was hiding
+   * (`118,732.04 Fidelity Freedom 2035 K6` -> FWTKX, `15,723.820 DFA
+   * International Small Company I` -> DFISX), and a seeded uniform draw of 24
+   * reads 24 of 24 correct.
+   *
+   * ***AND THE FIRST INSTRUMENT COULD NOT SEE THE CHANGE AT ALL.*** Handing
+   * each copy of `renderRow` the row straight from the shard reported `name`
+   * moved on **0** rows and the must-see pin unreached, because *the page
+   * cleans UPSTREAM of that slice* — `cleanCostMarkers` sets
+   * `f.name = cleanFiledName(f.nameRaw)` over the whole entry first, so the
+   * harness's `name` is the name it was HANDED. A `cleanFiledName` change is
+   * invisible to it on that cell by construction. `docs/accuracy-log.md`
+   * 2026-10-11 (00:1xZ). */
+  const lead = s.replace(/^(?:\d{1,3}(?:,\d{3})+|\d{5,})(?:\.\d+)?\s+(?=[A-Za-z].*\s\S)/, "").trim();
   if (lead !== s && /[A-Za-z]{3}/.test(lead)) s = lead;
   const m = s.match(TYPE_SUFFIX);
   /* A DANGLING REMAINDER IS WORSE THAN THE NAME IT REPLACED. `Shares of
@@ -1716,6 +1757,49 @@ export function cleanFiledName(name) {
   }
   s = s.replace(/[\s\-–,;:]+$/, "").trim();
   return /[A-Za-z]{3}/.test(s) ? s : String(name).trim();
+}
+
+/* CONTROLS FOR THE FRACTIONAL LEADING COUNT, at import time so a later edit to
+ * the arm cannot ship quietly. Each must-STRIP case is a FILED name from the
+ * store; the must-KEEP cases are the two hazards the integer form of this arm
+ * already paid for once (a vintage lead) plus the cases that keep the fraction
+ * from reaching anything but a count. */
+for (const [s, want, why] of [
+  ["1,341.08 Common/Collective Trust", "Common/Collective Trust", "St Moritz — the motivating row"],
+  ["45,931.70 Common/Collective Trust", "Common/Collective Trust", "St Moritz, the $1-NAV unit count"],
+  ["1,475,016.774 Class E shares", "Class E shares", "Vistra, $406,765,376 at 17.52% of its menu"],
+  ["118,732.04 Fidelity Freedom 2035 K6", "Fidelity Freedom 2035 K6", "Finch Paper — gains FWTKX"],
+  ["15,723.820 DFA International Small Company I", "DFA International Small Company I", "L. C. Whitford — gains DFISX"],
+  ["1,535,718.6330 common/collective trust units", "common/collective trust units", "El Paso Electric, four decimals"],
+]) {
+  if (cleanFiledName(s) !== want) {
+    throw new Error(`lib-disclose: cleanFiledName(${JSON.stringify(s)}) = ${JSON.stringify(cleanFiledName(s))}, want ${JSON.stringify(want)} (${why}) — the fractional leading-count arm is inert, fix it rather than shipping a quiet guard`);
+  }
+}
+for (const [s, why] of [
+  /* THE VINTAGE, both ways. A four-digit lead is a target-date year and the
+   * integer form of this arm cost 13,000 rows before it was anchored on
+   * comma-grouping or five digits; the fraction must not re-open it.
+   *
+   * `2045 Fund` is PROTECTED TWICE and is labelled as such rather than
+   * claimed: measured by mutation, the anchor spares it under one mutation and
+   * the lookahead under the other, so it is never the sole failure and proves
+   * neither condition. It stays as the recorded regression pin. The
+   * single-protection case for the comma/five-digit anchor is the DECIMAL
+   * vintage below, which `any digits` strips to `Target Date Fund`. */
+  ["2045 Fund", "a bare vintage is not a count (protected twice — a regression pin)"],
+  ["2045.00 Target Date Fund", "nor is a vintage with a decimal — the anchor's only case"],
+  /* A FRACTION ALONE IS NOT A LONG NUMBER: without the comma group or five
+   * digits there is nothing to say the lead is a unit count rather than part
+   * of the name. */
+  ["500.25 Index Fund", "three digits and a fraction"],
+  /* and the arm needs something to leave behind: the lookahead requires a
+   * letter AND a second token, so a count plus one word is left as filed */
+  ["1,341.08 Trust", "no second token survives"],
+]) {
+  if (cleanFiledName(s) !== s) {
+    throw new Error(`lib-disclose: cleanFiledName would strip ${JSON.stringify(s)} to ${JSON.stringify(cleanFiledName(s))} (${why}) — fix the predicate rather than the control`);
+  }
 }
 
 /* PARTICIPANT LOANS ARE NOT A MENU CHOICE — canonical copy, 2026-09-28.

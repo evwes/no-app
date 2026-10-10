@@ -53316,3 +53316,116 @@ recorded by dollars on a single row of that family.
 Guardian also publishes `JPM US A LGCPCR CFA`, `SC US LG CAP VAL CIT` and
 `AS CORE BOND II EF2` — opaque custodian codes, the `code` bucket of the
 19:4xZ one-token class, correctly carrying neither ticker nor fee.
+
+## 2026-10-11 (00:1xZ) — THE LEADING COUNT ARM WAS ONE CHARACTER CLASS SHORT: A FRACTIONAL UNIT COUNT, 999 rows / 74,127 ppl / $3.12B
+
+**Taken from the 23:08 draw's own finding.** `lib-disclose.mjs`'s leading-count
+strip reads `(?:\d{1,3}(?:,\d{3})+|\d{5,})\s+`, so for St Moritz Security
+Services' `1,341.08 Common/Collective Trust` the comma group matched `1,341`
+and the required `\s+` then had to match `.08 `. It did not. ***A COLLECTIVE
+TRUST'S UNITS ARE HELD TO TWO OR MORE DECIMALS, so the fractional form is the
+NORMAL one for exactly the vehicle whose rows carry a bare type caption*** —
+*a fix for one phrasing of a class is not a fix for the class*, met this time
+on a **DECIMAL POINT**, after a POSITION, a COLUMN, a SHARE CLASS and a FORM.
+
+**SHIPPED: 999 published+served rows / 92 plans / 74,127 ppl / $3,118,130,006.**
+Vistra Operations (7,829 ppl) stops publishing `1,475,016.774 Class E shares`
+at **17.52% of its menu / $406,765,376** and seven more `Class T shares` rows;
+El Paso Electric four `common/collective trust units` rows; Acco Engineered
+Systems `2,051,558.359 Fidelity Balanced Fund` at 23.58%.
+
+| | |
+|---|---|
+| name | **999** |
+| TICKER gained | **16** · lost 0 · swapped 0 |
+| FEE gained / lost / changed | **0 / 0 / 0** |
+| shownType | **6**, every one a TRUE qualification GAINED |
+| row membership (`ID_ONLY`) | **0** newly dropped, 0 newly kept |
+| names emptied | **0** (the arm's own three-letter guard) |
+| control, 1-in-150 of non-candidates | 11,178 sampled, **0 differing** |
+| crawlable pages | **4**, all four read |
+
+All 16 ticker gains are a real fund the count was hiding — `118,732.04 Fidelity
+Freedom 2035 K6` -> **FWTKX**, `15,723.820 DFA International Small Company I` ->
+**DFISX**, `7,124.21 Fidelity Investment Grade Bond Fund` -> **FBNDX** — and a
+seeded uniform draw of 24 reads **24 of 24 correct**. `PARSER_VERSION` stays
+203.
+
+***AND THE FIRST INSTRUMENT COULD NOT SEE THE CHANGE AT ALL — the recorded trap,
+met on the cell it is recorded about.*** Handing each copy of `renderRow` the
+row straight from the shard reported `name` moved on **0 rows** and the must-see
+pin **unreached**, with a tidy `shownType 5 / control 0`. That is not a finding:
+*the page cleans UPSTREAM of that slice.* `cleanCostMarkers` sets
+`f.name = cleanFiledName(f.nameRaw)` over the whole entry before any row
+renders, so the harness's `name` is **the name it was HANDED** and a
+`cleanFiledName` change is invisible to it on that cell BY CONSTRUCTION. The
+rebuilt instrument cleans each row with ITS OWN copy's cleaner first, exactly as
+the page does — which is also the half that needed measuring, because the
+remainders include generic strings (`Stock Fund`, `Class E shares`) of exactly
+the shape this record has watched cross registrants. **A positive control on the
+two cleaners now runs before any count and EXITS 1 if they agree**, so a
+candidate that failed to load can never read as a clean no-difference.
+
+**THE VINTAGE HAZARD IS UNTOUCHED BY CONSTRUCTION and the pin set says which
+condition each case protects.** The fraction is optional and the integer part
+must still be comma-grouped or five-plus digits, so a four-digit target-date
+year cannot reach the arm with or without a decimal — the exposure the integer
+form of this arm paid 13,000 rows for. Measured by mutation: dropping the
+fraction breaks all four must-STRIP cases, dropping the comma/five-digit anchor
+breaks `2045.00 Target Date Fund` and `500.25 Index Fund`, dropping the
+lookahead breaks `1,341.08 Trust`. ***`2045 Fund` is PROTECTED TWICE and is
+labelled as such rather than claimed*** — the anchor spares it under one
+mutation and the lookahead under the other, so it is never the sole failure and
+proves neither; it stays as the recorded regression pin.
+
+***THE SMOKE TEST CAUGHT A PINNED CONTROL AND THE PIN WAS ASSERTING A DIMENSION
+IT NEVER MEANT TO.*** `9,186.596 shares Vanguard Windsor || Fund` is pinned with
+its `want` equal to itself, and the comment above it says why: the DOUBLED BAR
+is the Roman numeral **II**, and a first draft of the bar arm once published
+`Vanguard Windsor Fund` (VWNDX) where the filing says Windsor II (VWNFX). My
+strip left `shares Vanguard Windsor || Fund` and the pin went red.
+**Settled by measurement against origin/main's own `cleanFiledName`, not by
+argument: the INTEGER sibling `9,186 shares Vanguard Windsor || Fund` ALREADY
+cleans to `shares Vanguard Windsor || Fund` there.** So a leading-`shares`
+remainder is the shipped behaviour of this arm for every count it can reach, the
+fraction introduces nothing, and the bar — the only thing the pin was written
+for — survives in both. The `want` is updated and **the integer sibling is
+pinned beside it**, so the equivalence is asserted rather than left in prose.
+***A pin is newer evidence than my reasoning, and reading WHY it exists is what
+separates updating it from overriding it*** — and the honest check was one probe
+through the mirrored copy, not a judgment.
+
+**NAMED RESIDUE, not swept in:** the leading unit NOUN. `<count> shares <fund>`
+and `<count> sh <fund>` leave the noun standing (`sh Stock Fund`, `sh Mutual
+Fund`, `mutual shares` — roughly 42 rows), and swallowing it is a NEW arm with
+its own population: the hazard is `<count> Shares of registered investment
+companies`, where a naive strip publishes a holding named after a preposition —
+the harm `TYPE_SUFFIX`'s own dangling-remainder guard already exists for. It
+needs its own measurement and is not taken here. **And one interaction is worth
+recording:** stripping the lead can leave a ONE-token remainder, which trips
+`TYPE_SUFFIX`'s two-token floor, so `37,259.12 OTCKX Mutual Fund` becomes
+`OTCKX Mutual Fund` rather than `OTCKX` — better than the count either way, and
+the floor is doing its job.
+
+**THE PAGES ARE THE ARTIFACT AND ALL FOUR WERE READ.** Only 4 of the 92 plans
+have a crawlable page whose twelve shown rows reach a changed row — the row
+LIMIT again — and every change removes a count with the name intact. Three El
+Paso Electric rows additionally gain *"the filing names no specific fund"*,
+which is TRUE: their issuer cell is blank, so nothing on the row names a fund,
+and the qualification was previously defeated by the digits standing in front of
+the caption. Local gates: `fund-er-test`, `no-identity-test`, `slice-vq --check`,
+`sec-tickers-test`, `house-core-test`, `fund-note-test`, `wrap-repair-test`,
+`stamp-assets --check` and `smoke-test` all green; app.js carries 0 exports and
+was restamped `94b2cf89 -> de3bb1b1`.
+
+**Also this cycle:** run #630 (`schedule`, `success`) committed `76e07810` to
+main and **fast-forwarded the dev branch itself**, so there was nothing to adopt
+and the only local action was `git merge --ff-only` — the fourth consecutive
+confirmation of that shipped automation. **Its coverage line moved on exactly
+two keys and both are the 23:1xZ EUPAC ship's delivery: `tkExact` 37.77 ->
+37.84 and `tkShare` 25 -> 25.07**, with confident 60,182 / match 43,312 /
+vesting 53,023 / entries 65,495 / HIGH 4 / warn 556 / `dl` 93 / pv 203 at 99.9%
+all unchanged. Attributed the recorded way, by the producing run's `head_sha` —
+**#630's is `1f5a3b4c`, the mirrored EUPAC commit** — and the registration said
+ticker-only, so the two ticker keys moving and nothing else is the prediction
+holding rather than a coincidence.

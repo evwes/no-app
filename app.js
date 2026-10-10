@@ -1542,7 +1542,14 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
     // a leading count is comma-grouped or five-plus digits; a four-digit lead
     // is a target-date VINTAGE ("2045 Fund") and stays — the first draft took
     // 13,000 vintage-led rows with it, caught by the store-wide count
-    const lead = s.replace(/^(?:\d{1,3}(?:,\d{3})+|\d{5,})\s+(?=[A-Za-z].*\s\S)/, "").trim();
+    /* the fractional leading count — 2026-10-11. A collective trust's units
+     * carry two or more decimals, so `1,341.08 Common/Collective Trust` left
+     * the integer form of this arm matching `1,341` and then needing `\s+`
+     * where `.08 ` stood. 999 rows / 92 plans / 74,127 ppl; 16 ticker gains,
+     * 0 lost, 0 swapped, 0 fee cells, 0 row membership. Canonical and pinned
+     * in lib-disclose's `cleanFiledName`; this twin is hand-maintained and is
+     * cross-checked by smoke-test's `nameCases`. */
+    const lead = s.replace(/^(?:\d{1,3}(?:,\d{3})+|\d{5,})(?:\.\d+)?\s+(?=[A-Za-z].*\s\S)/, "").trim();
     if (lead !== s && /[A-Za-z]{3}/.test(lead)) s = lead;
     const m = s.match(TYPE_SUFFIX);
     /* A DANGLING REMAINDER IS WORSE THAN THE NAME IT REPLACED. `Shares of

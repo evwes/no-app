@@ -1590,6 +1590,47 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **SHIPPED 2026-10-11 00:1xZ — A FRACTIONAL LEADING UNIT COUNT: 999 published
+  rows / 92 plans / 74,127 ppl / $3,118,130,006**, TICKER gained **16** / lost 0
+  / swapped 0, FEE 0/0/0, `shownType` 6 (every one a TRUE qualification gained),
+  row membership 0 newly dropped / 0 newly kept, 0 names emptied, 11,178 sampled
+  non-candidates differing on 0, **4 crawlable pages all read**. Vistra
+  Operations stops publishing `1,475,016.774 Class E shares` at **17.52% of its
+  menu / $406,765,376**; Acco Engineered Systems `2,051,558.359 Fidelity
+  Balanced Fund` at 23.58%. Canonical in `cleanFiledName` with the
+  hand-maintained app.js twin and 10 import-time controls; `PARSER_VERSION`
+  stays 203.
+  **THE ARM WAS ONE CHARACTER CLASS SHORT:** `(?:\d{1,3}(?:,\d{3})+|\d{5,})\s+`
+  matched `1,341` of `1,341.08 Common/Collective Trust` and then needed `\s+`
+  where `.08 ` stood. ***A collective trust's units are held to two or more
+  decimals, so the fractional form is the NORMAL one for exactly the vehicle
+  whose rows carry a bare type caption*** — *a fix for one phrasing of a class
+  is not a fix for the class*, met on a **DECIMAL POINT** after a position, a
+  column, a share class and a form. All 16 ticker gains are a real fund the
+  count was hiding (`118,732.04 Fidelity Freedom 2035 K6` -> FWTKX); seeded
+  uniform draw 24 of 24 correct.
+  ***AND THE FIRST INSTRUMENT COULD NOT SEE THE CHANGE — the recorded trap on
+  the cell it is recorded about.*** Handing each `renderRow` copy the row from
+  the shard read `name` moved on **0** and the pin **unreached**, because *the
+  page cleans UPSTREAM of that slice*: `cleanCostMarkers` sets `f.name =
+  cleanFiledName(f.nameRaw)` first, so the harness's `name` is the one it was
+  HANDED. The rebuilt harness cleans per copy first and now **exits 1 if the two
+  cleaners agree**, so a candidate that failed to load cannot read as a clean
+  no-difference.
+  **AND THE SMOKE TEST CAUGHT A PIN ASSERTING A DIMENSION IT NEVER MEANT TO.**
+  `9,186.596 shares Vanguard Windsor || Fund` is pinned for the DOUBLED BAR (the
+  numeral II, which once cost a wrong fund name), and its `want` carried the
+  count only because the fractional form was unreachable. Settled by probing
+  **origin/main's own cleaner**: the integer sibling `9,186 shares …` ALREADY
+  cleans to `shares Vanguard Windsor || Fund` there, so the remainder shape is
+  shipped behaviour and the bar survives in both. `want` updated and the integer
+  sibling PINNED beside it. ***A pin is newer evidence than my reasoning, and
+  reading WHY it exists is what separates updating it from overriding it.***
+  **NAMED RESIDUE:** the leading unit NOUN (`sh Stock Fund`, `mutual shares`,
+  ~42 rows) is a NEW arm with its own population — the hazard is `<count> Shares
+  of registered investment companies` publishing a holding named after a
+  preposition — and is not taken here. `docs/accuracy-log.md` 2026-10-11
+  (00:1xZ).
 - **FOUND BY THE 23:08 DRAW, UNSIZED — AN ASSERTED SYMBOL OF THE WRONG SHARE
   CLASS WHERE THE FILING STATES THE CLASS AND THE REGISTRY REGISTERS IT.** The
   Guardian Life Insurance Company Of America (**11,543 ppl** across 3 member
