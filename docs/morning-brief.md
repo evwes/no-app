@@ -1,103 +1,112 @@
-# wampo brief — 2026-10-09, 13:0xZ
+# wampo brief — 2026-10-10, 07:1xZ
 
 Overwritten nightly. Decision-shaped: what shipped and what it changed in
 numbers, what was found wrong, what is held, what is waiting on the owner.
 
-## v203 is live on main, and its registration held exactly
+## Three things shipped overnight, all live on main
 
-**123 plans stop telling 59,316 participants their employer money is vested
-today** on the strength of a sentence that says they vest at 65, or on death, or
-on disability. Arcosa (5,875 ppl) now publishes the **2-year cliff** that was in
-its notes all along; about 37 plans gain their real schedule out of the same
-filing, the rest keep the quote and lose only the false label.
+**A published fund name that contained itself at both ends.** Illinois Tool
+Works' **$1,060,028,326** row — 24.8% of its whole menu — stopped publishing
+`LENDING (TIER J) NT COLLECTIVE S&P500 INDEX FUND-DC-NON LENDING (TIER J)`.
+93 stored rows repaired across 78 filings, of which **62 rows / 53 plans /
+84,286 participants** are what a reader actually sees. Six `American Funds
+<vintage> Target Date Fund R6` rows drop a trailing `American Funds` by
+stripping the TAIL, because stripping the lead would have removed the house.
+And `Admiral Shares Vanguard Windsor II Admiral Shares` keeps its numeral —
+that is the hazard that cost a wrong fund name once before.
 
-Measured on the complete store, against what was pre-registered before dispatch:
+Ticker gained/lost/swapped **0 / 0 / 0**; fee **2 gained**, 0 lost; asterisk,
+shown type and row membership all 0. Two crawlable pages moved and both were
+read.
 
-| registered | delivered |
-|---|---|
-| `vesting` falls 82–94 | 53,115 → **53,023 = falls 92** |
-| `vestQuote` rises by the same, → 5,363–5,375 | 5,281 → **5,373 = rises 92** |
-| QUOTE LOST 0 | fall and rise are the **same number** |
-| confident / match / entries / warn unchanged | 60,182 / 43,312 / 65,495 / 556 |
-| `pv` 202 → 203 at ~99.9% | **99.86%**, `partial-store` cleared, HIGH back to **4** |
+**An apostrophe in a share class was costing 318 rows their ticker.**
+`norm("Inst'l Shares")` comes out as `"institutional l shares"` — the expansion
+was already there and it left a **one-letter token** behind, which the matcher
+treats as an unexplained leftover and declines the whole row on. Same fund:
+class spelled out resolves VINIX, filed as `Inst'l` resolves nothing. So this
+was never a registry gap. **318 rows / 292 plans / ~897,000 participants** gain
+an asserted symbol — `PIMCO Income Inst'l` → PIMIX, `Fidelity Gov't Cash
+Reserves` → FDRXX, `Victory Trivalent Int'l Small-Cap R6` → MSSIX.
 
-Mirrored `bb4bed5a` → **`97f7ae97`**, a MATCHED pair: the data-producing code
-moved with the store that code produced. Pages build on main's HEAD was
-in flight at the time of writing — the deploy is not claimed until its
-conclusion reads success, and the live site is unreachable from the sandbox, so
-the verification is the mirrored tree plus a positive control, never a `curl`.
+Table diffed key by key: **added 176, removed 0, changed 0**, and 0 added keys
+lack an apostrophe form, so the change reached exactly its own mechanism.
+26 keys drawn uniformly and read: **26 of 26 correct.**
 
-## It took three runs, and the two failures were ours, not v203's
+**A guard was claiming a matched code/store pair it cannot see.** `mirror.sh`
+compares `PARSER_VERSION` to the store's `pv` — but `merge-4i.mjs` carries six
+name-repair arms that rewrite the store at merge time and move no version, so
+for a change to that file the equality holds *by construction*. Measured: main
+took the new code beside a store still carrying the un-repaired name, under a
+message saying the data was not stale. Benign this time; a merge-side arm that
+*withdrew* a false claim would have mirrored with the claim still live.
 
-**#604 read NONE of the universe and reported 99.7% coverage.** Both apt steps
-ran `apt-get install … >/dev/null 2>&1 || true` with no `apt-get update`;
-`apt-get install` is atomic, so prep (one package) succeeded while parse (two)
-installed neither, and `pdftotext` was absent on all twenty shards. The publish
-gate caught it and committed nothing. Three instruments were blind: the install
-discarded both streams and its exit code; `fetch-4i`'s `pdftotext` branch was
-the only error path that destroyed an entry and incremented no counter; and
-`audit-data` knew two `e` codes where the store carried three. All fixed, with
-an `extraction-failures` HIGH at 0.1% — a tenth of the download threshold,
-because a 403 *preserves* the stored entry and an extraction failure
-*destroys* it.
+## Mirrored to the live site
 
-**#605 then hung one shard for 3h14m against nineteen siblings at 38–55
-minutes.** Cause: ten `execFileSync`/`execFile` sites spawn `pdftotext`,
-`pdftoppm`, `pdfimages` and `tesseract` and **not one passed `timeout`**.
-`TIME_BUDGET_MIN` could not help — *a budget enforced at the top of a loop is
-not a bound on the body of the loop.* Cancelled deliberately (the 355-minute
-backstop would have produced the same 19/20 merge 2h45m later, and the work list
-self-heals), and #607 finished the residue. Ceilings now on all ten sites with
-`SIGKILL`, controlled both ways: a wedged process dies at 1507ms, a real filing
-extracts 361,202 chars in 1076ms against a 180s ceiling (167× headroom).
+Five times, every one a fast-forward with `mirror-gate` clean (+0/−0 by ack,
+0 plans / 0 participants by plan). Final state `ec9ccbc1`, verified by reading
+the mirrored tree with a positive control — the stamp `63da561e` matches the
+file's own content hash, so returning browsers fetch the new table rather than a
+cached copy. The live site is unreachable from the sandbox, so that is the
+verification, never a `curl`.
 
-**And the hang produced no evidence at all**, which is #604's defect one run
-later: the 40-line failure tail was gated on `ec -ne 0`, so a *cancelled* step —
-the one case where the log is the only evidence — reached it never. Now a `trap`
-dumps it on success, failure, timeout and cancellation alike.
+## What was found wrong — four of them mine, and that is the useful half
 
-## Also shipped today
+**My first before/after measured the harness, not the arm.** A snapshot plus one
+merge run reported 2,645 changed names and 18,907 changed non-name fields for a
+change that touches 93 rows and only names. A standalone merge is not a no-op
+against a CI-written tree. The fix is a **differential run** — merge twice from
+one committed baseline, once with the arm's call site neutered — so whatever
+standalone does differently cancels exactly. It then read 93 / 0 / 0 / 0 with
+1,730,838 rows byte-identical, and supplied the disjointness control for free.
 
-- **The SEC asserted tickers: 4,346 published rows / 1,938 plans / 2,316,219
-  participants** gain a symbol, swaps 0, losses 0, 0 comparables. Its largest
-  judgment was a **refusal**: 51,491 rows / 19.6M participants typed collective
-  trust or separate account were withheld, because a pooled vehicle is not the
-  registered fund — the symbol is right for the fund and wrong for the vehicle,
-  so every count, fixture and whole-store diff read clean and only a draw
-  printing each row's TYPE could see it.
-- **The accelerated-vesting note: 59 plans / 51,205 ppl**, display-only.
-- **`trace-filing --vs`** repaired — unrunnable since v201 and unable to observe
-  a feature-only change, so it reported "no difference" for exactly the versions
-  it was needed for.
+**A condition I wrote was unreachable by construction.** The loop bound already
+forced what it tested, so it was dead code reading as a guard. The test could
+not build a case where it was the only protection — not because the probe was
+poor but because production cannot reach one. Deleted; the invariant is asserted
+instead.
 
-## Settled rather than inherited
+**"The apostrophe hypothesis is refuted" was true of one resolver and false of
+the other.** There are two, and a hypothesis refuted through one is untested
+through the other. The first measurement expanded the apostrophe and asked the
+page's pattern table, which gains 0 because it tolerates the apostrophe already.
 
-- **`dl` 48 → 93.** Fifth whole-population HEAD probe: **92 of 92 answered
-  403** at probe time, so `e=download` remains an honest published claim and the
-  rise is the EFAST2 bucket growing.
-- **`e:"analyze"`** is a recurring ~one-per-run transient, each instance a
-  different ack, each preserved and retried by the stale-pv mechanism. The
-  original self-healed to `no-section` / `dx:"nohead"`, reproduced exactly
-  through the real production path.
+**And a must-see pin matched the wrong row while printing `must-see ok`.** It
+was keyed on a NAME many plans file, so it caught a different plan's copy — one
+that publishes the correct symbol and is the *opposite* of the defect. A pin
+keyed on a shared string does not identify a row; key it by ack.
 
-## Open, and honestly unresolved
+## Held, and why
 
-- **122 acks clear the immediate-vesting bit where the registration said exactly
-  123.** Likeliest explanation is one of the 123 sitting in the 46 acks still at
-  pv 202, which would clear on a later run — direction "not yet applied", not
-  "wrong" — but that is **not proved** and should be checked, not assumed.
-- `audit-generic-names` stands above its 230 threshold, as recorded.
+**The fee half of every ticker item.** Where a row's symbol is now withheld or
+corrected, the expense ratio is still priced off the NAME, so a row that names
+no fund can still publish a fee. A fee is sourced, never derived, and
+`data/fund-facts.json` carries no figure for these funds — so the honest move is
+to withdraw rather than to guess, and that is the owner's call.
+
+**Two classes sized and deliberately not shipped.** A house CONTRACTION blocking
+the same resolver the apostrophe repair just unblocked (Peet's Coffee publishes
+`Vanguard Ext Mk Index Inst Fd` with no ticker and a 0.1 fee where the fund
+really costs ~0.05) — a contraction vocabulary is the shape this record has twice
+measured as harmful when guessed, so it needs the registry as witness. And a
+custodian-words blocker on house supply, unsized.
 
 ## Waiting on the owner
 
-- **The SEC *comparable* half:** 188,846 rows / 35,353 plans / **49,065,090
-  participants** would gain an asterisked approximation. That is a decision
-  about how much hedged content the page should carry, not a correctness
-  question — the asserted half is already shipped.
-- The long-standing gated items are unchanged: the share-class symbol+fee
-  population (11.1M ppl), our own store contradicting our own page (8.2M ppl),
-  the fee pre-emption (13.3M ppl), stable-value fabricated ERs (7.4M ppl), and
-  the American Funds no-share-class fee (10.5M ppl).
-- **One click, unrelated to data:** the session's permission prompts come from
-  the mode dropdown being on *Accept edits*; **Auto** runs non-file tool calls
-  unattended. No session can set that for itself.
+Unchanged from yesterday and all large: the share-class symbol-and-fee class
+(11.1M participants), our own store contradicting our own page (8.2M), the fee
+pre-emption (13.3M), the CREF and TIAA Access vehicle families, the stable-value
+fabricated ERs (7.4M), the American Funds no-share-class fee (10.5M), the
+whole-table generic test, and the SEC **comparable** half — 188,846 rows /
+49,065,090 participants, which would put a new asterisk on pages read by about
+49M people and is a decision rather than a cleanup.
+
+## Continuing today
+
+Hourly cycles are running and the Routine is armed. Pipeline: #621 through #624
+all `success` at baseline (HIGH 4, warn 556, pv 203 at 99.9%, `dl` 93, `ex` 0),
+#625 dispatched and in flight. `site-test` 185 green on the ship's own SHA.
+
+Next from the queue: the wrapping class's named residue (4 rows keeping a
+dangling separator — read the existing end-anchored arm before adding a trim),
+and the 194 rows / 488,810 participants the apostrophe repair newly makes the
+matcher answer as a *comparable*, which belongs with the gated comparable half.
