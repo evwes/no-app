@@ -845,11 +845,16 @@ VMware and Neiman Marcus. The witness must be **BOY** assets.
 match **43,312** · vesting **53,023** · roth 38,369 · **HIGH 4** ·
 warn **556** · overshoot 370 · overshootTrust 12 ·
 aggRow 114 · dl **93** · pvTopShare **99.9** (pv **203**) ·
-tkExact **39.00** · tkComparable **3.41** · vestQuote **5,373**.
+tkExact **39.04** · tkComparable **3.41** · vestQuote **5,373**.
 (vesting/vestQuote/dl/pv re-derived from the #607 line 2026-10-09 13:0xZ, the
 first COMPLETE v203 store; `dl` 93 was HEAD-probed at 92/92 -> 403 minutes
 earlier, so the code is honest and the bucket is growing.)
-(`tkExact` **39.00** is re-derived from #635's line 2026-10-11 11:0xZ and is
+(`tkExact` **39.04** is re-derived from #638's line 2026-10-11 15:5xZ — the
+Admiral ship's 315 keys, attributed to 37 sampled rows / 0.042 points, one
+hundredth above its registered band for the reason recorded in the
+pre-registration section: the metric samples `e.confident` entries and applies
+neither the serving condition nor the publish gate, so a registration derived
+from a published+served count under-predicts it. The 39.00 it replaces is
 TWO ships plus a METRIC FIX above the 37.77 this line carried: 37.88 was the
 data, **38.99** is the corrected metric that stopped being blind to `f.ftk` and
 the whole SEC table, and 39.00 is the MEFS keys inside it. *Do not read the
@@ -922,6 +927,34 @@ The `dl` population has been HEAD-probed whole four times (68/68, 78/78, 23/23,
 EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
+
+**DELIVERED BY #638 (`success`, data commit `d49b5694`) AND THE BAND WAS MISSED
+ON THE HIGH SIDE BY ONE HUNDREDTH — `tkExact` **39.00 -> 39.04** against a
+registered 39.02 (band 39.02-39.03), with every other key on the 35-key line
+BYTE-IDENTICAL. THE ARM IS INNOCENT AND THE METHOD WAS WRONG.** Attributed in
+the metric's own population: **38 sampled rows carry an added key, 1 refused by
+the render-time vehicle gate, 37 newly resolve = 0.042 points**, which is the
+observed move entire. Both controls hold — the key diff reproduces the ship's
+own ADDED 315 / REMOVED 0 / CHANGED 0, and the transcribed sample reproduces
+the trail's own `tkSampled` 87,106 — and all 37 rows were read, every one a
+genuine houseless Admiral row (`Wellesley Income Fund Admiral` -> VWIAX on
+$559,674,579).
+***THE CAUSE IS A RECORDED RULE RUNNING THE OTHER WAY. `audit-data:840` samples
+`ackHash(ack) % 20` over `e.confident` entries and applies NEITHER the serving
+condition NOR the publish gate, while the registered 425 is published+served***
+— so the arm lands on 38 sampled rows where the reader-facing arithmetic
+predicts 21. This file records five times that *a measurement of what a page
+PUBLISHES must apply every condition the page applies*; the inverse was
+unwritten: ***a prediction of what a METRIC will report must apply exactly the
+conditions the METRIC applies, no more.*** Derive a coverage-key registration
+from the key's own population — for `tkExact` that denominator is PRINTED ON
+THE TRAIL as `tkSampled`, so it never needs guessing. **SO THERE IS NOTHING
+PRE-REGISTERED AND PENDING.** `docs/accuracy-log.md` 2026-10-11 (16:0xZ).
+
+**ORIGINAL REGISTRATION, kept because it is what was predicted — and the band
+is kept tight deliberately: writing "anything above 39.03 means the table moved
+more than the row-level diff measured" is what forced the attribution instead
+of a shrug.**
 
 **PRE-REGISTERED 2026-10-11 14:2xZ for the next merge after the ADMIRAL ship
 (`4ae5198f`, mirrored to main 14:1xZ) — `tkExact` **39.00 -> 39.02**, band

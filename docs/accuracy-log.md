@@ -7,6 +7,84 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-11 (16:0xZ) — A PRE-REGISTRATION MISSED ITS OWN BAND BECAUSE IT WAS DERIVED IN THE READER-FACING POPULATION AND THE METRIC IS NOT: `tkExact` came in at 39.04 against a registered 39.02 (band 39.02-39.03), and the arm is innocent — fully attributed at 37 sampled rows / 0.042 points
+
+### What was wrong
+
+The Admiral ship (`4ae5198f`, 425 published+served rows / 950,842 participants
+gain an asserted symbol) was pre-registered at **`tkExact` 39.00 -> 39.02, band
+39.02-39.03**, with the explicit clause *"anything above 39.03 means the table
+moved more than the row-level diff measured."* Run #638 delivered **39.04**,
+and **every other key on the 35-key line is byte-identical** — so the
+registration held in every part except the one number it existed to predict,
+and by its own terms that was a question to answer rather than a figure to
+accept.
+
+The arithmetic was: 425 rows of 1,721,920 published rows is 0.0247%, which over
+an 87,106-row sample is ~21 rows and +0.025 points.
+
+### What the measurement said
+
+Attributed in the metric's own population, with the previous table taken out of
+git so nothing in the working tree could supply it:
+
+```
+table 7447 -> 7762 keys; ADDED 315 / REMOVED 0 / CHANGED 0
+CONTROL  sampled rows 87,106   (the trail reports tkSampled 87,106)
+sampled rows carrying an ADDED key: 38
+  of those, refused by the render-time vehicle gate: 1
+  NEWLY resolving through the table: 37
+that is 0.042 points of tkExact        (the trail moved +0.04)
+```
+
+**Both controls hold** — the key diff reproduces the ship's own
+315/0/0 and the transcribed sample reproduces the trail's own `tkSampled`, so
+this is the metric's population and the ship's arm and not approximations of
+either. **0.042 against an observed 0.04 is the whole move**, and all 37 rows
+were read: every one is a genuine houseless Admiral row
+(`Wellesley Income Fund Admiral` -> VWIAX on $559,674,579,
+`PRIMECAP Fund Admiral Shares` -> VPMAX, `Mid-cap index adm` -> VIMAX).
+**Nothing is wrong with the ship.**
+
+### The cause, which is a recorded rule running the other way
+
+`audit-data:840` samples `ackHash(ack) % 20` over every entry with
+`e.confident` and **applies NEITHER the serving condition NOR the publish
+gate**. The ship's 425 is a reader-facing count: the serving condition holds
+(a trust's menu is served only where the plan's own lineup is unusable) and
+bit 1 gates publication. So the arm's keys land on **38 sampled rows in the
+metric's population where the reader-facing arithmetic predicts 21** — 1.8x,
+and the 0.017-point gap is the whole miss.
+
+***This file records, five times, that a measurement of what a page PUBLISHES
+must apply every condition the page applies. Its inverse had not been written
+down: a prediction of what a METRIC will report must apply exactly the
+conditions the METRIC applies — no more.*** Applying the page's conditions to
+a metric that does not apply them under-predicts it, systematically and in one
+direction, and the error is invisible because the number still looks sober.
+
+### Prevention
+
+- **Derive a coverage-key registration from the key's own population.** For
+  `tkExact`/`tkComparable` that is `e.confident` entries at `ackHash % 20`,
+  which is 87,106 rows and is PRINTED ON THE TRAIL as `tkSampled` — so the
+  denominator never needs guessing. The one-line version: count the arm's
+  candidate rows under the metric's filters, not under the renderer's.
+- **A band is a claim and must be honoured in both directions.** The value of
+  writing *"anything above 39.03 means the table moved more than the row-level
+  diff measured"* is that it forced this attribution instead of a shrug; the
+  attribution then exonerated the arm in half an hour and corrected the method
+  permanently. Keep registering bands tight enough to be wrong.
+- **`sec-tickers.js` and `fund-er.js` are CLASSIC SCRIPTS, and `import` of
+  either yields `undefined` rather than throwing.** My first attribution
+  harness imported both and died on `Object.keys(undefined)` — cheap only
+  because it threw; had it read the tables as empty it would have attributed
+  **0 rows** and blamed the ship. Load them the way `audit-data` does, in a
+  `vm` context, and **throw if the table or the vehicle gate is absent** —
+  which this harness now does, because a skipped vehicle gate inflates the
+  count by exactly the rows the page withholds.
+---
+
 ## 2026-10-11 (15:3xZ) — A SCREEN REFUTED THREE TIMES BY ITS OWN OUTPUT, AND A REMEDY REFUTED BY A PIN ALREADY IN THE FILE: the loan-rate class is 245 published+served rows / 330,915 participants, it is THREE populations, and extending `isSentenceRow` to reach it would publish "names no specific fund" over a real fund held by 86,817 readers
 
 ### What was wrong
