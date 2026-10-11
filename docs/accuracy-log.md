@@ -54583,3 +54583,97 @@ typed `Pooled separate account` and 37 `Separate account`** — so any assertion
 here must pass the recorded vehicle refusal, since *a symbol can be right for
 the fund and wrong for the vehicle*. The must-see pin was keyed BY ACK and
 caught 14 of Boston Scientific's rows before any count printed.
+
+## 2026-10-11 (09:5xZ) — `MEFS` IS `MFS` WITH AN INSERTED E: 54 ROWS GAIN A SYMBOL, AND `registrantAttested` REFUSES FOUR FIFTHS OF THE CLASS
+
+**What was wrong.** The 08:08 draw landed on Galliano Marine Service, L.L.C.
+(5,522 ppl), publishing `MEFS Mid Cap Value Fund Class R6` at **$18,575,823,
+5.29% of its menu**, with no ticker. `MEFS` names no registrant: over all
+**29,406** rows of `sec-funds.json` **0 spell MEFS and 695 spell MFS**, so the
+correction is REGISTRY-ATTESTED and not guessed — and our own store witnesses
+it in **four cells that carry both spellings at once** (`MFS Mid Cap Growth
+Fund CT IMMCVCT MEFS Mid Cap Value Fund CT`; `MEFS Investment Management MFS
+Mid Cap Growth Fund Class 2W`). All **303** distinct stored spellings were
+read: every one is an MFS or MFS-Investment-Management product, **0 decoys**,
+which is the `AMF` precedent and the only reason a four-letter token is safe.
+
+**The class, measured through the shipped renderer** over all 1,721,920
+published+served rows: **474 rows / 398 acks / 363,797 ppl / $650,319,589**
+carry the token in the name or the issuer cell, 6 publishing a ticker and 11 a
+fee. Split by WHICH CELL holds the typo, because the repair rewrites the NAME
+spellings `secAsk` tries and never the issuer: **name 446 rows / 340,907 ppl**
+(the ship's population, 92 of them pooled by filed type), **issuer only 28 rows
+/ 24,399 ppl** — the named residue, whose own names are bare products
+(`Mid Cap Value`, `Growth R6`) with the house living only in the typo'd issuer
+cell, so they are the `houseCore` class with a typo on top.
+
+**The change.** One `deTypo` pass appended to `gen-sec-tickers`'s own `secAsk`
+candidate list, ADDITIVE BY CONSTRUCTION (a repaired spelling is tried only
+after every existing spelling came back empty), and COMPOSED with the
+issuer-core arm so a row needing both normalisations gets both — the 04:3xZ
+`AMF` lesson, where a `vs.slice()` snapshot cost exactly that composition and a
+pin caught it. `PARSER_VERSION` stays 203; one surface by construction
+(`build-seo-pages` has 0 ticker-resolver references).
+
+**Measured by a two-renderer differential over the whole store, varying only
+the generated table:** ticker **GAINED 120 / LOST 0 / SWAPPED 0**, fee 0, name
+0, `shownType` 0, **comparables shipped 0**, and **16,446 sampled non-candidate
+rows differing on 0** (the narrowing is an exact-key lookup, so it is a
+superset by construction and the sample discharges it). Seeded uniform draw of
+24 gains read WITH each row's filed type: **24 of 24 correct**, and **0 gains
+are typed a pooled vehicle** (95 `Mutual fund`, 25 blank) because the generator
+applies the vehicle rule per row and refuses this class's 92 pooled rows before
+the asserted/comparable split.
+
+**ATTRIBUTED, because one regen absorbed two unrelated things:**
+
+| | rows | acks | ppl | value |
+|---|---|---|---|---|
+| the MEFS repair | **54** | 50 | **34,059** | $63,973,731 |
+| table DRIFT absorbed | 66 | 18 | 9,224 | $71,696,270 |
+
+***The drift is the price of the staleness gate this record already names as
+missing.*** `sec-tickers.js` was last generated before today's five name and
+resolver ships, so keys its own cleaner can now reach had never been written —
+`1,749.92 MFS Mid Cap Value R6`, `100,794.85 Fidelity Freedom 2025 K6`,
+`Fidelity® Large Cap Growth Idx Instl`. **A table with no staleness gate does
+not merely risk being wrong; it silently withholds the gains of every ship that
+moved a name.** Attribution by token is sound here and needed no second
+25-minute regen: a gain is the repair's only if the typo is in its key.
+
+**Four keys DROPPED and all four are discharged, which is the half a count
+cannot do.** Three are now answered by the page's own chain (today's hyphen,
+EUPAC and AMF arms resolve `… Growth Fund of America Class R-6` -> RGAGX
+directly, so the generator correctly stops writing a key for them) and the
+fourth, `13,116 shares of Vanguard Star Fund` -> VGSTX, **no longer exists in
+the store at all**: 0 of 1,721,920 published rows carry that `nameRaw`, against
+186 rows that do name Vanguard Star. *A removed key is a loss only if a reader
+stands behind it.*
+
+**AND THE FINDING THAT MATTERS MORE THAN THE SHIP: a registry-attested typo
+correction is refused by the attestation guard exactly where the house token is
+the only distinctive evidence.** `registrantAttested` asks whether the
+registrant's own distinctive vocabulary appears in the FILED name or its issuer
+cell, and it is asked of **`f.nameRaw` — the TYPO'd spelling**. So the repair
+lands where the product name carries distinctive words of its own
+(`MEFS International Diversification R6` -> MDIZX, `MEFS Research
+International R6` -> MRSKX) and is REFUSED wherever the house word is all there
+is (`MEFS Value Fund R6`, `MEFS Mid Cap Value Class R6`, `MEFS Total Return
+R6`): **71 keys / 106 rows / 96 acks / 65,542 ppl / $116,048,214**, which is
+MORE readers than the ship delivers. **Galliano is in the refused half — the
+motivating row is outside its own repair for the THIRD consecutive ship.** The
+guard is right in general; it is what stops `Vanguard Asset Allocation Fund`
+publishing VCAAX as fact. Attesting against the REPAIRED spelling instead is a
+change to every arm's input and belongs in its own measured ship.
+
+**Tethered** in `scripts/sec-tickers-test.mjs` against the COMMITTED table
+rather than the live registry — the `merge-name-test` shape this record says
+must stay out of CI — so a later regen that stops producing the key reddens CI
+instead of a reader finding it. The pin **fails by name** against the old
+table, verified by swapping it in. The must-NOT-see decoy is labelled
+decorative, because no such key exists in either table and it can only fail
+against a future regen that drops the word anchor.
+
+**Prevention.** Table 7,350 -> 7,447 keys, 66,134 bytes gzipped (from 64,520).
+`stamp-assets` restamped `index.html`; smoke, fund-note and fund-er gates green
+locally.

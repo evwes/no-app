@@ -918,6 +918,16 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
+**PRE-REGISTERED 2026-10-11 09:5xZ — the MEFS ship's effect on the coverage
+line is at or below the printed precision: `tkExact` **38.99 -> 38.99 or
+39.00**.** The table gains 120 asserted rows out of 1,721,920 published rows
+(0.007%), and `tkExact` is a percentage over an 87,106-row sample, so the
+expected move is ~6 sampled rows, +0.007 points. **Anything larger than 39.00
+means the regen moved more than the diff measured.** `tkComparable` 3.41,
+`tkSampled` 87,106, `tkShare`, confident 60,182, match 43,312, vesting 53,023,
+vestQuote 5,373, entries 65,495, HIGH 4, WARN 556 and **pv 203** must all be
+unchanged: no store is written.
+
 **DELIVERED AND VERIFIED BY #634 (`success`, 09:01-09:0xZ) — THE REGISTRATION
 HELD EXACTLY: `tkExact` **37.88 -> 38.99**, and `tkComparable` 3.41 /
 `tkSampled` 87,106 / `tkShare` 25.12 / confident 60,182 / match 43,312 /
@@ -1616,6 +1626,43 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **SHIPPED 2026-10-11 09:5xZ — `MEFS` IS `MFS` WITH AN INSERTED E: 54 published
+  rows / 50 acks / 34,059 ppl / $63,973,731 gain a symbol**, ticker lost 0 /
+  swapped 0, **comparables shipped 0**, fee 0, name 0, shownType 0, 16,446
+  sampled non-candidates differing on 0; seeded uniform draw **24 of 24
+  correct**, **0 gains typed a pooled vehicle** (the generator refuses this
+  class's 92 pooled rows per row). One `deTypo` pass in `secAsk`, composed with
+  the issuer-core arm; `PARSER_VERSION` stays 203; one surface by construction.
+  **The correction is REGISTRY-ATTESTED: 0 of 29,406 registry rows spell MEFS
+  and 695 spell MFS**, four of our own cells carry both spellings at once, and
+  all 303 distinct stored spellings were read with 0 decoys.
+  **THE SAME REGEN ABSORBED 66 FURTHER GAIN ROWS / 9,224 ppl / $71,696,270 OF
+  PURE TABLE DRIFT, which is the price of the staleness gate this file already
+  names as missing:** `sec-tickers.js` was last generated before the day's five
+  name and resolver ships, so keys its own cleaner can now reach had never been
+  written. ***A table with no staleness gate does not merely risk being wrong;
+  it silently withholds the gains of every ship that moved a name.***
+  Attribution by token needed no second regen. **Four keys dropped and ALL FOUR
+  are discharged** — three are now answered by the page's own chain, and the
+  fourth's row is gone from the store (0 of 1,721,920 rows carry that
+  `nameRaw`): *a removed key is a loss only if a reader stands behind it.*
+  **STILL OPEN AND LARGER THAN THE SHIP — `registrantAttested` REFUSES 71 KEYS
+  / 106 rows / 96 acks / 65,542 ppl / $116,048,214.** That guard asks whether
+  the registrant's distinctive vocabulary appears in the FILED name or issuer
+  cell and is asked of **`nameRaw`, the TYPO'd spelling**, so the repair lands
+  only where the product name carries distinctive words of its own
+  (`International Diversification`, `Research International`) and is refused
+  wherever the house token is the only evidence (`MEFS Value Fund R6`).
+  ***A registry-attested typo correction is refused by the attestation guard
+  exactly where the house token is the only distinctive evidence***, and
+  **Galliano Marine Service — the row the class was found on — is in the refused
+  half, the THIRD consecutive ship whose motivating row is outside its own
+  repair.** The guard is right in general (it is what stops `Vanguard Asset
+  Allocation Fund` -> VCAAX), so attesting against the REPAIRED spelling is a
+  change to every arm's input and needs its own measurement. **Also open: the
+  28 rows / 24,399 ppl whose typo is in the ISSUER cell only**, whose names are
+  bare products — the `houseCore` class with a typo on top.
+  `docs/accuracy-log.md` 2026-10-11 (09:5xZ).
 - **SIZED 2026-10-11 07:0xZ, NOT SHIPPED — AN ADMIRAL SHARE CLASS WITH NO HOUSE:
   5,222 rows / 2,153 acks / 2,790,684 ppl / $8,706,430,036 gross, of which
   2,350 publish a FEE today — AND 1,811 ARE POOLED VEHICLES MY INSTRUMENT COULD
@@ -3087,6 +3134,19 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   periodic job rather than a per-push one. Until then the discipline is manual:
   **a commit touching `gen-sec-tickers.mjs` or `match-sec-tickers.mjs` must
   regenerate and commit the table in the same commit.**
+  **AND THE DISCIPLINE AS WRITTEN IS NOT ENOUGH, MEASURED 2026-10-11 09:5xZ: it
+  is keyed on the GENERATOR and the table is also stale after any change to the
+  NAME CLEANER or to `fund-er.js`'s resolver.** The MEFS regen absorbed **66
+  gain rows / 18 acks / 9,224 ppl / $71,696,270** of pure drift from the day's
+  five name and resolver ships — keys the cleaner could newly reach that had
+  never been written — plus 4 keys made redundant by the page itself. ***A
+  table with no staleness gate does not merely risk being wrong; it silently
+  withholds the gains of every ship that moved a name***, and nothing reports
+  it: `tkExact` moves, which reads as that hour's ship delivering. So the
+  manual rule must extend to **`lib-disclose.mjs`'s `cleanFiledName`, `app.js`'s
+  cleaning chain and `fund-er.js`** — or, better, the periodic job above, since
+  the list of files that can stale this asset is now five and growing.
+  `docs/accuracy-log.md` 2026-10-11 (09:5xZ).
 - Double render: one holding published TWICE at an identical value under two
   spellings where BOTH rows resolve to the same ticker — 1,217 groups / 2,434
   rows / 515 entries / $943,251,783. 85 `lineup-overshoot` menus carry one and
