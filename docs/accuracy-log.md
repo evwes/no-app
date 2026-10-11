@@ -53930,3 +53930,130 @@ gap is narrower than it looks. Unsized.
 instance of a blank type defeating a type-reading guard; here it is not a
 suppressor that fails but the absence of any vehicle statement beside three
 rows that are not vehicles at all.
+
+## 2026-10-11 (04:1xZ) — A HYPHENATED SHARE CLASS BLOCKED THE SYMBOL, AND THE QUEUE ENTRY BLAMED THE PARENTHESES
+
+**SHIPPED. 636 published+served rows / 628 acks / 636 plans / 1,878,821
+participants / $3,664,621,842 gain a ticker**, with ticker lost 0, swapped 0,
+**ASTERISKED 0**, fee 0, name 0, shownType 0. `fund-er.js:1487`, one `for` loop
+in `fundTickerInfo`'s own variant list. `PARSER_VERSION` stays 203. Prohealth
+Physicians' `AMERICAN FUNDS EUROPACIFIC GROWTH FUND CLASS R-6` at
+**$689,915,011 / 92,924 ppl** stops publishing a fee and no symbol; Publix
+(225,961 ppl), Stryker, Qualcomm, R. R. Donnelley (9.13% of its menu), Mount
+Sinai, Wegmans.
+
+**THE QUEUE ENTRY'S FRAMING WAS REFUTED BY THE FIRST PROBE, AND IT TOOK ONE
+LINE.** It was recorded from the 02:08 draw as *"A FOURTH SPELLING OF THE
+EUROPACIFIC ROW THAT BLOCKS RERGX — THE CLASS IN PARENTHESES"*, narrowed by the
+in-menu control `Baird Aggregate Bond Fund (Institutional Shares)` resolving
+BAGIX *"in the same shape, so the parenthesis is not the whole blocker."* It is
+not the blocker **at all**: varying ONE thing at a time,
+`(Class R6)` -> **RERGX**, `(Class R-6)` -> nothing, `Class R-6` -> nothing,
+`R-6` -> nothing, `(R-6)` -> nothing, and the Baird control resolves under
+EVERY variant because its class word is SPELLED OUT. ***The blocker is the
+HYPHEN*** — `FUND_TICKER`'s EuroPacific arm (`fund-er.js:956`) requires a
+literal `r6`. *A fix for one phrasing of a class is not a fix for the class*,
+now met on a **HYPHEN** after a decimal point, a position, a column, a share
+class and a form.
+
+**NOT A REGISTRY GAP AND NOT REACHABLE FROM THE SEC MATCHER, which is why the
+stage was never in doubt.** `norm` ALREADY collapses the hyphen, so
+`resolveHolding` sees the IDENTICAL token string for both spellings and answers
+**null for both** — because the registry holds the symbol under the fund's own
+legal name, `EUPAC FUND :: EUPAC Fund`, which shares no tokens with the filed
+name. *There are two resolvers, and the stage follows the one that can answer.*
+
+**THE STAGE WAS PRESCRIBED BY THIS RECORD AND VALIDATED ONCE ALREADY (23:1xZ).**
+The variant goes in `fundTickerInfo`'s own `vs`, never in `expandFundVariants`,
+because `fundER` calls that too — the EUPAC ship measured that mistake at 806
+FEE cells beside 681 symbols. So `vs` feeds only `hit`, `pooled` tests the RAW
+name, `fundER` never sees these seeds: **no fee cell can move BY CONSTRUCTION
+and the displayed NAME cannot either**, measured at 0 and 0.
+
+**THE COLLAPSE IS APPLIED TO EVERY SEED ALREADY IN `vs`, NOT TO `name`, AND
+THAT IS WORTH 138 ROWS / 224,314 READERS.** Written against `name` alone it does
+not COMPOSE with the `EUPAC` expansion one line above it: that push yields
+`... EuroPacific Growth Class R-6` (hyphen intact) and this one yields
+`... EUPAC Class R6` (EUPAC intact), so `American Funds EUPAC Class R-6` — 56
+rows, plus 41 of `American Funds EUPAC Fund Class R-6` — needs BOTH transforms
+and neither push supplies them. Simple form 498 rows / 1,654,507 ppl; composing
+form **636 / 1,878,821**, adding 138 rows all RERGX with lost/swapped/asterisked
+0. ***Found by reading the INERT candidates and not by any count*** — the inert
+list printed `American Funds EUPAC Class R-6` -> nothing beside 8,993 rows the
+transform touched harmlessly. ***When two normalisations each produce a seed the
+other's transform was needed for, neither reaches the names that need both.***
+
+**THE ASSERTION IS LICENSED BY THE FILING, checked over the WHOLE population
+rather than a sample:** all 636 gaining rows **STATE `R-6`** (0 do not), **0**
+name a pooled vehicle in either the name or the type cell, and both destinations
+are registered as that exact class — **RERGX `Class R-6`** (615 rows) and
+**RWMGX `R-6`** (21). **All 106 distinct filed spellings were read and not one
+is a false positive**; one filer even writes `... Class R-6 (RERGX)`, naming the
+symbol itself. A seeded uniform draw of 20 reads 20 of 20 correct.
+**THREE ODD-TYPED ROWS WERE READ RATHER THAN COUNTED** — `Company stock` ×1
+(Cnx Resources, $10,502,740, issuer `American Funds`) and `Cash / short-term`
+×2 (Parkview Health 19,192 ppl) — all three filer mis-types where the NAME is
+the witness, not vehicle rows.
+
+**MEASURED AS A DIFFERENTIAL, two renderers from one tree with only this block
+varying**, over all 1,721,920 published+served rows: narrowed to the 9,492 rows
+whose raw or cleaned name matches the gate — a **superset BY CONSTRUCTION**,
+since the push is gated on exactly that test — and **DISCHARGED on 19,026
+sampled non-candidates differing on 0**. The harness was required to DISAGREE
+on the pin before any count printed, so a patch that failed to load could not
+read as a clean no-difference.
+
+**AND I WALKED INTO THAT TRAP ANYWAY, ON MY OWN HARNESS, ONE STEP AFTER THE
+SHIP.** Measuring the decoy population I called `buildRenderer()` with no
+options for the baseline — **which reads the working tree, which I had already
+patched** — so both renderers were the SAME FILE and "the collapse changes the
+answer on 0 decoys" was vacuous, while the 53 decoys it reported as resolving
+were post-patch. Re-run against `git show HEAD:fund-er.js` the figure is **18
+decoys, and the collapse still changes 0** — the same conclusion, now earned.
+***A before that is silently the after reads as a clean no-difference***, which
+this record already states about `fund-er-test`'s own `--file` flag; the
+authoritative 636 predates the patch and was unaffected.
+
+**THE FIXTURE WORK FOUND THE SHARPER VERSION OF THAT RULE.** My first decoy was
+`GraniteShares Bloomberg Commodity Broad Strategy No K-1 ETF`, drawn from the
+data and ideal on its face — `K-1` there is a **TAX FORM**, not a share class,
+and `renderRow` publishes **COMB** for it, so the pin could fail. It failed
+immediately, against the SHIPPED code: `fund-er-test` asks `fundTickerInfo`,
+and COMB comes from **`sec-tickers.js` via `lookupTicker`**, so fund-er's own
+table answers nothing for it under both versions. ***There are two resolvers,
+and a fixture is only as good as the one its own harness asks*** — a decoy
+measured through the page can be decorative in a unit harness. Replaced with
+three drawn from the 18 that this table does answer, where the collapse
+produces `K6`, `R6` and `I2` and any of them could newly match another arm:
+`Fidelity Total bond K-6 Fund` -> FTBFX, `JP Morgan Large Cap Growth R-6` ->
+JLGMX, `PIMCO TOTAL RETURN I-2` -> PTTRX.
+
+**AND A COMMENT OF MINE WAS CORRECTED BEFORE IT SHIPPED BY ITS OWN CONTROL.** I
+wrote that the second pin was *the* single-protection case for the composing
+choice; run against the non-composing variant, **two** fail. The third,
+`EuroPacific Growth Fund Class R-6`, resolves on the PAGE under either form
+because `lookupTicker` prepends the issuer cell and the harness supplies none —
+*a fixture measures its own harness's inputs, which are narrower than
+production's here, and that makes it a stricter control rather than a wrong
+one.* The digit boundary is asserted rather than argued: `\b` after the digit is
+what keeps `Russell R-2000 Index Fund` out, and it reads unchanged.
+
+**ONE SURFACE BY CONSTRUCTION:** `build-seo-pages.mjs` has **0** references to
+`fund-er` / `lookupTicker` / `fundTickerInfo` / `.stk`, so the crawlable pages
+publish no ticker column and the regenerate-and-diff control is **INAPPLICABLE
+rather than skipped**. `fund-er.js` restamped (`b2c2e3f3` -> `915cc732`) and
+`--check` clean; smoke test green; fund-er fixtures 116 must-resolve / 40
+must-not / 19 / 18 / 28, **0 failures**, and the four new must-resolve pins fail
+BY NAME against the pristine file.
+
+**NAMED RESIDUE, measured not guessed.** The 182 published+served
+`Growth Fund of America` hyphen-class rows move **0** — those patterns already
+tolerate the hyphen — but reading them exposed a separate gap: `American Funds
+The Growth Fund of America® Class R-6` publishes **RGAGX** while
+`American Funds The Growth Fund of America Class R-6` publishes **nothing**, two
+spellings differing by a registered-trademark glyph. And of the 7,470 rows
+carrying an `R-6` token, 636 moved; the rest already resolved, which is why the
+class is this size and not larger. The `K-6`/`R-6` rows resolving an INVESTOR
+class (`Fidelity Total bond K-6 Fund` -> FTBFX, `Fidelity Blue Chip Growth R-6`
+-> FBGRX) are pre-existing members of the owner-gated wrong-share-class family
+and are deliberately untouched here.

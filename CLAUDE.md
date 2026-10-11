@@ -1605,18 +1605,49 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   ***THE DRAW'S OWN `--rows` LIMIT HID ALL THREE FINDINGS*** — every one sits
   below row 9, so the menu had to be re-read in full. *The row limit is one of
   the conditions a measurement must apply*, met this time on my own instrument.
-- **AND A FOURTH SPELLING OF THE EUROPACIFIC ROW THAT BLOCKS RERGX — THE CLASS
-  IN PARENTHESES.** Publix publishes `American Funds EuroPacific Growth Fund
-  (Class R-6)` at **$53,247,125 with a 0.46 FEE and NO TICKER**. The name is the
-  full registered spelling and 0.46 is RERGX's real cost, so this is NOT the
-  23:1xZ `EUPAC` abbreviation already shipped, nor Pvh's lost `n Funds`, nor
-  Carnival's lost `Funds`, nor Kaleida's `American EuroPacific Growth Fund R6`.
-  Fourth named spelling of one fund blocking one symbol, with the recorded
-  asymmetry: the FEE table reaches it and the TICKER table does not.
-  **The control is two rows down and narrows it:** `Baird Aggregate Bond Fund
-  (Institutional Shares)` resolves **BAGIX** with the class in parentheses in
-  the same shape, so the parenthesis is not the whole blocker.
-  `docs/accuracy-log.md` 2026-10-11 (03:0xZ).
+- **SHIPPED 2026-10-11 04:1xZ — A HYPHENATED SHARE CLASS STOPS BLOCKING THE
+  SYMBOL: 636 published rows / 628 acks / 636 plans / 1,878,821 ppl /
+  $3,664,621,842 gain a ticker**, with ticker lost 0 / swapped 0 / **ASTERISKED
+  0**, fee 0, name 0, shownType 0, and 19,026 sampled non-candidates differing
+  on 0. Prohealth Physicians' `AMERICAN FUNDS EUROPACIFIC GROWTH FUND CLASS
+  R-6` at **$689,915,011 / 92,924 ppl**; Publix 225,961; R. R. Donnelley at
+  9.13% of its menu. One `for` loop in `fundTickerInfo`'s own variant list;
+  `PARSER_VERSION` stays 203.
+  ***THE QUEUE ENTRY BLAMED THE PARENTHESES AND ONE PROBE REFUTED IT.***
+  Varying ONE thing at a time: `(Class R6)` -> **RERGX**, and `(Class R-6)` /
+  `Class R-6` / `R-6` / `(R-6)` -> nothing, while the in-menu Baird control
+  resolves BAGIX under EVERY variant because its class word is SPELLED OUT. The
+  blocker is the **HYPHEN** — `fund-er.js:956` requires a literal `r6` — so *a
+  fix for one phrasing of a class is not a fix for the class*, met on a hyphen
+  after a decimal point, a position, a column, a share class and a form.
+  **NOT A REGISTRY GAP AND UNREACHABLE FROM THE SEC MATCHER:** `norm` already
+  collapses the hyphen, so `resolveHolding` sees the IDENTICAL token string for
+  both spellings and answers null for both, the registry holding the symbol
+  under the fund's legal name `EUPAC FUND :: EUPAC Fund`.
+  **THE COLLAPSE APPLIES TO EVERY SEED, NOT TO `name`, AND THAT IS 138 ROWS /
+  224,314 READERS** — written against `name` alone it does not COMPOSE with the
+  `EUPAC` push one line above (that one yields `... EuroPacific Growth Class
+  R-6`, this one `... EUPAC Class R6`), so `American Funds EUPAC Class R-6`
+  needs both and neither supplies them. ***Found by reading the INERT
+  candidates, not by any count: when two normalisations each produce a seed the
+  other's transform was needed for, neither reaches the names that need both.***
+  **LICENSED BY THE FILING over the WHOLE population:** all 636 STATE `R-6`, 0
+  name a pooled vehicle, both destinations are registered as that class (RERGX
+  `Class R-6` 615, RWMGX `R-6` 21), and **all 106 distinct filed spellings were
+  read with 0 false positives** — one filer writes `... Class R-6 (RERGX)`.
+  **AND MY DECOY PIN FAILED AGAINST THE SHIPPED CODE, which is the reusable
+  half:** `GraniteShares ... No K-1 ETF` (where `K-1` is the TAX FORM) publishes
+  **COMB** through `sec-tickers.js` and NOTHING through fund-er's own table, so
+  a decoy measured through `renderRow` was decorative in a harness that asks
+  `fundTickerInfo`. ***There are two resolvers, and a fixture is only as good as
+  the one its own harness asks.*** Replaced with three the table does answer
+  (`Fidelity Total bond K-6 Fund` -> FTBFX).
+  **STILL OPEN, measured:** the 182 `Growth Fund of America` hyphen-class rows
+  move **0** (already tolerant), but `... of America® Class R-6` publishes
+  RGAGX where `... of America Class R-6` publishes **nothing** — two spellings
+  differing by a trademark glyph; and the `K-6`/`R-6` rows resolving an INVESTOR
+  class (FTBFX, FBGRX) are pre-existing members of the owner-gated
+  wrong-share-class family. `docs/accuracy-log.md` 2026-10-11 (04:1xZ).
 - **THE DOUBLE RENDER WITH NEITHER COPY QUALIFIED — SIZED 2026-10-11 02:4xZ AT
   5,754 pairs / 2,278 acks / 3,694,834 ppl / $19,181,051,166 duplicated, AND THE
   SHIPPABLE CORE IS A TRIPLE CONJUNCTION OF 572 pairs / 365 acks / 396,467 ppl /
