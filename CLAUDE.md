@@ -928,6 +928,27 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
+**PRE-REGISTERED 2026-10-11 17:0xZ for the next merge after the CAPITAL GROUP
+ABBREVIATION ship — `tkExact` **39.04 -> 40.19**, band **40.17-40.21**, and
+NOTHING ELSE MOVES.** The arm is build-side and writes no store, but it added
+**4,575 keys** to `sec-tickers.js` and `tkExact` reads that table, so this is
+the one coverage key it can touch. **DERIVED IN THE METRIC'S OWN POPULATION,
+which is the correction recorded one hour earlier**: `audit-data.mjs:840`
+samples `ackHash(ack) % 20` over every CONFIDENT entry and applies NEITHER the
+serving condition NOR the publish gate, so a registration built from a
+published+served row count under-predicts it — the Admiral ship predicted
++0.025 and delivered +0.042. So the metric's own lookup chain was transcribed
+and run over the identical sample with BOTH tables: **87,106 sampled rows,
+1,000 of which move**, BEFORE **39.04** — which reproduces #638's shipped
+figure, the control that it IS the metric — and AFTER **40.19**. Anything
+outside 40.17-40.21 means the table moved more than the row-level diff
+measured. `tkComparable` **3.41** and `tkSampled` **87,106** unchanged (the
+generator ships assertions only, so a comparable cannot be added), `tkShare`
+25.12, confident 60,182, match 43,312, vesting 53,023, vestQuote 5,373, entries
+65,495, HIGH 4, WARN 556, overshoot 370, overshootTrust 12, aggRow 114, `dl` 93
+and **pv 203** all unchanged. A `dl` rise means the EFAST2 bucket grew.
+
+
 **DELIVERED BY #638 (`success`, data commit `d49b5694`) AND THE BAND WAS MISSED
 ON THE HIGH SIDE BY ONE HUNDREDTH — `tkExact` **39.00 -> 39.04** against a
 registered 39.02 (band 39.02-39.03), with every other key on the 35-key line
@@ -1775,41 +1796,91 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
-- **FOUND BY THE 15:08 DRAW AND SIZED THE SAME HOUR — THE HOUSE CONTRACTED,
-  WITH THE PRODUCT CONTRACTED TOO: 7,747 published+served rows / 1,931 acks /
-  1,763,677 ppl / $8,707,224,486 publish NO ticker, and 92 publish a fee
-  anyway.** Sandpiper Property Mgt (448 ppl) publishes eight
-  `AMERFUNDS 20XX TARG DATERET R6` rows with no ticker and no fee — **65.6% of
-  its whole menu by value** — while row 6 of the SAME menu,
-  `AMERICAN FUNDS 2055 TARGET R6`, resolves **RFKTX at 0.4**. Same house, same
-  product family, same share class stated; the only thing that varies is how
-  much the filer typed.
-  **THE CONTROL IS STORE-WIDE AND IT IS WHAT MAKES THE GAP OURS:** the house
-  spelled IN FULL is 153,551 rows resolving **42.5%**; the contracted spellings
-  are 7,852 rows resolving **1.3%**. Largest families: `AMERFUNDS 20XX TARG
-  DATERET R6` ×1,751 rows over eleven vintages ($2.27B), `AMER FUNDS NEW PERSP
-  R6` ×202, `American Fds 20XX Tar Ret R6` ×~340, `AMERFDS 20XX TARG DATE
-  RET-R4` ×~130 (**note the R4, a different class and a different ticker**).
-  **NOT THE SHIPPED `AMF` ARM**, which is anchored on a bare `AMF` token; this
-  is a sibling spelling and a separate population.
-  ***TWO DAMAGED TOKENS, AND A FIX FOR THE HOUSE IS NOT A FIX FOR THE
-  PRODUCT:*** the biggest sub-family contracts BOTH (`AMERFUNDS` for the house
-  AND `TARG DATERET` / `Tar Ret` / `NEW PERSP` for the product), so expanding
-  the house alone will not resolve it — price the two separately, and expect
-  the composition trap the `AMF` ship hit (that loop iterates a SNAPSHOT, so
-  the shipped ORDER must be the order that was measured).
-  **ONE DECOY IS ALREADY NAMED BY READING, ~390 rows over twelve vintages:**
-  `MyCompass Amer Fds 20XX Fd R`, which **this file already records as a
-  WRAPPER lead, correct as filed** (0 of 608, and the record notes MyCompass
-  was 18 of a 30-row draw where the ROTATION is the damaged spelling). Those
-  are a platform's own product, not the mutual fund, so asserting a registered
-  symbol on them is the pooled-vehicle harm. **1,172 of the 7,747 are typed a
-  POOLED vehicle** and are a gain no reader may see.
-  Before anything ships: all 2,725 distinct contracted spellings enumerated and
-  read (the `AMF` method, not the `tiaa` one), the registry as the witness
-  rather than a guessed contraction vocabulary (*this record measured a guessed
-  one at 9 false positives of 21 rows*), `pooledVehicleRow` asked per row, and
-  a seeded uniform draw printing each row's TYPE.
+- **SHIPPED 2026-10-11 17:0xZ — THE HOUSE CONTRACTED AND THE PRODUCT WITH IT:
+  18,802 published+served rows / 4,575 keys / 7,702 acks / 7,715 plans /
+  6,300,982 ppl / $25,793,171,689 gain an ASSERTED symbol**, ticker lost 0 /
+  swapped 0 / asterisked 0, fee gained/lost/changed 0/0/0, name 0, shownType 0,
+  row membership 0, and a non-candidate control of **1,702,234 rows differing on
+  0** — measured through BOTH copies of `renderRow` over all 1,721,920 rows.
+  Table **7,762 -> 12,337 keys, ADDED 4,575 / REMOVED 0 / CHANGED 0**, all 4,575
+  attributable to this arm (4,318 via the raw name, 257 via the cleaned one), so
+  **0 drift**. `PARSER_VERSION` stays 203; one surface by construction
+  (`build-seo-pages` has 0 ticker-resolver references). Cost, because every
+  visitor downloads it: `sec-tickers.js` 68,102 -> **102,074 bytes gzipped**.
+  ***DO NOT CARRY THE SIZING'S 7,747 rows / 1,763,677 ppl — THE DELIVERY IS
+  2.4x ON ROWS AND 3.6x ON PEOPLE, because that screen was keyed on the
+  contracted HOUSE and the biggest sub-family's blocker is the PRODUCT.*** One
+  probe settled it: `AMERICAN FUNDS 2055 TARG DATERET R6`, house spelled in
+  FULL, resolves to **nothing**, while `American Funds 2055 Target Date
+  Retirement R6` resolves RFKTX. *A screen keyed on one of two damaged tokens
+  measures one of two damaged tokens.*
+  **ONE RELATION AND NO VOCABULARY, which is the whole design:** each FILED
+  token consumes one or more CONSECUTIVE series words, its letters a subsequence
+  of their concatenation AND including the FIRST LETTER of each. Nothing knows
+  that `TARG` means `Target`; the registry says which series exists, and the
+  same relation does the house, so `AMERFUNDS`, `AMERFDS`, `Amer Fds`, `AF` and
+  `AMF` all qualify unlisted. The family is REGISTRY-DERIVED — a registrant
+  registering `Class R-2E`/`R-5E`/`529-A` — **39 registrants / 66 series, every
+  one a Capital Group trust by reading, 0 foreign houses**, and `assertAfFamily`
+  throws if that changes. The class comes out of the registry's own `className`,
+  so R-4 and R-6 stay distinct, and a row stating NO class is REFUSED (without
+  that, 4,813 further rows would assert a Class A symbol).
+  **THE MyCompass DECOY IS REFUSED BY STRUCTURE, not a blocklist:** the house run
+  must be LEADING, so `MyCompass Amer Fds 20XX Fd R` (~390 rows, which this file
+  records as a WRAPPER lead CORRECT AS FILED, 0 of 608) reaches neither the gain
+  set nor the pooled refusal. `pooledRow` is asked PER ROW and refuses 1,282 rows
+  / 599 keys / 432,087 ppl. Seeded uniform draw of 26 with each TYPE printed:
+  **26 of 26 correct, 0 asterisked**; across all 18,802 the type cells are
+  `Mutual fund` 15,285 / blank 3,387 / `Cash / short-term` 127 /
+  `Government securities` 3, and the last two were read separately (money-market
+  and government funds typed by ASSET CLASS, which is not a vehicle).
+  **IT IS THE ONE ARM EXEMPT FROM `registrantAttested`, and that is a judgment
+  with evidence.** That guard asks whether the registrant's distinctive
+  vocabulary appears in the FILED spelling, and this arm's whole subject is a
+  filed spelling that abbreviates it — so it refutes the premise instead of
+  testing it: it refuses **1,557 of the 18,802 rows / 456 keys**, and asking it
+  of the house-repaired spelling rescues only 597. The MEFS lesson in its
+  general form. What replaces it is stricter and computed against the repaired
+  reading, with three whole-population measurements: 22 adversarial probes all
+  abstaining (including `American Funds MFS Value R6`, whose series DOES
+  register a Class R6), `namesManager` naming **16** managers across all gained
+  rows and **every one Capital Group's own series vocabulary**, and all **56**
+  leading house runs in the store enumerated and READ with **0 decoys**.
+  ***THREE DEFECTS IN MY OWN ARM, each a recorded rule:*** `houseRun` leaked the
+  SKIP set so `American` alone passed as the house (`American Century Growth R6`
+  accepted — *nothing executes a comment*, and the comment asserted the
+  opposite); a four-letter floor I shipped on reasoning cost **684 genuine rows**
+  and protected nothing, a floor of 2-vs-1 moving **0** (unreachable by
+  construction), its one target refused by the series match anyway — ***the rows
+  a predicate matches are not the rows a change fixes***; and my noise list held
+  `fd`/`fds` and not `fnd`, costing **276 rows** — *a count keyed on a
+  vocabulary measures the vocabulary*, met INSIDE an arm written to avoid one.
+  **AND THE DIFFERENTIAL'S NARROWING WAS NOT A SUPERSET, which only its own
+  control revealed:** `/amer|capital/i` put **1,839 genuine gains in the CONTROL
+  bucket** (`AMF 2025 TD RET INC R6` contains neither string) and printed
+  CONTROL FAILED; re-keyed on membership in the ADDED-KEY SET — a superset by
+  construction, given REMOVED 0 / CHANGED 0 — the control reads 0 and the gain is
+  18,802, not the 16,963 the contaminated run reported.
+  Tethered by `scripts/af-abbrev-test.mjs` in `site-test`: 9 must-fire, 15
+  must-not-fire, 6 single-protection mutations and 4 invariants, exiting 1 **if a
+  mutation passes**, CI-safe by carrying its own FROZEN registry so an SEC
+  refresh cannot redden it.
+  **STILL OPEN, named residue and none of it a gap in this arm:** the **FEE**,
+  where **10,996 of the 18,802 gained rows publish a pattern-table estimate**
+  beside their new symbol (`fundERRow` prices the NAME) — the owner-gated fee
+  family, *a fee is SOURCED, never derived*; **1,374 rows / 785 acks / 630,017
+  ppl carry the house ONLY in the ISSUER cell** and would answer if it were
+  prepended (the recorded `houseCore` class, name-anchored on the measured rule
+  that *the issuer cell routinely holds the CUSTODIAN*); **4,813 rows state no
+  class** (the comparable half); **1,202 rows** name only `American` or only
+  `Capital` (the `NO_SKIP` cost); **239 rows / 147,725 ppl** state a bare `A`,
+  deliberately abstained because `a` is both the article and a retail class; 8
+  rows weld four series words, 8 have a product run under four letters, 5 are
+  genuinely ambiguous; and **the 2025/2020 vintages abstain unless the filing
+  says `Income`**, the registry carrying them only as
+  `… Target Date Retirement **Income** Fund` — which is why the motivating menu
+  delivers **7 of its 8** rows and is correct, since *a rename is a FACT that
+  must be SOURCED*. `docs/accuracy-log.md` 2026-10-11 (17:0xZ).
 - **SHIPPED 2026-10-11 10:5xZ — A COLLECTIVE-TRUST PLATFORM'S FABRICATED FEE,
   WHEREVER THE FILER LEFT THE TYPE CELL BLANK: 315 published+served rows / 70
   acks / 70 plans / 64,085 ppl / $523,244,544 stop publishing an expense ratio**

@@ -136,6 +136,21 @@ jobs:
       # status has flipped three times on drift alone.
       - name: Leading-unit-noun repair — the witness and the floors still hold
         run: node scripts/noun-repair-test.mjs
+      # The Capital Group abbreviation arm resolves a contracted holding name
+      # against the SEC registry rather than against a guessed expansion --
+      # 16,844 published+served rows / 5,770,486 participants whose house AND
+      # product the filer contracted (`AMERFUNDS 2055 TARG DATERET R6`). It is
+      # the one arm in `gen-sec-tickers.mjs` EXEMPT from `registrantAttested`,
+      # because that guard asks whether the registrant's distinctive vocabulary
+      # appears in the FILED spelling and this arm's whole subject is a filed
+      # spelling that abbreviates it -- so what stands in its place is the arm's
+      # own conditions, and those are what this test pins. Six mutations, each
+      # with a case drawn from the store where that condition is the ONLY thing
+      # deciding the verdict, and the suite exits 1 if a mutation still passes.
+      # Its registry is FROZEN in the test file, so an SEC refresh of
+      # sec-funds.json cannot redden it -- the property merge-name-test lacks.
+      - name: Capital Group abbreviation arm — the family, the relation, the class
+        run: node scripts/af-abbrev-test.mjs
       # index.html cache-busts its assets with a query string, and that string
       # was typed by hand until 2026-10-02 -- when it was found SEVENTEEN DAYS
       # stale, with app.js and fund-er.js both changed that same day. A

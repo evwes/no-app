@@ -7,6 +7,278 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-11 (17:0xZ) — THE HOUSE CONTRACTED AND THE PRODUCT WITH IT: 18,802 published+served rows / 4,575 keys / 7,702 acks / 7,715 plans / 6,300,982 participants / $25,793,171,689 gain an ASSERTED symbol, resolved against the SEC registry by an ABBREVIATION RELATION rather than a guessed expansion
+
+### What was wrong
+
+Sandpiper Property Mgt (448 participants, ack
+`20251015171350NAL0010496978001`) publishes eight
+`AMERFUNDS 20XX TARG DATERET R6` rows with no ticker and no fee — **65.6% of
+its whole menu by value** — while row 6 of the SAME menu,
+`AMERICAN FUNDS 2055 TARGET R6`, resolves **RFKTX**. Same house, same product
+family, same share class stated; the only thing that varied is how much of the
+name the filer typed. Store-wide the control is stark and needs no registry:
+the house spelled IN FULL resolves on **42.3%** of its rows and the contracted
+spellings on **1.3%**.
+
+### The change
+
+`scripts/lib-af-abbrev.mjs` — one predicate, appended LAST in
+`gen-sec-tickers.mjs`'s `secAsk` on `!out`, so it is **additive by
+construction**. `PARSER_VERSION` stays **203**: nothing in the pipeline moves,
+and the only artifacts are `sec-tickers.js` and its stamp.
+
+**ONE RELATION, AND THE REGISTRY SUPPLIES THE TARGET.** Each FILED token
+consumes one or more CONSECUTIVE series words; its letters must be a
+subsequence of their concatenation AND must include the FIRST LETTER of every
+word it consumes. Nothing here knows that `TARG` means `Target` — it knows that
+`targ` can abbreviate `target`, that `dateret` can abbreviate `date
+retirement`, that `fnd` can abbreviate `fund`, and the registry says which
+series exists. The same relation does the HOUSE: `AMERFUNDS`, `AMERFDS`,
+`AMER FUNDS`, `Amer Fds`, `AF` and `AMF` all abbreviate `american funds`
+without being listed anywhere.
+
+***A FIX FOR THE HOUSE IS NOT A FIX FOR THE PRODUCT, AND ONE PROBE SETTLED
+WHICH:*** varying one thing at a time,
+`AMERICAN FUNDS 2055 TARG DATERET R6` — house spelled in FULL — still resolves
+to **nothing**, while `American Funds 2055 Target Date Retirement R6` resolves
+RFKTX. So the biggest sub-family's blocker is the PRODUCT, the queue's
+house-only framing could not have delivered it, and the class is therefore
+larger than the queue's screen: **the queue sized it at 7,747 rows /
+1,763,677 ppl on contracted HOUSE spellings and the delivery is 18,802 rows /
+6,300,982 ppl**, because rows whose house is spelled out and whose product is
+contracted are the same defect. *A screen keyed on one of two damaged tokens
+measures one of two damaged tokens.*
+
+**THE FAMILY IS DERIVED FROM THE REGISTRY AND READ, NOT NAMED.** A registrant
+belongs if it registers a class called `Class R-2E`, `Class R-5E` or
+`Class 529-A` — Capital Group's own distinctive ladder. Over all 29,406
+registry rows that is **39 registrants / 66 series**, and every one is a
+Capital Group trust by reading (AMCAP FUND, EUPAC FUND, GROWTH FUND OF AMERICA,
+SMALLCAP WORLD FUND INC, NEW PERSPECTIVE FUND, WASHINGTON MUTUAL INVESTORS
+FUND, CAPITAL INCOME BUILDER, INVESTMENT CO OF AMERICA and the twenty-odd
+`AMERICAN FUNDS …` trusts) — **ZERO foreign houses**. So a wrong answer from
+this arm can only ever be the wrong CAPITAL GROUP fund, never another house's,
+and `assertAfFamily` throws if that stops being true.
+
+**THE SHARE CLASS MUST BE STATED AND COMES OUT OF THE REGISTRY'S OWN
+`className`**, so `R6` -> `Class R-6` and `R4` -> `Class R-4` are the
+registry's answer and not ours — load-bearing, because R-4 and R-6 are
+different tickers and ~130 rows of this class state R-4. A row stating NO class
+is REFUSED: the honest answer there is a comparable, and comparables are the
+owner's call. Priced: without that condition the arm would assert on **4,813
+further rows**, every one a Class A symbol on a row that states no class.
+
+### What moved, measured through BOTH copies of `renderRow`
+
+Two renderers over the SAME `app.js`, varying ONE thing — the generated table —
+over all **1,721,920** published+served rows, with the before/after control
+asked of the RENDERERS (the AFTER answers RFKTX on the pin, the BEFORE answers
+nothing, and the script exits 1 if they agree):
+
+| | |
+|---|---|
+| TICKER GAINED | **18,802 rows / 4,575 keys / 7,702 acks / 7,715 plans / 6,300,982 ppl / $25,793,171,689** |
+| ticker LOST / SWAPPED / asterisked | **0 / 0 / 0** |
+| fee gained / lost / changed | **0 / 0 / 0** |
+| name / shownType / row membership | **0 / 0 / 0** |
+| non-candidate CONTROL | **1,702,234 rows, differing on 0** |
+
+Table **7,762 -> 12,337 keys: ADDED 4,575 / REMOVED 0 / CHANGED 0**, and all
+4,575 are attributable to this arm — 4,318 through the raw filed name and 257
+through the CLEANED one — so **there is no drift in it**. Cost, stated because
+every visitor downloads the asset: `sec-tickers.js` goes 508,696 -> 776,634
+bytes raw and **68,102 -> 102,074 bytes gzipped**.
+
+**ONE SURFACE BY CONSTRUCTION:** `build-seo-pages.mjs` has **0** references to
+`fundER` / `lookupTicker` / `fundTickerInfo` / `SEC_TICKERS` and publishes no
+per-fund ticker, so the page diff is INAPPLICABLE rather than skipped.
+
+**A SEEDED UNIFORM DRAW OF 26 GAINED ROWS WAS READ ONE BY ONE WITH EACH ROW'S
+TYPE CELL PRINTED: 26 of 26 correct, 0 asterisked, 0 fee cells moved.** Across
+all 18,802 the type cells are `Mutual fund` 15,285, blank 3,387,
+`Cash / short-term` 127 and `Government securities` 3 — and the last two were
+read separately: every one is an American Funds money-market or government
+fund typed by ASSET CLASS, which is not a vehicle. `pooledRow` is asked PER ROW
+and refuses **1,282 rows / 599 keys / 432,087 ppl** whose own filed type says
+pooled separate account, collective trust or separate account.
+
+### Three things in my own work were wrong, and each is a recorded rule
+
+**(1) `houseRun` LEAKED THE SKIP SET, SO `American` ALONE PASSED AS THE
+HOUSE.** `funds` is skippable on the SERIES side, and I passed the same set
+into the house-phrase match, so `American Century Growth R6` was accepted with
+a house run of one and the arm's whole claim — *this filing says American
+FUNDS* — collapsed to *this filing says American*. The comment above the
+function asserted the opposite of what the code did until a must-not-fire
+control printed it. ***Nothing executes a comment.*** Fixed with an explicit
+`NO_SKIP`, pinned, and priced: requiring BOTH words costs **1,202 rows** whose
+name says only `American` or only `Capital`, which is the conservative
+direction and is named residue.
+
+**(2) I SHIPPED A FOUR-LETTER FLOOR ON THE HOUSE RUN AND IT COST 684 GENUINE
+ROWS WHILE PROTECTING NOTHING.** I reasoned that `CG` is a code rather than an
+abbreviation, counted the leading runs a floor would refuse, and shipped it.
+Priced BY THE OUTCOME instead — rows that GAIN a symbol — a floor of 4 loses
+**684 rows** and all 684 were read: `AF AMER MUTUAL R6` (92),
+`AF BOND FD AMER R6` (67), `AMF BOND FUND OF AMERICA R6` (62),
+`AFS Interm Bond Fund of America R6`, every one unambiguously Capital Group.
+A floor of 2 against a floor of 1 changes **0** rows, because a one-letter
+token cannot satisfy the relation at all — so any such floor is UNREACHABLE BY
+CONSTRUCTION, and *a condition unreachable by construction is worse than an
+inert one.* The single row it would have been for,
+`CG LONG DUR CREDIT TRST (US) CL DB`, is refused by the SERIES MATCH on its own
+and never reaches an answer. Floor deleted, invariant asserted in the test.
+***The rows a predicate matches are not the rows a change fixes*** — at least
+the sixth instance on this record, and the first inside an arm I was writing to
+avoid exactly that class of error.
+
+**(3) MY NOISE LIST HELD `fd` AND `fds` AND NOT `fnd`, AND THAT COST 276 ROWS.**
+`American Funds NewPrsp R6 Fnd` abstained while `American Funds NewPrsp R6`
+answered RNPGX, because a trailing vehicle word the list could not spell was
+read as part of the share class. ***A count keyed on a vocabulary measures the
+vocabulary*** — met INSIDE the arm written to avoid a vocabulary. The noise
+test is now the abbreviation relation against a handful of vehicle words, which
+reaches `fnd`, `fnds`, `shs`, `cl` and the next filer's spelling alike.
+
+**AND MY DIFFERENTIAL'S CANDIDATE NARROWING WAS NOT A SUPERSET, WHICH ITS OWN
+CONTROL IS THE ONLY REASON I KNOW.** I narrowed the two-renderer diff with
+`/amer|capital/i` over the two name cells and asserted in a comment that it
+supersets what the new keys can reach. It does not: **1,839 genuine gains fell
+into the CONTROL bucket**, because `AMF 2025 TD RET INC R6`, `AF BALANCED R6`
+and `AMFDS CAP WLD BD R3` contain neither string. The run printed
+`CONTROL FAILED`. Re-keyed on MEMBERSHIP IN THE ADDED-KEY SET — a superset by
+construction, since the diff reads ADDED 4,575 / REMOVED 0 / CHANGED 0, so a
+row's verdict can move only where its key is newly present — the control reads
+1,702,234 rows differing on **0** and the gain is **18,802**, not the 16,963
+the contaminated run reported. *Sampling cannot establish a superset, and a
+narrowing asserted in a comment is not a narrowing.*
+
+### What licenses the `registrantAttested` exemption
+
+This is the ONE arm in `gen-sec-tickers.mjs` exempt from that guard, and the
+exemption is a judgment with evidence rather than a convenience. The guard asks
+whether the REGISTRANT's distinctive vocabulary appears in the FILED spelling,
+and this arm's entire subject matter is a filed spelling that abbreviates it —
+so it refutes the arm's premise instead of testing it:
+`AMERFUNDS AMER BALANCED - R6` -> RLBGX is refused because the registrant's
+single distinctive word is `american` and the filer typed `AMER`. Measured over
+all 18,802 gained rows it refuses **1,557 rows / 456 keys**, and asking it of
+the HOUSE-REPAIRED spelling rescues only 597 — **960 rows / 283 keys** stay
+refused because the product is contracted too. That is the MEFS lesson in its
+general form, and here it is structural rather than incidental.
+
+What stands in its place is stricter and is computed against the repaired
+reading: a stated house at the LEAD, a destination inside the registry-derived
+Capital Group family, a product abbreviating exactly ONE of its series, and a
+class that series registers. Three whole-population measurements support it:
+
+- **22 adversarial probes, every one abstaining** — a foreign house welded in
+  (`American Funds Vanguard 500 Index R6`, `AMERFDS BLACKROCK EQUITY INDEX R6`,
+  `American Funds MFS Value R6`, whose series DOES register a Class R6), a
+  product too generic to pin (`AMERFUNDS GROWTH R6`, `AMERFUNDS 2030 R6`),
+  another house whose own name opens with `American` (`American Century Growth
+  R6`, `American Beacon Small Cap Value R6`), and both MyCompass orderings;
+- over ALL gained rows, `namesManager` names **16** distinct managers and every
+  one is Capital Group's OWN series vocabulary (`new perspective`, `new world`,
+  `eupac`, `amcap`, `smallcap`, `american balanced`) or the structural phrase
+  `mutual fund`. **ZERO foreign houses** — and that measurement is also a
+  reminder that `namesManager` is not a foreign-house test here, exactly as the
+  Admiral entry records its magnet entries flagging correct rows;
+- **all 56 leading house runs the relation accepts anywhere in the store were
+  enumerated and READ, with 0 decoys** — the `AMF` method, not the `tiaa` one.
+  `AFS`, `AMFS`, `Afunds`, `AmFnds`, `cap gr` and `AME Fnds` were each read row
+  by row and every one is an American Funds / Capital Group product.
+
+**A FOREIGN-HOUSE REFUSAL WAS CONSIDERED AND DELIBERATELY NOT WRITTEN:** no
+single-protection case for it exists, because a foreign token must itself be
+absorbed by a family series for the arm to fire at all, so the condition would
+be unreachable by construction. The invariant is ASSERTED in the test instead,
+on three constructed names.
+
+### The MyCompass decoy is refused BY STRUCTURE, not by a blocklist
+
+`MyCompass Amer Fds 20XX Fd R` — ~390 rows over twelve vintages that this
+record already calls a WRAPPER lead, CORRECT AS FILED (0 of 608), a platform's
+own product and not the mutual fund — is refused because the house run must be
+LEADING and `mycompass` is first. **0 of them reach the gain set and 0 reach
+even the pooled-vehicle refusal**, and both orderings are pinned must-not-fire.
+
+### What prevents it
+
+`scripts/af-abbrev-test.mjs`, wired into `site-test`: **9 must-fire, 15
+must-not-fire, 6 single-protection mutations and 4 invariants**, with the suite
+exiting 1 **if a mutation still passes** and a baseline assertion on every
+mutation case that the SHIPPED arm does NOT already give the mutant's answer —
+without that second half a mutation control goes decorative silently, which is
+how my first version of this file reported six false failures with its
+assertion inverted.
+
+**CI-SAFE BY CONSTRUCTION, because it carries its own FROZEN registry.** The
+arm reads `sec-funds.json`, which is refreshed from the SEC, so a test pinning
+verdicts against the live file would redden on a refresh with nothing wrong —
+the property `merge-name-test` lacks and the shape that left `site-test`
+habitually red for ten runs. Every verdict is asserted against a fixture inside
+the test file; the live registry is touched only by `assertAfFamily` inside the
+generator, which throws rather than shipping a family it cannot vouch for.
+
+The five mutations each name the case where that condition is the only thing
+deciding the verdict, drawn FROM the store: `NO_SKIP` (1,202 rows), the
+first-letter obligation (which fails in BOTH directions at once — one correct
+answer goes ambiguous and one refusal becomes a wrong assertion across a
+rename), uniqueness (`American Funds Corp Bond R6 Fund`, where `Corp`
+abbreviates Corporate AND Core Plus), the product letter floor
+(`American Funds New Class R6 Fund`), the family restriction
+(`American Funds MFS Value R6`), and the stated class
+(`AMERFUNDS 2055 TARG DATERET Z9`).
+
+### Pre-registered for the next merge
+
+`tkExact` **39.04 -> 40.19**, band **40.17-40.21**, and NOTHING ELSE MOVES.
+Derived IN THE METRIC'S OWN POPULATION, which is the correction this log
+recorded one hour earlier: `audit-data.mjs:840` samples `ackHash(ack) % 20`
+over every CONFIDENT entry and applies NEITHER the serving condition NOR the
+publish gate, so a registration built from a published+served row count
+under-predicts it. The metric's own lookup chain was transcribed and run over
+the identical sample with both tables: **87,106 sampled rows, 1,000 of which
+move**, BEFORE 39.04 (which reproduces #638's shipped figure — the control that
+it IS the metric) and AFTER 40.19. `tkComparable` **3.41** and `tkSampled`
+**87,106** unchanged; the arm ships assertions only, so a comparable cannot be
+added. `confident` 60,182, `match` 43,312, `vesting` 53,023, `vestQuote` 5,373,
+`entries` 65,495, HIGH 4, WARN 556, overshoot 370, aggRow 114 and **pv 203** all
+unchanged — no store is written. A `dl` rise means the EFAST2 bucket grew.
+
+### Named residue, none of it a gap in this arm
+
+- **the FEE does not move, and 10,996 of the 18,802 gained rows publish a
+  pattern-table estimate today** — `fundERRow` prices the NAME and the arm
+  changes no name, so a correct symbol now sits beside a house-wide 0.4 where
+  RFKTX's real cost differs. That is the recorded ticker/fee asymmetry and the
+  owner-gated fee family: *a fee is SOURCED, never derived*, and
+  `data/fund-facts.json` holds no Capital Group figures;
+- **1,374 rows / 785 acks / 630,017 ppl carry the house ONLY in the ISSUER
+  cell** (`Balanced Fund R6` · iss `American Funds`) and would answer if it
+  were prepended. The arm is name-anchored on the measured rule that *the
+  issuer cell routinely holds the CUSTODIAN* — it is the recorded `houseCore`
+  class and needs its own measured ship;
+- **4,813 rows state NO share class**, where the honest answer is a comparable;
+- **1,202 rows name only `American` or only `Capital`** — the `NO_SKIP` cost;
+- **239 rows / 147,725 ppl state a bare `A`**, deliberately abstained: `a` is
+  both the article and a real retail share class, and the arm will not read one
+  as the other;
+- **8 rows weld four series words into one token** (`AMFDS 2035 TDRF R6`),
+  above the three-word bound; **8 rows** have a product run under four letters;
+  **5 rows** are genuinely ambiguous within the family (`American Funds 206
+  Target Date Retire R6`, a typo'd year);
+- **the 2025 and 2020 vintages abstain unless the filing says `Income`**,
+  because the registry carries them only as
+  `American Funds 20XX Target Date Retirement **Income** Fund`. That is why the
+  motivating menu delivers **7 of its 8** rows, and it is correct: *a rename is
+  a FACT that must be SOURCED*, so inferring one would be the Freedom Index
+  `Income` defect by a new route.
+
+---
+
 ## 2026-10-11 (16:0xZ) — A PRE-REGISTRATION MISSED ITS OWN BAND BECAUSE IT WAS DERIVED IN THE READER-FACING POPULATION AND THE METRIC IS NOT: `tkExact` came in at 39.04 against a registered 39.02 (band 39.02-39.03), and the arm is innocent — fully attributed at 37 sampled rows / 0.042 points
 
 ### What was wrong

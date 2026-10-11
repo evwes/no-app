@@ -65,6 +65,7 @@ import { buildRenderer } from "./apppath.mjs";
 import { servedLineup } from "./lib-ledger.mjs";
 import { buildIndex, resolveHolding, norm, decodeEntities,
   STRUCTURAL, CLASS_WORDS, DESCRIPTIVE, isAssetWord } from "./match-sec-tickers.mjs";
+import { buildAfIndex, assertAfFamily, afAbbrevAsk } from "./lib-af-abbrev.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
 const argv = process.argv.slice(2);
@@ -597,6 +598,39 @@ for (const r of d.rows) {
 }
 const servedBy = (m) => servedLineup(m, INDEX).ack;
 
+/* ---------- the Capital Group abbreviation index, built and ASSERTED ----------
+ * `assertAfFamily` throws if the registry-derived family stops being the
+ * Capital Group trusts, because that set is the arm's whole safety claim. */
+const AF_INDEX = buildAfIndex(regRows);
+const AF_FAMILY_N = assertAfFamily(AF_INDEX);
+{
+  /* controls in BOTH directions, ahead of any count, each a case where the
+   * condition under test is the only thing deciding the verdict */
+  const must = [
+    ["AMERFUNDS 2055 TARG DATERET R6", "RFKTX"],   // house AND product contracted
+    ["AMERICAN FUNDS 2055 TARG DATERET R6", "RFKTX"], // product only
+    ["AMER FUNDS NEW PERSP R6", "RNPGX"],          // series carrying no house of its own
+    ["AMERFUNDS AMER BALANCED - R6", "RLBGX"],     // first-letter rule: NOT Global Balanced
+    ["Amer Funds Bond Fnd Amer R6", "RBFGX"],      // internal-elision contraction
+    ["AMERFDS 2035 TARG DATE RET-R4", "RDFTX"],    // R-4 is a different class and ticker
+    /* must NOT fire */
+    ["MyCompass Amer Fds 2035 Fd R", null],        // a WRAPPER lead, correct as filed
+    ["MyCompass Amer Fds 2055 Fd R6", null],
+    ["American Century Growth R6", null],          // another house opening with `American`
+    ["American Beacon Small Cap Value R6", null],
+    ["American Funds Vanguard 500 Index R6", null],   // a foreign house welded in
+    ["AMERFUNDS GROWTH R6", null],                // too generic to pin to one series
+    ["AMERFUNDS 2030 R6", null],
+    ["AMERFUNDS 2025 TARG DATERET R6", null],      // registered as `… Retirement INCOME Fund`
+  ];
+  for (const [n, want] of must) {
+    const got = afAbbrevAsk(AF_INDEX, n);
+    if ((got ? got.ticker : null) !== want)
+      throw new Error(`gen-sec-tickers: AF-ABBREV CONTROL — ${JSON.stringify(n)} should answer ${want || "nothing"}, got ${got ? got.ticker : "nothing"}`);
+  }
+  console.error(`af-abbrev controls OK  (family ${AF_FAMILY_N} registrants, ${AF_INDEX.series.size} series)`);
+}
+
 const secCache = new Map();
 /* AN APOSTROPHE-ELIDED SHARE CLASS LEAVES A STRAY LETTER AND THE MATCHER THEN
  * REFUSES THE WHOLE ROW — 2026-10-10 (05:3xZ).
@@ -1101,6 +1135,18 @@ function secAsk(nameRaw, nameClean, iss) {
    * fund without our house and only the CLASS is in doubt — and belongs in its
    * own measured ship. */
   if (!out) out = admAsk(nameRaw, nameClean, iss);
+  /* AND LAST, THE CAPITAL GROUP ABBREVIATION ARM. Appended after `admAsk` so
+   * it is additive to everything already shipped, and running only on `!out`
+   * is what makes that true by construction rather than by measurement. The
+   * two arms are disjoint in practice — `admAsk` requires an `Adm` class token
+   * and this one requires a leading American Funds / Capital Group house run —
+   * and `scripts/af-abbrev-test.mjs` asserts the overlap is 0 rather than
+   * assuming it. Everything about the relation, the registry-derived family and
+   * the `registrantAttested` exemption is in `lib-af-abbrev.mjs`. */
+  if (!out) {
+    const a = afAbbrevAsk(AF_INDEX, nameRaw) || afAbbrevAsk(AF_INDEX, nameClean);
+    if (a) out = a;
+  }
   secCache.set(k, out);
   return out;
 }
@@ -1184,6 +1230,8 @@ const planExact = new Map(), planComp = new Map();
  * attributable without a second regeneration */
 let admRows = 0, admDollars = 0;
 const admKeys = new Set(), admAcks = new Set(), admPlans = new Map();
+let afRows = 0, afDollars = 0;
+const afKeys = new Set(), afAcks = new Set(), afPlans = new Map();
 let admUnattested = 0; const admUnattestedKeys = new Set();
 const gains = [];
 const compKeys = new Set();
@@ -1257,7 +1305,20 @@ for (let s = 0; s < 64; s++) {
         continue;
       }
       const viaAdm = /\+admclass$/.test(sec.why || "");
-      if (!registrantAttested(sec.ticker, f.nameRaw, f.iss || "")) {
+      /* THE CAPITAL GROUP ABBREVIATION ARM IS EXEMPT FROM `registrantAttested`,
+       * and `lib-af-abbrev.mjs`'s header carries the whole argument with its
+       * three whole-population measurements. In one line: that guard asks
+       * whether the registrant's distinctive vocabulary appears in the FILED
+       * spelling, and this arm's entire subject matter is a filed spelling that
+       * abbreviates it, so the guard refutes the arm's premise rather than
+       * testing it — 1,557 of the 18,802 gained rows / 456 keys, of which 960 stay
+       * refused even when it is asked of the house-repaired spelling. What
+       * stands in its place is stricter and is computed against the repaired
+       * reading: a stated house at the LEAD, a destination inside the
+       * registry-derived Capital Group family, a product abbreviating exactly
+       * ONE of its series, and a class that series registers. */
+      const viaAf = (sec.why || "") === "af-abbrev";
+      if (!viaAf && !registrantAttested(sec.ticker, f.nameRaw, f.iss || "")) {
         unattested++;
         unattestedPpl += ppl;
         if (viaAdm) { admUnattested++; admUnattestedKeys.add(key); }
@@ -1274,6 +1335,13 @@ for (let s = 0; s < 64; s++) {
         admKeys.add(key);
         admAcks.add(ack);
         for (const m of mem) admPlans.set(`${m.ein}|${m.pn}`, m.ppl);
+      }
+      if (viaAf) {
+        afRows++;
+        afDollars += +f.value || 0;
+        afKeys.add(key);
+        afAcks.add(ack);
+        for (const m of mem) afPlans.set(`${m.ein}|${m.pn}`, m.ppl);
       }
       const prev = table.get(key);
       if (prev !== undefined && prev !== sec.ticker) conflicts.push([key, prev, sec.ticker]);
@@ -1330,6 +1398,10 @@ console.error([
   `  GAIN an ASSERTED symbol                 ${admRows.toLocaleString()} rows / ${admKeys.size.toLocaleString()} keys / ${admAcks.size.toLocaleString()} acks -> ${admPlans.size.toLocaleString()} plans / ${sum(admPlans).toLocaleString()} ppl / $${admDollars.toLocaleString()}`,
   `  REFUSED, registrant unattested          ${admUnattested.toLocaleString()} rows / ${admUnattestedKeys.size.toLocaleString()} keys  (the plain index funds: the registrant says nothing distinctive beyond \`vanguard\` and the filing omits it)`,
   `  REFUSED, the NAME names another house   ${admForeignKeys.size.toLocaleString()} keys`,
+  ``,
+  `THE CAPITAL GROUP ABBREVIATION ARM, attributed by the af-abbrev tag:`,
+  `  GAIN an ASSERTED symbol                 ${afRows.toLocaleString()} rows / ${afKeys.size.toLocaleString()} keys / ${afAcks.size.toLocaleString()} acks -> ${afPlans.size.toLocaleString()} plans / ${sum(afPlans).toLocaleString()} ppl / $${afDollars.toLocaleString()}`,
+  `  registry-derived family                 ${AF_FAMILY_N} registrants / ${AF_INDEX.series.size} series`,
 ].join("\n"));
 if (admForeignKeys.size) {
   console.error(`\nEVERY key the Admiral arm refused for a foreign house in the NAME:`);
