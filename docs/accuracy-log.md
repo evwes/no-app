@@ -54904,3 +54904,42 @@ its prescription, so the next session sizes the arm from the attestation split
 rather than from the clean half. *Size the class before reading the filing,
 applied to a GUARD instead of a corpus: ten minutes of probe re-sized the item
 before a line of the arm was written.*
+
+## 2026-10-11 (11:0xZ) — #635 VERDICT: THE MEFS REGISTRATION HELD AT THE UPPER END OF ITS BAND, AND THE 1.23-POINT `tkExact` RISE IS MOSTLY THE COUNTER LEARNING TO COUNT
+
+**What was predicted.** The 09:5xZ ship registered `tkExact` **38.99 -> 38.99 or
+39.00** and nothing else moving: 120 asserted rows gained out of 1,721,920
+published rows is 0.007%, and `tkExact` is a percentage over an 87,106-row
+sample, so the expected move was ~6 sampled rows, +0.007 points — below the
+printed precision, hence a two-valued band rather than a point estimate.
+"Anything larger than 39.00 means the regen moved more than the row-level diff
+measured" was the falsifier.
+
+**What #635 delivered** (`success`, 10:08:59-11:0xZ, `53c31984`): `tkExact`
+38.99 -> **39.00**, the upper end, which is exactly 38.99 + 0.007 at two
+decimals. **Every other key byte-identical**: plans 112,652 / fullForm 68,538 /
+entries 65,495 / confident 60,182 / rk 63,916 / match 43,312 / vesting 53,023 /
+matchQuote 5,396 / matchQuoteShown 1,849 / vestQuote 5,373 / lineups 59,833 /
+roth 38,369 / aftertax 4,178 / menu 137 / matchAny 46,285 / cust 11,044 /
+**HIGH 4** (the baseline) / **WARN 556** / **pv 203 at 99.9%** / overshoot 370 /
+overshootTrust 12 / aggRow 114 / tkShare 25.12 / tkSampled 87,106 /
+tkComparable 3.41 / `ex` 0 / **`dl` 93**. So the completeness test passes on its
+own terms — one dominant pv over 97%, `dl` far under 1%, no `partial-store` and
+no `extraction-failures`.
+
+**AND THE READING THAT MATTERS IS ABOUT THE METRIC, NOT THE COVERAGE.**
+`tkExact` has gone 37.77 -> 37.88 -> 38.99 -> 39.00 in a day, and a reader of
+this trail alone would call that 1.23 points of new ticker coverage. It is
+not: **37.88 was the data, 38.99 is the METRIC FIX** (the 08:1xZ repair that
+stopped `audit-data`'s re-implementation being blind to `f.ftk` and to the whole
+generated SEC table — 1.11 of the 1.23 points), and only the last **0.01** is
+this ship. ***A corrected counter and a coverage gain are indistinguishable in
+a time series, so the trail cannot tell them apart and the entry beside it
+must.*** The store-block note now says so explicitly.
+
+**Prevention.** The pre-registration is what made the verdict a one-line check
+rather than an investigation: a two-valued band plus a named falsifier turns
+"did it work" into "is the printed number inside the band", and the 25 unchanged
+keys are the half of the claim that a single moving figure cannot establish.
+Recorded beside the figure so the next reader of `tkExact` does not price the
+metric fix as coverage.

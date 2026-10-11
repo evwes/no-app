@@ -845,13 +845,18 @@ VMware and Neiman Marcus. The witness must be **BOY** assets.
 match **43,312** · vesting **53,023** · roth 38,369 · **HIGH 4** ·
 warn **556** · overshoot 370 · overshootTrust 12 ·
 aggRow 114 · dl **93** · pvTopShare **99.9** (pv **203**) ·
-tkExact **37.77** · tkComparable **3.41** · vestQuote **5,373**.
+tkExact **39.00** · tkComparable **3.41** · vestQuote **5,373**.
 (vesting/vestQuote/dl/pv re-derived from the #607 line 2026-10-09 13:0xZ, the
 first COMPLETE v203 store; `dl` 93 was HEAD-probed at 92/92 -> 403 minutes
 earlier, so the code is honest and the bucket is growing.)
-(`tkExact` was 37.76 until #601 on 2026-10-09; ~9 rows of an 87,106-row sample
-whose size did not move, produced by the code at `4f6e29d1` — i.e. the DATA, not
-that hour's display ship. Re-derive before quoting.)
+(`tkExact` **39.00** is re-derived from #635's line 2026-10-11 11:0xZ and is
+TWO ships plus a METRIC FIX above the 37.77 this line carried: 37.88 was the
+data, **38.99** is the corrected metric that stopped being blind to `f.ftk` and
+the whole SEC table, and 39.00 is the MEFS keys inside it. *Do not read the
+1.23-point rise as coverage — most of it is the counter learning to count.*
+`dl` 93 was HEAD-probed at 92/92 -> 403, so the code is honest and the bucket
+grows; vesting/vestQuote come from the first COMPLETE v203 store. Re-derive
+before quoting.)
 
 **`vestQuote` IS NOW 5,373 AND THE +92 IS v203's DELIVERY** — it counts STORED
 quotes carrying no vesting label, so withdrawing a false `Immediate` label moves
@@ -918,9 +923,31 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
-**PRE-REGISTERED 2026-10-11 09:5xZ — the MEFS ship's effect on the coverage
-line is at or below the printed precision: `tkExact` **38.99 -> 38.99 or
-39.00**.** The table gains 120 asserted rows out of 1,721,920 published rows
+**PRE-REGISTERED 2026-10-11 11:1xZ for #636 (dispatched 11:10:35Z on
+`02f9c12a`) — the flexPATH fee suppression must move NOTHING on the coverage
+line.** It is display-side (`lib-disclose.mjs`'s `isCollectiveTrustName` plus
+its app.js twin), writes no store, and `noPublicPrice` gates only `er` at
+`app.js:4164`, so **no coverage key reads it**: `tkExact` 39.00, `tkComparable`
+3.41, `tkSampled` 87,106, `tkShare` 25.12, confident 60,182, match 43,312,
+vesting 53,023, vestQuote 5,373, entries 65,495, HIGH 4, WARN 556, overshoot
+370, aggRow 114, `dl` 93 and **pv 203** all unchanged. A `dl` rise means the
+EFAST2 bucket grew; anything else moving is the thing to investigate.
+
+**DELIVERED AND VERIFIED BY #635 (`success`, 10:08:59-11:0xZ, `53c31984`) — THE
+MEFS REGISTRATION HELD AT THE UPPER END OF ITS BAND: `tkExact` 38.99 ->
+**39.00**, which is the predicted +0.007 (120 asserted rows of 1,721,920 =
+0.007%, ~6 rows of an 87,106-row sample) rounded to the printed precision.**
+Every other key on the line is byte-identical: plans 112,652 / fullForm 68,538 /
+entries 65,495 / confident 60,182 / rk 63,916 / match 43,312 / vesting 53,023 /
+matchQuote 5,396 / matchQuoteShown 1,849 / vestQuote 5,373 / lineups 59,833 /
+roth 38,369 / HIGH 4 / WARN 556 / pv 203 at 99.9% / overshoot 370 /
+overshootTrust 12 / aggRow 114 / tkShare 25.12 / tkSampled 87,106 /
+tkComparable 3.41 / `ex` 0 / `dl` 93. *Nothing larger than 39.00 appeared, so
+the regen moved exactly what the row-level diff measured.*
+
+**ORIGINAL REGISTRATION, kept because it is what was predicted — the MEFS
+ship's effect is at or below the printed precision: `tkExact` **38.99 -> 38.99
+or 39.00**.** The table gains 120 asserted rows out of 1,721,920 published rows
 (0.007%), and `tkExact` is a percentage over an 87,106-row sample, so the
 expected move is ~6 sampled rows, +0.007 points. **Anything larger than 39.00
 means the regen moved more than the diff measured.** `tkComparable` 3.41,
