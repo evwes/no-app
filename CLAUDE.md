@@ -1590,6 +1590,45 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **FOUND BY THE 01:08 DRAW — A DOUBLE RENDER AT AN IDENTICAL VALUE WHERE ONE
+  SIDE NAMES NO FUND, OUTSIDE THE SHIPPED SCREEN BY CONSTRUCTION. UNSIZED.**
+  Wawa, Inc. (**25,954 ppl**) publishes `Vanguard · Total Bond Index
+  Institutional Class` at **$57,092,913** and, two rows later, `Bond Fund
+  Investments` at **$57,092,913** — identical to the dollar, 5.0% of the menu
+  each. The recorded double-render item is keyed on BOTH rows resolving to the
+  same TICKER; here **neither resolves**, because one row is the fund and the
+  other is a CAPTION, so no ticker-keyed screen can see it.
+  ***THE TELL IS A FIGURE THE PAGE ALREADY PRINTS: Wawa's menu sums to 1.009 of
+  its own Schedule H assets***, and dropping the duplicate puts it at ~0.959 —
+  the duplicate inflates a published number. A widening of the recorded class,
+  needing a witness that does not require either side to resolve.
+  `docs/accuracy-log.md` 2026-10-11 (01:5xZ).
+- **AND THE SAME DRAW NAMED ONE SYMBOL WITH TWO FEES FIVE TIMES APART, BOTH
+  MEMBERS ON OUR OWN PAGES.** Wawa publishes `Vanguard · Institutional Index`
+  -> **VINIX at 0.1** on $85,155,974 (7.5% of its menu); Korn Ferry publishes
+  `Vanguard Instl Idx Instl Fund` -> **VINIX at 0.02**. The registry says
+  `Vanguard Institutional Index Fund` / VINIX / `Institutional Shares`, whose
+  real cost is near 0.035 — so 0.02 is close and **0.1 is a category estimate
+  three times the fund's cost**. Second named plan-to-plan pair for the
+  one-ticker-two-fees class after Ross Stores / Ramaco (`FXAIX`). The symbol is
+  honest on both pages; the FEE disagrees. OWNER-GATED with the fee families.
+- **AND A SHARE CLASS THE FILING STATES AND THE REGISTRY REGISTERS, WITH THE
+  OTHER ONE PUBLISHED.** Korn Ferry files `Dodge & Cox Stock **X** Fund` and the
+  page publishes **DODGX at 0.51**. Read out of `sec-funds.json`: `DODGE & COX
+  FUNDS :: Dodge & Cox Stock Fund` registers **DODGX Class I** and **DOXGX
+  Class X**, and the same pair exists for International (DODFX / **DOXFX**) and
+  Global (DODWX / **DOXWX**). An unusually clean instance of the owner-gated
+  wrong-share-class item: the class is in the filed name, registered, and the
+  fee is wrong in the same direction as the symbol.
+- **AND THE CONTRACTION CLASS IS CONFIRMED BY A SECOND FILER USING THE IDENTICAL
+  STRING — which is what makes it sizable.** Korn Ferry publishes `Vanguard Ext
+  Mk Index Inst Fd` with no ticker and 0.1, *character for character the string
+  this record names for Peet's Coffee & Tea* (06:1xZ). The registry has it:
+  `Vanguard Extended Market Index Fund` Institutional = **VIEIX** (~0.05), so
+  0.1 is double. ***A repeated spelling is a population where a unique one is an
+  anecdote.*** The blocker stands — a guessed contraction vocabulary is the shape
+  measured harmful twice (`inv.` -> `Investment`, 9 false positives of 21 rows),
+  so the witness must be the registry.
 - **SHIPPED 2026-10-11 01:4xZ as `nounRepair` IN `merge-4i.mjs` — A LEADING UNIT
   NOUN IN FRONT OF THE FUND NAME: 274 rows / 67 acks / 78,586 ppl /
   $2,483,915,336**, published TICKER gained **11** / lost 0 / swapped 0, FEE

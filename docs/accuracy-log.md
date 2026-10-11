@@ -53708,3 +53708,82 @@ anchor skip a caption, which is a different family; and 201 of the 475 the
 witness refuses, which are overwhelmingly the `Shares of <caption>` family
 (correctly left alone), `Share Balance`, the ESOP `Shares (ESOP - Allocated)`
 rows and `Unit investment trusts`.
+
+## 2026-10-11 (01:5xZ) — THE 01:08 DRAW: ONE SYMBOL, TWO FEES, FIVE TIMES APART, ON TWO OF OUR OWN PAGES — AND A DOUBLE RENDER THE SHIPPED SCREEN CANNOT SEE
+
+Seeded participant-weighted draw over the 60,070 published menus reaching
+100,151,069 participants. **The first seed reproduced the 00:08 draw's three
+picks exactly** (Gundersen, Cook Children's, Morguard), so it was re-rolled —
+*a draw's value is new ground, and a repeat pick is a wasted cycle, not a
+confirmation.* Every symbol below is read out of `sec-funds.json` and not
+recalled.
+
+**ONE RESOLVED SYMBOL, TWO FEES, FIVE TIMES APART, AND BOTH MEMBERS ARE NAMED.**
+Wawa, Inc. (**25,954 ppl**) publishes `Vanguard · Institutional Index` ->
+**VINIX at 0.1** on $85,155,974, 7.5% of its menu. Korn Ferry (920 ppl)
+publishes `Vanguard Group · Vanguard Instl Idx Instl Fund` -> **VINIX at 0.02**
+on $1,754,640. Same fund, same resolved symbol, **the cost decided by how much
+of the name the filer typed** — and the registry settles which is right:
+`VANGUARD INSTITUTIONAL INDEX FUNDS :: Vanguard Institutional Index Fund`,
+`VINIX`, `Institutional Shares`, whose real expense ratio is near 0.035, so
+0.02 is close and **0.1 is a category estimate three times the fund's cost**.
+This is the recorded one-ticker-two-fees class with both populations named plan
+to plan, after the Ross Stores / Ramaco `FXAIX` pair. The symbol is honest on
+both pages; it is the FEE that disagrees. OWNER-GATED with the fee families —
+*a fee is SOURCED, never derived.*
+
+**A DOUBLE RENDER AT AN IDENTICAL VALUE WHERE ONE SIDE NAMES NO FUND — OUTSIDE
+THE SHIPPED SCREEN BY CONSTRUCTION.** Wawa publishes `Vanguard · Total Bond
+Index Institutional Class` at **$57,092,913** and, two rows later,
+`Bond Fund Investments` at **$57,092,913** — identical to the dollar, 5.0% of
+the menu each. The recorded double-render class is keyed on *both* rows
+resolving to the SAME TICKER; here **neither resolves**, because one row is the
+fund and the other is a CAPTION, so no ticker-keyed screen can see it. ***The
+tell is in the ratio and it is already published: Wawa's menu sums to 1.009 of
+its own Schedule H assets***, and removing the duplicate puts it at ~0.959 — so
+the duplicate is inflating a figure the page prints. That is a widening of the
+recorded class, not a new one: *a duplicate at an identical value needs a
+witness that does not require either side to resolve.* Unsized.
+
+**A SHARE CLASS THE FILING STATES AND THE REGISTRY REGISTERS, AND WE PUBLISH
+THE OTHER ONE.** Korn Ferry files `Dodge & Cox Stock X Fund` — the X is in the
+filed name — and the page publishes **DODGX at 0.51**. Read out of the
+registry: `DODGE & COX FUNDS :: Dodge & Cox Stock Fund` registers **DODGX
+Class I** and **DOXGX Class X**, and the same pair exists for International
+(DODFX / **DOXFX**) and Global (DODWX / **DOXWX**). So the answer is DOXGX, the
+cheaper class, and the published 0.51 is priced to Class I. A named live
+instance of the owner-gated wrong-share-class item, and an unusually clean one:
+the class is stated in the name, registered in the registry, and the fee is
+wrong in the same direction as the symbol.
+
+**AND THE CONTRACTION CLASS IS CONFIRMED BY A SECOND PLAN FILING THE IDENTICAL
+STRING.** Korn Ferry publishes `Vanguard Group · Vanguard Ext Mk Index Inst Fd`
+at $406,609 with **no ticker and a 0.1 fee** — *character for character the
+string this record names for Peet's Coffee & Tea* (06:1xZ, $7,242,209, 5.6% of
+its menu). The registry has the fund: `Vanguard Extended Market Index Fund`
+Institutional = **VIEIX** (~0.05), so 0.1 is double. That the same contracted
+spelling appears under two unrelated filers is what makes the class sizable
+rather than a one-off — ***a repeated spelling is a population, where a unique
+one is an anecdote*** — and the recorded blocker stands: a contraction
+vocabulary guessed is the shape measured as harmful twice (`inv.` ->
+`Investment` gave 9 false positives of 21 rows), so the witness must be the
+registry.
+
+**HALF A MENU IN A ROW THAT NAMES THE SPONSOR'S OWN TRUST.** Korn Ferry's
+largest holding, **49.7% / $6,278,739**, is `Korn Ferry Master Trust`, typed
+`Collective trust`, carrying `noPublicPrice` and correctly publishing no ticker
+and no fee. It is honest as far as it goes and it names no INVESTMENT — the
+bare-house/trust-pointer shape, where the row points at a vehicle whose own
+holdings we do publish elsewhere.
+
+**THE MACHINERY WORKING, which supplies the controls.** Wawa's nine
+`Target Retirement <vintage> Trust I` rows and its `Growth Company Comingled
+pool` all carry `noPublicPrice` and publish **asterisked comparables**
+(`~VFIFX`, `~FDGRX`) — the collective-trust treatment the record calls correct,
+with the ceiling footnote. Bright Horizons (21,525 ppl) resolves its whole
+`Trust II` ladder the same way at 0.08. Korn Ferry's five collective trusts
+(`GQG Part US Sel Qual Equ C CIT`, `Galliard Stable Return E`, `Prudential Core
+Plus Bond Fd 6`, `SSgA US Infl Pro Bd Ix NL Fd C`) publish **no fee at all**,
+which is the honest answer and the direct control on the stable-value class:
+where the type cell says collective trust the suppressor holds, and the
+recorded failures are all rows whose type cell is BLANK.
