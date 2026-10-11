@@ -1742,6 +1742,41 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **FOUND BY THE 15:08 DRAW AND SIZED THE SAME HOUR — THE HOUSE CONTRACTED,
+  WITH THE PRODUCT CONTRACTED TOO: 7,747 published+served rows / 1,931 acks /
+  1,763,677 ppl / $8,707,224,486 publish NO ticker, and 92 publish a fee
+  anyway.** Sandpiper Property Mgt (448 ppl) publishes eight
+  `AMERFUNDS 20XX TARG DATERET R6` rows with no ticker and no fee — **65.6% of
+  its whole menu by value** — while row 6 of the SAME menu,
+  `AMERICAN FUNDS 2055 TARGET R6`, resolves **RFKTX at 0.4**. Same house, same
+  product family, same share class stated; the only thing that varies is how
+  much the filer typed.
+  **THE CONTROL IS STORE-WIDE AND IT IS WHAT MAKES THE GAP OURS:** the house
+  spelled IN FULL is 153,551 rows resolving **42.5%**; the contracted spellings
+  are 7,852 rows resolving **1.3%**. Largest families: `AMERFUNDS 20XX TARG
+  DATERET R6` ×1,751 rows over eleven vintages ($2.27B), `AMER FUNDS NEW PERSP
+  R6` ×202, `American Fds 20XX Tar Ret R6` ×~340, `AMERFDS 20XX TARG DATE
+  RET-R4` ×~130 (**note the R4, a different class and a different ticker**).
+  **NOT THE SHIPPED `AMF` ARM**, which is anchored on a bare `AMF` token; this
+  is a sibling spelling and a separate population.
+  ***TWO DAMAGED TOKENS, AND A FIX FOR THE HOUSE IS NOT A FIX FOR THE
+  PRODUCT:*** the biggest sub-family contracts BOTH (`AMERFUNDS` for the house
+  AND `TARG DATERET` / `Tar Ret` / `NEW PERSP` for the product), so expanding
+  the house alone will not resolve it — price the two separately, and expect
+  the composition trap the `AMF` ship hit (that loop iterates a SNAPSHOT, so
+  the shipped ORDER must be the order that was measured).
+  **ONE DECOY IS ALREADY NAMED BY READING, ~390 rows over twelve vintages:**
+  `MyCompass Amer Fds 20XX Fd R`, which **this file already records as a
+  WRAPPER lead, correct as filed** (0 of 608, and the record notes MyCompass
+  was 18 of a 30-row draw where the ROTATION is the damaged spelling). Those
+  are a platform's own product, not the mutual fund, so asserting a registered
+  symbol on them is the pooled-vehicle harm. **1,172 of the 7,747 are typed a
+  POOLED vehicle** and are a gain no reader may see.
+  Before anything ships: all 2,725 distinct contracted spellings enumerated and
+  read (the `AMF` method, not the `tiaa` one), the registry as the witness
+  rather than a guessed contraction vocabulary (*this record measured a guessed
+  one at 9 false positives of 21 rows*), `pooledVehicleRow` asked per row, and
+  a seeded uniform draw printing each row's TYPE.
 - **SHIPPED 2026-10-11 10:5xZ — A COLLECTIVE-TRUST PLATFORM'S FABRICATED FEE,
   WHEREVER THE FILER LEFT THE TYPE CELL BLANK: 315 published+served rows / 70
   acks / 70 plans / 64,085 ppl / $523,244,544 stop publishing an expense ratio**
@@ -1976,6 +2011,52 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   belongs with the owner-gated fee families. Walgreen Co. (**277,328 ppl**) is
   correctly blank, its row typed `Collective trust` with `noPublicPrice`.
   `docs/accuracy-log.md` 2026-10-11 (03:4xZ).
+- **THE PARTICIPANT-LOAN NOTE'S OWN SENTENCE PUBLISHED AS A FUND NAME — SIZED
+  2026-10-11 15:3xZ AT 245 published+served rows / 222 acks / 330,915 ppl /
+  $295,311,069 unqualified (the guards already qualify 425 of the 670 the shape
+  reaches, and `isSentenceRow` reaches 0 of them), 1 publishing a ticker and 10
+  a fee. NOT SHIPPED, AND THE OBVIOUS REMEDY IS REFUTED BY A PIN ALREADY IN THE
+  FILE.** Adt Llc (26,304 ppl) publishes `with loan maturity dates that range
+  from 2025 through 2050` at $35,860,898; Estee Lauder (18,363) `outstanding
+  loans which have maturity dates through 2045` at $26,080,724; The Kinetic
+  Group (5,391) at $13,916,506.
+  **ALL 231 DISTINCT NAMES WERE READ AND IT IS THREE POPULATIONS, TWO OF WHICH
+  MUST BE SPARED:** a loan sentence naming nothing (49 ending mid-clause — the
+  convictable half); **a REAL vehicle with its rate appended** (`Key Guaranteed
+  Portfolio Fund, 1.41% interest rate`, `Voya Fixed Account rate at 2%`,
+  `Morley Stable Value VI Fund` — nine publishing the owner-gated fabricated
+  **0.35**, so the remedy is a STRIP and a qualification would be FALSE); and
+  **a REAL corporate BOND with its coupon** (`REGIONS FINANCIAL CORP Coupon of
+  5.502 - Maturity date` and nine more, **ALL TEN IN ONE PLAN AT 56,540
+  READERS** — Booz Allen's itemized fixed-income sleeve, correctly named by
+  issuer with only the maturity VALUE cut).
+  ***THE `isSentenceRow` WIDENING IS REFUTED, PRICED OVER ALL 1,721,920 ROWS:
+  67 rows / 137,102 ppl, and the `is` VERB reaches 67 where `from|to` alone
+  reaches 10.*** `IS` is **Institutional Shares**: it would publish *"names no
+  specific fund"* over `WASATCH SM CAP GR IS A` (The Cleveland Clinic
+  Foundation, **86,817 ppl / $41,270,369**), ~30 real brokerage EQUITIES whose
+  tail is the custodian's own `NFS LLC IS A MARKET` disclosure, and a row
+  correctly publishing **VTWNX**. **`lib-disclose:2549` already pins
+  `BLACKROCK SP 500 IDX (IS)` must-NOT-fire with the comment "`IS` is
+  Institutional Shares; the FUNCTION WORD is the only protection"** — the
+  shipped predicate excludes `is` deliberately, and the motivating string's own
+  verb is `is`, so the motivating case is unreachable without the harmful half.
+  ***So the recorded habit of grepping the pins for a prescription's motivating
+  STRING is not enough: grep them for the CONDITION the change touches, which
+  for a predicate means reading its must-NOT-fire list before proposing any
+  widening.***
+  **AND THE TRAILING-FUNCTION-WORD SCREEN THAT FOUND IT IS DEAD — REFUTED THREE
+  TIMES BY ITS OWN OUTPUT, EACH TIME ON AN ABBREVIATION.** It read 33,927 rows
+  / 17,151,139 ppl of which **32,164 (94.8%) were the trailing `a` arm**
+  (`SSgA … Series Fund - Class A`, 6,765 publishing a ticker — a SHARE CLASS,
+  and this file already records that trap verbatim); with `a` excluded, `in`
+  576 rows is **INSTITUTIONAL** (`FIDELITY FREEDOM INDEX 2060 IN`) and `as` 538
+  rows is **ASSET** (`Vngrd 500 Index Fd As` ×56) with **355 of its 538
+  publishing a ticker**. ***A trailing-token vocabulary over this corpus
+  measures ABBREVIATIONS, not grammar*** — `A` share class, `IN`
+  Institutional, `AS` Asset, `IS` Institutional Shares, `IP` Institutional
+  Plus — and **the `as` arm's 355 tickers were invisible in a count and
+  unmissable in a member list.** `docs/accuracy-log.md` 2026-10-11 (15:3xZ).
 - **FOUND BY THE 02:08 DRAW, UNSIZED — A PLAN'S POSTAL ADDRESS AND AN EXPENSE
   LINE PUBLISHED AS HOLDINGS, ON ONE 239,138-PARTICIPANT PAGE.** Publix Super
   Markets (15 funds, ratio 0.974) publishes **`PUBLIX SUPER MARKETS, INC. 3300
@@ -2434,6 +2515,16 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   Value Fund` is typed `Collective trust`, carries `noPublicPrice` and correctly
   publishes NOTHING — so a BLANK type cell defeats the suppressor again, the
   `gicRow` shape for the fifth time.
+  **SUPERSEDED AS THE LARGEST SINGLE ROW BY THE 15:08 DRAW — Caesars
+  Entertainment, 45,125 ppl, publishes `Guaranteed Long-Term` at 0.35 on
+  $277,699,196, 14.7% of its menu**, type cell `—`, issuer `Empower Annuity
+  Insurance Company`. **The control is the other 24 rows of the SAME menu**:
+  every one is typed `Collective trust` or `Pooled separate account`, carries
+  `noPublicPrice` and correctly publishes no fee, and `SS S&P500 Index`
+  resolves `~SSSYX` asterisked — so this is one screen where 24 rows get the
+  vehicle right and the largest row does not, and the only thing that varies
+  is that its type cell is blank. The `gicRow` shape for the SIXTH time, now at
+  $277.7M.
 - **SHIPPED 2026-10-10 23:1xZ — `EUPAC`, THE HOUSE'S OWN ABBREVIATION OF ITS OWN
   FUND: 737 published rows / 733 acks / 942,088 ppl / $1,685,895,634 gain
   **RERGX**, and NOT ONE FEE CELL MOVES** — asterisked 0, ticker lost/swapped

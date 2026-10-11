@@ -7,6 +7,163 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-11 (15:3xZ) — A SCREEN REFUTED THREE TIMES BY ITS OWN OUTPUT, AND A REMEDY REFUTED BY A PIN ALREADY IN THE FILE: the loan-rate class is 245 published+served rows / 330,915 participants, it is THREE populations, and extending `isSentenceRow` to reach it would publish "names no specific fund" over a real fund held by 86,817 readers
+
+### What was wrong
+
+The 12:07 draw found Connexus Resource Group publishing **`Rates of`** at 2.5%
+of its menu / $214,407, type cell `—`, no ticker, no fee, and **not qualified**
+— so no shipped predicate reaches it. A published name that is a caption
+fragment ending on a function word.
+
+The obvious screen is the trailing word, and it was wrong three times in a row.
+
+**(1) The article.** Keyed on a trailing function word from a thirteen-word
+vocabulary, the screen read **33,927 unqualified rows / 17,151,139
+participants / $169,055,503,780** — and **32,164 of them, 94.8%, were the
+trailing `a` arm**, whose members are `SSgA S&P 500 Index Non-Lending Series
+Fund - Class A`, `BLACKROCK GLOBAL LIFEPATH INDEX 2050 ACCOUNT A`,
+`State Street Target Ret 2050 NL CL A`, with **6,765 of them publishing a
+ticker**. That is a **SHARE CLASS**, correct as filed. CLAUDE.md records this
+exact trap verbatim from the `isNonIssuerCell` work — *"a trailing capital `A`
+read as the article"*, where it swept in `Leidos Stable Value, A` and
+`SSGA S+P 500 INDEX SER A`, $650,763,893 and $606,941,903 — **and I wrote the
+vocabulary anyway.**
+
+**(2) and (3) The two next-largest arms are the same error.** Re-derived with
+the article excluded and the MEMBERS PRINTED per arm rather than counted, the
+class falls to 1,763 rows, of which:
+
+| arm | rows | ppl | with a ticker | what the members actually are |
+|---|---|---|---|---|
+| `in` | 576 | 765,013 | 102 | `FIDELITY FREEDOM INDEX 2060 IN`, `Harbor Capital Appreciation In`, `Vanguard Treasury Money Mkt In` — **`IN` is INSTITUTIONAL** |
+| `as` | 538 | 195,571 | **355** | `Vngrd 500 Index Fd As`, `Vngrd Sm Cap Indx Fd As` ×55 — **`As` is ASSET** |
+| `and` | 151 | 411,427 | 5 | split: `Cash and` / `Mutual Funds and` are captions, `American Funds Capital World Growth and` / `PIMCO GNMA and` are TRUNCATED REAL NAMES |
+| `of` | 120 | 220,574 | 9 | `Rates of` ×4, `AMERICAN FUNDS GROWTH FUND OF` — same split |
+| `to` | 98 | 105,809 | **0** | `repayment schedules through December 2029 with interest rates ranging from 4.25% to` — the only clean arm |
+
+**Three arms, three share-class abbreviations.** `as` is the worst: 355 of its
+538 rows publish a ticker, i.e. two thirds of them resolve to a real fund while
+my screen called them nameless. *A count keyed on a vocabulary measures the
+vocabulary* — now met three times inside one screen, on three different
+abbreviations of three different words.
+
+### What the data said instead
+
+The only arm with no tickers is not a trailing-word class at all. It is the
+**participant-loan note's own sentence**, so the screen was re-keyed onto that
+noun phrase — an interest rate or a repayment schedule, with a percentage or a
+date range, because no registered fund is named by its own interest rate:
+
+```
+rows walked 1,721,920; loan-rate shaped 670
+  of which isSentenceRow ALREADY reaches: 0
+  already qualified on the page (the guards working): 425
+UNQUALIFIED: 245 rows / 222 acks / 330,915 ppl / $295,311,069
+  publishing a TICKER 1, a FEE 10
+```
+
+The guards already qualify **425 of the 670**, and the shipped `isSentenceRow`
+reaches **0** of them, so the residue is genuinely outside it. Largest members:
+Adt Llc (26,304 ppl) publishes **`with loan maturity dates that range from 2025
+through 2050`** at $35,860,898; Estee Lauder (18,363) `outstanding loans which
+have maturity dates through 2045` at $26,080,724; The Kinetic Group (5,391)
+`PART ICIPANT LOANS — carrying an interest rate of 3.25% to` at $13,916,506.
+
+**AND ALL 231 DISTINCT NAMES WERE READ, WHICH SPLIT IT THREE WAYS. Two of the
+three must be SPARED:**
+
+- **a loan-note SENTENCE naming nothing** — the convictable half (`percent with
+  maturity dates through 2029`, `rates at 4.25% through`, `Rate is from 5.25%
+  to`), 49 of the 231 ending mid-clause;
+- **a REAL vehicle with its rate appended** — `Key Guaranteed Portfolio Fund,
+  1.41% interest rate`, `Guaranteed Income Fund (1.90% interest rate)`,
+  `Superflex Guaranteed; 3% minimum interest rate`, `Voya Fixed Account rate at
+  2%`, `Stable Asset Fund II (interest rate 3.20%)`, `Morley Stable Value VI
+  Fund`, `TIAA Traditional Non-Benefit Responsive` — **the filing NAMES the
+  product**, so *"names no specific fund"* would be false, and **nine of them
+  publish the owner-gated fabricated 0.35**; the remedy there is a STRIP;
+- **a REAL corporate BOND with its coupon** — `REGIONS FINANCIAL CORP Coupon of
+  5.502 - Maturity date`, `NATIONAL BANK OF CANADA`, `AMERICAN HONDA FINANCE`,
+  `OGLETHORPE POWER CORP`, `NISSAN AUTO LEASE TRUST` and five more. **All ten
+  are in ONE plan at 56,540 readers** (Booz Allen Hamilton), whose fixed-income
+  sleeve is itemized securities correctly named by issuer — only the maturity
+  VALUE was cut. A blanket label is flatly false for them.
+
+*A row that names nothing, a row whose name carries debris beside it, and a row
+whose name we cut are three classes, and one label cannot serve all three* —
+recorded before, and this is the first instance where the three populations
+arrive in one screen with a 56,540-reader plan on the wrong side of it.
+
+### The remedy the shape suggests, refuted before a line shipped
+
+`isSentenceRow` (`lib-disclose:2525`) is a finite verb followed by one of
+`included|a|an|the|of|in|by`. `Rate is from 5.25% to` carries the verb and
+`from` is not in that list, so the gap looks like a two-word widening of a
+shipped predicate with import-time controls — exactly the shape this project
+ships. Priced over all 1,721,920 published+served rows, with my transcription
+asserted against the real export on every row (0 disagreements, so the
+measurement is of the guard and not of a copy):
+
+```
+WIDENING would newly qualify: 67 rows / 35 acks / 137,102 ppl / $70,533,527
+  necessity: only the `is` VERB reaches 67; only `from|to` reaches 10
+```
+
+**And reading those 67 kills it.** The widening needs `is` in the verb list —
+and `IS` is **Institutional Shares**:
+
+- `WASATCH SM CAP GR IS A` — The Cleveland Clinic Foundation, **86,817
+  participants, $41,270,369** on two rows: a real fund, Institutional Shares;
+- ~30 rows shaped `NVIDIA CORP NFS LLC IS A MARKET`, `APPLE COMPUTER INC NFS
+  LLC IS A MARKET`, `WAL-MART STORES INC NFS IS A SPECIALIST` — real
+  **EQUITIES** in brokerage accounts, where the trailing text is the
+  custodian's own *"NFS LLC is a market maker"* disclosure welded onto the name.
+  The company is named outright;
+- `Loomis Small Cap Growth IS a`, `Western Asset Core Plus Bond IS a`,
+  `ClearBridge Large Cap Growth IS a`, `Federated Hermes Instl High Yield Bd IS
+  a`, `Avantis US Sm Cap Val IS a` — all real funds;
+- `what is the #? Vanguard Target Retirement 2020 Inv`, which **publishes VTWNX
+  at 0.08, correctly.**
+
+***THE FILE ALREADY SAID SO. `lib-disclose:2549` pins
+`BLACKROCK SP 500 IDX (IS)` as must-NOT-fire with the comment "Cigna, $3.4B /
+91,385 readers — `IS` is Institutional Shares; the FUNCTION WORD is the only
+protection", and two more pins beside it.*** The shipped predicate excludes
+`is` from its verb list deliberately, and I proposed adding it. **The
+motivating string's own verb is `is`, so the motivating case is unreachable
+without the harmful half** — the `from|to` addition alone reaches 10 rows and
+not `Rate is from`.
+
+### Prevention
+
+- **A trailing-token vocabulary over this corpus measures ABBREVIATIONS, not
+  grammar.** `A` is a share class, `IN` is Institutional, `AS` is Asset, `IS`
+  is Institutional Shares, `IP` is Institutional Plus. Before keying a screen
+  on a short trailing token, ask what that token abbreviates in a fund name —
+  and **print the members of every arm**, because the `as` arm's 355 published
+  tickers were invisible in a count and unmissable in a list.
+- **GREP THE FIXTURES FOR THE CONDITION, NOT ONLY FOR THE STRING.** The
+  recorded rule is to grep the pins for a queued prescription's motivating
+  string; here the motivating string (`Rate is from`) appears in no pin, and
+  what forbids the remedy is a pin about a *different* string asserting the
+  same condition — *"the FUNCTION WORD is the only protection"*. So the grep
+  has to be for the mechanism the change touches, which for a predicate means
+  **reading its must-NOT-fire list before proposing a widening**, every time.
+  One read of ten lines would have saved the measurement.
+- **The three-way split is the finding, not an obstacle to it.** The loan
+  sentence remains a real defect at ~$75M and ~150,000 readers; the remedy is
+  the loan-note vocabulary with the named-vehicle and itemized-security
+  populations refused, which is the `quoteTrim` shape and needs
+  single-protection cases drawn from the population. Queued, not shipped.
+- My own instrument truncated the finding again: the first sizing ran through
+  `| tail -90`, which discarded every headline line, so the row, participant
+  and dollar totals had to be re-derived by a second five-minute walk. *A print
+  that drops its own summary reads exactly like a run that produced none* —
+  redirect to a file, never pipe a measurement through `tail`.
+
+---
+
 ## 2026-10-11 (13:0xZ) — AN ADMIRAL SHARE CLASS WITH NO HOUSE: 425 published+served rows / 159 plans / 950,842 participants / $4,094,444,301 gain an ASSERTED symbol — and the arm's own guard refuses a THIRD of what it reaches, in the direction the attestation probe predicted
 
 ### What was wrong
