@@ -112,9 +112,37 @@ participants / $19.18B duplicated**, of which a 572-pair core is convictable by
 the plan's own Schedule H total and 567 of those are invisible to every shipped
 check. Blocked on an unsolved question about which copy survives.
 
-## Waiting on the owner
+## Waiting on the owner — and one of these just got sharper
 
-Unchanged and all large: the wrong-share-class symbol-and-fee family (11.1M
+**The wrong-share-class family's biggest slice turns out to be one-directional,
+which is the exact blocker it was gated on.** That item waits because a blanket
+correction errs both ways. Keyed on filings that state the plain **Institutional**
+share class, it does not: **3,169 rows / 1,865 plans / 9,106,424 participants /
+$50.4 billion publish a retail class instead, and the opposite case is empty —
+0 of 3,169, measured over the whole population rather than sampled.**
+
+The draw found it as one menu, not one row: CohnReznick states Institutional
+three different ways (`Index I`, `Index Instl`, `Index Inst`) and gets the
+dearer **Admiral** symbol on all three, 11.4% of its menu, while
+`Vanguard Institutional Index Fund` two rows away is correct. Store-wide the
+biggest are Accenture (112,414 readers, $1.18B), Disney's Twdc Enterprises
+(193,570), Mount Sinai on two rows, and Justworks (163,323) publishing a
+generic 0.1 estimate on a row that states its class outright.
+
+So the decision is narrower than the register has been describing it: on this
+slice the recommendation already on file — correct the symbol, **withdraw** the
+fee rather than carry the other class's — has no counterexample to weigh
+against. 3,036 of the rows publish a fee today, and nothing was re-priced,
+because a fee is sourced and we hold no per-class Vanguard figures.
+
+*My first measurement of this said $58.8B and claimed two directions. Both were
+my own screen: it refused the spelling `Plus` and not `Pls`, `Select` or
+`Inst+`, so filings stating a **different** institutional tier were admitted
+with the wrong target named — $8.4 billion and 328,374 people of contaminant,
+and a second direction that does not exist. A screen for a stated share class
+has to refuse every other tier of the same class.*
+
+The rest, unchanged and all large: the wrong-share-class family overall (11.1M
 readers), our own store contradicting our own page (8.2M), the fee pre-emption
 (13.3M), fabricated stable-value expense ratios (7.4M), American Funds rows
 stating no share class (10.5M), the CREF and TIAA Access fee and vehicle-type

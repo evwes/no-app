@@ -7,6 +7,115 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-11 (11:4xZ) — THE OWNER-GATED WRONG-SHARE-CLASS ITEM'S LARGEST SUB-CLASS IS ONE-DIRECTIONAL: 3,169 ASSERTED rows / 1,865 plans / 9,106,424 participants / $50,375,541,195 state plain Institutional and publish a RETAIL class, with 0 counterexamples over the whole population
+
+### What was found
+
+The 11:07 participant-weighted draw landed on CohnReznick Llc (5,420 ppl, ack
+`20251114144752NAL0001553859001`), which states the Institutional share class in
+THREE different spellings in one menu and publishes the **Admiral** symbol on all
+three:
+
+    Vanguard Small Cap Index I              -> VSMAX   $39,580,826  5.3%   (VSCIX)
+    Vanguard Total Intl Stock Index Instl   -> VTIAX   $26,612,453         (VTSNX)
+    Vanguard Total Bond Market Index Inst   -> VBTLX   $18,723,349         (VBTIX)
+
+$84.8M, 11.4% of its menu, every symbol unasterisked — published as fact. The
+control is two rows away in the same menu: `Vanguard Institutional Index Fund`
+resolves VINIX and `Dodge & Cox Stock Fund - I` resolves DODGX, which the
+registry registers as Class I. So neither the spelling nor the house is the
+discriminator, and this is a tighter witness than the single-row instances
+already recorded (`VANG SM CAP IDX INST` -> VSMAX, 2026-10-10 23:3xZ).
+
+Sized store-wide with the registry supplying both verdicts — the published
+symbol's own registered `className`, and whether the same SERIES registers a
+bare Institutional class under a different ticker — over all 1,721,920
+published-and-served rows, ASSERTED only (the comparable half is the owner's):
+
+    stating plain Institutional AND asserting a symbol   42,605 rows
+    asserting a NON-Institutional class                   3,169 rows
+      1,865 acks / 1,865 plans / 9,106,424 ppl / $50,375,541,195
+      of which publishing a FEE too                       3,036 rows
+    published a RETAIL class                              3,169 rows
+    published ANOTHER institutional tier                      0 rows
+
+Six Vanguard index series carry 2,925 of them (VBTLX->VBTIX 769,
+VSMAX->VSCIX 624, VIMAX->VMCIX 540, VTIAX->VTSNX 496, VEXAX->VIEIX 310,
+VTSAX->VITSX 186); 244 more are OAKIX->OANIX 115, FIHLX->FIHBX 114,
+GVMXX->SAHXX 7, VVIAX->VIVIX 4, VIGAX->VIGIX 2, VTMGX->VTMNX 1, FMPXX->FNSXX 1.
+Largest: Accenture Llp 112,414 ppl / $1,175,002,940; Twdc Enterprises 193,570
+ppl / $856,071,577; Mount Sinai on two rows; Reyes Holdings at 18.53% of its
+own menu; Justworks 163,323 ppl publishing a **0.1** generic pattern estimate on
+a row that states Institutional outright.
+
+### Why this is worth recording rather than just counting
+
+**The parent item is gated on a blocker that does not apply here.** The register
+describes the wrong-share-class family (5,929 rows / 11.1M ppl) as erring *in
+both directions*, which is exactly why no blanket correction is available and why
+it waits on the owner. Keyed on plain-Institutional-stated, the direction is
+uniform: **3,169 of 3,169 publish a retail class where an institutional one was
+filed, and the inverse bucket is empty** — measured over the whole population,
+not sampled. So the remedy the parent already recommends (correct the symbol on
+the exact-match population, WITHDRAW the fee rather than carry the other
+class's) has no counterexample to trade against on this 9.1M-reader slice.
+
+That is a fact about the owner's decision, not a licence to ship: the fee half
+is untouched here, 3,036 rows publish one, and *a fee is SOURCED, never derived*
+— `data/fund-facts.json` holds no per-class Vanguard figures, so correcting a
+symbol without the fee leaves the two cells disagreeing, which is the recorded
+blocker for the store-versus-page item.
+
+### The instrument was wrong first, and it published a second direction that does not exist
+
+My first run reported **3,196 rows / 9,434,798 ppl / $58,807,332,725** and two
+cost directions. Both were artifacts of my own screen:
+
+1. **The filed-name filter refused `plus` and not `Pls`, `Select` or `Inst+`.**
+   Its test was `/\bplus\b/ || /\binst\+?\s*pl/ || /\bip\b/`, and
+   `Instl Pls` defeats the second arm because `\s*` cannot bridge the `l`. So
+   filings stating Institutional **Plus** or Institutional **Select** were
+   admitted — and then had the BARE Institutional class named as their target.
+   Kaiser Foundation Health Plan's $4,190,270,087 row
+   (`… Institutional Select Shares`) and the entire `VFIAX->VFFSX` family came
+   from exactly this.
+2. **The target was "the first `className` containing institutional"**, which is
+   order-dependent for the several series registering Institutional,
+   Institutional Plus and Institutional Select. For `Vanguard Institutional 500
+   Index Fund` it named VFFSX where the answer is VINIX.
+
+Cost of the contaminant: **27 rows, 328,374 participants and $8.4 billion — the
+dollar figure was wrong by 17%** — plus a phantom `VIIIX->VINIX` /
+`VMCPX->VMCIX` bucket that disappears entirely once Plus-stating filings are
+refused.
+
+***A screen for a stated share class must refuse every OTHER tier of the same
+class, or the rows it admits are rows whose named TARGET is wrong.*** This is
+the recorded *a count keyed on a vocabulary measures the vocabulary* met on a
+share-class tier, and it is the second time in two days one of my own
+instruments printed a field it did not apply: the tell was in its own output,
+three of the fourteen largest rows reading `Instl Pls` or `Institutional Select
+Shares` under a column headed by a bare-Institutional target.
+
+### What now prevents it
+
+- **Predicate-level controls run before the walk, not after it.** Six must-keep
+  cases (the pin's three spellings plus three large real rows) and five
+  must-refuse cases, each labelled with the tier it refuses and each checked to
+  be refused by at least one arm, with the firing arms printed. Seconds against
+  a 25-minute walk, and it is what turns a contaminated count into a refusal.
+- **The target must be the BARE Institutional class and must be UNIQUE**, else
+  the row abstains and the abstention is counted and printed. It abstains on 0
+  rows today — inert, and kept and labelled as such, because it is the only
+  thing making the symbol-pair column mean anything for a series registering
+  three institutional tiers.
+- **The must-see pin is keyed by ACK and throws before any count prints**, per
+  the recorded rule that a pin keyed on a shared string does not identify a row.
+- The direction split is computed and printed rather than assumed, which is how
+  the phantom second bucket was shown to be empty.
+
+---
+
 ## 2026-10-11 (11:3xZ) — A VERDICT READ FROM A STALE REF: AN INVALID REFSPEC LEFT `origin/dev` UNFETCHED, AND THE KEY-BY-KEY COVERAGE DIFF COMPARED TWO LINES THAT WERE BOTH ALREADY ON MAIN
 
 ### What was wrong

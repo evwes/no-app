@@ -1207,6 +1207,54 @@ published cells:
   class exactly as filed — so the resolver honours a stated class it carries
   and falls back to a different class **silently, with no asterisk**, when it
   does not. `docs/accuracy-log.md` 2026-10-04 (20:4xZ).
+  **AND ITS "ERRS IN BOTH DIRECTIONS" BLOCKER DOES NOT APPLY TO ITS LARGEST
+  SUB-CLASS — SIZED 2026-10-11 11:4xZ AT 3,169 published+served rows / 1,865
+  acks / 1,865 plans / 9,106,424 ppl / $50,375,541,195, EVERY ONE ASSERTED, and
+  the inverse direction measured 0 of 3,169 over the whole population.** Keyed
+  on the filing stating PLAIN Institutional while the page publishes a symbol
+  the registry classes as a RETAIL class, with the registry supplying both
+  verdicts: the published symbol's own `className`, and that the same SERIES
+  registers a bare Institutional class with a different ticker. 3,036 publish a
+  FEE as well. **That is the decision-relevant fact: the parent item is gated
+  because a blanket correction errs both ways, and this 9.1M-reader slice of it
+  is one-directional by measurement rather than by assumption** — so the
+  recommendation the parent already records (correct the symbol, WITHDRAW the
+  fee) has no counterexample to trade against here.
+  **FOUND BY THE 11:07 DRAW, whose witness is one menu rather than one row:**
+  CohnReznick Llc (5,420 ppl, ack `20251114144752NAL0001553859001`) states
+  Institutional in THREE spellings — `Vanguard Small Cap Index I`,
+  `… Total Intl Stock Index Instl`, `… Total Bond Market Index Inst` — and
+  publishes **VSMAX / VTIAX / VBTLX**, the Admiral class, on all three
+  ($84.8M, 11.4% of its menu), while two rows away `Vanguard Institutional
+  Index Fund` -> VINIX and `Dodge & Cox Stock Fund - I` -> DODGX are correct.
+  *The spelling is not the discriminator and neither is the house* — six
+  Vanguard index series carry 2,925 of the rows (VBTLX->VBTIX 769,
+  VSMAX->VSCIX 624, VIMAX->VMCIX 540, VTIAX->VTSNX 496, VEXAX->VIEIX 310,
+  VTSAX->VITSX 186) and 237 more are OAKIX->OANIX, FIHLX->FIHBX,
+  GVMXX->SAHXX, VVIAX->VIVIX, VIGAX->VIGIX, VTMGX->VTMNX, FMPXX->FNSXX.
+  Largest: Accenture Llp 112,414 ppl at $1,175,002,940; Twdc Enterprises
+  193,570 ppl; Mount Sinai on two rows; Justworks 163,323 ppl publishing a
+  **0.1** generic estimate on a stated Institutional row.
+  ***DO NOT CARRY MY FIRST RUN'S 3,196 rows / 9,434,798 ppl / $58,807,332,725 —
+  IT IS WRONG BY 328,374 PEOPLE AND $8.4B, AND IT INVENTED A SECOND
+  DIRECTION.*** Its filed-name filter refused `plus` and not `Pls`, `Select` or
+  `Inst+`, so filings stating Institutional PLUS or Institutional SELECT were
+  admitted with the BARE Institutional class named as their target — which is
+  where Kaiser's $4.19B row and the whole `VFIAX->VFFSX` family came from — and
+  its target was "the first `className` containing institutional", which is
+  order-dependent on the several series registering Institutional, Plus AND
+  Select. ***A screen for a stated share class must refuse every OTHER tier of
+  the same class, or the rows it admits are rows whose named TARGET is
+  wrong*** — and the tell was in its own print: three of its fourteen largest
+  rows read `Instl Pls` or `Institutional Select Shares` in a column headed by
+  a bare-Institutional target. The tightened target must be the bare class and
+  must be UNIQUE, which abstains on 0 rows today and is kept as the condition
+  that makes the pair column mean something.
+  Predicate controls run before the walk (6 must-keep incl. the pin's three, 5
+  must-refuse each naming the tier it refuses). **The fee is NOT re-priced
+  anywhere here** — *a fee is SOURCED, never derived*, and `fund-facts.json`
+  holds no per-class Vanguard figures. `docs/accuracy-log.md` 2026-10-11
+  (11:4xZ).
 - **OUR OWN STORE CONTRADICTS OUR OWN PAGE — 5,692 rows / 3,860 plans /
   8,197,880 ppl / $50.7B, and 0 of 42 rows read favour the page (22 of them
   drawn PARTICIPANT-WEIGHTED AT RANDOM).** The parser stores a share-class-
