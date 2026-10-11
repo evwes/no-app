@@ -2161,11 +2161,91 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
   window.__wampoIssuerPricedER = (n, iss) => issuerPricedER(fundER, n, iss);  // read by the smoke test only
   const CIT_VEHICLE_NAME =
     /\b(?:collective(?:\s+investment)?\s+trusts?|common\s+collective\s+trusts?)\b|\bcits?\s*$|\btrust\s+(?:i{1,3}|iv|vi{0,3})\s*$/i;
+  /* A COLLECTIVE-TRUST PLATFORM NAMED IN THE ROW'S OWN NAME — 2026-10-11.
+   *
+   * The rule above demands an explicit vehicle PHRASE or a roman-numeral unit
+   * class, so it reaches `flexPATH MOD 2035 Common Trust Fund` and is blind to
+   * `flexPATH Index Moderate 2045 Fund R1` — the identical product under the
+   * spelling almost every filer uses. flexPATH Strategies' funds are COLLECTIVE
+   * INVESTMENT TRUSTS (trusteed by Wilmington Trust, now Great Gray), and a CIT
+   * has no ticker and no public expense ratio by nature. Where the filer left
+   * the type cell blank or wrote `Mutual fund`, nothing suppressed and
+   * `fund-er.js`'s generic target-date pattern published 0.1 on a vehicle nobody
+   * prices publicly. The recorded "a fix for one phrasing of a class is not a
+   * fix for the class", met on a PLATFORM BRAND rather than a vehicle phrase.
+   *
+   * THE INTERNAL CONTROL IS WHAT CONVICTS IT AND IT NEEDS NO REGISTRY: 92 of the
+   * 315 withdrawn rows sat in a menu that ALSO carries a flexPATH sibling the
+   * same filer typed `Collective trust` and therefore left blank — 36 menus /
+   * 31,829 participants where one screen gave two answers about one product
+   * family. Liquidity Services publishes `flexPATH Index Moderate 2045 Fund R1`
+   * at 15.74% of its whole menu with a fee and three siblings blank.
+   *
+   * MEASURED THROUGH BOTH COPIES OF `renderRow` over all 1,721,920 published and
+   * served rows: 5,451 candidates, FEE WITHDRAWN on 315 rows / 70 acks / 70
+   * plans / 64,085 participants / $523,244,544 (300 at the generic 0.1, 11 at
+   * the stable-value fallback 0.35, 4 at 0.06), and fee gained 0 / fee changed 0
+   * / ticker 0 / asterisk 0 / name 0 / shown type 0 / row membership 0 / any
+   * other cell 0, with 17,696 sampled non-candidates differing on 0. By filed
+   * type the withdrawals are 164 BLANK and 151 `Mutual fund` — nothing typed a
+   * pooled vehicle moves, because the type gate already reached those.
+   *
+   * A FLAG THAT FLIPS IS NOT A CELL THAT CHANGES: `noPublicPrice` moves on 372
+   * rows and 57 of them publish no fee either way, an earlier arm in the same
+   * chain having withheld it already. The reader-facing figure is the 315.
+   *
+   * A BARE `flex` WOULD BE A MEASURED HARM, not a hypothetical one. 35 of the
+   * 29,406 rows in `sec-funds.json` carry `flex` as a word — `Fidelity Flex`
+   * registered funds, Janus Henderson Flexible Bond and kin — and `fund-er.js`
+   * already ships an arm where `\bflex\b` is load-bearing for 84,877 rows. So
+   * the anchor is the TWO-WORD BRAND, with only a space or hyphen tolerated
+   * between its halves, which is the whole safety argument. `flexible path`
+   * cannot match: there is no boundary between `flex` and `ible`.
+   *
+   * EVERY PIECE OF THE PATTERN IS PRICED OVER ALL 3,070 STORED SPELLINGS, and a
+   * LEADING `\b` — which is what the first draft wrote — was refuted by the
+   * differential's own superset assertion before a count printed. `_` is a WORD
+   * character, so `Transamerica Financial Life Ins Co _FLEXPATH MODERATE 2045
+   * RET ACCT` has no boundary in front of the brand: the lookbehind is the only
+   * reason for that row and it is the single-protection case for it. The
+   * optional separator is the only reason for 61 rows (`FLEX PATH IDX AGG 2035
+   * R1`, `flex Path Single Box Core Plus Bond Fund`), and no spelling needs more
+   * than one separator character — a wider `[\s_.·-]*` reads the identical 5,451
+   * rows / 3,070 names, so the widening is refused as unearned. The TRAILING
+   * `\b` blocks 0 rows today and is kept and LABELLED DECORATIVE for the reason
+   * `\bcit\b`'s own anchor is terminal in the rule above: it is the only thing
+   * between a brand token and a longer word that merely starts with it.
+   *
+   * THE BRAND ALONE LICENSES IT, which was established by reading and not by
+   * shape: all 3,070 DISTINCT stored names carrying the brand were enumerated
+   * and reduced by the platform's own vocabulary, and every residue was read —
+   * the target-date risk-profile ladders, the single-asset-class CITs (Large Cap
+   * Value, Core Plus Bond, Emerging Markets, US REIT, Stable Value), and the
+   * same products prefixed by a trustee or recordkeeper (Great Gray, Wilmington
+   * Trust, Mid Atlantic, Voya, Transamerica, Empower, Principal, Fidelity).
+   * ZERO decoys, and `sec-funds.json` registers no series spelling the brand, so
+   * it cannot collide with a registered fund. That is the `AMF` precedent rather
+   * than the `tiaa` one, where a bare brand took 474 registered funds.
+   *
+   * IT IS NAME-ANCHORED ON PURPOSE AND THE ISSUER CELL IS LEFT ALONE. 626
+   * further published rows / 112 acks / 115,671 participants carry the brand
+   * ONLY in the issuer cell and 34 of them publish a fee, and that cell
+   * routinely holds the PLATFORM rather than the product: Velux America files
+   * `Great Gray T. Rowe Price Rtmt Date 2025` under a flexPATH issuer and
+   * publishes TRRHX at 0.53 — a different manager's trust, and a pre-existing
+   * member of the owner-gated priced-trust family that this arm must not reach.
+   * That is the recorded reason the issuer cell's evidential value is priced at
+   * approximately nothing; those 34 are named residue, not a gap in this arm.
+   *
+   * FEE ONLY, like its sibling: the row keeps its name, its value, its
+   * percentage and any labelled comparable ticker, because app.js reaches this
+   * test only when `star` is false. */
+  const CIT_PLATFORM_NAME = /(?<![a-z])flex[\s-]?path\b/i;
   const CIT_SERIES_TRUST = /\bseries\s+trust\b|\btrust\s+(?:i{1,3}|\d)\s*[-–—:]\s*\S/i;
   function isCollectiveTrustName(name) {
     const s = String(name || "");
     if (CIT_SERIES_TRUST.test(s)) return false;
-    return CIT_VEHICLE_NAME.test(s);
+    return CIT_VEHICLE_NAME.test(s) || CIT_PLATFORM_NAME.test(s);
   }
 
   window.__wampoCitName = isCollectiveTrustName;  // read by the smoke test only

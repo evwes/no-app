@@ -1626,6 +1626,54 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **SHIPPED 2026-10-11 10:5xZ — A COLLECTIVE-TRUST PLATFORM'S FABRICATED FEE,
+  WHEREVER THE FILER LEFT THE TYPE CELL BLANK: 315 published+served rows / 70
+  acks / 70 plans / 64,085 ppl / $523,244,544 stop publishing an expense ratio**
+  — fee gained 0 / changed 0, ticker lost/gained/swapped 0/0/0, asterisk 0, name
+  0, shownType 0, row membership 0, and 17,696 sampled non-candidates differing
+  on 0, measured through BOTH copies of `renderRow` over all 1,721,920 rows.
+  flexPATH Strategies runs a CIT target-date platform; `noPublicPrice` reads the
+  TYPE cell and `fund-er.js`'s generic target-date pattern published **0.1** on
+  164 BLANK-typed and 151 `Mutual fund`-typed rows (plus 11 at the stable-value
+  0.35 and 4 at 0.06). One disjunct, `CIT_PLATFORM_NAME`, in
+  `isCollectiveTrustName`; `PARSER_VERSION` stays 203 and `sec-tickers.js` is
+  byte-unchanged (verified — `noPublicPrice` gates only `er` at `app.js:4164`
+  and changes no name a resolver is asked). ONE SURFACE BY CONSTRUCTION:
+  `build-seo-pages` has 0 references to `fundER`/`lookupTicker`/
+  `fundTickerInfo`/`noPublicPrice` and publishes no per-fund fee, so the page
+  diff is INAPPLICABLE rather than skipped.
+  **THE WITNESS IS INTERNAL AND NEEDS NO REGISTRY: 92 of the 315 sit in a menu
+  that ALSO carries a flexPATH sibling the same filer typed `Collective trust`
+  and the type gate therefore left blank** — 36 menus / 31,829 ppl where one
+  screen answered one question two ways. Liquidity Services 15.74% of its whole
+  menu, Red Ventures **27.35% / $73,801,533**, Flory Industries 40.10%, widest
+  single withdrawal **82.96%**, 68 rows at >=10% of their own menu.
+  **THE BRAND LICENSES IT BY READING, NOT BY SHAPE: all 3,070 DISTINCT stored
+  spellings were enumerated and read with 0 DECOYS** (the `AMF` precedent, not
+  the `tiaa` one), **0 of 29,406 `sec-funds.json` rows spell the brand**, and a
+  seeded uniform draw of 26 withdrawn rows read **26 of 26 genuine** with each
+  row's filed TYPE printed.
+  ***A FLAG THAT FLIPS IS NOT A CELL THAT CHANGES — DO NOT CARRY 372:***
+  `noPublicPrice` moves on 372 rows and **57 publish no fee either way**, an
+  earlier arm in the same `er` chain having withheld it already.
+  ***AND THE DIFFERENTIAL'S SUPERSET ASSERTION REFUTED MY OWN FIRST PATTERN
+  BEFORE A COUNT PRINTED:*** a leading `\b` misses
+  `… Ins Co _FLEXPATH MODERATE 2045 RET ACCT` because **`_` is a word
+  character**, so the anchor is a `(?<![a-z])` lookbehind — the only reason for
+  that 1 row, where the optional separator is the only reason for 61
+  (`FLEX PATH IDX AGG 2035 R1`). A bare `flex` is both a measured harm (3
+  registered/CIT names wrongly flagged; `\bflex\b` is load-bearing for 84,877
+  rows in `fund-er.js`) **and ineffective — it misses the motivating row**,
+  there being no boundary inside `flexPATH`.
+  **STILL OPEN, named residue and NOT a gap in this arm: 626 rows / 112 acks /
+  115,671 ppl carry the brand ONLY in the ISSUER cell and 34 publish a fee.**
+  The arm is name-anchored because that cell holds the PLATFORM, not the
+  product: Velux America files `Great Gray T. Rowe Price Rtmt Date 2025` under a
+  flexPATH issuer and publishes **TRRHX at 0.53**, a different manager's trust
+  and a pre-existing member of the owner-gated priced-trust family. Also still
+  the owner's: the FEE is never re-priced anywhere here — *a fee is SOURCED,
+  never derived*, and `data/fund-facts.json` holds no flexPATH figure.
+  `docs/accuracy-log.md` 2026-10-11 (10:5xZ).
 - **SHIPPED 2026-10-11 09:5xZ — `MEFS` IS `MFS` WITH AN INSERTED E: 54 published
   rows / 50 acks / 34,059 ppl / $63,973,731 gain a symbol**, ticker lost 0 /
   swapped 0, **comparables shipped 0**, fee 0, name 0, shownType 0, 16,446

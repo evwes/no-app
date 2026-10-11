@@ -1481,20 +1481,36 @@ try {
     if (isPageBreakCaptionRow(n)) fail(`page-break caption rule would claim a real fund or contract: ${JSON.stringify(n)}`);
 
   /* THE COLLECTIVE-TRUST NAME RULE, tethered the same way, 2026-09-30. The
-   * first six must FLAG (a fee is withdrawn); the last nine must be KEPT, and
-   * they are the whole reason the vocabulary is narrow: `American Funds
-   * American High-Income Trust` is a REGISTERED fund whose name ends in that
-   * word, `Trust Class` is Neuberger Berman's own retail share-class name,
-   * `CIT Group` is a lender, and a registrant's SERIES trust puts the trust
-   * words at the front. A bare terminal `Trust` reaches 201 rows dominated by
-   * the American Funds family, so it is deliberately not matched. */
-  const citCases = [
+   * must-KEEP half is the whole reason the vocabulary is narrow: `American
+   * Funds American High-Income Trust` is a REGISTERED fund whose name ends in
+   * that word, `Trust Class` is Neuberger Berman's own retail share-class
+   * name, `CIT Group` is a lender, and a registrant's SERIES trust puts the
+   * trust words at the front. A bare terminal `Trust` reaches 201 rows
+   * dominated by the American Funds family, so it is deliberately not matched.
+   *
+   * THE TWO HALVES ARE NAMED ARRAYS AS OF 2026-10-11 and were a single list
+   * dispatched by `slice(0, 6)` before. That is the shape `parser-gate.mjs`
+   * passed for two months on: a positional dispatch silently reassigns an
+   * existing case to the other half the moment a case is inserted, so adding
+   * one here used to mean editing a magic number in two places. */
+  const citFlag = [
     "BlackRock Lifepath Index 2035 CIT",
     "Vanguard Group Target Retirement 2050 Trust II",
     "Invesco Stable Value Trust V",
     "Common/Colle ctive Trust Invesco Stable Value Trust I",
     "Voya Stable Value Fund 20 CIT",
     "Target Retirement Income Trust II",
+    /* the flexPATH PLATFORM arm, 2026-10-11, and each of these three is the
+     * SINGLE PROTECTION for one piece of the pattern, drawn from the store:
+     * the first is the motivating row and the only reason for the arm at all
+     * (a CIT whose name states no vehicle phrase); the second is the only
+     * reason for the optional separator (61 rows); the third is the only
+     * reason the leading anchor is a lookbehind rather than `\b`, since `_`
+     * is a word character and leaves no boundary in front of the brand. */
+    "flexPATH Index Moderate 2045 Fund R1",
+    "FLEX PATH IDX AGG 2035 R1",
+    "Transamerica Financial Life Ins Co _FLEXPATH MODERATE 2045 RET ACCT"];
+  const citKeep = [
     "American Funds American High-Income Trust",
     "American Funds American High-Income Trust Class R-6",
     "Neuberger Berman Genesis Fund Trust Class",
@@ -1503,7 +1519,16 @@ try {
     "AIM Counselor Series Trust Fund",
     "MFS Series Trust II - MFS Growth Fund",
     "CIT Group Inc",
-    "Fidelity 500 Index Fund"];
+    "Fidelity 500 Index Fund",
+    /* the flexPATH arm must NOT become a bare-brand rule: 35 of the 29,406
+     * rows of `sec-funds.json` carry `flex` as a word, and these three are
+     * REGISTERED funds. The last one is the shape no boundary rule can be
+     * relied on for — there is no boundary between `flex` and `ible`. */
+    "Fidelity Flex Government Money Market Fund",
+    "Fidelity Flex International Index Fund",
+    "Janus Henderson Flexible Bond Fund",
+    "Pathway Core Bond Fund"];
+  const citCases = citFlag.concat(citKeep);
   const citGot = await page.evaluate((cs) => {
     if (typeof window.__wampoCitName !== "function") return null;
     return cs.map((n) => window.__wampoCitName(n));
@@ -1514,9 +1539,9 @@ try {
     for (const n of citDrift) console.error(`  ${JSON.stringify(n)}  app.js=${citGot[citCases.indexOf(n)]}  module=${isCollectiveTrustName(n)}`);
     fail(`the collective-trust name predicate in app.js disagrees with scripts/lib-disclose.mjs on ${citDrift.length} of ${citCases.length} names`);
   }
-  for (const n of citCases.slice(0, 6))
-    if (!isCollectiveTrustName(n)) fail(`collective-trust rule no longer catches a CIT unit class, so a retail fee publishes on it: ${JSON.stringify(n)}`);
-  for (const n of citCases.slice(6))
+  for (const n of citFlag)
+    if (!isCollectiveTrustName(n)) fail(`collective-trust rule no longer catches a CIT unit class or platform, so a retail fee publishes on it: ${JSON.stringify(n)}`);
+  for (const n of citKeep)
     if (isCollectiveTrustName(n)) fail(`collective-trust rule would withdraw the fee of a REGISTERED fund or a series trust: ${JSON.stringify(n)}`);
 
   /* THE GUARANTEE-ONLY FEE RULE, tethered the same way, 2026-09-29. It needed

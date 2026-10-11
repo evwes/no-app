@@ -983,7 +983,13 @@ const citNames = ["Vanguard Target Retirement 2040 Trust II", "Voya Stable Value
   "Great Grey Trust - T. Rowe Price Stable Value CIT", "Invesco Stable Value Trust III",
   /* must stay FALSE */ "MFS Series Trust II - MFS Growth Fund", "JPMorgan Trust II - Core Bond",
   "American Funds American High-Income Trust", "Neuberger Berman Genesis Fund Trust Class",
-  "Fidelity 500 Index Fund", "CIT Group Inc"];
+  "Fidelity 500 Index Fund", "CIT Group Inc",
+  /* the flexPATH platform arm, 2026-10-11 — a must-FLAG spelling that states no
+   * vehicle phrase, the separator and lookbehind cases, and the bare-`flex`
+   * decoy the arm must refuse (a REGISTERED fund) */
+  "flexPATH Index Moderate 2045 Fund R1", "FLEX PATH IDX AGG 2035 R1",
+  "Transamerica Financial Life Ins Co _FLEXPATH MODERATE 2045 RET ACCT",
+  "Fidelity Flex Government Money Market Fund"];
 for (const n of citNames) if (ctx.__ct(n) !== isCollectiveTrustName(n)) {
   bad++; console.log(`  CIT-NAME DRIFT ${JSON.stringify(n)} twin=${ctx.__ct(n)} lib=${isCollectiveTrustName(n)}`);
 }

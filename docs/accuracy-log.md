@@ -7,6 +7,172 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-11 (10:5xZ) — A COLLECTIVE-TRUST PLATFORM PUBLISHED A FABRICATED EXPENSE RATIO WHEREVER THE FILER LEFT THE TYPE CELL BLANK: 315 rows / 70 plans / 64,085 participants / $523,244,544, and our own page gave two answers about one product family on one screen
+
+### What was wrong
+
+flexPATH Strategies runs a COLLECTIVE INVESTMENT TRUST target-date platform
+(BlackRock-managed index CITs, trusteed by Wilmington Trust and now Great Gray).
+A CIT has no ticker and no public expense ratio by nature, and `app.js`'s
+`noPublicPrice` already withholds a fee on any row the FILING types
+`Collective trust` or `Pooled separate account`. Where the filer left the type
+cell blank or wrote `Mutual fund`, nothing suppressed, and `fund-er.js`'s
+generic target-date pattern published **0.1** on a vehicle nobody prices
+publicly — 300 rows at 0.1, 11 at the stable-value fallback 0.35, 4 at 0.06.
+
+**The convicting evidence is INTERNAL and needs no registry.** 92 of the 315
+withdrawn rows sit in a menu that *also* carries a flexPATH sibling the same
+filer typed `Collective trust` and that the type gate therefore left blank — 36
+menus / 31,829 participants where one screen answers the same question two ways.
+Liquidity Services, Inc. (998 ppl) publishes `flexPATH Index Moderate 2045 Fund
+R1` at **15.74% of its whole menu / $12,526,851** with a fee while its 2035,
+2055 and Retirement siblings publish none. Largest: Red Ventures Llc at
+**27.35% / $73,801,533**; Flory Industries **40.10%**; Mtc Us Corp 28.66%; the
+widest single withdrawal is **82.96%** of its own menu, and 68 of the 315 are at
+10% or more of theirs.
+
+**The name arm existed and was one phrasing short.** `isCollectiveTrustName`
+(2026-09-30) demands an explicit vehicle PHRASE or a roman-numeral unit class,
+so it reached `Flexpath MOD 2035 Common Trust Fund` and was blind to
+`flexPATH Index Moderate 2045 Fund R1` — the identical product under the
+spelling almost every filer uses. The recorded ***a fix for one phrasing of a
+class is not a fix for the class***, met on a PLATFORM BRAND rather than a
+vehicle phrase, after a position, a column, a share class, a form, a hyphen and
+a decimal point.
+
+### The change
+
+`CIT_PLATFORM_NAME = /(?<![a-z])flex[\s-]?path\b/i`, one disjunct in
+`isCollectiveTrustName` in `scripts/lib-disclose.mjs`, SLICED into app.js by
+`gen-generic-twin.mjs` (never hand-edited). `PARSER_VERSION` stays **203** —
+display-side, no store written, and `sec-tickers.js` is byte-unchanged, which
+`stamp-assets` confirms by leaving its stamp alone.
+
+**FEE ONLY, measured through BOTH copies of `renderRow` over all 1,721,920
+published and served rows**, varying one thing (the app.js copy):
+
+| | |
+|---|---|
+| candidates | 5,451 rows / 623 plans |
+| **fee WITHDRAWN** | **315 rows / 70 acks / 70 plans / 64,085 ppl / $523,244,544** |
+| fee gained / changed | **0 / 0** |
+| ticker lost / gained / swapped | **0 / 0 / 0** |
+| asterisk · name · shownType · row membership · any other cell | **0 · 0 · 0 · 0 · 0** |
+| sampled non-candidates differing | **0 of 17,696** |
+
+By filed type the withdrawals are **164 BLANK and 151 `Mutual fund`** and
+nothing typed a pooled vehicle moves — the type gate had already reached those,
+which is the control that the two rules compose rather than overlap.
+
+**ONE SURFACE BY CONSTRUCTION, so the page diff is INAPPLICABLE rather than
+skipped:** `build-seo-pages.mjs` has **0** references to `fundER`,
+`lookupTicker`, `fundTickerInfo`, `noPublicPrice` or `isCollectiveTrustName`,
+and its only `expense ratio` strings are prose saying admin fees are separate.
+The crawlable pages publish no per-fund fee at all.
+
+### What the measurement refuted, three times
+
+**(1) A FLAG THAT FLIPS IS NOT A CELL THAT CHANGES, and the gap is 18%.**
+`noPublicPrice` moves on **372** rows; **57 of them publish no fee either way**,
+an earlier arm in the same `er` chain having withheld it already. The
+reader-facing figure is the 315, and reporting the 372 would have overstated the
+ship by 57 rows / 16,808 participants. Recorded rule, met again — ask what the
+render chain ALREADY prints, not what your predicate answers.
+
+**(2) A LEADING `\b` IS NOT A LEADING WORD BOUNDARY WHEN `_` IS IN FRONT OF THE
+BRAND, and the differential's own SUPERSET ASSERTION caught it before a count
+printed.** The first draft was `/\bflex[\s-]?path\b/i`. The harness asserts that
+no name matching a deliberately WIDER brand spelling falls outside the candidate
+set, and it threw on
+`Transamerica Financial Life Ins Co _FLEXPATH MODERATE 2045 RET ACCT`:
+**`_` is a word character**, so there is no boundary in front of the brand.
+Fixed with a `(?<![a-z])` lookbehind. ***An assertion that the candidate set is
+a superset is what turns a silently narrow screen into a thrown error*** — this
+record already says a narrowing is a claim that must be tested; here the claim
+was false and the test said so in four seconds.
+
+**(3) A BARE `flex` IS BOTH HARMFUL AND INEFFECTIVE, which is better than
+harmful alone.** `fund-er.js` already ships an arm where `\bflex\b` is
+load-bearing for 84,877 rows, and 35 of `sec-funds.json`'s 29,406 rows carry
+`flex` as a word. Run as a mutation, a bare-brand version wrongly flags
+`Fidelity Flex Government Money Market Fund`, `Fidelity Flex International
+Index Fund` and `Vanguard Target Retirement 2050 Trust Flex` — **and misses the
+motivating row**, because `flexPATH` has no word boundary between its halves. A
+widening that cannot even reach the class it was proposed for is refused twice
+over.
+
+### How the brand earned the right to license a withdrawal on its own
+
+**Every DISTINCT stored spelling was enumerated and read, which is the `AMF`
+precedent rather than the `tiaa` one** (where a bare brand took 474 registered
+funds): **3,070 distinct names / 5,451 rows, 0 decoys.** Reading 3,070 strings
+one by one is not reading, so each was reduced by the platform's own vocabulary
+and every residue was read in full — the risk-profile target-date ladders, the
+single-asset-class CITs (`Large Cap Value`, `Core Plus Bond`, `Emerging
+Markets`, `US REIT`, `Stable Value`, `Single Box …`), the filers' own
+misspellings (`Agressive`, `Aggrsive`, `Moderatate`, `lndex`, `Modern`), and the
+same products prefixed by a trustee or recordkeeper (Great Gray, Great Grey,
+Wilmington Trust, Mid Atlantic, Voya, Transamerica, Empower, Principal,
+Fidelity, John Hancock). **Registry witness, re-taken on the file's real shape:
+0 of 29,406 rows in `sec-funds.json` spell the brand**, so it cannot collide
+with a registered series.
+
+**And the registry probe had to be re-run, because the first one read `24`.**
+`sec-funds.json` is `{generated, source, count, funds}` and my loader took
+`Object.values(...)[0]`, which is the timestamp's siblings rather than the rows.
+It returned a clean `0 of 24` — the right ANSWER from the wrong POPULATION.
+***A guessed SHAPE fails as a plausible small number where a guessed field name
+throws***; the tell was that 24 is not 29,406, a figure this record already
+carries.
+
+**Seeded uniform draw of 26 WITHDRAWN rows, each printed with its filed type
+cell: 26 of 26 genuine** (a separate earlier draw of 28 from the whole moved set
+read 28 of 28). The issuer cells in the draw name CIT trustees (Wilmington
+Trust, Great Gray, John Hancock Trust Company), insurers wrapping the trust
+(American United Life, Minnesota Life, Transamerica, Voya) and recordkeepers
+(Empower) — none of them a fund, which is exactly why the arm is name-anchored.
+
+### Named residue, not a gap in this arm
+
+**626 published rows / 112 acks / 115,671 participants carry the brand ONLY in
+the ISSUER cell, and 34 of them publish a fee.** The arm deliberately does not
+reach them: that cell routinely holds the PLATFORM rather than the product, and
+Velux America files `Great Gray T. Rowe Price Rtmt Date 2025` under a flexPATH
+issuer and publishes **TRRHX at 0.53** — a different manager's trust, and a
+pre-existing member of the owner-gated priced-trust family. This record has
+already priced the issuer cell's evidential value at approximately nothing; an
+issuer-anchored version of this arm would convict that row.
+
+Also residue, and the owner's: the 11 `flexPATH Stable Value` rows withdrawn
+here at **0.35** are the fabricated stable-value fee by a different route, and
+the FEE is never re-priced — *a fee is SOURCED, never derived*, and
+`data/fund-facts.json` holds no flexPATH figure. This ship only ever removes a
+number.
+
+### Prevention
+
+- **`CIT_PLATFORM_NAME` is canonical in `lib-disclose.mjs` and SLICED into
+  app.js** by `gen-generic-twin.mjs`, whose own `citNames` cross-check gained
+  four cases (three must-FLAG, one bare-`flex` must-KEEP), so the twin cannot
+  drift without the generator saying so.
+- **`smoke-test.mjs`'s CIT fixtures are now TWO NAMED ARRAYS, `citFlag` and
+  `citKeep`, where they were ONE list dispatched by `slice(0, 6)`.** That is the
+  shape `parser-gate.mjs` passed for two months on: ***a positional dispatch
+  silently reassigns an existing case to the other half the moment a case is
+  inserted***, so adding a fixture used to mean editing a magic number. Three
+  must-FLAG cases and four must-KEEP cases were added, and the three must-FLAG
+  ones are each the SINGLE PROTECTION for one piece of the pattern, drawn from
+  the store.
+- **Every piece of the pattern is priced by leave-one-out over all 3,070 stored
+  spellings and every mutation fails BY NAME**: the separator is the only reason
+  for **61 rows**, the lookbehind the only reason for **1**, and a wider
+  `[\s_.·-]*` reads the identical 5,451 rows so the widening is refused as
+  unearned. The **trailing `\b` blocks 0 rows** and is kept and LABELLED
+  DECORATIVE in the source with its reason, the role `\bcit\b`'s own terminal
+  anchor plays in the sibling rule — and the mutation harness **asserts the
+  label is present**, so an inert condition cannot quietly stop being declared
+  one.
+
 ## 2026-10-11 (08:1xZ) — THE COVERAGE LINE'S OWN TICKER METRIC WAS BLIND TO THE WHOLE SEC PATH AND TO THE GATE SHIPPED NINETY MINUTES EARLIER: `tkExact` under-reported by 1.11 points, and its comment claimed it ran through a function it re-implements
 
 ### What was wrong
