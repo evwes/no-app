@@ -1963,6 +1963,9 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   name and resolver ships, so keys its own cleaner can now reach had never been
   written. ***A table with no staleness gate does not merely risk being wrong;
   it silently withholds the gains of every ship that moved a name.***
+  **(THAT GATE IS SHIPPED AS OF 19:5xZ — `scripts/sec-tickers-stamp-test.mjs` in
+  `site-test`, keyed on a fingerprint of our code and not on the asset's bytes.
+  See the Open-list entry; this drift class is what sized it.)**
   Attribution by token needed no second regen. **Four keys dropped and ALL FOUR
   are discharged** — three are now answered by the page's own chain, and the
   fourth's row is gone from the store (0 of 1,721,920 rows carry that
@@ -3619,32 +3622,73 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   Group-Vgd Trgt Rtmt <vintage> Trust II Fd` — house welded with a HYPHEN, product
   contracted — and every one still resolves its correct asterisked comparable at
   0.08 with `noPublicPrice` set. `docs/accuracy-log.md` 2026-10-10 (10:2xZ).
-- **NAMED 2026-10-10, NOT FIXED — `sec-tickers.js` HAS NO STALENESS GATE.**
-  `gen-sec-tickers.mjs` implements `--check` (exit 1 if the asset is stale) and
-  **it is wired into no workflow**, so a change to the generator can land beside
-  a table it did not produce. `stamp-assets --check` catches a stale STAMP and
-  cannot catch a stale TABLE — the stamp is derived from the asset's own
-  content, so a stale table ships with a perfectly matching stamp. This is the
-  twin-drift shape that has cost this project four browser twins, and the reason
-  it is not simply wired in is cost: a regen walks 1,721,920 published rows and
-  takes ~25 minutes, which does not belong in `site-test`. The cheap version is
-  a gate that recomputes only the keys a DIFF of the generator could move, or a
-  periodic job rather than a per-push one. Until then the discipline is manual:
-  **a commit touching `gen-sec-tickers.mjs` or `match-sec-tickers.mjs` must
-  regenerate and commit the table in the same commit.**
-  **AND THE DISCIPLINE AS WRITTEN IS NOT ENOUGH, MEASURED 2026-10-11 09:5xZ: it
-  is keyed on the GENERATOR and the table is also stale after any change to the
-  NAME CLEANER or to `fund-er.js`'s resolver.** The MEFS regen absorbed **66
-  gain rows / 18 acks / 9,224 ppl / $71,696,270** of pure drift from the day's
-  five name and resolver ships — keys the cleaner could newly reach that had
-  never been written — plus 4 keys made redundant by the page itself. ***A
-  table with no staleness gate does not merely risk being wrong; it silently
-  withholds the gains of every ship that moved a name***, and nothing reports
-  it: `tkExact` moves, which reads as that hour's ship delivering. So the
-  manual rule must extend to **`lib-disclose.mjs`'s `cleanFiledName`, `app.js`'s
-  cleaning chain and `fund-er.js`** — or, better, the periodic job above, since
-  the list of files that can stale this asset is now five and growing.
-  `docs/accuracy-log.md` 2026-10-11 (09:5xZ).
+- **SHIPPED 2026-10-11 19:5xZ — `sec-tickers.js` NOW HAS A STALENESS GATE, AND IT
+  IS A FINGERPRINT OF OUR CODE RATHER THAN THE `--check` THAT COULD NEVER HAVE
+  BEEN ONE.** `scripts/sec-tickers-stamp-test.mjs` runs in `site-test` in **0.3
+  s** and fails BY NAME when the stamp the asset carries
+  (`const SEC_TICKERS_CODE = "sha256:…"`, written by the generator from
+  `scripts/lib-sec-fingerprint.mjs`) does not match the committed code. **The
+  ship moves ZERO keys, measured as a DIFFERENTIAL rather than asserted:** two
+  regenerations from one store varying only the generator read **ADDED 0 /
+  REMOVED 0 / CHANGED 0**, the only textual change in the asset being the stamp,
+  and the PRE-EDIT generator reproduced the committed table **byte-for-byte** —
+  which is also the control that the generator is deterministic. So no published
+  cell moves and **no coverage-line key can move**; `tkExact` reads this table
+  and its key map is byte-identical. `PARSER_VERSION` stays 203.
+  **WHY `--check` WAS DISQUALIFIED BY CONSTRUCTION, not by cost:** it compared
+  asset BYTES, and the header interpolates `sec-funds.json`'s ROW COUNT plus
+  **six figures derived from the lineup store**, so a one-row SEC refresh or one
+  more filing flipped it to STALE with no defect present. ***A check that
+  conflates three independent inputs cannot say which one moved.*** It is
+  rewritten into the REPORT this item wanted — ADDED / REMOVED / CHANGED keys
+  with ADDED priced in rows / acks / ppl / $ and a seeded draw — failing only on
+  a moved key map or a moved stamp, with header drift reported and explicitly
+  not a failure. Controlled against a perturbed asset: **ADDED 1 -> 2 rows / 2
+  acks / 485 ppl / $534,737, CHANGED 1 named old -> new, exit 1.** Still wired
+  into no workflow: a regen is **20 minutes** (1,204 s and 1,175 s measured, not
+  the ~25 this entry used to say).
+  **THE SURFACE IS apppath's OWN SLICE, NOT app.js.** The prologue is 2,909 of
+  app.js's 5,348 lines, so hashing the file would redden on a template or a
+  formatter edit, and hand-listing the resolver's line ranges would be an EIGHTH
+  transcription of a shipped expression. `composeSource` was split out of
+  `buildRenderer` for this and is behaviour-preserving over **60,000 real rows /
+  26,056 reaching the chain / 0 cells differing**, with a positive control.
+  Measured noise over the 70 commits 2026-10-10 11:15 -> 2026-10-11 19:18: the
+  fingerprint **holds on 57** (every data and docs commit), moves on exactly the
+  **12** name/resolver ships, of which 8 would have gone red. **A GATE, NOT A
+  CLOCK, and that is the decision:** the 66 drift rows were attributable to OUR
+  CODE, so the trigger is the change that makes the regen necessary, and that
+  regen absorbs registry and store drift for free. No periodic job was built,
+  deliberately.
+  **THE STEP RUNS LAST IN `site-test` ON PURPOSE** — its remedy is a 20-minute
+  regen and its subject is a DATA asset, not a broken page, so placing it first
+  would leave the smoke and map tests unrun behind a stale table, which is this
+  file's own *a red gate early in a job is not one failure, it is a job that
+  stopped*.
+  **TWO FINDINGS: `lib-disclose.mjs` CANNOT STALE THE TABLE — this file's
+  five-file list is REFUTED.** Neither the generator nor `apppath` imports it;
+  the generator reads **app.js's own GENERATED TWIN** of those suppressors,
+  which is inside the slice, so a `cleanFiledName` change stales the table
+  exactly when the slice moves. Hashing it would redden on its arms that gate
+  `er` alone. The absence is a labelled invariant with its reason.
+  **AND THE SAME SHAPE WAS LIVE A SECOND TIME:** `scripts/lib-af-abbrev.mjs`
+  and `scripts/af-abbrev-test.mjs` were ABSENT from `site-test`'s own `paths`
+  filter, so the Capital Group arm had a step in that job and **its source could
+  not start the job** — a change to it ran no test of its own unless an
+  unrelated path moved in the same push. Both are in the filter now, with
+  `lib-ledger.mjs`, `lib-schema.mjs` and the two new files. ***A gate the file
+  it guards cannot trigger is indistinguishable from no gate, and the `paths`
+  list is a second place that can make one.***
+  **NAMED RESIDUE:** store and registry drift is invisible to this gate by
+  construction — one day of `data/lineups` movement introduced **160 new
+  distinct (issuer, nameRaw) spellings** (and retired 243) against a table
+  resolving 12,337 of 553,274 (2.23%), so **~3-4 keys a day** sit unwritten
+  until the next regen; 11 of the last 8 days' 62 data commits touched
+  `data/lineups`, so it is bursty rather than steady. `--check` is the report
+  for it and wants a caller. And **a moved fingerprint does not prove a key
+  would move** — 2 of the 8 historical reds would clear with a 0/0/0 regen,
+  which is the price of being exact about code rather than guessing about keys.
+  `docs/accuracy-log.md` 2026-10-11 (19:5xZ).
 - Double render: one holding published TWICE at an identical value under two
   spellings where BOTH rows resolve to the same ticker — 1,217 groups / 2,434
   rows / 515 entries / $943,251,783. 85 `lineup-overshoot` menus carry one and

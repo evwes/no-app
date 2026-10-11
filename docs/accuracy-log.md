@@ -7,6 +7,232 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-11 (19:5xZ) — THE GENERATED SEC TICKER TABLE COULD SIT BESIDE CODE THAT DID NOT PRODUCE IT, AND THE `--check` THAT WAS MEANT TO CATCH IT COULD NEVER HAVE BEEN A GATE: it compares asset BYTES, and the asset's own header interpolates the SEC registry's row count and four store-derived figures, so it reddens when the registry grows or the hourly pipeline commits one filing. Shipped: a 0.3-second fingerprint of OUR CODE ALONE, wired into `site-test` LAST, plus `--check` rewritten from a byte verdict into an attributable ADDED/REMOVED/CHANGED report
+
+### What was wrong
+
+`scripts/gen-sec-tickers.mjs` generates `sec-tickers.js`, the last-resort symbol
+table `lookupTicker` consults when the page's own chain has nothing — **12,337
+keys covering 38,756 published rows across 14,721 plans reaching 17,639,037
+participants.** It shipped a `--check` mode whose own usage line reads *"exit 1
+if the asset is stale"*, and **that mode was wired into no workflow.** So the
+committed table could sit beside code that did not produce it.
+
+**And the failure is SILENT in the one direction that matters.** The table only
+ever fills a blank — a key is written only where the page resolves nothing and
+the row carries no `f.tk` — so a ship that moves a name does not publish a wrong
+symbol. It publishes NOTHING, which is exactly what the page showed yesterday,
+so no reader, no count and no diff says a word. `stamp-assets.mjs --check`
+cannot see it either, and not by oversight: **the stamp is a hash of the
+asset's own content, so a stale table ships with a perfectly matching stamp.**
+
+Measured harm already on the record: the 2026-10-11 09:5xZ MEFS regeneration
+absorbed **66 gain rows / 18 acks / 9,224 participants / $71,696,270 of pure
+table drift** — keys the cleaner could newly reach that had never been written,
+left behind by FIVE earlier name/resolver ships that each moved a resolver and
+regenerated nothing.
+
+### Why `--check` could never have been that gate — the measurement that chose the shape
+
+Read before designing anything, and the disqualification is structural rather
+than a matter of degree. `--check` was `have === asset`, and the asset's header
+interpolates:
+
+* `SEC_ROWS` — `sec-funds.json`'s row count, **an external registry**; and
+* `fig.keys`, `fig.exactRows`, `fig.exactPlans`, `fig.exactPpl`,
+  `fig.compPlans`, `fig.compPpl` — **six figures derived from the lineup store**,
+  which the pipeline rewrites about every 3.6 hours.
+
+So a one-row SEC refresh or one more filing flips it to STALE with no defect
+present. ***A check that conflates three independent inputs cannot say which one
+moved***, and this project's record is explicit that a gate reddening when
+nothing is wrong is worse than no gate: ten consecutive red `site-test` runs
+from 2026-09-08 are how a real failure stayed invisible for three days. The
+hard requirement was that an SEC refresh must not redden the gate, and the
+shipped `--check` fails it by construction.
+
+### What the measurements said
+
+**A full regeneration is 20 minutes, not 25** — 1,204 s and 1,175 s on two runs
+over 1,721,920 published+served rows. Too slow for a per-push gate either way,
+which is what kept this item named-and-unfixed.
+
+**The right surface for a cheap gate is OUR CODE, and apppath already maintains
+it.** The table is a function of three input classes — our code, the SEC
+registry, and the DOL store — and only the first is ours. Hashing it is
+milliseconds. But hashing the WHOLE of `app.js` would be habitually red:
+**app.js is 5,348 lines and the resolver prologue is 2,909 of them**, so a
+template, a formatter or a map edit would fire the gate. And hand-listing the
+resolver's line ranges would be an **EIGHTH transcription of a shipped
+expression**, and this record carries seven, every one of which produced a wrong
+published figure. So the surface is asked of `apppath.mjs`'s own slice —
+`composeSource`, split out of `buildRenderer` for this — which is the same
+string the generator itself evaluates.
+
+**The noise rate, measured rather than guessed.** Over the 70 commits from
+2026-10-10 11:15 to 2026-10-11 19:18, the fingerprint:
+
+| | commits |
+|---|---|
+| holds (every data commit, every docs commit) | **57** |
+| moves AND the commit also committed a table (gate GREEN) | 4 |
+| moves and the table was NOT regenerated (gate RED) | **8** |
+| holds while the table moved (a drift-only regen) | **0** |
+
+All 8 reds are name/resolver ships — the cross-reference strip, the date
+header, EUPAC, the fractional unit count, the hyphenated share class, AMF, the
+pooled-vehicle hoist, flexPATH. At least two of those eight are reds this
+record can already call harmless (flexPATH and the pooled hoist both recorded
+`sec-tickers.js` as byte-unchanged), and the rest are the population that
+contributed the 66 rows.
+
+**A GATE, NOT A CLOCK, and that is the decision this item turned on.** The
+alternative shapes were a periodic regeneration or a report on the coverage
+trail. What settled it: **the 66 rows of measured drift were attributable to OUR
+CODE, not to the registry or the store** — the MEFS entry says so in its own
+words ("keys its own cleaner can now reach"). A fingerprint gate catches that
+class entirely and at the moment of the ship, when it is cheapest to act on;
+and the regeneration it demands absorbs any registry or store drift for free at
+the same time. ***So the trigger is the change that makes the regeneration
+necessary, rather than a clock that reruns it whether or not anything moved.***
+A periodic job was not built, and that is a finding and not a deferral.
+
+**One day of store drift, sized, because the gate cannot see it.** Distinct
+`(issuer, nameRaw)` spellings in `data/lineups` at 3fa885cf (10-10 03:05) vs
+1c4e7715 (10-11 02:06), both 65,495 entries / 1,730,931 rows: **160 spellings
+only in the newer store**, 243 only in the older. The table resolves 12,337 of
+553,274 distinct spellings (2.23%), so a day's DOL movement is on the order of
+**3-4 keys** the fingerprint cannot see — bursty, tied to the 11 `data/lineups`
+commits in the last 8 days, and absorbed by the next regeneration.
+
+### The change
+
+**`scripts/lib-sec-fingerprint.mjs`** (new) — `codeFingerprint()` over
+apppath's slice of `app.js` + `fund-er.js` plus `match-sec-tickers.mjs`,
+`lib-af-abbrev.mjs`, `gen-sec-tickers.mjs`, `lib-ledger.mjs`, `lib-schema.mjs`
+and `apppath.mjs`. `secTickers:false` is load-bearing: with the table loaded the
+slice would contain the asset the value is stamped into, and the fingerprint
+would be a function of its own output.
+
+**`scripts/apppath.mjs`** — `composeSource()` split out of `buildRenderer`,
+which is now a thin wrapper. Behaviour preservation is measured, not asserted:
+HEAD's `buildRenderer` and the new one were both asked for every cell on
+**60,000 real fund rows, 26,056 of which reached the resolver chain, and 0 cells
+differ** — with a positive control (both sides must resolve VFIAX) so that a
+renderer which silently reached no arm could not report zero differences.
+
+**`sec-tickers.js`** — carries `const SEC_TICKERS_CODE = "sha256:…"`.
+
+**`scripts/sec-tickers-stamp-test.mjs`** (new), wired into `site-test` — 20
+checks in **0.3 s**.
+
+**`gen-sec-tickers.mjs --check`** — rewritten from a byte verdict into the
+report this item asked for: ADDED / REMOVED / CHANGED keys, with ADDED **priced
+in rows / acks / participants / dollars** (participants summed over DISTINCT
+ACKS, never per row) and a seeded uniform draw of up to 12 added keys. It fails
+only on a moved key map or a moved fingerprint; header figures drifting on their
+own are reported and are explicitly **not** a failure. It stays wired into no
+workflow, because it is still 20 minutes.
+
+**`site-test.yml`** — the step runs **LAST, and the placement is the decision
+rather than an afterthought.** Its remedy is a 20-minute regeneration and its
+subject is a DATA asset, not a broken page. This record's own lesson is that *a
+red gate early in a job is not one failure but a job that stopped*: placed
+first, a resolver ship that forgot the regeneration would leave the smoke and
+map tests unrun, hiding any real frontend regression behind a stale table. Last,
+the job still goes red with every other answer already in hand.
+
+### Verification
+
+**The ship moves ZERO keys, and that is a differential rather than an
+assertion.** Two regenerations from one store, varying only the generator:
+
+* the PRE-EDIT generator reproduces the committed table **byte-for-byte** —
+  ADDED 0 / REMOVED 0 / CHANGED 0, `diff` reporting 0 differing lines. (The
+  apparent 778-byte gap between `wc -c` and the generator's own report is
+  UTF-16 string length vs UTF-8 bytes, not a difference.) This is also the
+  control that the generator is deterministic and that the committed table was
+  NOT stale when this item was started — the 17:42 ship did regenerate.
+* the POST-EDIT generator against the same store: **ADDED 0 / REMOVED 0 /
+  CHANGED 0**, and the only textual difference in the whole asset is the
+  appended stamp comment and line.
+
+So no published cell moves and **no coverage-line key can move**: `tkExact`
+reads the table, and the table's key map is byte-identical.
+
+**Every control was proved able to fail.** The shipped test was run against five
+deliberately broken fingerprint modules, each producing the named failure:
+dropping a hashed input, hashing the whole of `app.js` instead of the slice,
+adding `sec-funds.json` to the inputs, adding `plans-all.json`, and dropping the
+slice from the hash entirely.
+
+***AND THAT PROOF FOUND A REAL DEFECT IN MY OWN TEST.*** The first version
+looped its mutation controls over `CODE_INPUTS` itself, so running it against a
+module with `match-sec-tickers.mjs` DELETED from that list left **every control
+passing** — the loop simply stopped testing the input that had gone missing.
+***A control derived from the thing it is checking cannot see that thing
+shrink.*** The expected list is frozen in the test now and compared against
+`CODE_INPUTS`, so a removal fails twice and an addition cannot arrive untested.
+
+**`--check`'s own report was controlled against a perturbed asset** (one key
+deleted, one retargeted to `ZZZZZ`), so the report is known to be able to say
+something rather than only to say nothing.
+
+All eleven cheap `site-test` gates pass locally, and `smoke-test` passes. The
+asset stamp was re-derived (`sec-tickers.js ?v=263acc31 -> ?v=af898117`) and
+`index.html` is committed with it. `map-test` fails in this sandbox on
+`ERR_CERT_AUTHORITY_INVALID`, the outbound-TLS property this record already
+documents; CI settles it.
+
+### What now prevents it
+
+`site-test` fails **by name** when the committed table's stamp does not match
+the committed code, on every push that touches any input the table is a
+function of. It reads no registry and no store, so an SEC refresh or an hourly
+data commit cannot redden it — asserted by four drift controls, each of which
+was proved able to fail.
+
+### Two findings beyond the item
+
+**`lib-disclose.mjs` CANNOT STALE THE TABLE, which refutes CLAUDE.md's
+five-file list.** Neither `gen-sec-tickers.mjs` nor `apppath.mjs` imports it;
+the generator reads **app.js's own GENERATED TWIN** of those suppressors, which
+is inside the slice. So a `cleanFiledName` change stales the table only once it
+reaches the twin — which is exactly when the slice moves and the fingerprint
+changes. Hashing lib-disclose as well would redden on its arms that gate `er`
+alone and can move no key. The absence is asserted as a labelled invariant with
+its reason, so a future change has to edit the claim rather than quietly
+contradict it.
+
+**AND THE SAME SHAPE WAS ALREADY LIVE A SECOND TIME, one line away from where I
+was working.** `site-test` has a step for the Capital Group abbreviation arm,
+and **`scripts/lib-af-abbrev.mjs` and `scripts/af-abbrev-test.mjs` were absent
+from the workflow's own `paths` filter** — so a change to that arm could not
+start the job that tests it, and ran no test of its own unless some unrelated
+path happened to move in the same push. That is the item's exact shape: a check
+that exists and nothing can trigger it. Both are in the filter now, with
+`lib-ledger.mjs`, `lib-schema.mjs` and the two new files.
+***A gate the file it guards cannot trigger is indistinguishable from no gate,
+and the `paths` list is a second place that can make one.***
+
+### Named residue
+
+* **Store and registry drift, ~160 new candidate spellings a day (~3-4 keys),
+  is invisible to this gate by construction** and is absorbed only by the next
+  regeneration. Nothing periodic was shipped, deliberately, because the measured
+  harm was code drift; if a week passes with no resolver ship, that drift sits
+  unwritten. The cheap report for it now exists (`--check`) and wants a caller.
+* **`--check` is still 20 minutes and wired into no workflow.** It is a human
+  and periodic tool. A per-push version would need the walk narrowed, and
+  sampling cannot establish a superset.
+* **A moved fingerprint does not prove a key would move.** The gate's claim is
+  "the answer is no longer known", and clearing it costs a 20-minute
+  regeneration whose own diff may read 0/0/0 — measured at 2 of the 8 historical
+  reds. That is the price of the gate being exact about code rather than
+  guessing about keys.
+
+---
+
 ## 2026-10-11 (18:2xZ) — A BROKERAGE WINDOW'S PERMITTED-HOLDINGS ENUMERATION PUBLISHED AS A FUND, WITH A FALSE VEHICLE TYPE ON ITS TWO LARGEST ROWS: 21 candidates / 44,638 participants, of which ~15 are genuine and ~6 are false positives of my own category vocabulary — the fourth instance today of a count keyed on a vocabulary measuring the vocabulary
 
 ### What was wrong

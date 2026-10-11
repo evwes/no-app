@@ -12362,3 +12362,13 @@ const SEC_TICKERS = {
 /* a pin the smoke test and scripts/sec-tickers-test.mjs assert, so a
  * regenerated table that lost its consumer fails a gate rather than a reader */
 const SEC_TICKERS_PIN = {"key":"\u0000(CL)Victory Sycamore Established Val R6","tk":"VEVRX"};
+/* THE FINGERPRINT OF THE CODE THIS TABLE WAS BUILT FROM — scripts/
+ * lib-sec-fingerprint.mjs, asserted by scripts/sec-tickers-stamp-test.mjs in
+ * site-test. It covers apppath's slice of app.js + fund-er.js, the matcher,
+ * the AF family, this generator, lib-ledger and lib-schema, and DELIBERATELY
+ * NOT sec-funds.json or the lineup store: a registry refresh must never redden
+ * a gate. A mismatch means a resolver or a name cleaner moved and this table
+ * was not regenerated, so every key that change would add is silently
+ * withheld — which is how 66 gain rows / 9,224 participants accumulated
+ * unreported across five ships on 2026-10-11. */
+const SEC_TICKERS_CODE = "sha256:a58bd1fa26cfe640d9017afc1cbe5f292ddd62a34153e71ba042d11d5212938c";

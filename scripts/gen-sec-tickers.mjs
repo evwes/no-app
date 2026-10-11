@@ -66,6 +66,7 @@ import { servedLineup } from "./lib-ledger.mjs";
 import { buildIndex, resolveHolding, norm, decodeEntities,
   STRUCTURAL, CLASS_WORDS, DESCRIPTIVE, isAssetWord } from "./match-sec-tickers.mjs";
 import { buildAfIndex, assertAfFamily, afAbbrevAsk } from "./lib-af-abbrev.mjs";
+import { codeFingerprint, codeLine, assetFingerprint } from "./lib-sec-fingerprint.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
 const argv = process.argv.slice(2);
@@ -1442,6 +1443,10 @@ if (DUMP) {
 }
 
 /* ---------- the asset ---------- */
+/* computed here rather than at import time so a `--dump` or `--with-comparables`
+ * run cannot be made to fail by a slice marker moving: the fingerprint is only
+ * needed by the two modes that write or judge the asset. */
+const CODE_FP = codeFingerprint().fp;
 const SEC_ROWS = JSON.parse(readFileSync(`${ROOT}/sec-funds.json`, "utf8")).funds.length;
 const keys = [...table.keys()].sort();
 const body = keys.map((k) => `${JSON.stringify(k)}:${JSON.stringify(table.get(k))}`).join(",\n");
@@ -1473,12 +1478,119 @@ ${body}
 /* a pin the smoke test and scripts/sec-tickers-test.mjs assert, so a
  * regenerated table that lost its consumer fails a gate rather than a reader */
 const SEC_TICKERS_PIN = ${JSON.stringify(keys.length ? { key: keys[0], tk: table.get(keys[0]) } : null)};
+/* THE FINGERPRINT OF THE CODE THIS TABLE WAS BUILT FROM — scripts/
+ * lib-sec-fingerprint.mjs, asserted by scripts/sec-tickers-stamp-test.mjs in
+ * site-test. It covers apppath's slice of app.js + fund-er.js, the matcher,
+ * the AF family, this generator, lib-ledger and lib-schema, and DELIBERATELY
+ * NOT sec-funds.json or the lineup store: a registry refresh must never redden
+ * a gate. A mismatch means a resolver or a name cleaner moved and this table
+ * was not regenerated, so every key that change would add is silently
+ * withheld — which is how 66 gain rows / 9,224 participants accumulated
+ * unreported across five ships on 2026-10-11. */
+${codeLine(CODE_FP)}
 `;
 
+/* ---------- --check: the REPORT, not a byte comparison ----------
+ *
+ * REWRITTEN 2026-10-11. This used to be `have === asset`, and that comparison
+ * could never be a gate anywhere: the asset's own header interpolates
+ * `sec-funds.json`'s row count AND four figures derived from the lineup store,
+ * so it reported STALE whenever the SEC registry grew or the hourly pipeline
+ * committed one more filing — with no defect present. *A check that conflates
+ * three independent inputs cannot say which one moved*, and this project's
+ * record is explicit that a gate reddening with nothing wrong is worse than no
+ * gate.
+ *
+ * So the verdict is keyed on the two things that are about US:
+ *   - the KEY MAP, which is what the page can resolve; and
+ *   - the CODE FINGERPRINT, which is whether this table knows its own parents.
+ * Header figures moving on their own are reported and are NOT a failure — they
+ * are the registry and the store doing what they do.
+ *
+ * ADDED keys are the SILENT WITHHOLDING this whole item is about, so they are
+ * priced in the project's units (rows / acks / participants / dollars) rather
+ * than counted. CHANGED keys are the opposite direction and worse: a symbol the
+ * page publishes that our own code would no longer write.
+ *
+ * It is wired into NO workflow on purpose — it walks 1,721,920 rows. The cheap
+ * half of this question is `scripts/sec-tickers-stamp-test.mjs`, which asks only
+ * whether the fingerprint matches and runs in 0.3s in `site-test`. */
 if (CHECK) {
   const have = existsSync(OUT) ? readFileSync(OUT, "utf8") : "";
-  if (have === asset) { console.error("gen-sec-tickers: sec-tickers.js is up to date"); process.exit(0); }
-  console.error("gen-sec-tickers: sec-tickers.js is STALE — run `node scripts/gen-sec-tickers.mjs` and commit it with a re-stamped index.html");
+  let old = null;
+  if (have) {
+    try { old = vm.runInNewContext(have + "\nSEC_TICKERS;"); }
+    catch (e) { console.error(`gen-sec-tickers --check: the committed asset does not evaluate (${e.message}) — treating it as absent`); }
+  }
+  if (!old) {
+    console.error("gen-sec-tickers --check: no readable committed table — run the generator");
+    process.exit(1);
+  }
+  const added = [], removed = [], changed = [];
+  for (const k of table.keys()) {
+    if (!(k in old)) added.push(k);
+    else if (old[k] !== table.get(k)) changed.push([k, old[k], table.get(k)]);
+  }
+  for (const k of Object.keys(old)) if (!table.has(k)) removed.push(k);
+
+  /* price the ADDED keys through the gain rows that carry them, so the report
+   * is in participants and not only in keys. Participants are summed over
+   * DISTINCT ACKS — summing per ROW is the recorded error that once inflated a
+   * class by 8x. */
+  const addedSet = new Set(added);
+  const aRows = gains.filter((g) => addedSet.has(`${g.iss}\u0000${g.name}`));
+  const aAcks = new Map();
+  let aDollars = 0;
+  for (const g of aRows) { aAcks.set(g.ack, g.ppl); aDollars += g.value || 0; }
+  const aPpl = [...aAcks.values()].reduce((a, b) => a + b, 0);
+
+  const stamped = assetFingerprint(OUT);
+  const stampMoved = stamped !== CODE_FP;
+  const headerOnly = have !== asset && !added.length && !removed.length && !changed.length && !stampMoved;
+
+  console.error([
+    ``,
+    `gen-sec-tickers --check — what a regeneration would do to the committed table`,
+    `  keys committed                          ${Object.keys(old).length.toLocaleString()}`,
+    `  keys a regeneration writes              ${table.size.toLocaleString()}`,
+    `  ADDED   (silently withheld today)       ${added.length.toLocaleString()} keys -> ${aRows.length.toLocaleString()} rows / ${aAcks.size.toLocaleString()} acks / ${aPpl.toLocaleString()} ppl / $${aDollars.toLocaleString()}`,
+    `  CHANGED (the page publishes a symbol our code would not write)  ${changed.length.toLocaleString()}`,
+    `  REMOVED (no longer reachable)           ${removed.length.toLocaleString()}`,
+    `  code fingerprint                        ${stampMoved ? "MOVED" : "matches"}`,
+    `    stamped in the asset : ${stamped || "<none>"}`,
+    `    the committed code   : ${CODE_FP}`,
+  ].join("\n"));
+  for (const [k, a, b] of changed.slice(0, 20)) console.error(`    CHANGED ${JSON.stringify(k)}: ${a} -> ${b}`);
+  for (const k of removed.slice(0, 10)) console.error(`    REMOVED ${JSON.stringify(k)}`);
+  if (added.length) {
+    /* a SEEDED uniform draw, never the head of the list: ranked members are
+     * systematically different and a rate needs a random draw. */
+    let h = 2166136261 >>> 0;
+    for (const c of String(SEED)) h = Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0;
+    const rand = () => { h ^= h << 13; h >>>= 0; h ^= h >>> 17; h ^= h << 5; h >>>= 0; return h / 4294967296; };
+    const seen = new Set();
+    console.error(`\n  UNIFORM DRAW of up to 12 ADDED keys, seed=${SEED}:`);
+    while (seen.size < Math.min(12, added.length)) {
+      const i = Math.floor(rand() * added.length);
+      if (seen.has(i)) continue;
+      seen.add(i);
+      const k = added[i];
+      const [iss, nm] = k.split("\u0000");
+      console.error(`    ${table.get(k).padEnd(7)} iss=${JSON.stringify(iss)} name=${JSON.stringify(nm)}`);
+    }
+  }
+  if (headerOnly) {
+    console.error(`\ngen-sec-tickers --check: the key map and the code fingerprint both MATCH.`);
+    console.error(`  The asset bytes differ only in header figures derived from sec-funds.json and`);
+    console.error(`  the lineup store, which move on their own. NOT a failure.`);
+    process.exit(0);
+  }
+  if (!added.length && !removed.length && !changed.length && !stampMoved) {
+    console.error(`\ngen-sec-tickers: sec-tickers.js is up to date`);
+    process.exit(0);
+  }
+  console.error(`\ngen-sec-tickers: sec-tickers.js is STALE — run \`node scripts/gen-sec-tickers.mjs\`, then`);
+  console.error(`  \`node scripts/stamp-assets.mjs\`, and commit sec-tickers.js + index.html together.`);
   process.exit(1);
 }
 if (WITH_COMP) { console.log(report); process.exit(0); }

@@ -56,7 +56,21 @@ function line(src, head, what) {
   return src.slice(a, b);
 }
 
-export function buildRenderer(opts = {}) {
+/* THE COMPOSED DISPLAY PATH AS SOURCE TEXT, split out of `buildRenderer`
+ * 2026-10-11 so that something other than the evaluator can READ it.
+ *
+ * `scripts/lib-sec-fingerprint.mjs` needs exactly this string: the region of
+ * app.js and fund-er.js that `sec-tickers.js` is a function of. Hashing the
+ * WHOLE of app.js would redden on a template or a formatter edit that cannot
+ * move a key; hand-listing the resolver's line ranges would be an eighth
+ * transcription of a shipped expression. The slice is already the right
+ * surface, and it is already maintained here — so the fingerprint asks for it
+ * rather than describing it.
+ *
+ * `buildRenderer` is now a thin wrapper around this, and `scripts/apppath-
+ * compose-test.mjs` pins the two together: the composed string must be
+ * byte-identical to what the pre-split `buildRenderer` built. */
+export function composeSource(opts = {}) {
   const appPath = opts.appjs || process.env.APPJS_PATH || (ROOT + "app.js");
   const app = readFileSync(appPath, "utf8");
   const fundEr = readFileSync(opts.funder || process.env.FUNDER_PATH || (ROOT + "fund-er.js"), "utf8");
@@ -136,6 +150,11 @@ ${rowBlock}
     cleanFiledName, fundER, fundTickerInfo };
 })();
 `;
+  return { src, appPath };
+}
+
+export function buildRenderer(opts = {}) {
+  const { src, appPath } = composeSource(opts);
   const ctx = { console };
   vm.createContext(ctx);
   vm.runInContext(src, ctx, { filename: "apppath:" + appPath });
