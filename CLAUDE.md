@@ -923,9 +923,32 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
-**PRE-REGISTERED 2026-10-11 11:1xZ for #636 (dispatched 11:10:35Z on
-`02f9c12a`) — the flexPATH fee suppression must move NOTHING on the coverage
-line.** It is display-side (`lib-disclose.mjs`'s `isCollectiveTrustName` plus
+**DELIVERED AND VERIFIED BY #636 (`success`, 11:10:35-11:19:56Z, `02f9c12a`,
+data commit `6187f386`) — THE REGISTRATION HELD IN THE STRONGEST FORM
+AVAILABLE: the line is BYTE-IDENTICAL to its predecessor on all 35 keys,
+compared programmatically rather than by eye.** `tkExact` 39.00, `pv` 203, HIGH
+4, WARN 556, `dl` 93 and every other key unchanged — which is the whole safety
+claim for a display-side fee suppression that writes no store. **SO THERE IS
+NOTHING PRE-REGISTERED AND PENDING.** This also makes #636 an identical-line
+merge, so the recorded identical-line run count is now one higher than its
+19 — *and per this file's own rule that figure is RE-DERIVED, never
+incremented*, so it stays at 19 until a measurement replaces it.
+
+**AND THE VERDICT NEARLY WENT WRONG ON A STALE REF, WHICH IS WORTH THE LINE:**
+my first `git fetch origin claude/… origin/main` passed `origin/main` where a
+BRANCH NAME belongs, so the refspec was invalid, **`origin/claude/…` was never
+updated, and the key-by-key diff I ran was over two lines that were BOTH
+already on main** — it compared #634's line against #635's and reported
+`tkExact` 38.99 -> 39 as though that were #636's delivery. The real #636 line
+did not exist locally yet. *A diff of the wrong two lines reads exactly like a
+diff of the right two*, and what exposed it was the reconcile step disagreeing
+with the diff: `origin/main..origin/dev` printed EMPTY for a run that had just
+committed. **Attribute a trail line by the COMMIT that introduced it
+(`git log -- docs/coverage-history.jsonl`), not by its position in the file** —
+that one command named 3bbe4983 at 10:17 as line 436's author and settled it.
+
+**ORIGINAL REGISTRATION, kept because it is what was predicted — the flexPATH
+fee suppression must move NOTHING on the coverage line.** It is display-side (`lib-disclose.mjs`'s `isCollectiveTrustName` plus
 its app.js twin), writes no store, and `noPublicPrice` gates only `er` at
 `app.js:4164`, so **no coverage key reads it**: `tkExact` 39.00, `tkComparable`
 3.41, `tkSampled` 87,106, `tkShare` 25.12, confident 60,182, match 43,312,

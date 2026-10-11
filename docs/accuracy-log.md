@@ -7,6 +7,103 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-11 (11:3xZ) — A VERDICT READ FROM A STALE REF: AN INVALID REFSPEC LEFT `origin/dev` UNFETCHED, AND THE KEY-BY-KEY COVERAGE DIFF COMPARED TWO LINES THAT WERE BOTH ALREADY ON MAIN
+
+### What was wrong
+
+Verdicting run #636 I fetched with
+`git fetch origin claude/wampo-401k-live-nx1t4o origin/main` — passing
+`origin/main`, a REMOTE-TRACKING name, where `git fetch` wants a BRANCH name.
+The refspec is invalid, and the consequence is the one that matters:
+**`origin/claude/wampo-401k-live-nx1t4o` was never updated either.** The run's
+data commit (`6187f386`) did not exist locally.
+
+I then ran the key-by-key diff over `tail -2` of the trail at that stale ref and
+reported `tkExact` **38.99 -> 39** with all 34 other keys identical, reading it
+as #636's delivery. It was nothing of the sort: those two lines were #634's
+(09:10) and #635's (10:17), both long since mirrored to main. #636's actual
+line, once fetched, is **byte-identical to its predecessor on all 35 keys** —
+the correct verdict, and a different one.
+
+Nothing was published from the wrong reading and no claim reached a reader; the
+cost was a verdict that would have credited one run's delivery to another.
+
+### Why it was nearly invisible
+
+**A diff of the wrong two lines reads exactly like a diff of the right two.**
+The output had every mark of a good verdict: 35 keys compared, exactly one
+moved, and the one that moved was the one the registration named, inside the
+registered band. A plausible answer to the wrong question.
+
+`git fetch` is also silent in the way that hurts here — the invalid refspec
+produced no failure loud enough to stop the step, and the trail file at the
+stale ref is a real file with real lines in it, so nothing downstream could tell
+it was two commits behind.
+
+### What caught it
+
+**The reconcile step disagreeing with the diff.** `git log --oneline
+origin/main..origin/claude/…` printed EMPTY for a run that had just committed
+nine minutes earlier. A completed run that leaves the dev branch with nothing
+main lacks is possible (the workflow fast-forwards dev when MAIN is ahead) but
+it is not the shape of a dispatch on dev, and that contradiction is what sent me
+back to re-fetch.
+
+The thing that settled it was one command:
+
+    git log --oneline --format='%h %ad %s' --date=format:'%H:%M' -- docs/coverage-history.jsonl
+
+which named `3bbe4983` at **10:17** as the author of the line I had read as
+#636's — #635's merge. ***Attribute a trail line by the COMMIT that introduced
+it, never by its position in the file.*** Position is a property of what you
+happen to have fetched; authorship is a property of the repository.
+
+### The prevention
+
+Three things, in order of how much they are worth:
+
+1. **Assert the fetch reached the commit under test, before measuring.** A
+   verdict about a run should resolve that run's `head_sha` and data commit and
+   check `git cat-file -e` on it, or read the figure through
+   `git show <sha>:docs/coverage-history.jsonl` with the SHA named explicitly.
+   Reading `origin/<branch>` assumes a successful fetch; naming the commit does
+   not. This is the same rule this file already records as *while an agent holds
+   the working tree, read through `git show <ref>:` and never the path* — the
+   gap was that a remote-tracking ref is just as stale-able as a path, and
+   `origin/<branch>` LOOKS like it names a commit.
+2. **Pass branch names to `git fetch`, and check its output.** The refspec that
+   broke this is a one-token slip (`origin/main` for `main`) that this project
+   will make again; the fetch output lists exactly which refs moved, and reading
+   those two lines is the whole check.
+3. **Treat a reconcile result that contradicts a known event as a question about
+   the refs, not about the event.** An empty `main..dev` after a dispatch-on-dev
+   run that reported `success` is the discriminating observation, and it was
+   available before the wrong number was ever computed.
+
+### Prior art this belongs with
+
+This is the ref-level member of a family this file keeps re-earning: *a clean
+zero reports on the QUERY* (a `curl` of the live site returning HTTP 000 and
+zero bytes while `grep -c` printed a plausible `0`), *a before that is silently
+the after reads as a clean no-difference* (two `apppath` renderers both loading
+the working tree because the option was named `app` and not `appjs`), and *a
+version label on a derived summary is not the version in the data*. In every
+case the instrument answered fluently about something other than what was
+asked, and in every case the tell was a second, cheaper observation that
+disagreed.
+
+### #636's verdict, for the record
+
+Dispatched 11:10:35Z on `02f9c12a` (the flexPATH fee suppression), `success` at
+11:19:56Z, data commit `6187f386`. The coverage line is byte-identical to its
+predecessor on all 35 keys: `tkExact` 39.00, `tkComparable` 3.41, `tkSampled`
+87,106, confident 60,182, match 43,312, vesting 53,023, vestQuote 5,373,
+entries 65,495, HIGH 4, WARN 556, `dl` 93, **pv 203**. The ship is display-side
+and `noPublicPrice` gates only `er` at `app.js:4164`, so no coverage key reads
+it — an unchanged line is the registration holding, not a run that did nothing.
+
+---
+
 ## 2026-10-11 (10:5xZ) — A COLLECTIVE-TRUST PLATFORM PUBLISHED A FABRICATED EXPENSE RATIO WHEREVER THE FILER LEFT THE TYPE CELL BLANK: 315 rows / 70 plans / 64,085 participants / $523,244,544, and our own page gave two answers about one product family on one screen
 
 ### What was wrong
