@@ -82,6 +82,27 @@ const BARE_KEY = "\u0000Fidelity Worldwide Fund";
     "...ASSERTED, never the Advisor class behind an asterisk");
 }
 
+/* (2c) THE FILER'S TYPO, pinned against the COMMITTED table for the same
+ * reason as (2b): the generator's own evidence for `MEFS` -> `MFS` is read out
+ * of the live `sec-funds.json` (0 of 29,406 rows spell MEFS, 695 spell MFS), so
+ * a registry refresh could make a generator-side control stale. This reads only
+ * what shipped. `MEFS` is MFS with an inserted E — it names no registrant — and
+ * the repair reaches the rows whose product name carries distinctive words of
+ * its own, which `registrantAttested` can then confirm. */
+{
+  const hit = lookupTicker(rowFromKey("\u0000MEFS International Diversification Class R6"));
+  ok(!!hit && hit.tk === "MDIZX",
+    `the MEFS typo repair still ships: "MEFS International Diversification Class R6" -> MDIZX (got ${hit ? hit.tk : "null"})`);
+  ok(!!hit && hit.comparable === false, "...ASSERTED: the filing states Class R6 and the registry registers it");
+  /* A MUST-NOT-SEE, and labelled as what it is: no such key exists in either
+   * the old table or the new one, so it cannot fail today. It is here because
+   * the repair is anchored on a WORD boundary and a later regen that dropped
+   * the anchor would start writing keys of this shape — the `AMF` lesson,
+   * where `^` and `\b` were each pinned and each could fail. */
+  ok(lookupTicker(rowFromKey("\u0000MEFSA Diversified Holdings Fund")) === null,
+    "a longer word beginning MEFS is left alone (decorative today, by construction)");
+}
+
 /* (3) IT IS LAST: a row the page's own chain resolves must keep that answer. */
 const own = lookupTicker({ name: "Vanguard 500 Index Fund Admiral Shares",
   nameRaw: "Vanguard 500 Index Fund Admiral Shares", iss: "", type: "Mutual fund", value: 1 });

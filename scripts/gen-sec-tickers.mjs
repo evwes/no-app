@@ -810,12 +810,60 @@ function secAsk(nameRaw, nameClean, iss) {
     const nX = aposExpand(n);
     if (nX !== n || issX !== iss) tries.push([nX, issX]);
   }
+  /* AND `MEFS`, WHICH IS `MFS` WITH AN INSERTED E — a filer/OCR typo, not a
+   * house (2026-10-11). Over all 29,406 registry rows **0 spell MEFS and 695
+   * spell MFS**, so the token names no registered entity and the correction is
+   * REGISTRY-ATTESTED rather than guessed. Our own store witnesses it too, in
+   * FOUR cells that carry both spellings at once: `MFS Mid Cap Growth Fund CT
+   * IMMCVCT MEFS Mid Cap Value Fund CT`, `MEFS Investment Management MFS
+   * Mid Cap Growth Fund Class 2W` and two more.
+   *
+   * ALL 303 distinct stored spellings were read and every one is an MFS or
+   * MFS-Investment-Management product (International Diversification, Mid Cap
+   * Value, Massachusetts Investors Trust — the house's flagship), so there are
+   * **0 decoys**, which is the `AMF` precedent and the reason a four-letter
+   * token is safe here. Anchored on a WORD boundary, so `MEFSA…` cannot match.
+   *
+   * It lives HERE and not in `fund-er.js` deliberately: this generator applies
+   * `pooledRow` PER ROW before the asserted/comparable split, so the 92 rows
+   * of this class typed as a pooled separate account, collective trust or
+   * separate account are refused BY CONSTRUCTION — the stage lesson recorded
+   * at 07:0xZ the same morning.
+   *
+   * AND THE DELIVERY IS A FIFTH OF THE POPULATION, BECAUSE `registrantAttested`
+   * BELOW REFUSES WHAT THIS ARM RESOLVES. That guard asks whether the
+   * registrant's own distinctive vocabulary appears in the FILED name or its
+   * issuer cell, and it is asked of `f.nameRaw` — the TYPO'd spelling. So the
+   * repair lands only where the product name carries distinctive words of its
+   * own (`International Diversification`, `Research International`) and is
+   * refused wherever the house token is the only distinctive evidence
+   * (`MEFS Value Fund R6`, `MEFS Mid Cap Value Class R6`). Measured: 54 rows
+   * gain, 71 keys / 106 rows / 65,542 ppl / $116,048,214 are refused, and the
+   * refused half INCLUDES the row this class was found on. The guard is right
+   * in general — it is what stops `Vanguard Asset Allocation Fund` -> VCAAX —
+   * so attesting against the REPAIRED spelling instead is a change to every
+   * arm's input and belongs in its own measured ship, not in this one. */
+  const deTypo = (x) => x.replace(/\bMEFS\b/gi, "MFS");
+  for (const n of names) {
+    const nT = deTypo(n);
+    if (nT !== n) {
+      tries.push([nT, iss]);
+      const nTX = aposExpand(nT);
+      if (nTX !== nT) tries.push([nTX, iss]);
+    }
+  }
   /* and last, the issuer cell reduced to the house the registry attests */
   const issCore = houseCore(iss);
   if (issCore) for (const n of names) {
     tries.push([n, issCore]);
     const nX = aposExpand(n);
     if (nX !== n) tries.push([nX, issCore]);
+    /* compose with the typo repair: a row can need BOTH, and two
+     * normalisations that do not compose reach neither population (the
+     * `AMF`/hyphen lesson of 04:3xZ, where a `vs.slice()` snapshot cost the
+     * composition and a pin caught it). */
+    const nT = deTypo(n);
+    if (nT !== n) tries.push([nT, issCore]);
   }
   for (const [n, is] of tries) {
     const r = resolveHolding(idx, n, is);
