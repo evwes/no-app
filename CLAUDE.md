@@ -1671,12 +1671,47 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   `fundTickerInfo`. ***There are two resolvers, and a fixture is only as good as
   the one its own harness asks.*** Replaced with three the table does answer
   (`Fidelity Total bond K-6 Fund` -> FTBFX).
-  **STILL OPEN, measured:** the 182 `Growth Fund of America` hyphen-class rows
-  move **0** (already tolerant), but `... of America® Class R-6` publishes
-  RGAGX where `... of America Class R-6` publishes **nothing** — two spellings
-  differing by a trademark glyph; and the `K-6`/`R-6` rows resolving an INVESTOR
-  class (FTBFX, FBGRX) are pre-existing members of the owner-gated
+  **ITS "TRADEMARK GLYPH" RESIDUE NOTE WAS WRONG AND IS WITHDRAWN:** it read
+  off renderer A of my own differential — the PRISTINE file — so it described
+  the world before this very ship. Probed against the shipped tree, every
+  spelling resolves and the glyph is irrelevant. *A queue entry records what was
+  true when it was written*, and this one was written from the baseline column
+  of its own measurement. The `K-6`/`R-6` rows resolving an INVESTOR class
+  (FTBFX, FBGRX) remain pre-existing members of the owner-gated
   wrong-share-class family. `docs/accuracy-log.md` 2026-10-11 (03:3xZ).
+- **SHIPPED 2026-10-11 04:3xZ — `AMF`, A RECORDKEEPER'S ABBREVIATION OF AMERICAN
+  FUNDS: 325 published rows / 325 acks / 325 plans / 156,373 ppl / $191,329,641
+  gain RGAGX**, ticker lost 0 / swapped 0 / **ASTERISKED 0**, fee 0, name 0,
+  shownType 0, 19,117 sampled non-candidates differing on 0. `AMF GROWTH FUND OF
+  AMERICA R6` (256 rows) published no ticker AND no fee while stating its class.
+  One line in `fundTickerInfo`'s own variant list; `PARSER_VERSION` stays 203.
+  ***A BARE HOUSE TOKEN SHIPS ONLY BECAUSE THE DECOYS WERE READ FIRST:*** all
+  **254** distinct stored names beginning with an `AMF` token are American Funds
+  / Capital Group products — **0 decoys** — against the `tiaa` precedent where a
+  bare brand took 474 registered funds. **My first classifier called 138 of them
+  decoys and was wrong about every one**, having keyed on a hand-written product
+  vocabulary: *a count keyed on a vocabulary measures the vocabulary*, second
+  instance in a week on my own classifier.
+  ***ORDER IS LOAD-BEARING AND MY OWN FIXTURE CAUGHT IT:*** I measured the push
+  BEFORE the hyphen collapse and shipped it AFTER, and that loop iterates
+  `vs.slice()` — a SNAPSHOT — so a later seed never gets its hyphen collapsed
+  and `AMF … Class R-6` resolved to nothing. The composition pin failed by name,
+  one commit after the hyphen arm was rewritten for the same reason in the
+  OPPOSITE direction. **Two normalisations in one list compose only in the
+  direction the later one reads, and the shipped ORDER must be the order that
+  was measured** — without the pin the ship delivers 324 of 325 and reads as
+  holding. Both anchors pinned and both can fail (`^` keeps `Vanguard AMF …`
+  out, `\b` keeps `AMFIELD …` out).
+  **STILL OPEN and mostly NOT shippable: 2,126 rows / 1,587,433 ppl across 324
+  spellings of Growth Fund of America publish no ticker**, and the four largest
+  (`American Funds Growth Fund of America` 349 rows / 232,665 ppl / $1.5B at a
+  0.3 fee, `Growth Fund of America` 257, `The Growth Fund of America` 294,
+  `American Funds The Growth Fund of America` 157) **state NO SHARE CLASS**, so
+  the matcher answers `AGTHX*` — the owner-gated COMPARABLE half, now with a
+  figure. Only the Growth Fund of America family gains out of the 254 `AMF`
+  spellings; the rest (`INFL LINKED BOND`, `TD RET INC`, `AMCAP`, `INVEST CO OF
+  AMERICA`) are the recorded CONTRACTION class and need the registry, not a
+  wider screen. `docs/accuracy-log.md` 2026-10-11 (04:3xZ).
 - **THE DOUBLE RENDER WITH NEITHER COPY QUALIFIED — SIZED 2026-10-11 02:4xZ AT
   5,754 pairs / 2,278 acks / 3,694,834 ppl / $19,181,051,166 duplicated, AND THE
   SHIPPABLE CORE IS A TRIPLE CONJUNCTION OF 572 pairs / 365 acks / 396,467 ppl /

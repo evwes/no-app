@@ -54159,3 +54159,88 @@ untouched.
 than estimating it from how long the work felt, and when correcting a label,
 anchor the match on something unique to the entry rather than on the timestamp
 being corrected.
+
+## 2026-10-11 (04:3xZ) — `AMF`, A RECORDKEEPER'S ABBREVIATION, AND MY OWN PIN CAUGHT THE ORDER WRONG
+
+**SHIPPED. 325 published+served rows / 325 acks / 325 plans / 156,373
+participants / $191,329,641 gain RGAGX**, with ticker lost 0, swapped 0,
+**ASTERISKED 0**, fee 0, name 0, shownType 0, and 19,117 sampled non-candidates
+differing on 0. One line in `fundTickerInfo`'s own variant list;
+`PARSER_VERSION` stays 203; one surface by construction. `AMF GROWTH FUND OF
+AMERICA R6` — 256 rows, the family's largest spelling — published **no ticker
+and no fee** while stating its share class outright.
+
+**THE ITEM CAME FROM A RESIDUE NOTE OF MINE THAT WAS WRONG, AND CHECKING IT
+AGAINST THE SHIPPED TREE IS WHAT FOUND THE REAL CLASS.** An hour earlier I
+recorded, as named residue, that `American Funds The Growth Fund of America®
+Class R-6` publishes RGAGX where the same name without the trademark glyph
+publishes nothing — *"two spellings differing by a registered-trademark
+glyph."* **That was read off renderer A of my own differential, which is the
+PRISTINE file**, so it described the world before my own hyphen ship. Probed
+against the shipped tree, **every** idealised spelling resolves and the glyph
+is irrelevant. *A queue entry records what was true when it was written*, and
+this one was written from the baseline column of my own measurement — a new way
+for a note to go stale within the hour.
+
+**WHAT THE RE-CHECK FOUND INSTEAD IS LARGER AND MOSTLY NOT MINE TO SHIP:
+2,126 published+served rows / 1,587,433 ppl across 324 spellings of Growth Fund
+of America publish no ticker**, and the four biggest (`American Funds Growth
+Fund of America` 349 rows / 232,665 ppl / $1.5B at a 0.3 fee, `Growth Fund of
+America` 257, `The Growth Fund of America` 294, `American Funds The Growth Fund
+of America` 157) **state NO SHARE CLASS**, so the matcher answers `AGTHX*` — a
+COMPARABLE, which `gen-sec-tickers` never ships. That is the owner-gated
+comparable half, named here with a figure rather than taken.
+
+***THE DECOY QUESTION WAS ANSWERED BEFORE THE SIZE, AND IT IS THE ONLY REASON A
+BARE HOUSE TOKEN SHIPS:*** all **254** distinct stored names beginning with an
+`AMF` token were read, and **every one is an American Funds / Capital Group
+product** — AMCAP, New Economy, Bond Fund of America, Income Fund of America,
+Investment Company of America, US Government Securities, Inflation Linked Bond,
+Small Cap World, Capital World Growth & Income, Global Balanced, Multi-Sector
+Income, Preservation Portfolio, Retirement Income Portfolio and every
+target-date vintage. **0 decoys.** The precedent is the `tiaa` sizing, where the
+two-word phrase took 0 outside its family and a bare brand took 474 registered
+funds — so the test is not "is a bare token allowed" but "what does THIS token
+take in THIS store".
+
+***AND MY FIRST CLASSIFIER CALLED 138 OF THE 254 DECOYS AND WAS WRONG ABOUT
+EVERY ONE.*** It split them with a hand-written product vocabulary, so
+`AMF AMCAP R6`, `AMF INFL LINKED BOND R6`, `AMF NEW ECON R6`, `AMF 2025 TD RET
+INC R6` and `AMF INVEST CO OF AMERICA` landed in the decoy bucket purely
+because I had not listed those products. *A count keyed on a vocabulary measures
+the vocabulary* — met for the second time in a week on my own classifier, and
+the fix was to read all 138 rather than widen the list.
+
+**ORDER IS LOAD-BEARING AND MY OWN FIXTURE CAUGHT ME GETTING IT WRONG — the
+sharpest thing in this entry.** I measured a variant with the AMF push inserted
+**before** the hyphen collapse and shipped it **after**, and the hyphen loop
+iterates **`vs.slice()`** — a snapshot — so a seed added afterwards never gets
+its hyphen collapsed. `AMF Growth Fund of America Class R-6` resolved RGAGX in
+the measured variant and **nothing** in the first shipped order. ***The
+composition fixture failed by name, one commit after the hyphen arm itself had
+to be rewritten for the same reason in the opposite direction*** — there two
+pushes each produced a seed the other's transform was needed for; here the later
+arm simply cannot see a seed added below it. **So: two normalisations in one
+list compose only in the direction the later one reads, and the shipped ORDER
+must be the order that was measured.** Had the pin not existed the ship would
+have delivered 324 of 325 rows and the registration would have read as holding.
+
+**THE ASSERTION IS THE FILING'S:** all 325 gaining rows STATE `R6`, RGAGX is
+registered as `Class R-6`, and **0** name a pooled vehicle in either the name or
+the type cell (319 `Mutual fund`, 6 blank). All **9** distinct moved spellings
+read, one of them carrying a welded share count
+(`AMF Growth Fund of America R6 5,827.0530 shares`) and still correct.
+
+**BOTH ANCHORS ARE PINNED AND BOTH CAN FAIL**, verified to resolve to nothing
+today: `^` is the only thing keeping the token from being read mid-name as some
+other firm's initials (`Vanguard AMF Growth Fund of America R6`), and `\b` the
+only thing keeping it off a longer word (`AMFIELD …`).
+
+**ONLY THE GROWTH FUND OF AMERICA FAMILY GAINS, out of 254 spellings**, and the
+reason is the recorded contraction class: `INFL LINKED BOND`, `TD RET INC`,
+`AMCAP`, `INVEST CO OF AMERICA` and `US GOV SECURITIES` are spellings
+`fund-er.js`'s pattern table does not carry, and a guessed contraction
+vocabulary is the shape this record has measured harmful twice. So the
+expansion is general in FORM with one live product family — the same honest
+state as the recordkeeper-brand rule being general with one live house. The
+residue needs the registry, not a wider screen.
