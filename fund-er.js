@@ -1484,6 +1484,53 @@ function fundTickerInfo(name, type) {
    * typed a non-registered vehicle (549 `Mutual fund`, 188 blank); and a
    * seeded uniform draw of 24 reads 24 of 24 correct. */
   if (/\bEUPAC\b/i.test(name)) vs.push(name.replace(/\bEUPAC\b/gi, "EuroPacific Growth"));
+  /* `AMF` IS A RECORDKEEPER'S ABBREVIATION OF AMERICAN FUNDS, AND IT IS
+   * UNAMBIGUOUS IN THIS STORE (2026-10-11). `AMF GROWTH FUND OF AMERICA R6` —
+   * 256 rows, the family's largest spelling — published no ticker and no fee
+   * while stating its share class outright. Same stage and same reason as the
+   * two pushes above: `vs` feeds only `hit`, `pooled` tests the RAW name, and
+   * `fundER` never sees the seed, so no FEE cell and no displayed NAME can move
+   * BY CONSTRUCTION (measured 0 and 0).
+   *
+   * THE DECOY QUESTION WAS ANSWERED BEFORE THE SIZE, AND IT IS WHY A BARE
+   * HOUSE TOKEN IS SAFE HERE WHERE THE RECORD NORMALLY REFUSES ONE: all **254**
+   * distinct stored names beginning with an `AMF` token were read, and **every
+   * one is an American Funds / Capital Group product** — AMCAP, New Economy,
+   * Bond Fund of America, Income Fund of America, Investment Company of
+   * America, US Government Securities, Inflation Linked Bond, Small Cap World,
+   * Capital World Growth & Income, Global Balanced, Multi-Sector Income,
+   * Preservation Portfolio, Retirement Income Portfolio and every target-date
+   * vintage. **0 decoys**, where the `tiaa` sizing found the same answer for the
+   * two-word phrase and the bare brand took 474 registered funds.
+   *
+   * ANCHORED AT THE START AND ON A WORD BOUNDARY, both pinned: `^` keeps
+   * `Vanguard AMF Growth Fund of America R6` out and `\b` keeps `AMFIELD …`
+   * out, so the token cannot be picked up mid-name where it is some other
+   * firm's initials.
+   *
+   * Measured as a DIFFERENTIAL over all 1,721,920 published+served rows,
+   * narrowed to the 1,359 whose raw or cleaned name begins with the token (a
+   * superset BY CONSTRUCTION) and discharged on 19,117 sampled non-candidates
+   * differing on 0: **325 rows / 325 acks / 325 plans / 156,373 participants /
+   * $191,329,641 gain RGAGX**, with ticker lost 0, swapped 0, ASTERISKED 0,
+   * fee 0, name 0, shownType 0. All 325 STATE `R6` and RGAGX is registered as
+   * `Class R-6`, so the assertion is the filing's; 0 name a pooled vehicle
+   * (319 typed `Mutual fund`, 6 blank). All 9 distinct moved spellings read.
+   *
+   * ONLY THE GROWTH FUND OF AMERICA FAMILY GAINS, out of 254 spellings — the
+   * rest are contractions `fund-er.js`'s table does not carry (`INFL LINKED
+   * BOND`, `TD RET INC`, `AMCAP`), which is the recorded contraction class and
+   * needs the registry rather than a wider screen. The expansion is general in
+   * FORM with one live product family, exactly as the recordkeeper-brand rule
+   * is general with one live house. */
+  if (/^\s*AMF\b/i.test(name)) vs.push(name.replace(/^\s*AMF\b/i, "American Funds"));
+  /* ORDER IS LOAD-BEARING: this push must run BEFORE the hyphen collapse below,
+   * because that loop snapshots `vs.slice()` — a seed added after it never gets
+   * its hyphen collapsed, so `AMF … Class R-6` would resolve to nothing. The
+   * composition fixture in `fund-er-test.mjs` is what caught the wrong order,
+   * one commit after the hyphen arm had to be rewritten for the same reason in
+   * the opposite direction. *Two normalisations in one list compose only in the
+   * direction the later one reads.* */
   /* A SHARE CLASS WRITTEN WITH A HYPHEN, WHERE THE TABLE SPELLS IT WITHOUT ONE
    * (2026-10-11). `American Funds EuroPacific Growth Fund (Class R-6)` was
    * publishing a 0.46 fee and NO symbol, and the queue entry blamed the

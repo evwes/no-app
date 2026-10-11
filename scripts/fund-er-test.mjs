@@ -256,6 +256,18 @@ const MUST = [
   ["American Funds EUPAC Class R-6", "RERGX"],
   ["EuroPacific Growth Fund Class R-6", "RERGX"],
   ["American Funds Washington Mutual Class R-6", "RWMGX"],
+  /* `AMF`, A RECORDKEEPER'S ABBREVIATION OF AMERICAN FUNDS (2026-10-11). 325
+   * rows / 156,373 readers published no ticker while stating `R6`. Safe as a
+   * BARE house token only because all 254 distinct stored names beginning with
+   * the token were read and every one is an American Funds product — 0 decoys.
+   *
+   * THE SECOND PIN IS A COMPOSITION CONTROL, and it exists because the hyphen
+   * arm one commit earlier had to be rewritten for exactly this: two
+   * normalisations in the same list do NOT compose unless the later one reads
+   * every seed. `AMF … Class R-6` needs the AMF expansion AND the hyphen
+   * collapse, so it fails if either arm stops feeding the other. */
+  ["AMF GROWTH FUND OF AMERICA R6", "RGAGX"],
+  ["AMF Growth Fund of America Class R-6", "RGAGX"],
   /* THE COLLAPSE MUST NOT MOVE AN ANSWER THAT IS ALREADY RIGHT, and these three
    * can FAIL because fund-er's own table resolves them today: the collapse
    * produces `K6`, `R6` and `I2`, any of which could newly match some other
@@ -266,6 +278,10 @@ const MUST = [
    * through this table, so its pin failed here while being correct on the page.
    * *There are two resolvers, and a fixture is only as good as the one its own
    * harness asks.* Over all 18, the collapse changes the answer on 0. */
+  /* THE `AMF` ARM'S TWO ANCHORS, each its own single-protection case and each
+   * verified to resolve to nothing today: `^` is the only thing keeping the
+   * token from being read mid-name (some other firm's initials), and `\b` the
+   * only thing keeping it off a longer word. */
   ["Fidelity Total bond K-6 Fund", "FTBFX"],
   ["JP Morgan Large Cap Growth R-6", "JLGMX"],
   ["PIMCO TOTAL RETURN I-2", "PTTRX"],
@@ -291,6 +307,8 @@ const MUST = [
 
 /* MUST NOT RESOLVE. A blank is the honest answer for all of these. */
 const MUST_NOT = [
+  "Vanguard AMF Growth Fund of America R6",
+  "AMFIELD Growth Fund of America R6",
   "VanEck CM Commodity Index I",                   // "Van" -> Vanguard must not reach a Vanguard fund
   "Van Eck International Investors Gold",
   "PUTNAM STABLE VALUE FUND 25",
