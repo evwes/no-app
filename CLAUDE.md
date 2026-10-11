@@ -560,7 +560,14 @@ costs a night.
   `docs/coverage-history.jsonl` (universe, confident lineups, match/vesting/
   rk coverage, fee-codes %, HIGH/WARN counts, and as of 2026-10-03 **`pv`, the
   PARSER_VERSION that wrote the line**) — trends are diffable, dips are
-  regressions. **`pv` was added because a question about our own cadence was
+  regressions. **BUT `tkExact`/`tkComparable` are a RE-IMPLEMENTATION of
+  `lookupTicker`, not a call to it, so they go blind whenever an arm is added
+  to the page and not to `audit-data` — which happened twice, costing 1.11
+  points: `f.ftk` (read FIRST on the page) and the whole `sec-tickers.js`
+  table (read LAST, 19,413 published rows), both fixed 2026-10-11 08:1xZ.
+  *Nothing executes a comment asserting equivalence*, and that comment had
+  claimed the call for weeks — check the arm list against app.js's whenever
+  either moves. **`pv` was added because a question about our own cadence was
   unanswerable from 374 lines of our own record:** measured over all 373
   consecutive pairs, 51.2% are identical and 48.8% move a number, longest
   identical streak **34** — so three identical runs is evidence of nothing — but
@@ -910,6 +917,18 @@ The `dl` population has been HEAD-probed whole four times (68/68, 78/78, 23/23,
 EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
+
+**REPORTING-ONLY, PRE-REGISTERED 2026-10-11 08:1xZ — `tkExact` 37.88 ->
+38.99.** `audit-data`'s ticker split was blind to TWO of app.js's arms: `f.ftk`
+(which the page reads FIRST) and the generated `sec-tickers.js` table (which it
+reads LAST, 7,350 keys / 19,413 published rows). The copy loaded `fund-er.js`
+alone. Both are now added in app.js's order, the SEC arm behind the SAME vehicle
+gate the page applies. **`tkComparable` 3.41, `tkSampled` 87,106 and `tkShare`
+all UNCHANGED, and every other key on the line unchanged** — no store is
+written and `PARSER_VERSION` stays 203. Measured: the harness reproduces the
+shipped 37.88 on 87,106 rows (the control that it IS the metric), `+ftk` 37.99,
+`+sec` 38.88, both 38.99; the real audit printed 38.99 / 3.41 / HIGH 4 / WARN
+556. `docs/accuracy-log.md` 2026-10-11 (08:1xZ).
 
 **v203 IS COMPLETE, VERIFIED AND MIRRORED TO MAIN (`bb4bed5a` -> `97f7ae97`, a
 MATCHED code/store pair). ITS REGISTRATION HELD EXACTLY, SO THERE IS NOTHING

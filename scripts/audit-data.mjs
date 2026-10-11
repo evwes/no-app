@@ -736,8 +736,35 @@ try {
     const { default: vm } = await import("node:vm");
     const ctx2 = { console };
     vm.createContext(ctx2);
-    vm.runInContext(readFileSync("fund-er.js", "utf8") + "\nglobalThis.__t = fundTickerInfo;", ctx2);
+    vm.runInContext(readFileSync("fund-er.js", "utf8")
+      + "\nglobalThis.__t = fundTickerInfo;\nglobalThis.__pooled = pooledVehicleRow;", ctx2);
     const tickerOf = ctx2.__t;
+    const pooledVehicleRow = ctx2.__pooled;
+    /* THE GENERATED SEC TABLE IS ONE OF THE PAGE'S SCRIPTS, and this metric was
+     * blind to all of it. `lookupTicker`'s LAST arm reads `sec-tickers.js`
+     * (7,350 keys reaching 19,413 published rows as of 2026-10-11) and the
+     * re-implementation below never loaded it, so `tkExact` under-reported by
+     * 1.11 points and could not witness the vehicle gate that withholds a
+     * pooled row's symbol. *A coverage metric that cannot see the field it is
+     * meant to measure* — the same shape this block's own `f.stk` comment
+     * names, one arm further along.
+     *
+     * A MISSING TABLE IS REPORTED, NOT SWALLOWED: the metric still runs (the
+     * audit must not die for a reporting key) but says so in its own line,
+     * because a silent fallback here recreates exactly the under-report being
+     * fixed. */
+    let SEC_TICKERS = null;
+    try {
+      const ctx3 = { console };
+      vm.createContext(ctx3);
+      vm.runInContext(readFileSync("sec-tickers.js", "utf8")
+        + "\nglobalThis.__s = SEC_TICKERS;", ctx3);
+      SEC_TICKERS = ctx3.__s && typeof ctx3.__s === "object" ? ctx3.__s : null;
+    } catch (e) { SEC_TICKERS = null; }
+    if (!SEC_TICKERS || !Object.keys(SEC_TICKERS).length)
+      console.warn("!! sec-tickers.js did not load — tkExact UNDER-REPORTS by roughly a point");
+    if (typeof pooledVehicleRow !== "function")
+      console.warn("!! fund-er.js exposes no pooledVehicleRow — the vehicle gate is not applied to tkExact");
     /* Sample by ACK HASH, not by row position (2026-09-18, run #369): the
      * positional 1-in-20 re-phased on every row removed anywhere before it,
      * so v139's 300 junk-row deletions produced a DIFFERENT 85,987-row sample
@@ -763,13 +790,21 @@ try {
      * no type — so it is not what a reader sees, and it lumps an EXACT
      * ticker together with a labelled COMPARABLE, which are different claims:
      * "this is the fund you hold" versus "this is what your holding tracks".
-     * These two keys run the SAME 1-in-20 ack-hash sample through app.js's
-     * own lookupTicker, so the trend is comparable run to run while tkShare
+     * These two keys run the SAME 1-in-20 ack-hash sample through a
+     * RE-IMPLEMENTATION of app.js's lookupTicker — arm for arm, in its order,
+     * and that is a claim this file got wrong twice: `f.ftk` and the SEC table
+     * were added to the page and not here. Check the arm list against
+     * app.js's whenever either moves. The trend is comparable run to run while tkShare
      * keeps its history unbroken. Whole-store exact figures:
      * `node scripts/ticker-sweep.mjs`. */
     let tkEx = 0, tkCo = 0;
     try {
       const lookup = (f) => {
+        /* FIRST, exactly as app.js does: the symbol the merge resolved through
+         * the SEC matcher and stored on the row. It runs ahead of every
+         * pattern arm there because it CORRECTS one, so a metric that reads it
+         * late (or not at all) measures a different chain. */
+        if (typeof f.ftk === "string" && f.ftk) return { tk: f.ftk, comparable: false };
         const raw = typeof f.nameRaw === "string" ? f.nameRaw : f.name;
         const iss = f.iss ? String(f.iss).replace(/\*+/g, "").trim() + " " : "";
         const order = /\s\|+\s*$/.test(raw) && raw !== f.name ? [f.name, raw] : [raw, f.name];
@@ -789,6 +824,17 @@ try {
          * `fundTickerInfo` one argument on the bare name and its value is an
          * unbroken history. */
         if (typeof f.stk === "string" && f.stk) return { tk: f.stk, comparable: false };
+        /* AND LAST, the generated table, behind the SAME vehicle gate the page
+         * applies — `f.tk` stand-down, both name spellings, fund-er.js's own
+         * `pooledVehicleRow`. Without the gate this key would count 81 sample
+         * rows the page deliberately withholds, which is the opposite error:
+         * a metric that reports a claim the reader never sees. */
+        if (SEC_TICKERS && !f.tk) {
+          const pooled = typeof pooledVehicleRow === "function"
+            && (pooledVehicleRow(f.name, f.type || "") || pooledVehicleRow(f.nameRaw, f.type || ""));
+          const sec = SEC_TICKERS[(f.iss || "") + "\u0000" + (f.nameRaw || f.name || "")];
+          if (!pooled && typeof sec === "string" && sec) return { tk: sec, comparable: false };
+        }
         return null;
       };
       for (const [ack, e] of Object.entries(entriesByAckCov)) {
@@ -807,7 +853,7 @@ try {
       auditCoverage.tkSampled = tkSeen;
       auditCoverage.tkExact = +(100 * tkEx / tkSeen).toFixed(2);
       auditCoverage.tkComparable = +(100 * tkCo / tkSeen).toFixed(2);
-      console.log(`== FUND LABELLING (same sample, through app.js's lookup): exact ${auditCoverage.tkExact}% | comparable ${auditCoverage.tkComparable}% | unlabelled ${(100 - auditCoverage.tkExact - auditCoverage.tkComparable).toFixed(2)}%`);
+      console.log(`== FUND LABELLING (same sample, through app.js's arm set incl. the SEC table): exact ${auditCoverage.tkExact}% | comparable ${auditCoverage.tkComparable}% | unlabelled ${(100 - auditCoverage.tkExact - auditCoverage.tkComparable).toFixed(2)}%`);
       console.log(`== TICKER COVERAGE: ${pct}% of published holding rows resolve to a fund (1-in-20 sample of ${tkSeen.toLocaleString()} rows; blank fee cell otherwise)`);
     }
   } catch (e) { console.warn("ticker-coverage sample skipped: " + e.message); }

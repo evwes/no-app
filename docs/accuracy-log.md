@@ -7,6 +7,90 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-11 (08:1xZ) — THE COVERAGE LINE'S OWN TICKER METRIC WAS BLIND TO THE WHOLE SEC PATH AND TO THE GATE SHIPPED NINETY MINUTES EARLIER: `tkExact` under-reported by 1.11 points, and its comment claimed it ran through a function it re-implements
+
+### What was wrong
+
+`audit-data.mjs` writes `tkExact` and `tkComparable` on every coverage line, and
+its own comment says the two keys *"run the SAME 1-in-20 ack-hash sample through
+**app.js's own lookupTicker**"*. They do not: the block loads **`fund-er.js`
+alone** into a vm and rebuilds the chain by hand. Two of the page's arms were
+never added to the copy:
+
+- **`f.ftk`, which app.js reads FIRST** — the symbol `merge-4i` resolved through
+  the SEC matcher and stored on the row. It runs ahead of every pattern arm on
+  the page *because it corrects one*, and the metric did not read it at all.
+- **the generated `sec-tickers.js` table, which app.js reads LAST** — 7,350 keys
+  reaching **19,413 published rows**, shipped 2026-10-09 and widened three times
+  since. The metric never loaded the file.
+
+So the always-on machinery could not see the largest ticker change of the past
+three days, and — measured the same hour — **could not witness the vehicle gate
+shipped at 06:5xZ**, which withholds a pooled row's symbol on 81 rows of this
+very sample.
+
+### How it surfaced
+
+The 08:08 cycle read #633's verdict and `tkExact` had **risen** 37.84 -> 37.88,
+where the hour's only ship can nothing but WITHDRAW assertions. ***A guard that
+answers differently than expected is a reason to read what it SAID***, so the
+metric was read rather than the ship re-examined — and the rise is honest
+(`fundTickerInfo` gained the hyphen and `AMF` arms at 03:3xZ and 04:3xZ, which
+this metric CAN see). The contradiction was in what it could not.
+
+*Attribute a moved coverage figure by the producing run's `head_sha`* got the
+attribution right and would have stopped there; what found the defect was asking
+why the figure did not ALSO move the other way.
+
+### The change
+
+The two arms are added in app.js's own order, with `sec-tickers.js` loaded into
+the same vm context and the SEC arm behind the **same gate the page applies** —
+`!f.tk` stand-down, both name spellings, `fund-er.js`'s own `pooledVehicleRow`
+(reachable there only because the 06:5xZ ship hoisted it to the top level).
+Without that gate the key would count 81 sample rows the page deliberately
+withholds, **which is the opposite error: a metric reporting a claim no reader
+sees.**
+
+**Measured, and the harness proves itself before it predicts:** the "shipped"
+variant reproduces **87,106 sample rows and exactly 37.88%** — the trail's own
+`tkSampled` and `tkExact` — so the re-implementation under test IS the shipped
+one. Then `+ftk` 37.99, `+sec` 38.88, **both 38.99**. The real audit, run end to
+end, printed **38.99% / comparable 3.41% / HIGH 4 / WARN 556**, matching to the
+digit.
+
+**A MISSING TABLE IS REPORTED, NOT SWALLOWED.** The load is wrapped, because the
+audit must not die for a reporting key — but a silent fallback here recreates
+exactly the under-report being fixed, so a failed load prints
+`!! sec-tickers.js did not load — tkExact UNDER-REPORTS by roughly a point`, and
+a `fund-er.js` with no `pooledVehicleRow` prints its own line. Neither fired on
+the real run, which is how both loads are known to have worked. *A suppressed
+command is an uninstrumented command*, applied to a `require`.
+
+### Pre-registered for the next run that merges
+
+`tkExact` **37.88 -> 38.99**; `tkComparable` **3.41 unchanged**; `tkSampled`
+**87,106 unchanged**; `tkShare` **unchanged** (it is deliberately a different,
+unbroken series — one argument, bare stored name); and **every other key on the
+line unchanged**, because this is reporting-only: no store is written, and
+`PARSER_VERSION` stays 203. A line that moves anything else is the thing to
+investigate.
+
+### What now prevents it
+
+The block comment no longer claims to call `lookupTicker`; it says plainly that
+it is a **re-implementation, arm for arm, in app.js's order**, records that this
+file got that wrong twice, and tells the next reader to check the arm list
+against app.js's whenever either moves. The operator-facing line was carrying
+the same false claim in the audit's own output and now reads *"through app.js's
+arm set incl. the SEC table"*.
+
+*The honest general form: a metric that re-implements a chain inherits the duty
+to track it, and the comment asserting equivalence is the thing most likely to
+go stale — because nothing executes a comment.*
+
+---
+
 ## 2026-10-11 (07:0xZ) — the houseless ADMIRAL class, SIZED with a validated witness at 5,222 rows / 2,790,684 participants — and **1,811 of them are POOLED VEHICLES my instrument could not see**, so nothing ships until the clean half is re-measured
 
 ### The witness, and the probe that refuted the first one
