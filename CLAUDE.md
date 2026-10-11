@@ -923,6 +923,24 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
+**PRE-REGISTERED 2026-10-11 14:2xZ for the next merge after the ADMIRAL ship
+(`4ae5198f`, mirrored to main 14:1xZ) — `tkExact` **39.00 -> 39.02**, band
+39.02-39.03, and NOTHING ELSE MOVES.** The arm is build-side and writes no
+store, but it added 315 keys to `sec-tickers.js` and **`tkExact` reads that
+table** (that is what the 08:1xZ metric fix wired in), so this is the one
+coverage key it can touch: 425 published+served rows of 1,721,920 is 0.0247%,
+which over the 87,106-row sample is ~21 rows and +0.025 points. **Anything
+above 39.03 means the table moved more than the row-level diff measured.**
+`tkComparable` 3.41 (the generator ships assertions only, so a comparable
+cannot be added), `tkSampled` 87,106, `tkShare` 25.12, confident 60,182, match
+43,312, vesting 53,023, vestQuote 5,373, entries 65,495, HIGH 4, WARN 556,
+overshoot 370, aggRow 114, `dl` 93 and **pv 203** all unchanged. A `dl` rise
+means the EFAST2 bucket grew.
+*This registration exists because a build-side asset is not a display-side one:
+the flexPATH ship could register "nothing moves" only because `noPublicPrice`
+gates `er` alone, and the recorded habit of reading that claim across to the
+next ship is what the v202 15x miss cost.*
+
 **DELIVERED AND VERIFIED BY #636 (`success`, 11:10:35-11:19:56Z, `02f9c12a`,
 data commit `6187f386`) — THE REGISTRATION HELD IN THE STRONGEST FORM
 AVAILABLE: the line is BYTE-IDENTICAL to its predecessor on all 35 keys,
