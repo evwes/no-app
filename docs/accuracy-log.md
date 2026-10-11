@@ -53787,3 +53787,97 @@ Plus Bond Fd 6`, `SSgA US Infl Pro Bd Ix NL Fd C`) publish **no fee at all**,
 which is the honest answer and the direct control on the stable-value class:
 where the type cell says collective trust the suppressor holds, and the
 recorded failures are all rows whose type cell is BLANK.
+
+## 2026-10-11 (02:4xZ) — THE DOUBLE RENDER WHERE NEITHER COPY IS QUALIFIED: MY FIRST SCREEN ASKED WHETHER THE PAGE ALREADY AGREED WITH ME, AND THE PLAN'S OWN SCHEDULE H IS THE WITNESS
+
+**Took the 01:08 draw's own find, queued UNSIZED.** Wawa publishes `Vanguard ·
+Total Bond Index Institutional Class` at $57,092,913 and, two rows later,
+`Bond Fund Investments` at the same $57,092,913. The recorded double-render
+item is keyed on BOTH rows resolving to the same TICKER; here neither resolves,
+so the queue asked for *a witness that does not require either side to
+resolve*.
+
+***MY FIRST SCREEN COULD NOT SEE ITS OWN MOTIVATING ROW, AND THE REASON IS
+REUSABLE.*** I required one of the two copies to be QUALIFIED by the page
+("the filing names no specific fund"), which read a tidy **67 pairs / 65 acks /
+130,288 ppl / $1,456,677,795** — and the must-see pin, keyed BY ACK, printed
+`0 pair(s)` above it. Wawa's `Bond Fund Investments` is **not** qualified by the
+page, and *that is the defect*. ***A SCREEN KEYED ON THE PAGE'S OWN VERDICT
+CANNOT SEE A DEFECT THAT CONSISTS OF THAT VERDICT BEING WRONG*** — it asks
+whether the page already agrees with me. Same family as *a count keyed on a
+vocabulary measures the vocabulary*, met on a rendered verdict instead of a
+word list, and the pinned fixture is the only thing that refused the 67 before
+it was believed.
+
+**RE-KEYED TO THE STRUCTURE — every pair of rows in one entry at an IDENTICAL
+non-zero value under DIFFERENT published names — the class is 85x that: 5,754
+pairs / 2,278 acks / 3,694,834 ppl / $19,181,051,166 duplicated**, of which
+**5,671 pairs / 3,578,724 ppl have NEITHER side qualified** (Wawa's shape) and
+only 67 are what the first screen saw.
+
+**THE READER-FACING HARM IS THE MENU TOTAL, NOT THE DUPLICATE NAME, AND IT IS
+ALREADY A PUBLISHED FIGURE.** 3,314 pairs sit in menus that OVERSHOOT the
+plan's own Schedule H assets, and `audit-data` raises `lineup-overshoot` only
+above 1.15, so **961 are visible and roughly 2,350 publish an inflated total no
+check sees.** Wawa's own menu reads 1.009.
+
+***BUT THE BLANKET CLASS IS REFUTED BY READING IT, AND THE FALSE POSITIVES ARE
+ARITHMETIC.*** Oracle files `Dodge & Cox International Stock Fund` (DODFX) and
+`PIMCO Inflation Response Multi-Asset Fund Institutional` (PIRMX) **both at
+$423,736,000** — two real, different funds; Pfizer the same at $279,792,000;
+Oracle again at $261,131,000. Those filings report in THOUSANDS, so a collision
+is expected and not a duplicate. **And that discriminator is nearly inert on
+its own: only 57 pairs / $2,050,798,000 carry a round-thousand value**, so
+refusing them removes the named false positives and almost nothing else — *a
+discriminator can be right about the members it was built from and still
+explain almost none of the population.*
+
+**WHAT CONVICTS A DUPLICATE IS AN INTERNAL WITNESS NEEDING NO REGISTRY: the
+plan's OWN Schedule H total.** Dropping one copy must move the ratio TOWARD 1.0
+AND land it in 0.97-1.005. **TRIPLE CONJUNCTION: 572 pairs / 365 acks / 396,467
+ppl / $1,270,614,032, and 567 of the 572 are INVISIBLE to audit today**
+(ratio ≤ 1.15).
+
+***AND THE BAND TEST ALONE IS CONTAMINATED — I measured it before noticing.***
+"Lands in 0.97-1.005" reads 2,404 pairs, because it admits a menu that was
+ALREADY inside the band and that the drop moves AWAY from 1.0. Adding the
+direction test cuts it to 572. **DO NOT CARRY 2,404 / 1,481,177 ppl.** *A band
+test is not a direction test, and a predicate about a MOVE needs both.*
+
+**ALL 16 LARGEST MEMBERS OF THE CONJUNCTION READ, and every one is two
+spellings of ONE holding** — which is what makes the witness sound rather than
+lucky: John Hancock Life (10,457 ppl) `John Hancock Fixed Income Fund` /
+**`Fixed Income`**, $366,198,795 each, ratio **1.145 -> 1.000 exactly**; Baptist
+Health South Florida (33,902) `Guaranteed investment option` / `Transamerica
+Guaranteed Inv Option`, 1.090 -> 0.993, **and the second copy publishes the
+owner-gated fabricated 0.35**; Patterson Companies (8,144) `Patterson
+Companies, Inc. common stock` / **`Employer stock`**, 1.201 -> 0.991;
+GlaxoSmithKline (21,762) the SAME name twice with `Common collective` welded
+onto one copy, 1.007 -> 1.001; IUOE Local 399 `John Hancock Stable Value Fund`
+/ **`Party-in-Interest`** — the party-in-interest MARKER published as a holding;
+and **two FILER TYPOS**: Loyola Marymount's `Personal Choice Retirement
+Account` / `Personal Choice Ret**ment** Account` and AssuredPartners'
+`M**E**FS Mid-Cap Growth fd CI CT` / `MFS Mid-Cap Growth fd CI CT`.
+
+**AND THE LARGEST PAIR IN THE WHOLE CLASS IS A DIFFERENT, ALREADY-RECORDED
+DEFECT: Capital One Financial (68,906 ppl) publishes `$4,377,590,614.97
+857444590 Series Fund` at $4,377,618,687 — 23.30% of its menu — beside `State
+Street S&P 500 Index Fund` (SSSYX, 0.02) at the same value.** The name is a
+DOLLAR FIGURE plus a CUSIP, which is the 15:5xZ welded-table-row class, and the
+amount inside the name is **not** the row's value, so it is a second figure we
+cannot account for. Lockheed Martin (180,780 ppl) and Huntington Ingalls
+(65,582) supply the other recorded shape, six pairs where the duplicate side is
+an opaque CUSTODIAN CODE — `BLACKROCK MSCI ACWI EX US` / `ACI0099W6`
+($2,916,664,605), `BLACKROCK 1 10 YR TIPS FUND` / `MLL1`, `BLK MSCI USA MIN VOL
+INDX F` / `MLS2`, `U S BD INDEX SECS LENDING SER …` / `HI9K` — the `code`
+bucket of the one-token class, now with the identical value as proof that the
+code row IS the named row.
+
+**NOT SHIPPED, and the blocker is the parent item's, unchanged:** removing a
+row LOWERS its region's score and v194 found that a junk-removal version can
+LOSE a region contest it previously won, while typing the row instead leaves
+the dollars double-counted — which is the whole defect. What this cycle adds is
+the SIZE, the refutation of the blanket form, and a witness that needs no
+registry; the orientation question (WHICH copy to drop) is still the recorded
+unsolved one, and here it is easier than usual because on every member read the
+survivor is the fuller spelling.

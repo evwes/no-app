@@ -1590,6 +1590,57 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **THE DOUBLE RENDER WITH NEITHER COPY QUALIFIED — SIZED 2026-10-11 02:4xZ AT
+  5,754 pairs / 2,278 acks / 3,694,834 ppl / $19,181,051,166 duplicated, AND THE
+  SHIPPABLE CORE IS A TRIPLE CONJUNCTION OF 572 pairs / 365 acks / 396,467 ppl /
+  $1,270,614,032.** Supersedes the 01:5xZ "unsized" entry.
+  ***MY FIRST SCREEN ASKED WHETHER THE PAGE ALREADY AGREED WITH ME.*** Keyed on
+  one copy being QUALIFIED it read a tidy **67 pairs / 130,288 ppl** and the
+  must-see pin (BY ACK) printed **0** — Wawa's `Bond Fund Investments` is not
+  qualified, and *that is the defect*. ***A SCREEN KEYED ON THE PAGE'S OWN
+  VERDICT CANNOT SEE A DEFECT THAT CONSISTS OF THAT VERDICT BEING WRONG.***
+  Re-keyed structurally (two rows of one entry at an IDENTICAL non-zero value
+  under DIFFERENT names) the class is **85x** larger, and **5,671 pairs /
+  3,578,724 ppl have NEITHER side qualified**.
+  **THE HARM IS THE MENU TOTAL, A FIGURE THE PAGE ALREADY PRINTS:** 3,314 pairs
+  sit in menus overshooting the plan's own Schedule H assets, `lineup-overshoot`
+  fires only above 1.15, so **961 are visible and ~2,350 publish an inflated
+  total no check sees** (Wawa reads 1.009).
+  **THE BLANKET FORM IS REFUTED BY READING IT AND THE FALSE POSITIVES ARE
+  ARITHMETIC:** Oracle files DODFX and PIRMX **both at $423,736,000**, Pfizer
+  two real funds at $279,792,000 — those filings report in THOUSANDS. **But that
+  discriminator is nearly inert: only 57 pairs / $2,050,798,000 are round
+  thousands**, so *a discriminator can be right about the members it was built
+  from and explain almost none of the population.*
+  **WHAT CONVICTS A DUPLICATE IS INTERNAL AND NEEDS NO REGISTRY — the plan's OWN
+  Schedule H total.** Dropping one copy must move the ratio TOWARD 1.0 AND land
+  in 0.97-1.005: **572 pairs, 567 of them invisible to audit.**
+  ***THE BAND TEST ALONE IS CONTAMINATED — DO NOT CARRY 2,404 pairs / 1,481,177
+  ppl***: it admits a menu already inside the band that the drop moves AWAY from
+  1.0. *A band test is not a direction test.*
+  **ALL 16 LARGEST READ, every one two spellings of ONE holding:** John Hancock
+  Life (10,457 ppl) `John Hancock Fixed Income Fund` / **`Fixed Income`**,
+  $366,198,795 each, **1.145 -> 1.000 exactly**; Baptist Health South Florida
+  (33,902) 1.090 -> 0.993 **with the second copy publishing the owner-gated
+  fabricated 0.35**; Patterson (8,144) `… common stock` / **`Employer stock`**
+  1.201 -> 0.991; GlaxoSmithKline (21,762) the same name twice with
+  `Common collective` welded on; IUOE Local 399 publishing
+  **`Party-in-Interest`** — the marker — as a holding; and **two FILER TYPOS**
+  (`Personal Choice Ret**ment** Account`, `M**E**FS Mid-Cap Growth`).
+  **TWO ALREADY-RECORDED CLASSES SUPPLY THE BIGGEST PAIRS:** Capital One
+  (68,906 ppl) publishes `$4,377,590,614.97 857444590 Series Fund` at
+  **$4,377,618,687 / 23.30%** beside `State Street S&P 500 Index Fund` (SSSYX
+  0.02) — a DOLLAR FIGURE plus a CUSIP as the name, the 15:5xZ welded-table-row
+  class, and the amount *inside* the name is not the row's value; and Lockheed
+  Martin (180,780) / Huntington Ingalls (65,582) give six pairs whose duplicate
+  side is an opaque CUSTODIAN CODE (`BLACKROCK MSCI ACWI EX US` / `ACI0099W6`,
+  $2,916,664,605) — the `code` bucket of the one-token class, **now with the
+  identical value as proof the code row IS the named row.**
+  **NOT SHIPPED, blocker unchanged from the parent:** removing a row lowers its
+  region's score (v194) and typing it leaves the dollars double-counted. What is
+  new is the size, the refutation, and a registry-free witness; the orientation
+  question is the recorded unsolved one, though on every member read the
+  survivor is the FULLER spelling. `docs/accuracy-log.md` 2026-10-11 (02:4xZ).
 - **FOUND BY THE 01:08 DRAW — A DOUBLE RENDER AT AN IDENTICAL VALUE WHERE ONE
   SIDE NAMES NO FUND, OUTSIDE THE SHIPPED SCREEN BY CONSTRUCTION. UNSIZED.**
   Wawa, Inc. (**25,954 ppl**) publishes `Vanguard · Total Bond Index
