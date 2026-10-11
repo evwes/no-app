@@ -36,6 +36,11 @@ on:
             "scripts/lib-ledger.mjs", "scripts/lib-schema.mjs",
             "scripts/lib-sec-fingerprint.mjs",
             "scripts/sec-tickers-stamp-test.mjs",
+            # WHICH SPELLING `registrantAttested` IS ASKED OF. The guard is one
+            # `||` away from admitting the cross-house magnets it exists to
+            # refuse, so `sec-attest-test` pins both directions -- and it slices
+            # `gen-sec-tickers.mjs`, which is already in this list above.
+            "scripts/sec-attest-test.mjs",
             # merge-4i carries SEVEN name repairs that rewrite the store, and
             # until 2026-10-11 none of them was tethered here -- so a change to
             # one ran no test of its own. `noun-repair-test` slices the leading-
@@ -121,6 +126,15 @@ jobs:
       # refresh cannot redden it with nothing wrong.
       - name: Issuer-cell reduction — the platform refusals still hold
         run: node scripts/house-core-test.mjs
+      # WHICH SPELLING THE ATTESTATION GUARD IS ASKED OF. It is asked of the
+      # filing as written AND of the destination-blind `MEFS` -> `MFS` typo
+      # repair, which is worth 76 store cells -- and is one `||` away from being
+      # worth the whole cross-house magnet population the guard exists to
+      # refuse. The three arms NOT shipped are pinned too: the Admiral repair
+      # SUPPLIES a house the filing never wrote, so attesting against it is
+      # circular, and an invariant demonstrates that by doing it.
+      - name: Attestation inputs — the typo repair is attested, the supplied house is not
+        run: node scripts/sec-attest-test.mjs
       # The comparable-fee footnote is the largest disclosure dependency on the
       # record: 45,067 published rows / 34,282,495 participants /
       # $1,455,409,472,270 publish a comparable's expense ratio, and what makes

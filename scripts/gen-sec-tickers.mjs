@@ -673,6 +673,112 @@ const aposExpand = (s) => {
   return o;
 };
 
+/* `MEFS` IS `MFS` WITH AN INSERTED E — a filer/OCR typo, not a house. Over all
+ * 29,406 registry rows **0 spell MEFS and 695 spell MFS**, so the token names
+ * no registered entity and the correction is REGISTRY-ATTESTED rather than
+ * guessed; our own store carries both spellings in one cell four times.
+ *
+ * HOISTED to module scope 2026-10-11 because `registrantAttested` is now asked
+ * of it as well as `secAsk` — see ATTESTATION_INPUTS below. */
+const deTypo = (x) => String(x == null ? "" : x).replace(/\bMEFS\b/gi, "MFS");
+
+/* ---------- WHICH SPELLING IS `registrantAttested` ASKED OF ----------
+ *
+ * The guard asks whether the registrant's own distinctive vocabulary appears in
+ * the FILED name or issuer cell, and it was asked of `f.nameRaw`/`f.iss` alone.
+ * That is right for a filing we have not touched and WRONG for one whose house
+ * token we have corrected: it refused the MEFS class on exactly the rows where
+ * the house token was the only distinctive evidence, which is the rows the
+ * repair exists for. `MEFS Value Fund R6` resolves MEIKX, whose registrant
+ * `MFS SERIES TRUST I :: MFS Value Fund` offers the single distinctive word
+ * `mfs`, and the filing spells `mefs`. The row the class was found on was in
+ * the refused half.
+ *
+ * SO THE QUESTION IS WHICH REPAIRED SPELLINGS MAY BE ATTESTED AGAINST, AND THE
+ * TEST IS NOT "did the filing contain the word" BUT ***DOES THE REPAIR DEPEND
+ * ON THE DESTINATION?*** A rewrite that is a pure function of the filed string,
+ * fixed before any resolution and blind to which symbol it will reach, cannot
+ * be attesting against our own guess about the house. A rewrite that SUPPLIES a
+ * house taken from the answer's own registrant is circular by construction.
+ *
+ * Measured over the whole store (1,730,931 rows / 553,274 distinct cells), per
+ * arm, with the transcribed guard first reproducing all 14 of the attestation
+ * controls below:
+ *
+ *   deTypo      PURE function of the filed string, destination-blind. 362 cells
+ *               / 474 rows touchable; 117 resolve ASSERTED; attestation moves
+ *               41 -> 117, i.e. **76 cells**, and 0 are refused under both.
+ *               ALL 76 READ: every one an MFS product under the typo, every
+ *               destination an `MFS SERIES TRUST` registrant whose ONLY
+ *               distinctive word is `mfs`, every one stating its share class.
+ *               SHIPPED.
+ *   aposExpand  PURE and destination-blind too, and therefore eligible — and
+ *               **MEASURED INERT**: 1,592 cells / 2,547 rows touchable, 232
+ *               resolve asserted, and the verdict moves on **0**. Three of its
+ *               four expansions produce words `distinctiveWords` drops outright
+ *               (`institutional`, `international`, `government` are CLASS_WORDS
+ *               or DESCRIPTIVE); only `National` survives the filter, and its
+ *               entire live population is `Lincoln Nat'l Life` in the ISSUER
+ *               cell — a separate-account platform, where attesting a row on
+ *               `national` would be a FALSE permission read off the custodian.
+ *               NOT shipped: an arm inert on the data is untested machinery.
+ *   houseCore   A REDUCTION of the issuer: it only REMOVES tokens. Attestation
+ *               reads `norm(name + " " + iss)`, so the reduced cell's token set
+ *               is a SUBSET and the guard asked of it is STRICTLY WEAKER —
+ *               it can never admit anything. Asserted over all 15,686 distinct
+ *               issuer cells in the store: 0 tokens of any 1-3 leading
+ *               reduction absent from `norm(iss)`. NOT shipped, and could not
+ *               be.
+ *   admAsk      ***CIRCULAR.*** It prefixes a house drawn from the
+ *               registry-derived Admiral family — a word chosen from the
+ *               ANSWER, which the filing never wrote. Attesting `Vanguard
+ *               Growth Index Adm` against VANGUARD INDEX FUNDS is attesting
+ *               our own guess. Its 204 refused rows / 144 keys stay refused and
+ *               need a different WITNESS, not a different input. NOT shipped.
+ *   af-abbrev   Already EXEMPT at the call site, for the stronger reason that
+ *               its whole subject is a filed spelling abbreviating the
+ *               registrant, so the guard refutes its premise rather than
+ *               testing it. Unchanged.
+ *
+ * THE RELAXATION'S TOUCHABLE POPULATION IS EXACTLY THE ROWS CARRYING A `MEFS`
+ * TOKEN, by construction: `deTypo` is the identity on every other string, so
+ * the second call is byte-identical to the first and returns the same verdict.
+ * That is why the adversarial population is untouched without needing to be
+ * measured — `(Vanguard Asset Allocation Fund)` -> VCAAX and the three HOIBX
+ * cross-house magnets contain no `MEFS` token — and they are pinned anyway, in
+ * the controls below and in scripts/sec-attest-test.mjs. */
+const ATTESTATION_INPUTS = [(n, i) => [n, i], (n, i) => [deTypo(n), deTypo(i)]];
+function attestedAnySpelling(ticker, filedName, iss) {
+  for (const f of ATTESTATION_INPUTS) {
+    const [n, i] = f(filedName, iss);
+    if (registrantAttested(ticker, n, i)) return true;
+  }
+  return false;
+}
+/* CONTROLS, in both directions. The relaxation must ADMIT the typo'd class and
+ * must leave every recorded cross-house magnet REFUSED, asserted by name. */
+{
+  const must = [
+    ["MEIKX", "MEFS Value Fund R6", "", true, "the row the MEFS class was found on"],
+    ["MVCKX", "MEFS Mid Cap Value R6", "", true, "7 store rows, the class's commonest spelling"],
+    ["MGRDX", "MEFS International Growth R6", "", true, "7 store rows"],
+    ["VCAAX", "(Vanguard Asset Allocation Fund)", "", false, "VALIC's fund on a Vanguard name"],
+    ["HOIBX", "Vanguard Intermediate Bond Fund", "", false, "Homestead magnetizing Vanguard"],
+    ["HOIBX", "JPMorgan Intermediate Bond Fund", "", false, "Homestead magnetizing JPMorgan"],
+    ["HOIBX", "Intermediate Bond Fund", "Voya Financial", false, "Homestead magnetizing Voya"],
+  ];
+  for (const [tk, n, iss, want, why] of must) {
+    const got = attestedAnySpelling(tk, n, iss);
+    if (got !== want)
+      throw new Error(`gen-sec-tickers: REPAIRED-SPELLING ATTESTATION CONTROL — ${tk} on ${JSON.stringify(n)} / ${JSON.stringify(iss)} should be ${want} (${why}), got ${got}`);
+    /* and the MUST-ADMIT cases must be admitted BY THE REPAIR and not already
+     * by the raw spelling, or they test nothing */
+    if (want && registrantAttested(tk, n, iss))
+      throw new Error(`gen-sec-tickers: REPAIRED-SPELLING ATTESTATION CONTROL — ${tk} on ${JSON.stringify(n)} is already attested on the RAW spelling, so it is protected twice and proves neither`);
+  }
+  console.error("repaired-spelling attestation controls OK  (3 MEFS rows admitted BY the repair; VCAAX and 3 HOIBX magnets still refused)");
+}
+
 /* A CUSTODIAN'S OWN WORDS IN THE ISSUER CELL BLOCK THE HOUSE THEY CARRY, AND
  * THEY BLOCK IT TWO INDEPENDENT WAYS — measured, not reasoned:
  *
@@ -1067,39 +1173,25 @@ function secAsk(nameRaw, nameClean, iss) {
     if (nX !== n || issX !== iss) tries.push([nX, issX]);
   }
   /* AND `MEFS`, WHICH IS `MFS` WITH AN INSERTED E — a filer/OCR typo, not a
-   * house (2026-10-11). Over all 29,406 registry rows **0 spell MEFS and 695
-   * spell MFS**, so the token names no registered entity and the correction is
-   * REGISTRY-ATTESTED rather than guessed. Our own store witnesses it too, in
-   * FOUR cells that carry both spellings at once: `MFS Mid Cap Growth Fund CT
-   * IMMCVCT MEFS Mid Cap Value Fund CT`, `MEFS Investment Management MFS
-   * Mid Cap Growth Fund Class 2W` and two more.
-   *
-   * ALL 303 distinct stored spellings were read and every one is an MFS or
-   * MFS-Investment-Management product (International Diversification, Mid Cap
-   * Value, Massachusetts Investors Trust — the house's flagship), so there are
-   * **0 decoys**, which is the `AMF` precedent and the reason a four-letter
-   * token is safe here. Anchored on a WORD boundary, so `MEFSA…` cannot match.
+   * house (2026-10-11). `deTypo` and the whole registry argument for it are at
+   * module scope now; the short version is that 0 of 29,406 registry rows spell
+   * MEFS and 695 spell MFS, all 303 distinct stored spellings were read with 0
+   * decoys, and the token is word-anchored so `MEFSA…` cannot match.
    *
    * It lives HERE and not in `fund-er.js` deliberately: this generator applies
-   * `pooledRow` PER ROW before the asserted/comparable split, so the 92 rows
-   * of this class typed as a pooled separate account, collective trust or
+   * `pooledRow` PER ROW before the asserted/comparable split, so the rows of
+   * this class typed as a pooled separate account, collective trust or
    * separate account are refused BY CONSTRUCTION — the stage lesson recorded
    * at 07:0xZ the same morning.
    *
-   * AND THE DELIVERY IS A FIFTH OF THE POPULATION, BECAUSE `registrantAttested`
-   * BELOW REFUSES WHAT THIS ARM RESOLVES. That guard asks whether the
-   * registrant's own distinctive vocabulary appears in the FILED name or its
-   * issuer cell, and it is asked of `f.nameRaw` — the TYPO'd spelling. So the
-   * repair lands only where the product name carries distinctive words of its
-   * own (`International Diversification`, `Research International`) and is
-   * refused wherever the house token is the only distinctive evidence
-   * (`MEFS Value Fund R6`, `MEFS Mid Cap Value Class R6`). Measured: 54 rows
-   * gain, 71 keys / 106 rows / 65,542 ppl / $116,048,214 are refused, and the
-   * refused half INCLUDES the row this class was found on. The guard is right
-   * in general — it is what stops `Vanguard Asset Allocation Fund` -> VCAAX —
-   * so attesting against the REPAIRED spelling instead is a change to every
-   * arm's input and belongs in its own measured ship, not in this one. */
-  const deTypo = (x) => x.replace(/\bMEFS\b/gi, "MFS");
+   * THE DELIVERY USED TO BE A FIFTH OF THE POPULATION BECAUSE
+   * `registrantAttested` REFUSED WHAT THIS ARM RESOLVED — the guard was asked
+   * of `f.nameRaw`, the TYPO'd spelling, so the repair landed only where the
+   * product name carried distinctive words of its own and was refused wherever
+   * the house token was the only evidence. FIXED 2026-10-11: the call site asks
+   * the guard of the repaired spelling as well, and the argument for why that
+   * is legitimate HERE and circular for the Admiral arm is at
+   * ATTESTATION_INPUTS above. */
   for (const n of names) {
     const nT = deTypo(n);
     if (nT !== n) {
@@ -1319,7 +1411,13 @@ for (let s = 0; s < 64; s++) {
        * registry-derived Capital Group family, a product abbreviating exactly
        * ONE of its series, and a class that series registers. */
       const viaAf = (sec.why || "") === "af-abbrev";
-      if (!viaAf && !registrantAttested(sec.ticker, f.nameRaw, f.iss || "")) {
+      /* `attestedAnySpelling`, not `registrantAttested`: the guard is asked of
+       * the filing as written AND of the destination-blind typo repair, which
+       * is the only one of the four candidate spellings that is both
+       * non-circular and not inert. ATTESTATION_INPUTS carries the whole
+       * measurement. The touchable population is exactly the rows carrying a
+       * `MEFS` token, because `deTypo` is the identity everywhere else. */
+      if (!viaAf && !attestedAnySpelling(sec.ticker, f.nameRaw, f.iss || "")) {
         unattested++;
         unattestedPpl += ppl;
         if (viaAdm) { admUnattested++; admUnattestedKeys.add(key); }

@@ -928,6 +928,30 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
+**PRE-REGISTERED 2026-10-11 20:5xZ for the next merge after the REPAIRED-SPELLING
+ATTESTATION ship — `tkExact` **40.19 -> 40.20**, band **40.19-40.21**, and
+NOTHING ELSE MOVES.** The change is build-side and writes no store, but it added
+**71 keys** to `sec-tickers.js` and `tkExact` reads that table, so this is the one
+coverage key it can touch. **DERIVED IN THE METRIC'S OWN POPULATION**, which is
+the recorded correction: `audit-data.mjs:840` samples `ackHash(ack) % 20` over
+every CONFIDENT entry and applies NEITHER the serving condition NOR the publish
+gate, so a registration built from a published+served row count under-predicts
+it. The metric's own lookup chain was transcribed and run over the identical
+sample with BOTH tables: **87,106 sampled rows, BEFORE 40.19 (35,009 rows) —
+which reproduces #640's shipped figure to the digit, the control that it IS the
+metric — and AFTER 40.20 (35,014 rows)**, a move of 5 sampled rows = +0.0057
+points, which crosses the printed rounding boundary (40.1913 -> 40.1971). The
+band is one hundredth either side only because the store moves hourly and a
+sampled row either way re-rounds it; anything outside means the table moved more
+than the 71-key diff measured. `tkComparable` **3.41** and `tkSampled` **87,106**
+unchanged, measured with both tables (the generator ships assertions only, so a
+comparable cannot be added), `tkShare` 25.12 (it asks `fundTickerInfo` one
+argument on the bare name and never reads this table), confident 60,182, match
+43,312, vesting 53,023, vestQuote 5,373, entries 65,495, HIGH 4, WARN 556,
+overshoot 370, overshootTrust 12, aggRow 114, `dl` 93 and **pv 203** all
+unchanged — no store is written and `PARSER_VERSION` does not move. A `dl` rise
+means the EFAST2 bucket grew.
+
 **DELIVERED AND VERIFIED BY #640 (`success`, 18:12-18:21Z on `4517031b`, data
 commit `6e95f852`, mirrored to main) — THE REGISTRATION HELD ON THE POINT
 ESTIMATE: `tkExact` **39.04 -> 40.19**, dead centre of the registered
@@ -935,8 +959,10 @@ ESTIMATE: `tkExact` **39.04 -> 40.19**, dead centre of the registered
 programmatically rather than by eye.** `tkComparable` 3.41, `tkSampled` 87,106,
 `tkShare` 25.12, confident 60,182, match 43,312, vesting 53,023, vestQuote
 5,373, entries 65,495, HIGH 4, WARN 556, overshoot 370, overshootTrust 12,
-aggRow 114, `dl` 93 and `pv` 203 all unchanged. **SO THERE IS NOTHING
-PRE-REGISTERED AND PENDING.**
+aggRow 114, `dl` 93 and `pv` 203 all unchanged. **This block used to end "SO
+THERE IS NOTHING PRE-REGISTERED AND PENDING" and that is SUPERSEDED by the
+20:5xZ registration at the top of this section** — a sentence like that is true
+only until the next ship, and leaving it up makes the file assert both.
 *This is the first registration since the metric-population correction, and it
 landed on the nose where the two before it missed high by 0.017 and 0.02 — which
 is the evidence that the correction was the right one: a coverage-key prediction
@@ -1921,7 +1947,13 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   filed spelling that abbreviates it — so it refutes the premise instead of
   testing it: it refuses **1,557 of the 18,802 rows / 456 keys**, and asking it
   of the house-repaired spelling rescues only 597. The MEFS lesson in its
-  general form. What replaces it is stricter and computed against the repaired
+  general form — **and the 2026-10-11 20:5xZ attestation ship did NOT disturb
+  this exemption, deliberately: that change widened the guard's INPUT to a
+  destination-blind typo repair, where this arm's repair SUPPLIES the house from
+  the registry and so is the circular case. The exemption stands for the
+  stronger reason this entry already gives, and asking the guard of the
+  house-repaired spelling remains the refuted route (597 of 1,557).** What
+  replaces it is stricter and computed against the repaired
   reading, with three whole-population measurements: 22 adversarial probes all
   abstaining (including `American Funds MFS Value R6`, whose series DOES
   register a Class R6), `namesManager` naming **16** managers across all gained
@@ -2033,23 +2065,35 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   are discharged** — three are now answered by the page's own chain, and the
   fourth's row is gone from the store (0 of 1,721,920 rows carry that
   `nameRaw`): *a removed key is a loss only if a reader stands behind it.*
-  **STILL OPEN AND LARGER THAN THE SHIP — `registrantAttested` REFUSES 71 KEYS
-  / 106 rows / 96 acks / 65,542 ppl / $116,048,214.** That guard asks whether
-  the registrant's distinctive vocabulary appears in the FILED name or issuer
-  cell and is asked of **`nameRaw`, the TYPO'd spelling**, so the repair lands
-  only where the product name carries distinctive words of its own
-  (`International Diversification`, `Research International`) and is refused
-  wherever the house token is the only evidence (`MEFS Value Fund R6`).
-  ***A registry-attested typo correction is refused by the attestation guard
-  exactly where the house token is the only distinctive evidence***, and
-  **Galliano Marine Service — the row the class was found on — is in the refused
-  half, the THIRD consecutive ship whose motivating row is outside its own
-  repair.** The guard is right in general (it is what stops `Vanguard Asset
-  Allocation Fund` -> VCAAX), so attesting against the REPAIRED spelling is a
-  change to every arm's input and needs its own measurement. **Also open: the
-  28 rows / 24,399 ppl whose typo is in the ISSUER cell only**, whose names are
-  bare products — the `houseCore` class with a typo on top.
-  `docs/accuracy-log.md` 2026-10-11 (09:5xZ).
+  **THAT RESIDUE IS CLOSED AS OF 2026-10-11 20:5xZ — `registrantAttested` IS NOW
+  ASKED OF THE REPAIRED SPELLING TOO, AND THE 71 REFUSED KEYS ALL SHIP: 98
+  published+served rows / 71 keys / 89 acks / 89 plans / 62,819 ppl /
+  $114,559,915 gain an ASSERTED symbol**, ticker lost 0 / swapped 0 / asterisked
+  **0**, fee gained/lost/changed 0/0/0, name 0, shownType 0, row membership 0,
+  and a 17,218-row non-candidate discharge differing on 0. Table **12,337 ->
+  12,408 keys, ADDED 71 / REMOVED 0 / CHANGED 0, and all 71 attributed to this
+  arm with ZERO drift.** The whole non-Admiral refusal bucket is now **2 keys**,
+  both `HOIBX` cross-house magnets, which is the guard working.
+  **THE ENTRY'S OWN ROW AND PARTICIPANT FIGURES ARE SUPERSEDED (106 rows / 96
+  acks / 65,542 ppl): the KEY count 71 reproduces exactly and the store has taken
+  six data commits since.** The recorded participant sum was the generator's own
+  DOUBLE-COUNTED one; 62,819 is plan-deduplicated.
+  ***THE JUDGMENT THIS ENTRY DEFERRED IS SETTLED, AND THE TEST IS NOT "DID THE
+  FILING CONTAIN THE WORD" BUT DOES THE REPAIR DEPEND ON THE DESTINATION.***
+  `deTypo` is a pure function of the filed string, fixed before any resolution
+  and blind to which symbol it reaches, so it cannot be attesting our own guess;
+  `admAsk` PREFIXES a house drawn from the answer's own registrant and is
+  circular. Measured per arm over the whole store, and the other two candidate
+  spellings are disposed of by measurement rather than by argument: `aposExpand`
+  is **MEASURED INERT** (1,592 touchable cells, 232 resolving asserted, verdict
+  moves on **0**), and `houseCore` is a REDUCTION whose token set is a SUBSET of
+  what the guard already reads — asserted over all 15,686 distinct issuer cells
+  at 0 — so it is STRICTLY WEAKER and could never admit anything.
+  **Still open: the 28 rows / 24,399 ppl whose typo is in the ISSUER cell only**,
+  whose names are bare products — the `houseCore` class with a typo on top; the
+  repair shipped here reads the issuer cell, so part of that class may already be
+  covered and the figure needs re-deriving rather than carrying.
+  `docs/accuracy-log.md` 2026-10-11 (09:5xZ) and (20:5xZ).
 - **SHIPPED 2026-10-11 13:0xZ — AN ADMIRAL SHARE CLASS WITH NO HOUSE: 425
   published+served rows / 315 keys / 159 acks / 159 plans / 950,842 ppl /
   $4,094,444,301 gain an ASSERTED symbol**, ticker lost/swapped/asterisked
@@ -2093,9 +2137,19 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   `Collective trust` ($3.83M of Vanguard Admiral funds held through a trust),
   Wec's two typed `Separate account`. Without `pooledVehicleRow` asked per row
   they would publish a mutual fund's symbol on a pooled vehicle.
-  **STILL OPEN:** the **204 refused rows** need a different WITNESS and not a
-  different stage — attesting against the house-prefixed spelling is
-  **CIRCULAR**, since we supplied the word; and **383 cells / ~528 rows whose
+  **STILL OPEN:** the **204 refused rows / 144 keys** need a different WITNESS
+  and not a different stage — attesting against the house-prefixed spelling is
+  **CIRCULAR**, since we supplied the word. **THAT CLAIM WAS TESTED 2026-10-11
+  20:5xZ, HELD, AND IS NOW A TETHERED INVARIANT.** The attestation guard's input
+  was widened that cycle — but only to a repair that is a pure function of the
+  filed string, and this one is not: it prefixes a house drawn from the
+  registry-derived Admiral family, i.e. from the ANSWER. `sec-attest-test.mjs`
+  pins `Growth Index Adm` and `Total Stock Market Index Adm` as must-REFUSE on
+  the shipped inputs AND demonstrates the circularity by doing it — prefixing
+  `Vanguard` flips the verdict to attested, which is why the invariant is an
+  assertion rather than a sentence. So these 204 stay refused by design and a
+  future relaxation of that guard reddens CI by name.
+  Also open: **383 cells / ~528 rows whose
   BASE answer is a COMPARABLE** which the additive position never reaches (the
   matcher found the fund without our house and only the CLASS is in doubt — its
   own measured ship). The **FEE** does not move, so Boston Scientific still

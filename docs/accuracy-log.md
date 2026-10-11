@@ -7,6 +7,205 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-11 (20:5xZ) — WHICH SPELLING THE ATTESTATION GUARD IS ASKED OF: a registry-attested typo repair may be attested against, a SUPPLIED house may not, and two further candidate spellings are disposed of by measurement rather than by argument. 71 refused keys ship; the Admiral half stays refused and is now a tethered invariant
+
+### What was wrong
+
+`gen-sec-tickers.mjs`'s `registrantAttested` asks whether the destination
+registrant's own distinctive vocabulary appears in the FILED name or issuer
+cell. It was asked of `f.nameRaw` / `f.iss` — **the filing exactly as written,
+including a typo the generator had already corrected one function earlier.**
+
+So the `MEFS` -> `MFS` repair (shipped 09:5xZ the same day) resolved a symbol
+and the guard then refused it, on exactly the rows the repair exists for: an
+`MFS SERIES TRUST` registrant contributes the single distinctive word `mfs`,
+and the filing spells `mefs`. The repair landed only where the PRODUCT name
+carried distinctive words of its own, and **Galliano Marine Service — the row
+the class was found on — was in the refused half.**
+
+CLAUDE.md named this as open residue in THREE separate entries and the three
+did not agree about the answer: the MEFS ship called it "a change to every
+arm's input [that] needs its own measurement", the Admiral ship called
+attestation against its own repaired spelling "CIRCULAR, since we supplied the
+word", and the Capital Group ship exempted its arm outright because the guard
+"refutes the premise instead of testing it".
+
+### The distinction that settles it, and it is not the obvious one
+
+The obvious test is *did the filing contain the word*. That is too weak: it
+would license the Admiral arm, whose filings genuinely do contain `Adm`.
+
+***THE TEST IS WHETHER THE REPAIR DEPENDS ON THE DESTINATION.*** A rewrite that
+is a pure function of the filed string, fixed before any resolution and blind
+to which symbol it will reach, cannot be attesting against our own guess about
+the house. A rewrite that SUPPLIES a house taken from the answer's own
+registrant is circular by construction — and `admAsk` prefixes each of
+`ADM_HOUSES`, a set derived from the registry's Admiral family, i.e. from the
+answer.
+
+That is checkable rather than rhetorical, and `sec-attest-test.mjs` asserts it
+three ways: `deTypo` is destination-blind (the same filed string yields the same
+spelling while resolving toward five different tickers), it changes no token
+COUNT and introduces no token that is neither in the filing nor the corrected
+house, and prefixing `Vanguard` to a houseless Admiral row DOES flip the guard —
+so the circularity claim is demonstrated by doing it, not asserted.
+
+### Probed before regenerating, which is what made the split cheap
+
+`registrantAttested`, `distinctiveWords` and the entity index were transcribed
+from the generator using only `match-sec-tickers` exports, and **all 14 of the
+generator's own attestation control verdicts were reproduced first** — without
+that the copy is a different function and the probe is void. Ten minutes against
+a 20-minute regen, and it sized every candidate arm and refuted two of them
+before a line of the arm was written.
+
+Measured per arm over the whole store (1,730,931 rows / 553,274 distinct cells):
+
+| candidate spelling | destination-blind? | touchable | resolves asserted | verdict moves |
+|---|---|---|---|---|
+| `deTypo` (MEFS -> MFS) | YES | 362 cells / 474 rows | 117 | **76 cells** |
+| `aposExpand` | YES | 1,592 cells / 2,547 rows | 232 | **0** |
+| `houseCore` | reduction only | — | — | **0, by construction** |
+| `admAsk` | **NO — circular** | — | — | not eligible |
+
+`aposExpand` is **MEASURED INERT, not reasoned inert**, and the distinction
+matters: three of its four expansions produce words `distinctiveWords` drops
+outright (`institutional`, `international` and `government` are CLASS_WORDS or
+DESCRIPTIVE), but **`national` survives the filter**, so a filter argument alone
+would have been wrong. Its entire live `Nat'l` population — all 470 cells —
+turned out to be `Lincoln Nat'l Life` in the ISSUER cell, a separate-account
+platform whose sub-accounts carry `SAxx` codes, where attesting a row on
+`national` would have been a FALSE permission read off the custodian. *An arm
+inert on the data is untested machinery*, so it is not shipped.
+
+`houseCore` could never have worked: attestation reads
+`norm(filedName + " " + iss)` and that function only REMOVES issuer tokens, so
+the guard asked of its output is strictly WEAKER. Asserted over all 15,686
+distinct issuer cells in the store — 0 tokens of any 1-3 leading reduction
+absent from `norm(iss)`.
+
+### The change
+
+`deTypo` hoisted to module scope; `ATTESTATION_INPUTS` and
+`attestedAnySpelling` added beside `registrantAttested` with the whole
+measurement in a comment; the call site asks `attestedAnySpelling` instead.
+`PARSER_VERSION` stays 203 — the change is build-side and writes no store.
+
+**The touchable population is exactly the rows carrying a `MEFS` token, BY
+CONSTRUCTION:** `deTypo` is the identity on every other string, so the second
+attestation call is byte-identical to the first and returns the same verdict.
+That is why the adversarial population needs no measurement to be safe —
+`(Vanguard Asset Allocation Fund)` -> VALIC's VCAAX and the three Homestead
+cross-house magnets contain no `MEFS` token — and they are pinned anyway.
+
+### What moved, priced through BOTH copies of `renderRow`
+
+**98 published+served rows / 71 keys / 89 acks / 89 plans / 62,819 participants
+/ $114,559,915 gain an ASSERTED symbol.** Ticker lost 0 / swapped 0 /
+**asterisked 0**; fee gained 0 / lost 0 / changed 0; name 0; shownType 0; row
+membership 1,721,920 -> 1,721,920 (delta 0). Table **12,337 -> 12,408 keys,
+ADDED 71 / REMOVED 0 / CHANGED 0**, and **all 71 attributed to this arm with
+ZERO drift** — each one refused on the filed spelling, admitted on the repair,
+and carrying a `MEFS` token.
+
+The non-candidate control rendered **17,218 rows and differs on 0**, and it is
+a DISCHARGE rather than the proof: the table is addressed by the exact key and
+the diff reports REMOVED 0 / CHANGED 0, so for any row whose key is not in the
+added set both renderers read the identical table entry. *Sampling could never
+establish a superset; here the superset is by construction and the sample only
+has to fail to refute it.*
+
+The fee cannot move, read off the shipped expression rather than argued: the arm
+returns `comparable: false`, so `star` stays false and `er` stays name-keyed.
+
+**104 candidate rows exist and 98 gain. All 6 that do not are typed `Pooled
+separate account` and are held by the page's own render-time
+`pooledVehicleRow`** — their key is in the table because ANOTHER plan filed the
+same two cells with an honest type, which is the recorded structure that a KEY
+cannot carry the vehicle. `pooledRow` separately refuses **16 of the 90 moved
+cells** inside the generator, before the asserted/comparable split.
+
+### Read, not merely counted
+
+All 71 added keys read. Every one an MFS product under the typo; every
+destination an `MFS SERIES TRUST` registrant; 23 distinct symbols. **A
+whole-population check on the claim a reader sees: for 71 of 71 the share class
+the FILING STATES equals the class the registry registers the published symbol
+under** — R3/R4/R6 across MEIHX/MEIJX/MEIKX, MFEHX/MFEJX/MFEKX,
+MVCHX/MVCJX/MVCKX and fourteen more, 0 mismatches and 0 stating no class. A
+seeded uniform draw of 26 reads **26 of 26 correct**, with each row's filed TYPE
+printed beside its answer: `Mutual fund` 19, blank 7, **0 a pooled vehicle**.
+
+The whole non-Admiral refusal bucket is now **2 keys**, both `HOIBX` — Homestead
+Funds' bare `Intermediate Bond Fund` magnetizing another house — which is the
+guard doing precisely the job it was created for.
+
+### Two of the record's own figures corrected
+
+**The recorded refusal was "71 keys / 106 rows / 96 acks / 65,542 ppl".** The
+KEY count reproduces exactly; the rows and acks differ because the lineup store
+has taken six data commits since, and the participant sum was the generator's
+own DOUBLE-COUNTED one (its report labels it so) where 62,819 is
+plan-deduplicated. *A re-size is a new measurement, not a delta against a
+remembered one.*
+
+**And my own instrument over-reported one cell.** The cell diff reported
+`star 98`, which reads as 98 asterisks appearing. It is not: before-`star` is
+`null` on all 104 candidate rows and after-`star` is `true` on **0**, so the
+count is a `null`-versus-`false` stringification artifact. The honest figure is
+**asterisked 0**, and it was caught only by asking the question the other way
+round. *An asterisk is a whole category of claim*, so a harness that can turn a
+representation change into one is a harness to check both directions on.
+
+### The prevention
+
+- **`scripts/sec-attest-test.mjs`**, wired into `site-test` AND into its `paths`
+  filter — a gate the file it guards cannot trigger is indistinguishable from no
+  gate, and `gen-sec-tickers.mjs` (which it slices) is already in that list.
+  5 must-admit, 9 must-refuse, 3 single-protection mutations, 4 invariants.
+- **CI-SAFE BY CONSTRUCTION:** the registrant map is FROZEN in the test, so an
+  SEC refresh cannot redden it. The VOCABULARY is imported live and
+  deliberately — it is our code, not the registry, and a change to it SHOULD
+  move these verdicts. The fixture's own premise is asserted before any case
+  runs (the four MFS registrants must offer exactly `["mfs"]`), because if the
+  vocabulary ever absorbed `mfs` every must-admit case would pass for the wrong
+  reason.
+- **Each must-admit case is asserted REFUSED ON THE RAW SPELLING FIRST**, or it
+  is protected twice and proves nothing.
+- **The suite EXITS 1 IF A MUTATION PASSES**, and it was controlled in BOTH
+  directions against the real tree: deleting the arm gives 8 failures and exit
+  1; adding a `Vanguard`-prefixing input — the circular case — gives 7,
+  including the Admiral refusals and invariant (4) by name.
+- A mutation whose anchor is in the SOURCE but not in the SLICE fails as
+  decorative, so the test cannot quietly stop testing the code it reads.
+- The generator carries its own import-time control block for the relaxation,
+  so the three MEFS admissions and the four magnet refusals are checked on every
+  regeneration and not only in CI.
+- `scripts/sec-tickers-stamp-test.mjs` was RED the moment the code changed and
+  green after the regen — which is the gate behaving exactly as designed, and
+  the reason the regen and the code change are in one commit.
+- `stamp-assets.mjs --check` caught `sec-tickers.js`'s stamp as stale after the
+  regen; restamped, `index.html` committed.
+
+### Named residue
+
+- **The Admiral half stays refused: 204 rows / 144 keys.** Not shipped, and now
+  tethered — the two pins and invariant (4) mean a future relaxation of the
+  guard's input to a house-SUPPLYING repair reddens CI by name.
+- **The Capital Group exemption is untouched**, for the stronger reason its own
+  entry gives; asking the guard of that arm's house-repaired spelling rescues
+  597 of 1,557 and remains refuted.
+- **The 28 rows / 24,399 ppl whose typo is in the ISSUER cell only** — the
+  `houseCore` class with a typo on top. This repair reads the issuer cell, so
+  part of that class may now be covered and the figure needs re-deriving rather
+  than carrying forward.
+- `aposExpand` as an attestation input is refused for being inert, not for being
+  unsafe. If the store ever files a `Nat'l`-spelled row whose destination
+  registrant's distinctive word is `national`, it becomes live — and the
+  Lincoln platform population is the reason to measure rather than ship it.
+
+---
+
 ## 2026-10-11 (21:4xZ) — A LEADING HOUSE WITH A SECOND HOUSE'S FUND UNDERNEATH IT: the shape is real, the menu's five-way inconsistency is real, and the mechanism I attributed it to is INERT. Refuted before anything shipped, by a pin that failed and a probe that cost six renders
 
 ### What looked wrong
