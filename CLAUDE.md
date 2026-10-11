@@ -1590,6 +1590,42 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **THE ONE-TOKEN SPLIT, WORKED 2026-10-11 00:4xZ — RE-DERIVED AT 5,216 rows /
+  2,964 acks / 7,261,682 ppl / $38,715,423,099 unqualified (681 of 5,897 are
+  already qualified), AND BOTH OF MY DISCRIMINATORS ARE NOW REFUTED.** The
+  figure corroborates the recorded 5,259 / ~6,983,334 by a different screen.
+  Largest unqualified row unchanged and genuinely nameless: Food Lion's
+  `OTHER-STRATEGY` at **64.75% / $4,476,240,694 / 239,586 ppl**.
+  ***A LEAD-TOKEN ATTESTATION WITNESS CANNOT SEE A DESPACED NAME.*** Asking
+  whether any other plan files a LONGER name beginning with the token splits
+  3,036 rows / 4,255,918 ppl (`Cash`, `Fidelity`, `CREF`, `Macquarie`,
+  `iShares`, `VALIC`) from 1,944 / 2,438,147 / $26.8B — **and the second
+  bucket's own members are REAL funds whose spaces we lost**
+  (`Dodge&CoxInternationalStockX`, `FIDADFR2035`, `PIONEERBONDFUND-R`,
+  `PIMCOCOMDYREALRTNSTRATINST`), which have no lead token to attest and so land
+  in "names nothing" BY CONSTRUCTION. Same shape as the 19:4xZ bucketing being
+  keyed on CASE: *two consecutive discriminators on one class, each measuring
+  itself rather than the defect.*
+  **AND THE SHIPPED SEGMENTER'S ONE-TOKEN GATE IS EARNING ITS KEEP — MEASURED,
+  NOT ASSUMED. DO NOT LIFT IT.** `despaceKerned`'s greedy `KERN_WORDS`
+  segmenter is excluded from the one-token case by `toks.length < 3`, which
+  reads like a pure gap given the loop's own strong protections. Over all 6,056
+  one-token stored names on published acks it would re-space **35 distinct
+  names / 49 rows**, and all 35 were read: **the motivating row
+  `Dodge&CoxInternationalStockX` does NOT segment** (the `&` strands), **one
+  candidate is a HARM — `MIDX` -> `MID X`, inventing a name from a code** (the
+  single letters `a`..`z` in `KERN_WORDS` become reachable once the multi-token
+  signature need not be present), and the rest is `RETIRE2055` -> `RETIRE 2055`
+  ×12 vintages plus `Smallcap`, `500Index`, `JHancock` and one real gain.
+  49 rows against an invented name is not a trade worth making. ***A guard
+  whose entry condition looks like an oversight can be the only thing between a
+  self-protecting loop and a fabricated name*** — and measuring the YIELD
+  before touching a file is why no twin, stamp or page work was owed.
+  **WHAT THE REAL SPLIT NEEDS:** a witness that can see a DESPACED name, which
+  means a vocabulary wider than `KERN_WORDS`'s 230 words (it cannot spell
+  Pioneer, Dodge & Cox or PIMCO products) or the SEC registry — i.e. the
+  `fund-facts` shape. The bare-house half stays the recorded PARSER-side item.
+  `docs/accuracy-log.md` 2026-10-11 (00:4xZ).
 - **FOUND BY THE 00:08 DRAW — THE TIGHTEST WITNESS YET FOR THE OWNER-GATED
   WRONG-SHARE-CLASS ITEM: ONE SHARE CLASS, FOUR SPELLINGS, THREE VERDICTS ON ONE
   SCREEN.** Gundersen Lutheran Administrative Services (**12,092 ppl**, 63

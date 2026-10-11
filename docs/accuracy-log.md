@@ -53485,3 +53485,77 @@ symbols through house ABBREVIATIONS — `TRP RETIREMENT 2030 I` -> TRFHX,
 `DFA US SM CAP PORTFOLIO INST` -> DFSTX — with its `INVESCO STABLE ASSET -
 ADPZ` collective trust correctly carrying `noPublicPrice` and publishing no
 fee.
+
+## 2026-10-11 (00:4xZ) — THE ONE-TOKEN SPLIT: MY WITNESS IS REFUTED BY ITS OWN MEMBER LIST, AND THE SEGMENTER'S ONE-TOKEN GATE IS EARNING ITS KEEP (49 rows, one of them a harm)
+
+**Took the 19:4xZ queue item, whose prescribed next step is to SEPARATE the
+names-nothing population from the name-we-MANGLED one.** Re-derived first,
+through the tracked harness with the serving condition, the publish gate and
+an already-qualified check: **5,897 one-token published names, of which 681
+are ALREADY qualified by a shipped arm, leaving 5,216 rows / 2,964 acks /
+7,261,682 ppl / $38,715,423,099** — 20 publishing a ticker and 104 a fee.
+Independent corroboration of the recorded 5,259 rows / ~6,983,334 ppl, reached
+by a different screen. Largest unqualified row is unchanged and genuinely
+nameless: Food Lion's `OTHER-STRATEGY` at **64.75% of its menu /
+$4,476,240,694 / 239,586 ppl**, type cell `—`, no ticker, no fee.
+
+***THE WITNESS I CHOSE IS REFUTED BY ITS OWN MEMBER LIST, AND THE MECHANISM IS
+THE ONE THE QUEUE ENTRY WAS WARNING ABOUT.*** I asked, of every one-token
+published name, whether any other plan in the store files a LONGER name
+beginning with that token — attested ≥3 as "a name we cut", attested 0 as
+"names nothing". It splits cleanly into 3,036 rows / 4,255,918 ppl (`Cash`,
+`Fidelity`, `CREF`, `Macquarie`, `iShares`, `VALIC`) and 1,944 rows /
+2,438,147 ppl / $26.8B. **And the second bucket's own members kill its name:**
+`Dodge&CoxInternationalStockX`, `FIDADFR2035`, `FIDADFR2025`,
+`PIONEERBONDFUND-R`, `PIMCOCOMDYREALRTNSTRATINST` are REAL funds whose SPACES
+we lost — and a despaced name has **no lead token to attest**, so it lands in
+"names nothing" by construction. *A witness keyed on a LEADING token cannot
+see a name that has no token boundaries left*, which is the same shape as the
+19:4xZ bucketing being keyed on CASE. Second consecutive instance on this one
+class of my own discriminator measuring itself rather than the defect.
+
+**SO THE DISCRIMINATOR HAS TO BE WHETHER THE TOKEN SPLITS INTO A REAL NAME —
+AND THAT ENGINE IS ALREADY SHIPPED.** `lib-disclose`'s `despaceKerned` holds a
+greedy longest-match segmenter over `KERN_WORDS` (230 words, sliced not
+retyped, with a positive and a negative control on the slice before use), and
+its entry gate `if (toks.length < 3 || …) return name` is a signature test for
+a MULTI-token kerned name (`V an guard Targe t`). A fully despaced single
+token can never reach it. ***The engine exists and the one-token case is
+excluded by the gate, which reads like a pure gap.***
+
+**IT IS NOT A GAP — MEASURED, AND THE ENTRY GATE IS EARNING ITS KEEP.** The
+loop's own protections are strong (it returns the name unchanged unless EVERY
+character position matches a known word, caps short segments, refuses two
+single letters in a row), so I expected the refusals to hold and the gain to
+be real. Over all **6,056** one-token stored names on published acks the
+segmenter would re-space **35 distinct names / 49 rows**, and reading all 35
+settles it three ways:
+
+- **THE MOTIVATING ROW DOES NOT SEGMENT.** `Dodge&CoxInternationalStockX`
+  returns null — `&` is no word and `X` strands — so *the change cannot reach
+  the case that motivated it*, the third consecutive ship-or-refuse decision
+  on this record where that is true.
+- **ONE CANDIDATE IS A HARM:** `MIDX` -> **`MID X`**. That is a code or a
+  symbol, and segmenting it INVENTS a name — exactly what the `z`-through-`a`
+  single letters in `KERN_WORDS` make possible once the multi-token signature
+  no longer has to be present.
+- **The rest is trivial or cosmetic:** `RETIRE2055` -> `RETIRE 2055` ×12
+  vintages at 2 rows each, `Smallcap` -> `Small Cap`, `500Index` ->
+  `500 Index`, `JHancock` -> `J Hancock`, and one real gain
+  (`JPMorganSmartRetirementIncomeA` -> `JPMorgan SmartRetirement Income A`).
+
+**49 rows against at least one invented name is not a trade worth making, so
+nothing ships and the gate stays.** *A guard whose entry condition looks like
+an oversight can be the only thing standing between a self-protecting loop and
+a fabricated name* — and the cheap way to find that out was to measure the
+yield BEFORE touching a file, which is why no twin work, no stamp and no page
+regeneration was owed on a change that should not exist.
+
+**WHAT THE CYCLE LEAVES, honestly:** the one-token class is still 5,216 rows /
+7.26M ppl, and its real split needs a witness that can see a DESPACED name —
+which means a vocabulary wider than `KERN_WORDS` (it holds 230 words and the
+despaced members name Pioneer, Dodge & Cox and PIMCO products it cannot spell)
+or the SEC registry, where `fund-facts` lives. The `Cash`/`Fidelity`/`CREF`
+bare-house half is the recorded PARSER-side item, where replacing the identity
+column's own text is a claim rather than a repair. Neither is this cycle's
+work, and both are now sized rather than guessed.
