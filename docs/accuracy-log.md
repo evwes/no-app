@@ -54677,3 +54677,64 @@ against a future regen that drops the word anchor.
 **Prevention.** Table 7,350 -> 7,447 keys, 66,134 bytes gzipped (from 64,520).
 `stamp-assets` restamped `index.html`; smoke, fund-note and fund-er gates green
 locally.
+
+## 2026-10-11 (10:1xZ) — THE ATTESTATION GUARD REFUSES HALF THE HOUSELESS ADMIRAL CLASS, AND WHICH HALF TURNS ON WHICH VANGUARD TRUST HOLDS THE SERIES
+
+**Why this probe exists.** The 07:0xZ entry sized an `Adm`/`Admiral` share class
+filed with no house named anywhere and prescribed, as the next step, the clean
+half re-measured through the real generator — a ~25-minute regeneration. Two
+hours later the MEFS ship measured `registrantAttested` refusing **71 of 73**
+keys for exactly one reason: the guard wants one of the registrant's DISTINCTIVE
+words in the filed name or the issuer cell, and for that class the house token
+was the only distinctive evidence there was. **This class is houseless by
+definition**, so the same refusal was predictable — and testable in ten minutes
+instead of twenty-five.
+
+**The instrument, and the control that makes it one.** `registrantAttested`,
+`distinctiveWords` and `entitiesByTicker` are internal to
+`gen-sec-tickers.mjs`, which cannot be imported (it runs the whole 1.7M-row walk
+on import). The probe therefore transcribes the predicate using only
+`match-sec-tickers`' exports (`norm`, `STRUCTURAL`, `CLASS_WORDS`,
+`DESCRIPTIVE`, `isAssetWord`, `decodeEntities`) — and then **reproduces all 14
+of the generator's own control pairs before any probe runs**, refusing to print
+a result if any disagree. *The recorded rule is slice, never reproduce from
+memory; where a slice is impossible, a transcription is only an instrument once
+it reproduces the original's own fixtures.*
+
+**The result: 5 of 10 houseless Admiral destinations REFUSED, 5 ALLOWED — and
+the discriminator is not the product.** It is whether the REGISTRANT'S LEGAL
+NAME contributes a non-descriptive word that the filing happens to repeat:
+
+| | distinctive words of the registrant | |
+|---|---|---|
+| `PRIMECAP Fund Admiral Shares` -> VPMAX | vanguard, **chester**, **primecap** | ALLOW |
+| `Windsor II Fund – Admiral Shares` -> VWNAX | vanguard, **windsor** | ALLOW |
+| `500 Index Fund Adm` -> VFIAX | vanguard, **500** | ALLOW |
+| `Extended Market Index Adm` -> VEXAX | vanguard, **extended** | ALLOW |
+| `Growth Index Adm` -> VIGAX | vanguard | **REFUSE** |
+| `Total Stock Market Index Adm` -> VTSAX | vanguard | **REFUSE** |
+| `Total Bond Market Index Adm` -> VBTLX | vanguard | **REFUSE** |
+| `Equity-Inc Adm Fund` -> VEIRX | vanguard, fenway | **REFUSE** |
+| `Total Intl Stock Index Adm` -> VTIAX | vanguard, star | **REFUSE** |
+
+The control is the first row of the probe against the second: `Growth Index Adm`
+is refused and `Vanguard Growth Index Adm` — the identical row with the house
+stated — is allowed, so the guard is doing exactly what it is for.
+
+***Two things follow, and the second is uncomfortable.*** The refused half is
+the PLAIN INDEX FUNDS, which are the biggest and commonest rows of the class —
+Boston Scientific's motivating row among them — so the deliverable is far
+smaller than the 3,411-row clean half suggests. And `Equity-Inc` is refused
+while `Windsor II` is allowed **only because Vanguard files its Equity Income
+series under a trust called FENWAY and its Windsor series under one called
+WINDSOR**: whether a reader gets a symbol turns on an accident of registrant
+naming that has nothing to do with the filing or the fund. That is not a defect
+in the guard — withdrawing it is what stops `Vanguard Asset Allocation Fund`
+publishing VALIC's VCAAX as fact — but it is a reason the Admiral arm cannot be
+designed around "the registry registers the class" alone.
+
+**Prevention.** The 07:0xZ queue entry now carries the measurement instead of
+its prescription, so the next session sizes the arm from the attestation split
+rather than from the clean half. *Size the class before reading the filing,
+applied to a GUARD instead of a corpus: ten minutes of probe re-sized the item
+before a line of the arm was written.*

@@ -1698,6 +1698,34 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   cannot carry it.* Next step is the clean half re-measured through the real
   generator (pooled refused, `registrantAttested` applied, `renderRow`'s gates
   applied) plus a seeded uniform draw printing each row's TYPE.
+  **AND THE 09:5xZ MEFS SHIP PREDICTS THAT MOST OF THE CLEAN HALF WILL BE
+  REFUSED, WHICH MAKES THE CHEAP FIRST STEP AN ATTESTATION PROBE RATHER THAN A
+  25-MINUTE REGEN.** `registrantAttested` requires one of the registrant's
+  DISTINCTIVE words to appear in the filed name or the issuer cell, and it
+  refused 71 of 73 MEFS keys for precisely the reason that the house token was
+  the only distinctive evidence. **This class is HOUSELESS BY DEFINITION** —
+  `Growth Index Adm` with an EMPTY issuer cell is the motivating row — so for
+  every destination whose registrant says nothing distinctive beyond `vanguard`
+  the gain cannot land, and the survivors would be the rows whose product words
+  (`PRIMECAP`, `Windsor`) are themselves distinctive.
+  **PROBED 2026-10-11 10:1xZ AND THE PREDICTION HOLDS IN SHAPE, HALF THE CLASS:
+  5 of 10 houseless Admiral destinations are REFUSED and 5 ALLOWED, and the
+  discriminator is not the product at all — it is whether the REGISTRANT'S
+  LEGAL NAME contributes a non-descriptive word the filing happens to repeat.**
+  `VANGUARD CHESTER FUNDS :: Vanguard PRIMECAP Fund` offers `chester` and
+  `primecap`, the filing says PRIMECAP, ALLOW (likewise `windsor`, `500`,
+  `extended`); `VANGUARD INDEX FUNDS :: Vanguard Growth Index Fund` offers only
+  `vanguard`, REFUSE — and so are `Total Stock Market Index Adm`,
+  `Total Bond Market Index Adm`, `Equity-Inc Adm Fund` (its trust is `FENWAY`)
+  and `Total Intl Stock Index Adm` (its trust is `STAR`). ***So the refused half
+  is the plain index funds, which are the biggest and commonest rows in the
+  class, and whether a row lands turns on an accident of which Vanguard trust
+  happens to hold its series.*** The probe transcribed `registrantAttested`
+  from the generator using only `match-sec-tickers` exports and **reproduced all
+  14 of the generator's own control verdicts first** — without that the copy
+  would not be the predicate and the probe would be void. Ten minutes against a
+  25-minute regen, and it re-sizes the item before a line of the arm is written.
+  `docs/accuracy-log.md` 2026-10-11 (10:1xZ).
   ***DO NOT CARRY MY EARLIER SCREEN'S 3,227 rows / 730,481 ppl / $2.51B — IT IS
   CONTAMINATED:*** its largest members carry the house CONTRACTED and my `HOUSE`
   vocabulary listed `vanguard` and not `vangrd`/`vgd`/the typos `Vanard`,
