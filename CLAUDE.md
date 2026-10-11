@@ -1706,6 +1706,67 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   of its own measurement. The `K-6`/`R-6` rows resolving an INVESTOR class
   (FTBFX, FBGRX) remain pre-existing members of the owner-gated
   wrong-share-class family. `docs/accuracy-log.md` 2026-10-11 (03:3xZ).
+- **SHIPPED 2026-10-11 06:5xZ — A POOLED VEHICLE PUBLISHED AS THE REGISTERED
+  FUND, BECAUSE THE SEC TABLE'S KEY CANNOT CARRY THE VEHICLE: 1,748 rows / 307
+  keys / 839 acks / 839 plans / 1,017,749 ppl / $16,456,667,177 stop ASSERTING a
+  symbol**, with ticker gained 0 / swapped 0, asterisk 0, **fee 0**, name 0,
+  shownType 0, row membership 0, and 18,623 sampled non-candidates differing on
+  0. One surface by construction (`build-seo-pages` has 0 ticker-resolver refs);
+  `PARSER_VERSION` stays 203 and **`sec-tickers.js` is unchanged**, the
+  generator building with `secTickers: false` so the gate is unreachable there.
+  **`gen-sec-tickers.mjs` applies the pooled rule PER ROW and refuses 51,491 —
+  and writes a table keyed on `(issuer, nameRaw)`, while `pooledRow` reads a
+  THIRD INPUT THE KEY DOES NOT CARRY: the filed TYPE cell.** So app.js's own
+  comment ("the generator withholds rows whose type cell says collective trust,
+  separate account …") is TRUE of the rows it refused and FALSE of the table.
+  One plan files `VALIC Government Securities Fund` typed `Government
+  securities` — a security CATEGORY, not a vehicle — writing the key, and eight
+  plans filing those same two cells typed `Pooled separate account` publish
+  **VCGSX** as fact. The symbol is the right registrant and series, so it is
+  *right for the FUND and wrong for the VEHICLE*. Largest: Navy Federal Credit
+  Union's `Fidelity Freedom Blend 2050` typed `Collective trust` publishing
+  **FHAPX on $417,764,837 / 10.58%** of its menu, 168 symbols in all, by type
+  `Pooled separate account` 1,191 / `Collective trust` 536 / `Separate account`
+  21.
+  ***THE STAGE IS THE FINDING AND IT WAS SETTLED BY MEASUREMENT: the
+  generator-side fix is 14x HARMFUL.*** `pooledKeys` is already computed there
+  beside two integrity refusals, so deleting the contested keys is one line in
+  the file's own idiom — and it withdraws the symbol from **24,094 rows / 12,654
+  plans / 13,925,559 ppl** whose own type cell is honest, 17,643 typed `Mutual
+  fund`. ***A verdict that reads an input outside the key cannot be expressed by
+  deleting the key; it must be asked where that input is in hand.*** So
+  `pooledVehicleRow` is HOISTED out of `fundTickerInfo` (byte-identical
+  expression, and the 2-space indent is load-bearing — the generator's slice
+  regex refuses to run if it moves) and asked at render time, per row.
+  **FOUND BY THE 05:08 DRAW, AND THE MOTIVATING ROW IS OUTSIDE ITS OWN CLASS
+  BECAUSE IT IS THE WRITER:** Cook Childrens' 21 VALIC rows typed `Separate
+  account` correctly publish nothing and row 41 does not, so my ack-keyed
+  must-see pin read **0**. *When a defect is a leak between two rows, a pin on
+  one row is half a pin* — PIN A (the writer's key is in the table) and PIN B
+  (pooled rows reading that key) both fire.
+  **TWO HARNESS DEFECTS, both recorded rules met again.** The differential read
+  a PERFECT ZERO because I passed `{ app: … }` where `buildRenderer` takes
+  **`appjs`**, so both renderers read the working tree; *a before that is
+  silently the after reads as a clean no-difference*, and **my control compared
+  the two FILES, which cannot see which file the renderer loaded** — it now asks
+  the RENDERERS, including that the working tree still answers a `Mutual fund`
+  row, without which the suite would pass against a DELETED arm. And the first
+  sizing read 1,750 because `apppath`'s `hooks` is `window`, not the regexes, so
+  my fallbacks silently set `ID_ONLY` to `/^$/`: *a harness that skips the drop
+  counts rows no reader sees.* Both regexes are now sliced from each app.js copy
+  with the generator's own assertions.
+  **TETHERED: 11 new assertions in `scripts/sec-tickers-test.mjs`** (in
+  `site-test`) — withheld on four pooled type cells, still answered on `Mutual
+  fund` AND on a BLANK cell, `pooledVehicleRow` reached BY NAME with a DENY
+  stand-down, the generator's slice still matching, and the `f.nameRaw` call
+  asserted DECORATIVE over the committed table (0 of 7,350 keys pooled by name).
+  ***It is kept and labelled rather than deleted because its unreachability is a
+  property of ANOTHER file***, unlike the two conditions this record deleted.
+  The hoist's behaviour-preservation is measured, not asserted: identical over
+  all 497,511 distinct (name, type) pairs, 50,204 non-null, 0 differing.
+  **STILL OWNER-GATED:** the FEE does not move — `fundERRow` prices the NAME —
+  so a withdrawn row may still publish a pattern-table estimate, which goes with
+  the recorded fee families. `docs/accuracy-log.md` 2026-10-11 (06:5xZ).
 - **SHIPPED 2026-10-11 04:3xZ — `AMF`, A RECORDKEEPER'S ABBREVIATION OF AMERICAN
   FUNDS: 325 published rows / 325 acks / 325 plans / 156,373 ppl / $191,329,641
   gain RGAGX**, ticker lost 0 / swapped 0 / **ASTERISKED 0**, fee 0, name 0,

@@ -7,6 +7,140 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-11 (06:5xZ) — A POOLED VEHICLE PUBLISHED AS THE REGISTERED FUND BECAUSE THE TABLE'S KEY CANNOT CARRY THE VEHICLE: 1,748 rows / 307 keys / 839 plans / 1,017,749 participants / $16,456,667,177 stop ASSERTING a symbol. The generator-side fix was measured at 14x harmful, and the whole value of the measurement is the STAGE
+
+### What was wrong
+
+`gen-sec-tickers.mjs` applies `fund-er.js`'s pooled rule **per row** and refuses
+51,491 of them, and app.js's own comment says so: the table "withholds … rows
+whose type cell says collective trust, separate account, managed account or
+master trust." That claim is **true of the rows it refused and false of the
+table it wrote**, because the table is keyed on `(issuer, nameRaw)` and
+`pooledRow` reads a **third input the key does not carry** — the filed TYPE
+cell.
+
+So one plan files `VALIC Government Securities Fund` typed `Government
+securities` — a SECURITY CATEGORY, not a vehicle — which is not pooled, so the
+key is written; and **eight plans filing the identical two cells typed `Pooled
+separate account` then read VCGSX out of it and publish it as fact** (Vermont
+Adult Learning, Eckerd Youth Alternatives, Hospice Of Iredell County,
+Developmental Services Of Dickson County, The Arc Tampa Bay, National University
+Of Natural Medicine …). VCGSX is the right registrant and the right series
+(`VALIC Co I :: Government Securities Fund`), so **the symbol is right for the
+FUND and wrong for the VEHICLE** — the plan holds a separate account that
+invests in it, at the separate account's cost. That is the harm
+`fund-er.js:1451`'s own comment describes, arriving by a side door.
+
+Store-wide the leak is **1,748 rows / 307 keys / 839 acks / 839 plans /
+1,017,749 participants / $16,456,667,177**, every one unasterisked, across
+**168 distinct symbols**. By type cell: `Pooled separate account` 1,191,
+`Collective trust` 536, `Separate account` 21. The largest members are a
+collective-trust target-date ladder published as the registered MUTUAL funds —
+Navy Federal Credit Union's `Fidelity Freedom Blend 2050` typed `Collective
+trust` publishing **FHAPX on $417,764,837, 10.58% of its menu**, with 2045,
+2040, 2055, 2030 and 2035 beside it; Gilead Sciences on six vintages; Cencora.
+
+### How it was found
+
+The 05:08 cycle's participant-weighted draw read Cook Childrens Health Care
+System (12,520 ppl) in full. Twenty-one VALIC rows are typed `Separate account`
+and correctly publish NO ticker; **row 41, `VALIC Government Securities Fund`,
+is typed `Government securities` and publishes VCGSX**. *The control was twenty
+rows of the same menu*, and the only thing that varied was the type cell.
+
+***THE MOTIVATING ROW IS OUTSIDE ITS OWN CLASS, AND THAT IS NOT A SCOPING
+FAILURE — IT IS THE WRITER.*** My first must-see pin was keyed on Cook
+Childrens' ack and read **0**. The recorded rule (*a measurement that cannot see
+its own motivating example has not been scoped*) is about a screen missing a
+member; here the drawn row is the one that WRITES the key, and the harm is at
+the plans that READ it. So the pin has two halves — PIN A, the writer's key is
+in the shipped table; PIN B, pooled rows reading that very key — and both fire.
+*When a defect is a leak between two rows, a pin on one row is half a pin.*
+
+### The change
+
+`pooledVehicleRow(name, type)` is **hoisted out of `fundTickerInfo`** in
+fund-er.js — byte-identical expression, comments included — and app.js's
+`lookupTicker` asks it of the row's own filed type before returning a
+`SEC_TICKERS` answer.
+
+**THE STAGE IS THE WHOLE FINDING, AND IT WAS SETTLED BY MEASUREMENT RATHER THAN
+BY ARGUMENT.** The obvious fix is generator-side: `pooledKeys` is *already
+computed* there, beside two existing integrity refusals, so deleting every
+contested key is one line in the idiom the file already uses. **Measured, that
+is 14x harmful: 24,094 rows / 12,654 plans / 13,925,559 participants publish one
+of those 307 keys on a row that is NOT pooled — 17,643 of them typed `Mutual
+fund` — and deleting the key withdraws their correct symbol too.** ***A verdict
+that reads an input outside the key cannot be expressed by deleting the key; it
+must be asked where that input is in hand.*** Judged per row, by the row's own
+filed cell, nothing honest is touched: ticker gained **0**, swapped **0**,
+asterisk **0**, fee **0**, name **0**, shownType **0**, row membership **0**.
+
+One surface by construction: `build-seo-pages.mjs` has **0** references to
+`lookupTicker`, `fundTickerInfo`, `SEC_TICKERS` or `fund-er`, so the crawlable
+pages publish no ticker column and the regenerate-and-diff control is
+INAPPLICABLE rather than skipped. `PARSER_VERSION` stays 203; `sec-tickers.js`
+is unchanged, because the generator builds its renderer with `secTickers: false`
+and the new gate lives inside the `SEC_TICKERS` branch — unreachable there,
+which assertion (6) of `sec-tickers-test.mjs` already pins.
+
+### What the measurement cost, and both lessons are about harnesses
+
+***MY DIFFERENTIAL READ A PERFECT ZERO BECAUSE I PASSED AN OPTION
+`buildRenderer` IGNORES.*** The option is `appjs`; I passed `{ app: … }`, so
+**both renderers read the working tree** and every cell was identical by
+construction — withdrawn 0, gained 0, and the must-see pin at 0. **My control
+compared the two FILES and could not see it**, because it never asked which file
+the renderer loaded. Rebuilt, the control now asks the RENDERERS: HEAD must
+still publish the pin on a `Collective trust` row, the working tree must
+withhold it, **and the working tree must still answer a `Mutual fund` row** —
+without that third clause the suite would pass against an arm that had simply
+been deleted. *A before that is silently the after reads as a clean
+no-difference*, met for the second time on this record and the first on an
+option NAME. **What refused the zero was the pin, printed above the figures.**
+
+**And the first sizing pass skipped the `ID_ONLY` drop.** `apppath`'s `hooks` is
+`window`, not the regexes, so my `R.hooks?.COST_MARKER || …` fallbacks silently
+took over and `ID_ONLY` defaulted to `/^$/` — matching nothing. That read 1,750
+where the page shows **1,748**: *a harness that skips the drop counts rows no
+reader sees.* Both regexes are now SLICED from each app.js copy exactly as the
+generator slices them, with the generator's own behaviour assertions on each.
+
+**A third control of mine was simply wrong about its own case:** I pinned
+`Galliard Stable Return Fund` as a positive for the name rule, and `stable
+return` is not `stable value`, so it reads false. *Pick a control independently
+known correct* — probe it, do not compose it from memory.
+
+### What now prevents it
+
+`scripts/sec-tickers-test.mjs` (in `site-test`) gains eleven assertions:
+
+1. the gate WITHHOLDS the table's own pin on each of `Collective trust`,
+   `Separate account`, `Pooled separate account`, `Managed account`;
+2. the SAME key still resolves on a row typed `Mutual fund`, and on a row whose
+   type cell is BLANK — a blank says nothing about the vehicle, so withholding
+   there would be a different and unmeasured change;
+3. app.js reaches for `pooledVehicleRow` **by name**, and a missing predicate
+   DENIES the arm rather than publishing unchecked;
+4. the `f.nameRaw` call is asserted DECORATIVE over the committed table — 0 of
+   7,350 keys are pooled by name alone — rather than deleted, because `f.name`
+   is `clean(f.nameRaw)` and the generator refuses a row on either spelling
+   before writing its key. ***Unlike the two conditions this record deleted as
+   unreachable, its unreachability is a property of ANOTHER file***, so it is
+   kept and labelled and the test says which claim moved if that ever changes;
+5. fund-er.js's pooled rule can still be SLICED by the generator's own regexes —
+   the hoist had to leave the 2-space indent intact or `gen-sec-tickers.mjs`
+   refuses to run, which is the guard working;
+6. the sliced rule answers the NAME question in both directions, on probed
+   cases.
+
+The hoist's claim to be behaviour-preserving is itself measured, not asserted:
+`fundTickerInfo` answers IDENTICALLY before and after over **all 497,511
+distinct (name, type) pairs** in the published store, 50,204 of them non-null,
+**0 differing**, with a control that the two harnesses read different files.
+
+---
+
 ## 2026-10-09 (18:0xZ) — the "numeric token defeats an end-anchored caption vocabulary" item: TWO queue residues, NOT one mechanism, and the larger one is a PARSER defect. Nothing published moved; both refusals are now pinned with their evidence
 
 ### What the queue said

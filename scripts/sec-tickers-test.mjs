@@ -17,6 +17,7 @@
  *   node scripts/sec-tickers-test.mjs
  */
 import { readFileSync } from "node:fs";
+import vm from "vm";
 import { buildRenderer } from "./apppath.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
@@ -32,6 +33,8 @@ ok(!!pinM, "sec-tickers.js carries SEC_TICKERS_PIN");
 const PIN = pinM ? JSON.parse(pinM[1]) : null;
 ok(PIN && typeof PIN.key === "string" && /^[A-Z]{1,5}X?$/.test(PIN.tk || ""),
   `the pin names a key and a plausible symbol (${PIN && PIN.tk})`);
+
+const APP = readFileSync(`${ROOT}/app.js`, "utf8");
 
 /* ---- the page, with every script index.html loads ---- */
 const R = buildRenderer();
@@ -110,12 +113,82 @@ if (PIN) {
     "...and disabling it leaves the rest of the chain intact");
 }
 
+/* (8) A POOLED VEHICLE IS NOT THE REGISTERED FUND, AND THE KEY CANNOT SAY SO.
+ * `gen-sec-tickers.mjs` applies fund-er.js's pooled rule PER ROW, but the table
+ * it writes is keyed on `(issuer, nameRaw)` and that predicate reads a THIRD
+ * input — the filed TYPE cell. So one plan filing cells typed `Government
+ * securities` wrote a key that eight plans filing the same cells typed `Pooled
+ * separate account` then read, publishing the symbol as fact: 1,750 rows / 307
+ * keys / 840 plans / 1,019,442 participants / $16,466,055,303 store-wide.
+ * `lookupTicker` now asks the vehicle question itself, per row.
+ *
+ * BOTH DIRECTIONS, because a blanket refusal would read the same as a gate: the
+ * pin must STILL resolve under an honest type cell and must NOT under a pooled
+ * one. Without the first half this test would pass against an arm that had
+ * simply been deleted. */
+if (PIN) {
+  for (const t of ["Collective trust", "Separate account", "Pooled separate account", "Managed account"]) {
+    ok(lookupTicker(rowFromKey(PIN.key, { type: t })) === null,
+      `the vehicle gate withholds the pin on a row typed ${JSON.stringify(t)}`);
+  }
+  const honest = lookupTicker(rowFromKey(PIN.key, { type: "Mutual fund" }));
+  ok(!!honest && honest.tk === PIN.tk,
+    "...and the SAME key still resolves on a row typed Mutual fund (a gate, not a deletion)");
+  const blank = lookupTicker(rowFromKey(PIN.key, { type: "" }));
+  ok(!!blank && blank.tk === PIN.tk,
+    "...and on a row whose type cell is blank, which says nothing about the vehicle");
+}
+
+/* (8b) THE PREDICATE IS THE SHIPPED ONE, NOT A TWIN. fund-er.js exposes
+ * `pooledVehicleRow` precisely so there is no second copy of that expression to
+ * drift; assert app.js reaches for it by name and stands DOWN if it is absent. */
+ok(/pooledVehicleRow\(f\.name, f\.type \|\| ""\)/.test(APP),
+  "app.js asks fund-er.js's own pooledVehicleRow, with the row's filed type");
+ok(/typeof pooledVehicleRow !== "function"\s*\n?\s*\|\|/.test(APP),
+  "...and a missing predicate denies the arm rather than publishing unchecked");
+
+/* (8c) THE `f.nameRaw` CALL IS UNREACHABLE FOR ANY KEY IN THIS TABLE, and it is
+ * kept and LABELLED rather than deleted: `f.name` is `clean(f.nameRaw)`, so the
+ * two differ only through the rule's NAME disjuncts, and the generator refuses
+ * a row on EITHER spelling before writing its key. Asserted over the committed
+ * table rather than argued, so that if the generator ever stops asking the name
+ * question this stops being decorative and the test says which claim moved. */
+{
+  /* the committed table's own keys, read out of the asset the page loads */
+  const m = asset.match(/^const SEC_TICKERS = (\{[\s\S]*?\});$/m);
+  ok(!!m, "the asset carries a SEC_TICKERS object literal this test can read");
+  const TABLE = m ? vm.runInNewContext(`(${m[1]})`) : {};
+  ok(Object.keys(TABLE).length > 1000, `the table parses (${Object.keys(TABLE).length} keys)`);
+  const names = Object.keys(TABLE).map((k) => k.slice(k.indexOf("\u0000") + 1));
+  /* ASK THE PREDICATE, NOT THE CHAIN. The first version of this check built a
+   * row from the key's NAME half with a blank issuer and called `lookupTicker`:
+   * the key then missed and all 4,480 nulls read as "pooled by name". *A clean
+   * null reports on the query.* So slice fund-er.js's rule, as the generator
+   * does, and ask it directly — with a control in each direction first. */
+  const FE = readFileSync(`${ROOT}/fund-er.js`, "utf8");
+  const tcM = FE.match(/^const TRUST_CLASS = .*$/m);
+  const poM = FE.match(/^ {2}const pooled = [\s\S]*?\.test\(type \|\| ""\);$/m);
+  ok(!!tcM && !!poM, "fund-er.js's pooled rule can still be sliced (the generator needs this too)");
+  const g = {};
+  if (tcM && poM) vm.runInNewContext(`${tcM[0]}\n__out.pooledRow = (name, type) => {\n${poM[0]}\n  return !!pooled;\n};`, { __out: g });
+  /* both controls PROBED, not guessed: my first positive here was `Galliard
+   * Stable Return Fund`, which carries no pooled token at all (`stable return`
+   * is not `stable value`) and reads false — *pick a control independently
+   * known correct.* */
+  ok(g.pooledRow && g.pooledRow("Putnam Stable Value Fund", "") === true
+    && g.pooledRow("Vanguard Target Retirement Trust Flex", "") === true
+    && g.pooledRow("Fidelity 500 Index Fund", "") === false,
+    "the sliced rule answers the NAME question in both directions");
+  const byName = g.pooledRow ? names.filter((n) => g.pooledRow(n, "")) : ["slice failed"];
+  ok(byName.length === 0,
+    `no key in the table is pooled by NAME alone, so the nameRaw call is decorative (${byName.length} would be: ${byName.slice(0, 3).map((x) => JSON.stringify(x)).join(", ")})`);
+}
+
 /* (7) THE BROWSER TWIN OF THE KEY. app.js must build the key from the same two
  * cells in the same order; a transposition would make every lookup miss and
  * nothing else would notice. Asserted against the SOURCE, because the shape of
  * the key is the one thing the test above cannot distinguish from a drifted
  * table. */
-const APP = readFileSync(`${ROOT}/app.js`, "utf8");
 ok(/SEC_TICKERS\[\(f\.iss \|\| ""\) \+ "\\u0000" \+ \(f\.nameRaw \|\| f\.name \|\| ""\)\]/.test(APP),
   "app.js builds the key as (f.iss) NUL (f.nameRaw || f.name)");
 

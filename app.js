@@ -2786,9 +2786,54 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
      * either side — so there is no browser twin of `norm` to drift.
      * `scripts/sec-tickers-test.mjs` asserts this expression, the pin, the
      * position and the `f.tk` stand-down. */
+    /* AND THE KEY CANNOT CARRY THE VEHICLE, SO THE VEHICLE IS ASKED HERE
+     * (2026-10-11). The comment above says the generator "withholds 51,491
+     * rows whose type cell says collective trust, separate account, managed
+     * account or master trust", and that is true of the ROWS IT REFUSED and
+     * false of the TABLE: `pooledVehicleRow` reads the filed TYPE cell, which
+     * is NOT part of `(issuer, nameRaw)`. So a plan filing `VALIC Government
+     * Securities Fund` typed `Government securities` — not a vehicle — writes
+     * the key, and eight plans filing those same two cells typed `Pooled
+     * separate account` read VCGSX out of it and publish it as FACT.
+     *
+     * Store-wide: 1,750 rows / 307 keys / 840 plans / 1,019,442 participants /
+     * $16,466,055,303, every one unasterisked, across 168 symbols. Largest is
+     * Navy Federal Credit Union's `Fidelity Freedom Blend 2050`, typed
+     * `Collective trust`, publishing FHAPX — the registered MUTUAL fund — on
+     * $417,764,837, 10.58% of its menu; the plan holds the collective trust,
+     * which is a different vehicle at a different cost.
+     *
+     * IT IS ASKED HERE AND NOT IN THE GENERATOR BECAUSE THE GENERATOR-SIDE FIX
+     * WAS MEASURED AT 14x HARMFUL: refusing those 307 keys also withdraws the
+     * symbol from 24,094 rows / 12,654 plans / 13,925,559 participants whose
+     * own type cell is honest (17,643 typed `Mutual fund`). Judged per row, by
+     * the row's own filed cell, nothing honest is touched.
+     *
+     * The two spellings are asked exactly as `gen-sec-tickers.mjs` asks them,
+     * so the page and the generator apply one predicate — and the predicate is
+     * fund-er.js's own `pooledVehicleRow`, hoisted out of `fundTickerInfo` for
+     * this call rather than transcribed, because this project has lost four
+     * browser twins to drift.
+     *
+     * THE `f.nameRaw` CALL IS DECORATIVE TODAY AND IS KEPT AND LABELLED, not
+     * deleted: `f.name` is `clean(f.nameRaw)`, so the two can differ only
+     * through the rule's NAME disjuncts, and the generator refuses a row on
+     * EITHER spelling before writing its key — so no key in the table can have
+     * a pooled name. That is asserted over the committed table in
+     * `scripts/sec-tickers-test.mjs` (0 of 7,350) rather than argued, so if the
+     * generator ever stops asking the name question this call becomes live and
+     * the test says which claim moved. Unlike the two conditions this record
+     * deleted as unreachable, its unreachability is a property of ANOTHER file.
+     *
+     * `typeof` guards the global for the same reason the `SEC_TICKERS` guard
+     * does — fund-er.js is a separate script — and the stand-down is DENY: if
+     * it failed to load, this arm publishes nothing rather than unchecked. */
     if (!f.tk && typeof SEC_TICKERS === "object" && SEC_TICKERS) {
+      const vehiclePooled = typeof pooledVehicleRow !== "function"
+        || pooledVehicleRow(f.name, f.type || "")
+        || pooledVehicleRow(f.nameRaw, f.type || "");
       const sec = SEC_TICKERS[(f.iss || "") + "\u0000" + (f.nameRaw || f.name || "")];
-      if (typeof sec === "string" && sec) return { tk: sec, comparable: false };
+      if (!vehiclePooled && typeof sec === "string" && sec) return { tk: sec, comparable: false };
     }
     return null;
   }

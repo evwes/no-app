@@ -1429,6 +1429,157 @@ const FUND_COMPARABLE = [
   [trpFund("structured research", "extended"), ["PRCOX", 0.45]],
 ];
 
+/* A POOLED VEHICLE IS NOT THE REGISTERED FUND — hoisted out of
+ * `fundTickerInfo` 2026-10-11 so that app.js's `lookupTicker` can ask the
+ * same question of its LAST arm, the generated `sec-tickers.js` table.
+ *
+ * WHY IT HAD TO MOVE, AND IT IS A STAGE ARGUMENT SETTLED BY MEASUREMENT.
+ * `gen-sec-tickers.mjs` applies this rule PER ROW and refuses 51,491 of
+ * them — but it then writes a table keyed on `(issuer, nameRaw)` alone,
+ * and THIS PREDICATE READS A THIRD INPUT THE KEY DOES NOT CARRY. So a plan
+ * filing `VALIC Government Securities Fund` typed `Government securities`
+ * (not a vehicle) writes the key, and eight plans filing the identical two
+ * cells typed `Pooled separate account` then read VCGSX out of it and
+ * publish it ASSERTED. Store-wide that leak is **1,750 rows / 307 keys /
+ * 840 plans / 1,019,442 participants / $16,466,055,303**, every one of them
+ * unasterisked, 168 distinct symbols, the largest being Navy Federal Credit
+ * Union's `Fidelity Freedom Blend 2050` typed `Collective trust` publishing
+ * FHAPX — the registered MUTUAL fund — on $417,764,837, 10.58% of its menu.
+ *
+ * REFUSING THE CONTESTED KEYS IN THE GENERATOR WAS MEASURED AND IS 14x
+ * HARMFUL: 24,094 rows / 12,654 plans / 13,925,559 participants publish one
+ * of those 307 keys on a row that is NOT pooled, 17,643 of them typed
+ * `Mutual fund`, and deleting the key withdraws their correct symbol too.
+ * *A verdict that reads an input outside the key cannot be expressed by
+ * deleting the key — it must be asked where that input is in hand.*
+ *
+ * `fundTickerInfo` calls this and nothing else changes for it, so the
+ * expression below is BYTE-IDENTICAL to the one that lived inside it,
+ * comments included — including the 2-space indent, which is what keeps
+ * `gen-sec-tickers.mjs`'s slice (anchored `^  const pooled = ` … `.test(type
+ * || "");$`) matching, so the generator and the page cannot drift apart. */
+function pooledVehicleRow(name, type) {
+  /* `tiaa access` IS A VEHICLE NAME, NOT A PRODUCT NAME (2026-10-09). The
+   * TIAA Access platform is a set of sub-accounts inside TIAA's variable
+   * annuity: the plan holds a separate account that invests in a registered
+   * fund, at the separate account's higher cost — the same claim this arm's
+   * own `separate account` disjunct exists to refuse. The name carries the
+   * vehicle, so the NAME is the witness and the TYPE cell is not needed.
+   *
+   * IT HAD TO BE THE NAME, because the type cell cannot answer: our own store
+   * files `TIAA ACCESS NUV INTL EQUITY T4` and each of the seven next most
+   * common products under ALL FOUR of `Pooled separate account`,
+   * `Separate account`, `Mutual fund` and blank. 651 of 2,399 distinct TIAA
+   * Access product names are filed as a separate account by at least one plan,
+   * and the page's verdict was therefore decided by which plan filed the row:
+   * The St. Paul's Schools filed `TIAA Access TRP Institutional Large-Cap
+   * Growth T3` as a pooled separate account and got `TRLGX*`, while Liberty
+   * Science Center filed `TIAA Access TRP Inst Large Cap Growth T4` as a
+   * `Mutual fund` and got **TRLGX asserted** — one product, two verdicts.
+   *
+   * REGISTRY WITNESS: `sec-funds.json` registers 589 TIAA/CREF/Nuveen rows and
+   * **0 of 29,406** series matching both `tiaa` and `access`, so no row in this
+   * family is a registered fund that an assertion could be right about.
+   *
+   * ONE-DIRECTIONAL BY CONSTRUCTION — `pooled` can only withdraw an assertion
+   * or downgrade it to a comparable; the `!pooled` branch is the only one that
+   * returns `comparable:false` from FUND_TICKER. Measured through
+   * `scripts/apppath.mjs` over all 1,721,920 published+served rows: 13 rows /
+   * 11 plans / 10,967 participants / $2,689,702 move — 7 rows / 4,490 ppl lose
+   * a ticker (VWENX, DODFX), 6 rows / 7,358 ppl go asserted -> comparable
+   * (TRLGX*) — with ticker GAINED 0, SWAPPED 0, fee changed 0, name 0,
+   * shownType 0, and 341,327 sampled non-candidate rows differing on 0.
+   *
+   * THE FEE DOES NOT MOVE, and that is a limit rather than a feature:
+   * `er = star ? info.er : fundERRow(f)` prices the NAME either way, so
+   * Association Of Independent Maryland And Dc Schools still publishes
+   * Wellington Admiral's 0.17 on a row that now names no fund. 1,000 rows /
+   * 596 plans / 431,094 ppl carry a pattern-table fee here (503 at 0.06, 343
+   * at 0.1, 65 at 0.2 — index and money-market patterns), which belongs with
+   * the owner-gated stable-value and fee-pre-emption families: a fee is
+   * SOURCED, never derived, and `data/fund-facts.json` holds no TIAA Access
+   * figures. `docs/accuracy-log.md` 2026-10-09.
+   *
+   * THE DECOYS ARE MEASURED, NOT IMAGINED: of 8,714 distinct stored
+   * (issuer, name) strings carrying `tiaa` and outside this family, the token
+   * wrongly takes **0** — `TIAA Real Estate`, `TIAA Traditional`, `TIAA Stable
+   * Value` and the 474 `CREF Lifecycle Index` rows (registered mutual funds)
+   * are all untouched. That last set is why the token is the two-word phrase
+   * and not a bare brand: a bare `CREF`/`TIAA` token admitted 474 registered
+   * funds when the CREF class was sized one cycle earlier. */
+  const pooled = /trust|commingled|collective|pool\b|unitized|separate account|\bcit\b|annuity|tiaa traditional|tiaa access|guaranteed|\bgic\b|stable value|separately managed/i.test(name)
+    || new RegExp(TRUST_CLASS, "i").test(name)
+    /* `FLEX` IS VANGUARD'S COLLECTIVE-TRUST EDITION, AND ONE SPELLING OF IT
+     * CARRIES NO `TRUST` TOKEN (2026-10-09). `Vanguard Target Retirement Trust
+     * Flex` is a collective trust sold to retirement plans; the SEC registers
+     * no series for it, so it has no ticker and no public expense ratio. The
+     * `trust` disjunct above already catches the two spellings that say
+     * "Trust", which is why our own page publishes `VFIFX*` for
+     * `Vanguard Target Retirement 2050 Trust Flex` and nothing at all for
+     * `VFTC Target Retirement 2050 Trust Flex`. The third spelling,
+     * `VANGUARD TARGET RET 2030 FLEX`, says neither `Trust` nor a vehicle in
+     * its TYPE cell -- so General Dynamics published VTHRX..VLXVX ASSERTED,
+     * er 0.08, on $11.5B. One product, three verdicts, and the only thing that
+     * varied was a cell the filer left blank: the `gicRow` shape for the
+     * fourth time after Accenture's stable value, the Fidelity Freedom ladder
+     * and the CREF accounts.
+     *
+     * REGISTRY WITNESS: `sec-funds.json` registers VTHRX as `VANGUARD CHESTER
+     * FUNDS :: Vanguard Target Retirement 2030 Fund`, class `Investor Shares`,
+     * and `FLEX` appears 145 times in the file with NOT ONE a Vanguard
+     * target-date series -- every hit is Janus Henderson Short Duration
+     * Flexible Bond and kin.
+     *
+     * A BARE `\bflex\b` IS WRONG AND WAS MEASURED SO, not assumed: over all
+     * 1,730,931 stored rows it takes 495 rows / 333 distinct names of
+     * genuinely different products, among them `Fidelity Flex International
+     * Index Fund` (a REGISTERED fund) and the `Flex Focus` and `Janus Henderson
+     * Flex Bond` families. That is the recorded CREF lesson -- a bare brand
+     * token admitted 474 registered Lifecycle Index funds -- so the anchor is
+     * the conjunction with the Vanguard target-date context, which takes 42
+     * rows / 33 names and NOTHING else. `Flexible` cannot match it at all:
+     * there is no word boundary after `flex` inside the word.
+     *
+     * NECESSITY, AND LEAVE-ONE-OUT IS BLIND TO HALF OF IT. Measured over the
+     * 1,617,526 stored rows the shipped name arms do NOT already pool: `flex`
+     * is load-bearing for **84,877 rows** — without it this disjunct pools
+     * every Vanguard Target Retirement MUTUAL fund and downgrades 84k correct
+     * assertions. The other two each read **necessary for 0**, and that is an
+     * artifact of the test rather than a finding: they are MUTUALLY REDUNDANT,
+     * each blocking the rows the other blocks, so dropping either ALONE costs
+     * nothing and dropping BOTH routes 479 further rows / 317 names into the
+     * pooled branch. So both stay: jointly necessary, individually redundant.
+     * *A conjunction's conditions cannot be priced one at a time when two of
+     * them block the same population.*
+     *
+     * AND THE PUBLISHED COST OF DROPPING BOTH IS 6 ROWS, NOT 479 — measured
+     * through the renderer rather than read off the routing, and it runs the
+     * OPPOSITE way to the one I assumed. Pooling does not merely downgrade:
+     * the pooled branch never consults FUND_TICKER at all, only
+     * FUND_COMPARABLE, so a row the TICKER table carries and the comparable
+     * table does not loses its symbol outright. `Fidelity Flex Government
+     * Money Market Fund` is a REGISTERED Fidelity fund, and dropping both
+     * conditions WITHDRAWS its correct, unasterisked SPAXX from 6 rows / 6
+     * plans / 1,843 participants / $847,023. *A count of what a condition
+     * admits is not a count of what the page publishes* — and a guard whose
+     * job is to withhold a false assertion can cost a true one. */
+    || (/\bflex\b/i.test(name) && /vanguard|\bvftc\b/i.test(name)
+        && /target\s*(?:ret\b|retirement)/i.test(name))
+    /* The TYPE column is the filing's own statement of the vehicle, and it is
+     * a controlled vocabulary of 13 values -- so it can be matched exactly
+     * rather than guessed at. This arm listed only two of the five that name
+     * a NON-REGISTERED vehicle, and the gap was not cosmetic: the plain
+     * `Separate account` value (12,061 rows) matched neither this arm nor the
+     * name arm above, so an insurance separate account filed as `VALIC
+     * Vanguard Windsor II Fund` resolved to VWNAX with comparable:false --
+     * the claim that the plan holds the Vanguard fund itself. It does not; it
+     * holds a separate account that invests in it, at the separate account's
+     * higher cost. Measured through app.js's own lookupTicker on the v180
+     * store: 878 rows / 207 plans / 311,893 participants made that claim. */
+    || /collective trust|separate account|managed account|master trust/i.test(type || "");
+  return !!pooled;
+}
+
 /* Ticker for a holding. Returns {tk, comparable} or null.
  * comparable=true means "this is what the holding tracks", not "this is the
  * holding" — the caller must render the asterisk and the footnote. */
@@ -1596,124 +1747,9 @@ function fundTickerInfo(name, type) {
   // exact mutual fund, with no asterisk, because "trust" never appears
   // spelled out. The trailing anchor is what keeps this from also matching
   // "TRP RETIRE 2030 F" (a bare class letter, no "Tr" marker at all).
-  /* `tiaa access` IS A VEHICLE NAME, NOT A PRODUCT NAME (2026-10-09). The
-   * TIAA Access platform is a set of sub-accounts inside TIAA's variable
-   * annuity: the plan holds a separate account that invests in a registered
-   * fund, at the separate account's higher cost — the same claim this arm's
-   * own `separate account` disjunct exists to refuse. The name carries the
-   * vehicle, so the NAME is the witness and the TYPE cell is not needed.
-   *
-   * IT HAD TO BE THE NAME, because the type cell cannot answer: our own store
-   * files `TIAA ACCESS NUV INTL EQUITY T4` and each of the seven next most
-   * common products under ALL FOUR of `Pooled separate account`,
-   * `Separate account`, `Mutual fund` and blank. 651 of 2,399 distinct TIAA
-   * Access product names are filed as a separate account by at least one plan,
-   * and the page's verdict was therefore decided by which plan filed the row:
-   * The St. Paul's Schools filed `TIAA Access TRP Institutional Large-Cap
-   * Growth T3` as a pooled separate account and got `TRLGX*`, while Liberty
-   * Science Center filed `TIAA Access TRP Inst Large Cap Growth T4` as a
-   * `Mutual fund` and got **TRLGX asserted** — one product, two verdicts.
-   *
-   * REGISTRY WITNESS: `sec-funds.json` registers 589 TIAA/CREF/Nuveen rows and
-   * **0 of 29,406** series matching both `tiaa` and `access`, so no row in this
-   * family is a registered fund that an assertion could be right about.
-   *
-   * ONE-DIRECTIONAL BY CONSTRUCTION — `pooled` can only withdraw an assertion
-   * or downgrade it to a comparable; the `!pooled` branch is the only one that
-   * returns `comparable:false` from FUND_TICKER. Measured through
-   * `scripts/apppath.mjs` over all 1,721,920 published+served rows: 13 rows /
-   * 11 plans / 10,967 participants / $2,689,702 move — 7 rows / 4,490 ppl lose
-   * a ticker (VWENX, DODFX), 6 rows / 7,358 ppl go asserted -> comparable
-   * (TRLGX*) — with ticker GAINED 0, SWAPPED 0, fee changed 0, name 0,
-   * shownType 0, and 341,327 sampled non-candidate rows differing on 0.
-   *
-   * THE FEE DOES NOT MOVE, and that is a limit rather than a feature:
-   * `er = star ? info.er : fundERRow(f)` prices the NAME either way, so
-   * Association Of Independent Maryland And Dc Schools still publishes
-   * Wellington Admiral's 0.17 on a row that now names no fund. 1,000 rows /
-   * 596 plans / 431,094 ppl carry a pattern-table fee here (503 at 0.06, 343
-   * at 0.1, 65 at 0.2 — index and money-market patterns), which belongs with
-   * the owner-gated stable-value and fee-pre-emption families: a fee is
-   * SOURCED, never derived, and `data/fund-facts.json` holds no TIAA Access
-   * figures. `docs/accuracy-log.md` 2026-10-09.
-   *
-   * THE DECOYS ARE MEASURED, NOT IMAGINED: of 8,714 distinct stored
-   * (issuer, name) strings carrying `tiaa` and outside this family, the token
-   * wrongly takes **0** — `TIAA Real Estate`, `TIAA Traditional`, `TIAA Stable
-   * Value` and the 474 `CREF Lifecycle Index` rows (registered mutual funds)
-   * are all untouched. That last set is why the token is the two-word phrase
-   * and not a bare brand: a bare `CREF`/`TIAA` token admitted 474 registered
-   * funds when the CREF class was sized one cycle earlier. */
-  const pooled = /trust|commingled|collective|pool\b|unitized|separate account|\bcit\b|annuity|tiaa traditional|tiaa access|guaranteed|\bgic\b|stable value|separately managed/i.test(name)
-    || new RegExp(TRUST_CLASS, "i").test(name)
-    /* `FLEX` IS VANGUARD'S COLLECTIVE-TRUST EDITION, AND ONE SPELLING OF IT
-     * CARRIES NO `TRUST` TOKEN (2026-10-09). `Vanguard Target Retirement Trust
-     * Flex` is a collective trust sold to retirement plans; the SEC registers
-     * no series for it, so it has no ticker and no public expense ratio. The
-     * `trust` disjunct above already catches the two spellings that say
-     * "Trust", which is why our own page publishes `VFIFX*` for
-     * `Vanguard Target Retirement 2050 Trust Flex` and nothing at all for
-     * `VFTC Target Retirement 2050 Trust Flex`. The third spelling,
-     * `VANGUARD TARGET RET 2030 FLEX`, says neither `Trust` nor a vehicle in
-     * its TYPE cell -- so General Dynamics published VTHRX..VLXVX ASSERTED,
-     * er 0.08, on $11.5B. One product, three verdicts, and the only thing that
-     * varied was a cell the filer left blank: the `gicRow` shape for the
-     * fourth time after Accenture's stable value, the Fidelity Freedom ladder
-     * and the CREF accounts.
-     *
-     * REGISTRY WITNESS: `sec-funds.json` registers VTHRX as `VANGUARD CHESTER
-     * FUNDS :: Vanguard Target Retirement 2030 Fund`, class `Investor Shares`,
-     * and `FLEX` appears 145 times in the file with NOT ONE a Vanguard
-     * target-date series -- every hit is Janus Henderson Short Duration
-     * Flexible Bond and kin.
-     *
-     * A BARE `\bflex\b` IS WRONG AND WAS MEASURED SO, not assumed: over all
-     * 1,730,931 stored rows it takes 495 rows / 333 distinct names of
-     * genuinely different products, among them `Fidelity Flex International
-     * Index Fund` (a REGISTERED fund) and the `Flex Focus` and `Janus Henderson
-     * Flex Bond` families. That is the recorded CREF lesson -- a bare brand
-     * token admitted 474 registered Lifecycle Index funds -- so the anchor is
-     * the conjunction with the Vanguard target-date context, which takes 42
-     * rows / 33 names and NOTHING else. `Flexible` cannot match it at all:
-     * there is no word boundary after `flex` inside the word.
-     *
-     * NECESSITY, AND LEAVE-ONE-OUT IS BLIND TO HALF OF IT. Measured over the
-     * 1,617,526 stored rows the shipped name arms do NOT already pool: `flex`
-     * is load-bearing for **84,877 rows** — without it this disjunct pools
-     * every Vanguard Target Retirement MUTUAL fund and downgrades 84k correct
-     * assertions. The other two each read **necessary for 0**, and that is an
-     * artifact of the test rather than a finding: they are MUTUALLY REDUNDANT,
-     * each blocking the rows the other blocks, so dropping either ALONE costs
-     * nothing and dropping BOTH routes 479 further rows / 317 names into the
-     * pooled branch. So both stay: jointly necessary, individually redundant.
-     * *A conjunction's conditions cannot be priced one at a time when two of
-     * them block the same population.*
-     *
-     * AND THE PUBLISHED COST OF DROPPING BOTH IS 6 ROWS, NOT 479 — measured
-     * through the renderer rather than read off the routing, and it runs the
-     * OPPOSITE way to the one I assumed. Pooling does not merely downgrade:
-     * the pooled branch never consults FUND_TICKER at all, only
-     * FUND_COMPARABLE, so a row the TICKER table carries and the comparable
-     * table does not loses its symbol outright. `Fidelity Flex Government
-     * Money Market Fund` is a REGISTERED Fidelity fund, and dropping both
-     * conditions WITHDRAWS its correct, unasterisked SPAXX from 6 rows / 6
-     * plans / 1,843 participants / $847,023. *A count of what a condition
-     * admits is not a count of what the page publishes* — and a guard whose
-     * job is to withhold a false assertion can cost a true one. */
-    || (/\bflex\b/i.test(name) && /vanguard|\bvftc\b/i.test(name)
-        && /target\s*(?:ret\b|retirement)/i.test(name))
-    /* The TYPE column is the filing's own statement of the vehicle, and it is
-     * a controlled vocabulary of 13 values -- so it can be matched exactly
-     * rather than guessed at. This arm listed only two of the five that name
-     * a NON-REGISTERED vehicle, and the gap was not cosmetic: the plain
-     * `Separate account` value (12,061 rows) matched neither this arm nor the
-     * name arm above, so an insurance separate account filed as `VALIC
-     * Vanguard Windsor II Fund` resolved to VWNAX with comparable:false --
-     * the claim that the plan holds the Vanguard fund itself. It does not; it
-     * holds a separate account that invests in it, at the separate account's
-     * higher cost. Measured through app.js's own lookupTicker on the v180
-     * store: 878 rows / 207 plans / 311,893 participants made that claim. */
-    || /collective trust|separate account|managed account|master trust/i.test(type || "");
+  /* the vehicle question, hoisted to `pooledVehicleRow` above so app.js's
+   * own last resolver arm can ask it too — see that function's comment */
+  const pooled = pooledVehicleRow(name, type);
   /* Tested against the RAW name, never the expanded one: expandFundName
    * rewrites "MM" (to "Money Market"), which silently defeated this guard when
    * it lived inside the individual patterns, and "MM S&P 500 Index Fd(Northern
