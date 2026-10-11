@@ -1484,6 +1484,62 @@ function fundTickerInfo(name, type) {
    * typed a non-registered vehicle (549 `Mutual fund`, 188 blank); and a
    * seeded uniform draw of 24 reads 24 of 24 correct. */
   if (/\bEUPAC\b/i.test(name)) vs.push(name.replace(/\bEUPAC\b/gi, "EuroPacific Growth"));
+  /* A SHARE CLASS WRITTEN WITH A HYPHEN, WHERE THE TABLE SPELLS IT WITHOUT ONE
+   * (2026-10-11). `American Funds EuroPacific Growth Fund (Class R-6)` was
+   * publishing a 0.46 fee and NO symbol, and the queue entry blamed the
+   * PARENTHESES. One probe refuted that: `(Class R6)` resolves RERGX,
+   * while `(Class R-6)`, `Class R-6`, `R-6` and `(R-6)` all resolve nothing,
+   * and the in-menu control `Baird Aggregate Bond Fund (Institutional Shares)`
+   * resolves BAGIX under EVERY variant because its class word is spelled out.
+   * So the blocker is the HYPHEN — `FUND_TICKER`'s EuroPacific arm requires a
+   * literal `r6` — and the parentheses were never involved. *A fix for one
+   * phrasing of a class is not a fix for the class*, met on a HYPHEN.
+   *
+   * THE SEC MATCHER CANNOT REACH THIS AND IT IS NOT A REGISTRY GAP EITHER:
+   * `norm` already collapses the hyphen, so `resolveHolding` sees the IDENTICAL
+   * token string for both spellings and answers null for both — because the
+   * registry registers RERGX under the fund's legal name `EUPAC FUND :: EUPAC
+   * Fund`, which shares no tokens with the filed name. *There are two
+   * resolvers, and the stage follows the one that can answer.*
+   *
+   * THE COLLAPSE IS APPLIED TO EVERY SEED ALREADY IN `vs`, NOT TO `name`, AND
+   * THAT IS WORTH 138 ROWS / 224,314 READERS. Written against `name` alone it
+   * does not COMPOSE with the `EUPAC` expansion one line above: that push
+   * yields `... EuroPacific Growth Class R-6` (hyphen intact) and this one
+   * yields `... EUPAC Class R6` (EUPAC intact), so `American Funds EUPAC Class
+   * R-6` — 56 rows, plus 41 of `EUPAC Fund Class R-6` — needs BOTH transforms
+   * and neither push supplies them. Found by reading the INERT candidates, not
+   * by a count: *when two normalisations each produce a seed the other's
+   * transform was needed for, neither reaches the names that need both.*
+   *
+   * SAME STAGE AND SAME REASON AS THE `EUPAC` PUSH ABOVE: `vs` feeds only
+   * `hit`, `pooled` tests the RAW name, and `fundER` never sees these seeds, so
+   * NO FEE CELL CAN MOVE BY CONSTRUCTION and the displayed NAME cannot either.
+   * Measured through `scripts/apppath.mjs` as a DIFFERENTIAL — two renderers
+   * from one tree with only this block varying — over all 1,721,920
+   * published+served rows: 636 rows / 628 acks / 636 plans / 1,878,821
+   * participants / $3,664,621,842 GAIN a symbol, with ticker lost 0, swapped 0,
+   * ASTERISKED 0, fee 0, name 0, shownType 0. Narrowed to the 9,492 rows whose
+   * raw or cleaned name matches the gate (a superset BY CONSTRUCTION, since the
+   * push is gated on exactly that test) and DISCHARGED on 19,026 sampled
+   * non-candidates differing on 0.
+   *
+   * THE ASSERTION IS LICENSED BY THE FILING, checked over the WHOLE population
+   * rather than a sample: all 636 gaining rows STATE `R-6` (0 do not), 0 name a
+   * pooled vehicle in either the name or the type cell, and both destinations
+   * are registered as that exact class — RERGX `Class R-6` (615 rows) and
+   * RWMGX `R-6` (21). All 106 distinct filed spellings were read and not one is
+   * a false positive; one filer even writes `... Class R-6 (RERGX)`. Largest:
+   * Prohealth Physicians $689,915,011 / 92,924 ppl, Publix 225,961 ppl.
+   *
+   * THE DECOY IS MEASURED AND IT RESOLVES, so its pin can fail: of the 1,120
+   * distinct candidate names where the token is NOT behind a class word,
+   * `GraniteShares Bloomberg Commodity Broad Strategy No K-1 ETF` publishes
+   * COMB — and `K-1` there is a TAX FORM, not a share class. It survives
+   * because a seed is only ever ADDED. The `\b` after the digit is what keeps
+   * `R-2000` out, asserted in the fixtures rather than argued. */
+  for (const v of vs.slice()) if (/\b[A-Za-z]-\d\b/.test(v))
+    vs.push(v.replace(/\b([A-Za-z])-(\d)\b/g, "$1$2"));
   const hit = (re) => re.test(name) || vs.some((v) => re.test(v));
   // "Tr" (never "TRP", which is the T. Rowe Price manager abbreviation) is a
   // recordkeeper-shortened "Trust" when it carries a trailing trust-class

@@ -232,6 +232,43 @@ const MUST = [
   ["VANGUARD TARGET RET 2030 FLEX", "VTHRX*"],
   ["Vanguard Target Retirement 2050 Trust Flex", "VFIFX*"],
   ["VANGUARD TARGET RET 2065 FLEX", "VLXVX*"],
+  /* THE HYPHENATED SHARE CLASS (2026-10-11). `Class R-6` resolved nothing
+   * where `Class R6` resolved RERGX, so 636 published+served rows / 1,878,821
+   * readers / $3.66B published a fee and no symbol. The queue blamed the
+   * PARENTHESES; the first pin below is the draw's own row and the parentheses
+   * are incidental — the second and third carry no parenthesis at all and were
+   * equally blocked.
+   *
+   * THE SECOND AND THIRD ARE THE SINGLE-PROTECTION CASES FOR APPLYING THE
+   * COLLAPSE TO EVERY SEED rather than to `name`: run against a version
+   * written for `name` alone, these two FAIL and the other two pass. The
+   * second needs the `EUPAC` expansion AND the collapse, and neither push
+   * composes with the other. Without these the choice — worth 138 rows /
+   * 224,314 readers — would be untested. Note the third resolves on the PAGE
+   * under either form, because `lookupTicker` prepends the issuer cell and
+   * this harness supplies none: *a fixture measures its own harness's inputs,
+   * which are narrower than production's here, and that makes it a stricter
+   * control rather than a wrong one.*
+   *
+   * THE FOURTH is a second house and a second destination, so the arm is not
+   * pinned to one product; RWMGX is registered as `R-6` exactly as filed. */
+  ["American Funds EuroPacific Growth Fund (Class R-6)", "RERGX"],
+  ["American Funds EUPAC Class R-6", "RERGX"],
+  ["EuroPacific Growth Fund Class R-6", "RERGX"],
+  ["American Funds Washington Mutual Class R-6", "RWMGX"],
+  /* THE COLLAPSE MUST NOT MOVE AN ANSWER THAT IS ALREADY RIGHT, and these three
+   * can FAIL because fund-er's own table resolves them today: the collapse
+   * produces `K6`, `R6` and `I2`, any of which could newly match some other
+   * arm. Drawn from the 18 candidate names where the token is not a class the
+   * EuroPacific/Washington Mutual arms care about AND this table answers —
+   * measured, because my first decoy (`GraniteShares ... No K-1 ETF`, where
+   * `K-1` is the TAX FORM) resolves COMB through `sec-tickers.js` and NOTHING
+   * through this table, so its pin failed here while being correct on the page.
+   * *There are two resolvers, and a fixture is only as good as the one its own
+   * harness asks.* Over all 18, the collapse changes the answer on 0. */
+  ["Fidelity Total bond K-6 Fund", "FTBFX"],
+  ["JP Morgan Large Cap Growth R-6", "JLGMX"],
+  ["PIMCO TOTAL RETURN I-2", "PTTRX"],
   /* THE TWO SINGLE-PROTECTION CASES FOR THAT ARM'S OWN CONDITIONS, both found
    * by measuring rather than by listing the strings that came to mind — the
    * six `Flex`-family decoys I first reached for all resolve to nothing today,
