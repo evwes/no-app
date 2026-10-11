@@ -7,6 +7,105 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-11 (18:2xZ) — A BROKERAGE WINDOW'S PERMITTED-HOLDINGS ENUMERATION PUBLISHED AS A FUND, WITH A FALSE VEHICLE TYPE ON ITS TWO LARGEST ROWS: 21 candidates / 44,638 participants, of which ~15 are genuine and ~6 are false positives of my own category vocabulary — the fourth instance today of a count keyed on a vocabulary measuring the vocabulary
+
+### What was wrong
+
+The 18:08 draw drew Sabre Glbl Inc. (4,338 ppl, a healthy 24-fund menu at ratio
+0.995) and its second-largest row, **12.18% of a $1,067,239,688 menu /
+$130,029,210**, is:
+
+```
+"Fidelity Investments deposit, common and preferred stocks, options,
+ rights and warrants, c"            <- truncated mid-word
+```
+
+typed **`Mutual fund`**. That is not a fund name; it is the list of asset
+CATEGORIES a self-directed brokerage window permits, cut off mid-word. The
+**fee is correctly suppressed** (`bankDepositFee` reads the `deposit` noun), so
+the harm is the NAME and the false VEHICLE claim — and the honest label already
+exists and the same draw printed it on another plan, where a brokerage account
+renders as `Brokerage window` with `brokRow` set.
+
+### What the measurement said
+
+Screened structurally rather than lexically — a published name mentioning
+**three or more** Schedule H asset categories cannot be one fund's name — over
+all 1,721,920 published+served rows, with the serving condition and the publish
+gate applied:
+
+```
+enumerating >=3 categories: 21
+  already labelled honestly by a shipped arm: 0
+UNQUALIFIED: 21 rows / 21 acks / 44,638 ppl / $239,970,341
+  publishing a TICKER 0, a FEE 1
+  by SHOWN type: "Mutual fund" 11, "Cash / short-term" 3, "Collective trust" 2,
+                 "Company stock" 2, "—" 2, "Exchange-traded fund" 1
+```
+
+**No shipped predicate reaches ANY of the 21**, and **0 publish a ticker** — so
+the resolvers are already refusing these names, and only the type cell and the
+name itself are wrong.
+
+**THE TYPE CELLS ARE THE INTERNAL EVIDENCE, and they disagree with each other
+across one class:** the same shape is filed as a mutual fund, a cash account, a
+collective trust, company stock and an ETF. `Certificates of Deposit,
+Government Bonds, Stock Options, Common Stocks` is typed **`Exchange-traded
+fund`**; `Cash, Exhange-traded Funds, Common Stock and Options` (the filer's own
+typo) is typed **`Company stock`**. *Six verdicts for one shape is a filer's
+type cell carrying no information*, which is why the remedy cannot read it.
+
+Largest by share of their own menu: **Ora Orthopedics 25.89%** (`Common Stocks,
+Mutual Funds, Money Market, ETFs`), Sabre 12.18%, Willdan 11.72% (`Cash and
+Cash Equivalents, Common Stock, Mutual Funds, and Unit Investment Trusts`),
+Rambus 9.13%, Radiology Imaging 5.13%. Two members **name themselves**: Globus
+Medical (3,311 ppl) files `Interest bearing cash, common and preferred stocks,
+Participant-Directed Brokerage Account`, and Fortune Brands (10,172 ppl) welds
+an enumeration onto a real fund (`CERT. OF DEP., GOVERNMENT BOND,
+RIGHTS/WARRANTS TRP STABLE VALUE P`).
+
+### Reading all 21 refuted a quarter of my own screen
+
+***~6 of the 21 are false positives, and every one is a category word doing a
+different job inside a real product's name:***
+
+- **`Nuveen Real Estate Securities Retirement Option`** — a REAL fund. It
+  matched on `real estate` + `securities` + **`options`, because `Option` is
+  the last word of `Retirement Option`.** The derivative and the product suffix
+  are the same token.
+- **`Interest-bearing cash - Preferred Money Market Account`** — `preferred`
+  here is a money-market **tier name**, not preferred stock.
+- **`Money Market Deposit Accounts Matrix Retirement Cash Account`** — a real
+  cash product whose own name contains three of my categories.
+- **`PRINCIPAL REAL ESTATE SECURITIES INST Mutual Funds 1`** and its R-6
+  sibling — a real fund with debris welded on. The remedy there is a NAME
+  REPAIR, not a brokerage label, so they belong to a different class.
+
+So the genuine population is **~15 rows / ~30,000 participants** — small, and
+the two largest of them carry the false `Mutual fund` type on $150M.
+
+### Prevention
+
+- ***A count keyed on a vocabulary measures the vocabulary — fourth instance
+  today***, after the trailing `a` (a share class), `IN` (Institutional) and
+  `AS` (Asset). Here the vocabulary is semantic rather than abbreviational, and
+  it fails the same way: **a category noun inside a registered product's own
+  name is not a category.** The screen must refuse a match whose token is doing
+  grammatical work for the product (`Retirement Option`, `Preferred Money
+  Market Account`), which means position matters and not just presence.
+- **The remedy's witness is the ENUMERATION, never the type cell.** Six
+  different type cells for one shape is proof the filer's cell carries no
+  information here — the opposite of the classes where a blank type defeats a
+  suppressor, and worth noting because it rules out the cheap fix.
+- **Queued, not shipped, and the size is why.** ~15 rows is small enough that
+  an arm must be very well targeted to be worth it, and two members already
+  name themselves (`Participant-Directed Brokerage Account` in the filed
+  string), which is a cleaner and narrower witness than any category count.
+  That sub-case is the one to build first.
+- The fee is already right on 20 of 21, so this is a TYPE and NAME item and
+  must not be written as a fee change.
+---
+
 ## 2026-10-11 (17:0xZ) — THE HOUSE CONTRACTED AND THE PRODUCT WITH IT: 18,802 published+served rows / 4,575 keys / 7,702 acks / 7,715 plans / 6,300,982 participants / $25,793,171,689 gain an ASSERTED symbol, resolved against the SEC registry by an ABBREVIATION RELATION rather than a guessed expansion
 
 ### What was wrong

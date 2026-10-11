@@ -154,6 +154,48 @@ full re-parse: 123 plans publishing `Employer-money vesting: Immediate` over a
 clause that only states when vesting accelerates, and IBM's wrapped description
 cell where the real fund name was cut and only the continuation kept.
 
+## Evening: the day's largest ticker gain — 6.3 million readers
+
+**An abbreviated Capital Group holding now resolves against the registry:
+18,802 rows / 7,715 plans / 6,300,982 participants / $25.8 billion gain a
+symbol they are entitled to**, with nothing lost — ticker lost, swapped and
+approximated all zero, no fee moved, no name or type changed, no row entered or
+left a menu, and a control of 1,702,234 untouched rows differing on none of it.
+The lookup table goes 7,762 → 12,337 keys, every added key attributable to this
+one arm with no drift. A seeded draw of 26 gains read 26 of 26 correct.
+
+**The sizing that queued it was wrong by 2.4x on rows and 3.6x on people, and
+one probe found out why.** The screen was keyed on the *house* being
+contracted — `AMERFUNDS` for American Funds. But `AMERICAN FUNDS 2055 TARG
+DATERET R6`, with the house spelled out in full, resolves to **nothing**, while
+the same row with the product spelled out resolves correctly. Two tokens were
+damaged, not one, and a screen keyed on one of them measures one of them.
+
+**What makes it safe is that it knows no abbreviations.** There is no list of
+contractions anywhere in it. Each token in the filed name has to consume
+consecutive words of a registered fund's actual name, letter by letter,
+including each word's first letter — so `TARG DATERET` matching *Target Date
+Retirement* is derived from the registry rather than guessed, and the same
+relation handles the house, letting five spellings qualify without being
+listed. The fund family itself is read out of the registry (39 registrants, 66
+series, every one Capital Group) and the build fails if that ever stops being
+true. A platform's own wrapper product, which our notes record as correct as
+filed, is refused structurally rather than by a blocklist.
+
+**Three defects in its own work were caught and fixed before it shipped**,
+each a mistake this project has written down before: a leaked exclusion let the
+bare word `American` pass as the house and accept a competitor's fund; a
+character floor added on reasoning rather than measurement cost 684 genuine
+rows and protected nothing; and a hand-written noise list omitted one spelling
+and cost 276 more. Its own verification nearly went wrong too — the control
+group was built from a keyword that 1,839 genuine gains do not contain, so the
+check reported a failure that was its own construction.
+
+**Still the owner's call:** 10,996 of the newly-identified rows publish a
+generic expense estimate beside their new symbol, because the fee comes from a
+name table and not from the symbol. That belongs with the fee families already
+waiting for a decision — a fee is sourced, never derived.
+
 ## Afternoon: two screens of mine refuted, and a band missed on purpose
 
 **A registration missed its band by one hundredth, and that is the cycle

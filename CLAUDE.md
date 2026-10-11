@@ -2161,6 +2161,47 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   Institutional, `AS` Asset, `IS` Institutional Shares, `IP` Institutional
   Plus — and **the `as` arm's 355 tickers were invisible in a count and
   unmissable in a member list.** `docs/accuracy-log.md` 2026-10-11 (15:3xZ).
+- **A BROKERAGE WINDOW'S PERMITTED-HOLDINGS ENUMERATION PUBLISHED AS A FUND —
+  SIZED 2026-10-11 18:2xZ AT 21 candidates / 21 acks / 44,638 ppl /
+  $239,970,341, of which ~15 ARE GENUINE AND ~6 ARE FALSE POSITIVES OF MY OWN
+  CATEGORY VOCABULARY. 0 of the 21 are reached by any shipped predicate and 0
+  publish a ticker**, so the resolvers already refuse these names and only the
+  NAME and the shown TYPE are wrong; the FEE is right on 20 of 21
+  (`bankDepositFee` holds), so this must not be written as a fee change.
+  Sabre Glbl (4,338 ppl) publishes `Fidelity Investments deposit, common and
+  preferred stocks, options, rights and warrants, c` — **truncated mid-word, at
+  12.18% of a $1,067,239,688 menu / $130,029,210, typed `Mutual fund`**; Ora
+  Orthopedics `Common Stocks, Mutual Funds, Money Market, ETFs` at **25.89% of
+  its whole menu**; Willdan 11.72%, Rambus 9.13%.
+  **THE INTERNAL EVIDENCE IS THAT THE TYPE CELLS DISAGREE WITH EACH OTHER
+  ACROSS ONE SHAPE — `Mutual fund` 11 / `Cash / short-term` 3 / `Collective
+  trust` 2 / `Company stock` 2 / blank 2 / `Exchange-traded fund` 1**, with
+  `Certificates of Deposit, Government Bonds, Stock Options, Common Stocks`
+  typed **ETF** and `Cash, Exhange-traded Funds, Common Stock and Options` (the
+  filer's own typo) typed **Company stock**. *Six verdicts for one shape is a
+  type cell carrying no information*, which RULES OUT the cheap type-reading
+  fix — the opposite of the recorded classes where a BLANK type defeats a
+  suppressor.
+  ***READING ALL 21 REFUTED A QUARTER OF THE SCREEN, AND THE MECHANISM IS THE
+  DAY'S FOURTH INSTANCE OF A COUNT KEYED ON A VOCABULARY MEASURING THE
+  VOCABULARY*** (after the trailing `a`, `IN` and `AS`): `Nuveen Real Estate
+  Securities Retirement **Option**` is a REAL fund that matched because the
+  derivative and the product suffix are the same token; `Interest-bearing cash -
+  **Preferred** Money Market Account` is a money-market TIER, not preferred
+  stock; `Money Market Deposit Accounts Matrix Retirement Cash Account` is a
+  real cash product whose own name holds three of my categories; and two
+  `PRINCIPAL REAL ESTATE SECURITIES … Mutual Funds 1` rows are a real fund with
+  debris welded on, which wants a NAME REPAIR and belongs to a different class.
+  ***A category noun inside a registered product's own name is not a
+  category*** — so position matters and not just presence.
+  **THE NARROWER WITNESS IS THE ONE TO BUILD FIRST, and two members supply it
+  by naming themselves:** Globus Medical (3,311 ppl) files `… Participant-
+  Directed Brokerage Account` inside the string, and Fortune Brands (10,172
+  ppl) welds an enumeration onto a real fund (`CERT. OF DEP., GOVERNMENT BOND,
+  RIGHTS/WARRANTS TRP STABLE VALUE P`). The honest label already exists —
+  `Brokerage window` with `brokRow`, which the same draw printed correctly on
+  another plan. At ~15 rows the arm must be very well targeted to be worth it.
+  `docs/accuracy-log.md` 2026-10-11 (18:2xZ).
 - **FOUND BY THE 02:08 DRAW, UNSIZED — A PLAN'S POSTAL ADDRESS AND AN EXPENSE
   LINE PUBLISHED AS HOLDINGS, ON ONE 239,138-PARTICIPANT PAGE.** Publix Super
   Markets (15 funds, ratio 0.974) publishes **`PUBLIX SUPER MARKETS, INC. 3300
