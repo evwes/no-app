@@ -53881,3 +53881,52 @@ the SIZE, the refutation of the blanket form, and a witness that needs no
 registry; the orientation question (WHICH copy to drop) is still the recorded
 unsolved one, and here it is easier than usual because on every member read the
 survivor is the fuller spelling.
+
+## 2026-10-11 (03:0xZ) — THE 02:08 DRAW: A PLAN'S POSTAL ADDRESS AND AN EXPENSE LINE PUBLISHED AS HOLDINGS, AND A FOURTH SPELLING THAT BLOCKS RERGX — ALL ON ONE 239,138-PARTICIPANT PAGE
+
+Seeded participant-weighted draw over the 60,070 published menus reaching
+100,151,069 participants. **Publix Super Markets (239,138 ppl, 15 funds, ratio
+0.974) is mostly the machinery WORKING** — `Common stock of Publix Super
+Markets, Inc.` at 71.6% correctly flagged `stockRow`, and nine collective
+trusts all carrying `noPublicPrice` with either an asterisked comparable
+(`~TRLGX` 0.55, `~SSSYX` 0.02, `~MDY` 0.23) or no fee at all, which is the
+honest answer. **The draw's own `--rows` limit hid the findings: all three sit
+below row 9**, so the menu had to be re-read in full — *the row limit is one of
+the conditions a measurement must apply, met on my own instrument.*
+
+**A PLAN'S POSTAL ADDRESS PUBLISHED AS A HOLDING.** Row 14 reads
+**`PUBLIX SUPER MARKETS, INC. 3300 PUBLIX CORPORATE PARKWAY LAKELAND,
+FLORIDA`** at $33,811, type cell blank, no ticker, no fee. The money is
+trivial and the claim is not: it is a Form 5500 header field published as an
+investment option to 239,138 readers, the same shape the record names for The
+Home Depot (the plan administrator's name at 92% of a non-confident menu),
+except that this entry IS confident and IS served. A new member of the
+form-artifact class and the first whose text is an ADDRESS.
+
+**AN EXPENSE LINE PUBLISHED AS A MENU CHOICE.** Row 13 reads **`Fees paid by
+participants`** at $2,283,079, blank type, no ticker, no fee. It belongs to the
+subtotal / not-a-holding family and no shipped predicate reaches it: it names
+no fund but it is not a type caption, so `isGenericTypeName` cannot see it, and
+it carries real words so `hasNoFundIdentity` cannot either. The honest label
+already exists (`not a holding`); what is missing is a witness, and the natural
+one is the filing's own vocabulary for an expense rather than a holding.
+
+**AND A FOURTH SPELLING OF THE EUROPACIFIC ROW, WITH THE CLASS IN
+PARENTHESES.** Row 10 publishes `American Funds EuroPacific Growth Fund (Class
+R-6)` at **$53,247,125 with a 0.46 FEE and NO TICKER**. The name is the full
+registered spelling and the class is stated, so this is not the 23:1xZ `EUPAC`
+abbreviation the record just shipped for, nor the `America EuroPacific Growth
+R6` damage of Pvh, nor Carnival's lost `Funds` word, nor Kaleida's `American
+EuroPacific Growth Fund R6` — **it is the class stated in PARENTHESES**, and
+0.46 is RERGX's real cost, so the FEE table reaches this row and the TICKER
+table does not. Fourth named spelling of one fund blocking one symbol, and the
+recorded asymmetry again: *both tables cannot be right about whether we know
+the fund.* Its sibling two rows down is the control — `Baird Aggregate Bond
+Fund (Institutional Shares)` resolves **BAGIX** with the class in parentheses
+in exactly the same shape — so the parenthesis is not the whole blocker and the
+gap is narrower than it looks. Unsized.
+
+**All three sit on rows whose TYPE CELL IS BLANK**, which is the sixth recorded
+instance of a blank type defeating a type-reading guard; here it is not a
+suppressor that fails but the absence of any vehicle statement beside three
+rows that are not vehicles at all.

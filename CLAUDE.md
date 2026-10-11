@@ -1590,6 +1590,33 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **FOUND BY THE 02:08 DRAW, UNSIZED — A PLAN'S POSTAL ADDRESS AND AN EXPENSE
+  LINE PUBLISHED AS HOLDINGS, ON ONE 239,138-PARTICIPANT PAGE.** Publix Super
+  Markets (15 funds, ratio 0.974) publishes **`PUBLIX SUPER MARKETS, INC. 3300
+  PUBLIX CORPORATE PARKWAY LAKELAND, FLORIDA`** at $33,811 and **`Fees paid by
+  participants`** at $2,283,079, both with a BLANK type cell, no ticker and no
+  fee. The address is a Form 5500 HEADER FIELD published as an investment option
+  — the Home Depot form-artifact shape, except that this entry IS confident and
+  IS served. The expense line belongs to the subtotal / not-a-holding family and
+  **no shipped predicate reaches either**: they name no fund yet are not type
+  captions (so `isGenericTypeName` is blind) and carry real words (so
+  `hasNoFundIdentity` is too). The honest label already exists; the witness does
+  not.
+  ***THE DRAW'S OWN `--rows` LIMIT HID ALL THREE FINDINGS*** — every one sits
+  below row 9, so the menu had to be re-read in full. *The row limit is one of
+  the conditions a measurement must apply*, met this time on my own instrument.
+- **AND A FOURTH SPELLING OF THE EUROPACIFIC ROW THAT BLOCKS RERGX — THE CLASS
+  IN PARENTHESES.** Publix publishes `American Funds EuroPacific Growth Fund
+  (Class R-6)` at **$53,247,125 with a 0.46 FEE and NO TICKER**. The name is the
+  full registered spelling and 0.46 is RERGX's real cost, so this is NOT the
+  23:1xZ `EUPAC` abbreviation already shipped, nor Pvh's lost `n Funds`, nor
+  Carnival's lost `Funds`, nor Kaleida's `American EuroPacific Growth Fund R6`.
+  Fourth named spelling of one fund blocking one symbol, with the recorded
+  asymmetry: the FEE table reaches it and the TICKER table does not.
+  **The control is two rows down and narrows it:** `Baird Aggregate Bond Fund
+  (Institutional Shares)` resolves **BAGIX** with the class in parentheses in
+  the same shape, so the parenthesis is not the whole blocker.
+  `docs/accuracy-log.md` 2026-10-11 (03:0xZ).
 - **THE DOUBLE RENDER WITH NEITHER COPY QUALIFIED — SIZED 2026-10-11 02:4xZ AT
   5,754 pairs / 2,278 acks / 3,694,834 ppl / $19,181,051,166 duplicated, AND THE
   SHIPPABLE CORE IS A TRIPLE CONJUNCTION OF 572 pairs / 365 acks / 396,467 ppl /
