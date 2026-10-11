@@ -103,6 +103,73 @@ const BARE_KEY = "\u0000Fidelity Worldwide Fund";
     "a longer word beginning MEFS is left alone (decorative today, by construction)");
 }
 
+/* (2d) AN ADMIRAL SHARE CLASS WITH NO HOUSE, pinned against the COMMITTED table
+ * for the same reason as (2b) and (2c): the generator's own evidence is read out
+ * of the live `sec-funds.json` — the house set is DERIVED from it — so a registry
+ * refresh could make a generator-side control stale. These read only what
+ * shipped.
+ *
+ * Boston Scientific (34,105 participants) files fourteen rows shaped
+ * `<product> Adm` with an EMPTY issuer cell, typed `Mutual fund`: the filing
+ * states Vanguard's Admiral CLASS and omits the HOUSE. The arm prefixes the one
+ * house the registry attests registers an Admiral class and requires the
+ * resolved ticker's own registered `className` to state Admiral.
+ *
+ * ***THE MUST-NOT-SEES ARE THE LOAD-BEARING HALF HERE, because this arm's
+ * delivery is bounded by a guard rather than by its own reach.*** It reaches 13
+ * of Boston Scientific's 14 rows and `registrantAttested` allows TWO; the eleven
+ * refused are the plain index funds, whose registrant `VANGUARD INDEX FUNDS`
+ * contributes nothing distinctive beyond `vanguard` — the word the filing omits.
+ * So a later regen that started publishing `Growth Index Adm` would mean the
+ * guard or the registry moved and the ship's measured figure no longer holds. */
+{
+  for (const [key, want, what] of [
+    ["\u0000500 Index Adm", "VFIAX", "the Admiral arm still ships: `500 Index Adm` -> VFIAX"],
+    ["\u0000Cash Reserves Federal MM Adm", "VMRXX", "...and `Cash Reserves Federal MM Adm` -> VMRXX"],
+  ]) {
+    const hit = lookupTicker(rowFromKey(key));
+    ok(!!hit && hit.tk === want, `${what} (got ${hit ? hit.tk : "null"})`);
+    ok(!!hit && hit.comparable === false, "...ASSERTED, because the filing states the class and the registry registers it");
+  }
+  /* the ATTESTATION bound — the motivating row itself, refused */
+  ok(lookupTicker(rowFromKey("\u0000Growth Index Adm")) === null,
+    "the motivating row `Growth Index Adm` is REFUSED by registrantAttested, as measured (the arm reaches it; the guard withholds it)");
+  /* the FOREIGN-HOUSE refusal: attestation ALLOWS this row, because VANGUARD
+   * INDEX FUNDS contributes the product word `500` and `American Funds 500 Index
+   * Adm` repeats it. Only the name-side house test blocks it, so this pin is the
+   * single protection against publishing a Vanguard symbol on a row that names
+   * another house outright. */
+  for (const n of ["Fidelity Emerging Markets Stock Index Adm", "American Funds 500 Index Adm"]) {
+    ok(lookupTicker(rowFromKey(`\u0000${n}`)) === null,
+      `a name stating ANOTHER house is refused: ${JSON.stringify(n)}`);
+  }
+  /* the className condition: Vanguard's twelve Target Retirement series register
+   * EXACTLY ONE class, `Investor Shares`, so a filing stating Admiral names no
+   * registered class of that fund and the arm must abstain rather than reach for
+   * VTINX. Nothing else answers this spelling, so `lookupTicker` is the right
+   * instrument here. */
+  ok(lookupTicker(rowFromKey("Fidelity\u0000Target Retirement 2040 Fund Admiral")) === null,
+    "a Target Retirement row stating Admiral is refused (the registry registers no Admiral class of it)");
+  /* ***AND THE SIBLING SPELLING HAD TO BE PINNED AGAINST THE TABLE INSTEAD,
+   * because asking `lookupTicker` tested the WRONG RESOLVER.*** `Admiral Shares
+   * Target Retirement Income Fund` [iss `The Vanguard Group`] does not resolve
+   * to null: `fund-er.js` answers **VTINX, ASSERTED** — pre-existing, nothing to
+   * do with this arm, and a named live instance of the owner-gated
+   * wrong-share-class family, since the registry registers that fund with one
+   * class (`Investor Shares`) and the filing states Admiral. So the claim this
+   * arm is responsible for is that the GENERATOR WROTE NO KEY for it, which is
+   * what the className condition decides. *There are two resolvers, and a
+   * fixture is only as good as the one its own harness asks* — recorded on the
+   * `K-1` decoy of 2026-10-11 03:3xZ and met again here. */
+  {
+    const m = asset.match(/^const SEC_TICKERS = (\{[\s\S]*?\});$/m);
+    const T = m ? vm.runInNewContext(`(${m[1]})`) : {};
+    const bad = Object.keys(T).filter((k) => /target retirement/i.test(k) && /\badm/i.test(k));
+    ok(bad.length === 0,
+      `the table writes no Target-Retirement-stating-Admiral key (${bad.length}: ${bad.slice(0, 2).map((x) => JSON.stringify(x)).join(", ")})`);
+  }
+}
+
 /* (3) IT IS LAST: a row the page's own chain resolves must keep that answer. */
 const own = lookupTicker({ name: "Vanguard 500 Index Fund Admiral Shares",
   nameRaw: "Vanguard 500 Index Fund Admiral Shares", iss: "", type: "Mutual fund", value: 1 });

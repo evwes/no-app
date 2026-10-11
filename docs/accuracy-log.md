@@ -7,6 +7,272 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-11 (13:0xZ) — AN ADMIRAL SHARE CLASS WITH NO HOUSE: 425 published+served rows / 159 plans / 950,842 participants / $4,094,444,301 gain an ASSERTED symbol — and the arm's own guard refuses a THIRD of what it reaches, in the direction the attestation probe predicted
+
+### What was wrong
+
+The 04:08 draw of this morning found Boston Scientific Corporation (**34,105
+participants**, ack `20260724162125NAL0023714354001`, 53 funds at ratio 0.99)
+filing **fourteen** rows shaped `<product> Adm` with an **EMPTY issuer cell**,
+typed `Mutual fund`, publishing a pattern-table fee and **no ticker** —
+`Growth Index Adm` at **0.1** on $6,432,000 where VIGAX costs about 0.05, and
+twelve more.
+
+`Adm` is Vanguard's own **Admiral share class**, so the filing states the CLASS
+and omits the HOUSE — the inverse of every abbreviation class on this record,
+where the house is abbreviated and the product spelled out.
+
+### The change
+
+One arm appended LAST in `gen-sec-tickers.mjs`'s `secAsk`, after the loop over
+every existing spelling, so it is **additive by construction**: a row that
+resolves today resolves first and identically and this arm can only ever fill a
+blank. `PARSER_VERSION` stays **203**; `sec-tickers.js` is regenerated and
+`index.html` re-stamped in the same commit.
+
+The arm prefixes the house the registry attests and requires the answer to be
+the Admiral class:
+
+| | |
+|---|---|
+| **house set** | DERIVED, never written: the manager phrases leading a registrant that registers a class whose name states Admiral. **107 registered Admiral classes across 28 registrants -> exactly ONE house, `vanguard`**, and the generator THROWS if that ever stops being one |
+| **the witness** | the resolved ticker's own **registered `className` must state Admiral** |
+| **foreign house** | the FILED NAME must name no manager phrase the destination's own registered series name does not also carry |
+| **stand-down** | that refusal stands down where the filing states the supplied house anywhere |
+
+### What shipped, measured through BOTH copies of `renderRow`
+
+Through the TRACKED `scripts/apppath.mjs`, one renderer per table against an
+UNCHANGED app.js, over all **1,721,920** published + served rows:
+
+| | |
+|---|---|
+| TICKER **gained** | **425 rows / 315 keys / 159 acks / 159 plans / 950,842 ppl / $4,094,444,301** |
+| TICKER lost / swapped / asterisked | **0 / 0 / 0** |
+| FEE gained / lost / changed | **0 / 0 / 0** |
+| NAME / shownType / row membership | **0 / 0 / 0** |
+| non-candidate control | ~17,747 rows sampled 1-in-97 of 1,721,487, **differing on 0** |
+
+Table **7,447 -> 7,762 keys: ADDED 315 / REMOVED 0 / CHANGED 0** — and 315 is
+`admKeys.size` to the digit, which is the **disjointness control**: the whole
+table change is this arm and **there is no drift in it**, unlike the 09:5xZ
+MEFS regen ninety minutes earlier which absorbed 66 gain rows of it. *A second
+regeneration the same morning is the cheapest proof a table had no backlog.*
+
+**DO NOT CARRY THE 07:0xZ SIZING'S 5,222 rows / 2,153 acks / 2,790,684 ppl /
+$8,706,430,036 AS THE DELIVERY — the clean half is 425 rows / 950,842 ppl, 12x
+smaller on rows and 2.9x on participants.** That figure was gross of the pooled
+refusal (which the entry named), gross of `registrantAttested`, and gross of the
+383 cells whose BASE answer is a COMPARABLE and which the additive position
+never reaches at all.
+
+**AND CLAUDE.md's RECORDED TABLE SIZE WAS STALE: it says 7,350 keys and the
+committed baseline is 7,447** — the MEFS ship raised it and the figure was not
+re-derived. *A count carried forward is a count asserted again.*
+
+### The seeded uniform draw: 26 of 26 correct, and 0 typed a pooled vehicle
+
+`--dump 26 --why +admclass --seed 20261011adm`, each row printed with its filed
+TYPE beside its answer. **`--why` is new and it is the point:** a uniform draw
+over all 19,954 gains would not reliably surface 425 of them, which is the
+10:4xZ lesson where 30 VALIC keys needed a draw aimed at the sub-population BY
+NAME. Types seen: `Mutual fund`, blank, and one `Cash / short-term` — an asset
+CATEGORY, correct for a short-term bond fund, not a vehicle. Largest:
+
+* **Google Llc, 160,603 ppl** — `Wellesley Income Fund Admiral` [iss
+  `The Vanguard Group, Inc.`] -> **VWIAX** on **$559,674,579**
+* Texas Roadhouse (5,124 ppl) — `500 Index Admiral` -> VFIAX on $13,457,713
+* Fedex Office And Print Services (20,488 ppl) — `Wellington Fund Admiral
+  Shares` -> **VWENX**, the Admiral class and not Investor's VWELX, which is
+  the exact distinction the owner-gated store-vs-page item turns on
+* two rows whose issuer cell is the filer's typo **`Vangaurd`**, and one
+  `Vanguardb`, all resolving correctly
+
+### ***THE GUARD IS DEFEATED IN BOTH DIRECTIONS, AND ONLY ONE HALF WAS PREDICTED***
+
+The 10:1xZ attestation probe predicted the first half and it held exactly: the
+arm reaches **13 of Boston Scientific's 14 rows and `registrantAttested` allows
+TWO** — `500 Index Adm` (the registrant's series name contributes `500`) and
+`Cash Reserves Federal MM Adm` (`VANGUARD MONEY MARKET RESERVES` contributes
+`reserves`). The eleven refused are the **plain index funds**, whose registrant
+`VANGUARD INDEX FUNDS` contributes nothing distinctive beyond `vanguard` — the
+word the filing omits, which IS the defect. Store-wide that is **204 rows / 144
+keys refused** against 425 gained: the guard withholds a third of what the arm
+reaches. `VANGUARD VALLEY FORGE FUNDS` gives {valley, forge}, so
+`Balanced Index Adm` is refused on $682,000 while `Explorer Adm` ships on
+`VANGUARD EXPLORER FUND`'s {explorer}. ***Whether a reader gets a symbol turns
+on an accident of which Vanguard trust holds the series and whether its legal
+name happens to repeat a word of the product.***
+
+**THE SECOND HALF IS NEW AND IT IS WHY THE FOREIGN-HOUSE CONDITION EXISTS.**
+The same mechanism that refuses the plain index funds **ALLOWS a row that names
+another house outright**, because the registrant's distinctive set contributes
+PRODUCT words (`500`, `explorer`, `windsor`) the filing repeats. Unguarded, the
+arm would have published a Vanguard symbol on **16 keys** that say whose fund
+they are, and all 16 were read:
+
+    MassMutual Core Bond Adm            -> VCOBX   (x3, one via an Empower issuer)
+    JPMorgan Mid Cap Index Adm Fund     -> VIMAX
+    JP Morgan Small Cap Index Adm Fund  -> VSMAX
+    Fidelity Growth Index Admiral       -> VIGAX
+    Fidelity Emerging Markets Stock Index Adm -> VEMAX
+    Victory Small Cap Value Index Admiral     -> VSIAX
+    Invesco Small Cap Index Adm         -> VSMAX
+    Franklin Small Cap Index Adm        -> VSMAX
+    Index Admiral American Beacon Small Cap   -> VSMAX
+    Nuveen Mid Cap Index Adm            -> VIMAX
+    SMALL CAP INDEX ADM MASSMUTUAL      -> VSMAX
+    American Funds 500 Index Adm        -> VFIAX
+    Mid-Cap Value Index Admiral Fund American Funds -> VMVAX
+
+***So `registrantAttested` is not a house test and must not be mistaken for
+one.*** It asks whether the REGISTRANT said something the FILING said, and a
+registrant's distinctive vocabulary is mostly its PRODUCTS — so on a houseless
+class it refuses the correct rows whose product words are generic and admits the
+wrong rows whose product words are specific. **It is exactly backwards for this
+class**, and a second, name-side condition is the only thing between the arm and
+a false claim.
+
+**THE REFUSAL IS NOT `namesManager` AND NOT A VOCABULARY.** `idx.managers`
+holds MAGNET entries — `emerging`, `intermediate`, `primecap`, `mutual fund`,
+`morningstar` are all manager phrases — so a bare manager test flags
+`PRIMECAP Fund Admiral Shares` and `Intermediate-Term Bond Index Admiral`, both
+CORRECT. The structural exclusion is that a phrase the DESTINATION'S OWN
+REGISTERED SERIES NAME also carries says nothing about a foreign house: the
+series is literally called `Vanguard PRIMECAP Fund`. This file already records a
+manager test written at this very call site once and refuted by its own output.
+**Named cost, one key:** `Mutual Fund - International Growth Admiral` [iss ``]
+is refused where VWILX is right — `mutual fund` is a manager phrase and the
+empty issuer gives the stand-down nothing to fire on.
+
+**THE STAND-DOWN IS FREE IN BOTH DIRECTIONS, measured:** it recovers
+`Mutual Fund - Total Stock Market Index Admiral` [iss `The Vanguard Group`] and
+`Morningstar Small-Cap Index Fund Admiral` [iss `Vanguard`], and dropping the
+foreign-house condition entirely LOSES 0 cells.
+
+**A FOREIGN HOUSE IN THE *ISSUER* IS DELIBERATELY NOT REFUSED**, on this
+record's own measured rule that *the issuer cell routinely holds the CUSTODIAN
+or PLATFORM* — priced at approximately nothing on 2026-10-09. All eight such
+cells were read (`500 Index Fund Admiral Shares` [iss `Nuveen`], [iss `John
+Hancock Life Insurance Company (U.S.A.)`], `Information Technology Index
+Admiral Fund` [iss `Lincoln`] …) and in every one the NAME's own class word says
+Vanguard while the issuer names a platform. Where the name contradicts itself we
+abstain; where one weak source disagrees with the name's own class word, the
+name wins — and the vehicle question for those rows is answered independently
+and better by `pooledRow`, which reads the filed TYPE cell.
+
+### ***THE 06:5xZ SHIP IS CONFIRMED LIVE BY THIS ONE, ON 8 ROWS***
+
+**433 candidate rows carry a newly-added key and 425 gain a ticker. All 8 of
+the residue were named rather than assumed, and every one is this morning's
+render-time vehicle gate doing exactly its job:** the key was written from a row
+whose type cell is honest, and these 8 file the SAME two cells typed
+`Separate account` (Wec, Inc., 2 rows / $2.34M), `Pooled separate account`
+(Oklahoma Chapter AGC) or **`Collective trust` (Sutton Ford, 5 rows / $3.83M of
+Vanguard Admiral funds held through a trust)**. Without `pooledVehicleRow` being
+asked per row at render time, all 8 would publish a mutual fund's symbol on a
+pooled vehicle. *A verdict that reads an input outside the key cannot be
+expressed by deleting the key* — shipped seven hours earlier, and this is the
+first independent population to exercise it.
+
+### What prevents it recurring
+
+* **`scripts/sec-tickers-test.mjs` (in `site-test`), pinned against the
+  COMMITTED table** — never the live registry, whose refresh could stale a
+  generator-side control. Two must-SEE (`500 Index Adm` -> VFIAX,
+  `Cash Reserves Federal MM Adm` -> VMRXX, both ASSERTED) and **four
+  must-NOT-SEE, which are the load-bearing half here because this arm's
+  delivery is bounded by a guard rather than by its own reach**: the motivating
+  row `Growth Index Adm` must stay REFUSED, the two foreign-house names must
+  stay refused, and the table must write no Target-Retirement-stating-Admiral
+  key. Both must-SEEs FAIL BY NAME against the before table, so neither is
+  decorative.
+* **Five mutation controls on the SHIPPED generator**, each re-running its own
+  import-time control block. Three break BY NAME at their own case — className
+  removed makes `Admiral Shares Target Retirement Income Fund` reach **VTINX**;
+  the foreign-house refusal removed makes `Fidelity Emerging Markets Stock Index
+  Adm` reach **VEMAX**; the stand-down removed costs `Mutual Fund - Total Stock
+  Market Index Admiral` its correct VTSAX. **The other two break nothing and are
+  LABELLED as scope limits rather than claimed as guards:** `!r.comparable`
+  blocks 0 cells `className` does not already block (mutually redundant, so they
+  were priced TOGETHER), and `ADM_TOKEN` is a COST limit — without it the arm
+  prefixes a house onto ~550,000 names — **whose verdict effect is UNMEASURED
+  and recorded that way.**
+* **A uniqueness test across houses was DELETED rather than shipped dead.** I
+  wrote `hits.size !== 1` first; with one house it reduces to "there is an
+  answer", which the next line already says, so it was unreachable by
+  construction and blocked 0 cells. *A condition unreachable by construction is
+  worse than an inert one, because it reads as a guard and is dead code* — third
+  instance this week after `wrapRepair` and `houseCore`. The invariant is
+  ASSERTED instead, and the generator refuses to write a table if the registry
+  ever attests a second Admiral house.
+* **The must-see pin is keyed BY ACK and prints the per-row verdict before any
+  count**, because a pin keyed on a shared STRING has twice matched the wrong
+  ROW on this record.
+
+### Two traps met again, both already written down
+
+***THERE ARE TWO RESOLVERS, AND A FIXTURE IS ONLY AS GOOD AS THE ONE ITS OWN
+HARNESS ASKS.*** My must-not-see for the className condition asked
+`lookupTicker` whether `Admiral Shares Target Retirement Income Fund` [iss `The
+Vanguard Group`] resolves to nothing. **It does not: `fund-er.js` answers
+VTINX, ASSERTED** — pre-existing, nothing to do with this arm, and the pin was
+testing a resolver the condition does not control. Re-keyed to assert the
+GENERATOR WROTE NO KEY, which is what `className` decides, and the table has 0.
+Recorded on the `K-1` decoy nine hours earlier and met again.
+
+**AND A FINDING FELL OUT OF THAT FAILURE, unsized and named:** the page
+publishes **VTINX asserted** on a filed name stating **Admiral Shares**, while
+the registry registers Vanguard Target Retirement Income Fund with exactly ONE
+class, `Investor Shares`. So the filing states a class that fund does not have
+and the page asserts a class anyway — a named live instance of the owner-gated
+wrong-share-class family, reached through `fund-er.js` rather than this table.
+*A must-not-see pin failing is a question about the world, not only about the
+pin.*
+
+**AND A MUTATION HARNESS'S COPIES MUST LIVE WHERE THE ORIGINAL DID.**
+`gen-sec-tickers.mjs` derives `ROOT` from `import.meta.url`, so my first
+mutation run wrote its copies into the scratchpad, every one failed to find
+`app.js` before a single control ran, and **all five mutations "passed"
+silently** — which reads exactly like five controls that fired and found
+nothing. Moved into `scripts/` under a temp name, removed after each run, and
+each mutation now ASSERTS its pattern was present and applied. Sibling of the
+`cwd: "/home/user/no-app"` trap that hid ten red `site-test` runs: *a path
+resolved relative to the script is a path that breaks when the script moves,
+and it breaks before any assertion can speak.*
+
+### Not run, and said so rather than claimed
+
+**The crawlable-page diff is INAPPLICABLE, not skipped.** `build-seo-pages.mjs`
+has 0 references to `fundER`, `lookupTicker`, `fundTickerInfo` or `SEC_TICKERS`
+and publishes no per-fund ticker column at all, so this is a ONE-SURFACE change
+by construction. `smoke-test` green, `sec-tickers-test` green, `house-core-test`
+green, `fund-note-test` green, `stamp-assets --check` clean. `map-test` fails
+in this sandbox on `ERR_CERT_AUTHORITY_INVALID`, which this file already records
+as an outbound-TLS property of the sandbox rather than a repo defect; CI settles
+it.
+
+### Still open from it
+
+* **204 rows / 144 keys the attestation refuses** — the plain index funds, and
+  the remedy is not a wider screen. Attesting against the REPAIRED (house-
+  prefixed) spelling would be **circular**: we supplied the word `vanguard`, so
+  attesting it against our own supplied evidence makes the guard vacuous. That
+  is a stronger reason than the 09:5xZ "it is a separate ship" and it means this
+  residue needs a different witness, not a different stage.
+* **383 cells / ~528 store rows whose BASE answer is a COMPARABLE**, which the
+  additive position never reaches. The reader sees a blank today because
+  comparables are never shipped, so promoting them is blank -> symbol — but the
+  matcher found the fund WITHOUT our house and only the CLASS is in doubt, which
+  is a different claim with a different safety argument. Its own measured ship.
+* The **FEE** does not move: `er` takes `star ? info.er : fundERRow(f)`, the arm
+  always returns `comparable: false`, so `star` stays false and the fee stays
+  name-keyed. Boston Scientific still publishes 0.1 on `Growth Index Adm`. *A
+  fee is SOURCED, never derived*, and `data/fund-facts.json` holds no Vanguard
+  per-class figures. Owner's call, with the fee families.
+
+---
+
 ## 2026-10-11 (11:4xZ) — THE OWNER-GATED WRONG-SHARE-CLASS ITEM'S LARGEST SUB-CLASS IS ONE-DIRECTIONAL: 3,169 ASSERTED rows / 1,865 plans / 9,106,424 participants / $50,375,541,195 state plain Institutional and publish a RETAIL class, with 0 counterexamples over the whole population
 
 ### What was found

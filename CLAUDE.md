@@ -1809,7 +1809,59 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   28 rows / 24,399 ppl whose typo is in the ISSUER cell only**, whose names are
   bare products — the `houseCore` class with a typo on top.
   `docs/accuracy-log.md` 2026-10-11 (09:5xZ).
-- **SIZED 2026-10-11 07:0xZ, NOT SHIPPED — AN ADMIRAL SHARE CLASS WITH NO HOUSE:
+- **SHIPPED 2026-10-11 13:0xZ — AN ADMIRAL SHARE CLASS WITH NO HOUSE: 425
+  published+served rows / 315 keys / 159 acks / 159 plans / 950,842 ppl /
+  $4,094,444,301 gain an ASSERTED symbol**, ticker lost/swapped/asterisked
+  0/0/0, fee 0/0/0, name 0, shownType 0, row membership 0, and ~17,747 sampled
+  non-candidates differing on 0 — measured through BOTH copies of `renderRow`
+  with one renderer per table against an UNCHANGED app.js. Table 7,447 ->
+  **7,762 keys, ADDED 315 / REMOVED 0 / CHANGED 0**, and 315 is `admKeys` to the
+  digit, so the whole table change is this arm and there is **no drift in it**.
+  Google Llc (160,603 ppl) gains **VWIAX on $559,674,579**; seeded uniform draw
+  **26 of 26 correct, 0 typed a pooled vehicle**. One arm appended LAST in
+  `secAsk` (additive by construction); `PARSER_VERSION` stays 203; one surface by
+  construction.
+  ***DO NOT CARRY THE SIZING'S 5,222 rows / 2,790,684 ppl AS THE DELIVERY — the
+  clean half is 12x smaller on rows.*** And **CLAUDE.md's own recorded table size
+  of 7,350 keys was STALE; the committed baseline was 7,447.**
+  **THE WITNESS IS REGISTRY-DERIVED: 107 registered Admiral classes across 28
+  registrants -> exactly ONE house, `vanguard`** (the generator THROWS if that
+  stops being one), plus the resolved ticker's own `className` must state
+  Admiral.
+  ***AND `registrantAttested` IS DEFEATED IN BOTH DIRECTIONS, which is the new
+  half.*** The 10:1xZ probe predicted the refusal of the plain index funds and it
+  held — the arm reaches 13 of Boston Scientific's 14 rows and the guard allows
+  **TWO**, store-wide **204 rows / 144 keys refused** against 425 gained — but
+  the SAME mechanism **ALLOWS a row naming another house outright**, because a
+  registrant's distinctive vocabulary is mostly its PRODUCTS (`500`, `explorer`,
+  `windsor`) which the filing repeats. Unguarded it would publish a Vanguard
+  symbol on **16 keys**, all read (`MassMutual Core Bond Adm` -> VCOBX,
+  `JPMorgan Mid Cap Index Adm Fund` -> VIMAX, `Fidelity Growth Index Admiral` ->
+  VIGAX, …). ***So that guard is not a house test: on a houseless class it is
+  exactly backwards*** — it refuses the correct rows whose product words are
+  generic and admits the wrong rows whose product words are specific. The
+  name-side refusal is structural, not `namesManager` (whose magnet entries
+  `emerging`/`intermediate`/`primecap`/`mutual fund` flag CORRECT rows): a
+  manager phrase the DESTINATION'S OWN SERIES NAME also carries says nothing
+  about a foreign house. A foreign house in the ISSUER is deliberately NOT
+  refused — all 8 read, every one a platform — on the measured rule that *the
+  issuer cell routinely holds the CUSTODIAN*.
+  **AND IT CONFIRMS THE 06:5xZ SHIP LIVE ON 8 ROWS: 433 candidate rows carry a
+  new key and 425 gain a ticker**; all 8 of the residue were named and every one
+  is the render-time vehicle gate working — Sutton Ford's five rows typed
+  `Collective trust` ($3.83M of Vanguard Admiral funds held through a trust),
+  Wec's two typed `Separate account`. Without `pooledVehicleRow` asked per row
+  they would publish a mutual fund's symbol on a pooled vehicle.
+  **STILL OPEN:** the **204 refused rows** need a different WITNESS and not a
+  different stage — attesting against the house-prefixed spelling is
+  **CIRCULAR**, since we supplied the word; and **383 cells / ~528 rows whose
+  BASE answer is a COMPARABLE** which the additive position never reaches (the
+  matcher found the fund without our house and only the CLASS is in doubt — its
+  own measured ship). The **FEE** does not move, so Boston Scientific still
+  publishes 0.1 on `Growth Index Adm`: owner's call with the fee families.
+  `docs/accuracy-log.md` 2026-10-11 (13:0xZ).
+- **ORIGINAL SIZING, kept because it is what was predicted — SIZED 2026-10-11
+  07:0xZ: AN ADMIRAL SHARE CLASS WITH NO HOUSE:
   5,222 rows / 2,153 acks / 2,790,684 ppl / $8,706,430,036 gross, of which
   2,350 publish a FEE today — AND 1,811 ARE POOLED VEHICLES MY INSTRUMENT COULD
   NOT SEE.** Boston Scientific (34,105 ppl) files **fourteen** `<product> Adm`

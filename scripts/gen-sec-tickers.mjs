@@ -72,6 +72,7 @@ const CHECK = argv.includes("--check");
 const WITH_COMP = argv.includes("--with-comparables");
 const DUMP = argv.includes("--dump") ? Number(argv[argv.indexOf("--dump") + 1] || 24) : 0;
 const SEED = argv.includes("--seed") ? argv[argv.indexOf("--seed") + 1] : "20261009";
+const WHY = argv.includes("--why") ? argv[argv.indexOf("--why") + 1] : "";
 const OUT = `${ROOT}/sec-tickers.js`;
 
 /* ---------- two expressions sliced from app.js, never transcribed ---------- */
@@ -794,6 +795,226 @@ const houseCore = (iss) => {
   console.error(`platform pre-pass: ${PLATFORM_HOUSE.size} house(s) attested as selling through a wrapper, from ${cells} declaring cell(s) — ${[...PLATFORM_HOUSE].join(", ")}`);
 }
 
+/* ---------- AN ADMIRAL SHARE CLASS WITH NO HOUSE ----------
+ *
+ * 2026-10-11. The 04:08 draw found Boston Scientific filing FOURTEEN rows shaped
+ * `<product> Adm` with an EMPTY issuer cell, typed `Mutual fund`, publishing a
+ * pattern-table fee and NO ticker — `Growth Index Adm` at 0.1 where VIGAX costs
+ * about 0.05. `Adm` is Vanguard's own Admiral share class, so **the filing states
+ * the CLASS and omits the HOUSE** — the inverse of every abbreviation class on
+ * this record, where the house is abbreviated and the product spelled out.
+ *
+ * THIS ARM IS DIFFERENT IN KIND FROM EVERY OTHER CANDIDATE IN `secAsk`, AND THE
+ * DIFFERENCE IS WHY IT CARRIES ITS OWN CONDITIONS. The apostrophe expansion, the
+ * `MEFS` typo repair and `houseCore` all REPAIR A SPELLING THE FILING STATES —
+ * the evidence is in the cell and we are reading it correctly. This arm SUPPLIES
+ * a word the filing does not contain. So the registry has to supply the house,
+ * and it has to be the registry rather than a constant.
+ *
+ * THE PRESCRIBED WITNESS WAS REFUTED BY ITS OWN PROBE and the shipped one is a
+ * conjunction. "Prefix every registry manager phrase and require a unique
+ * asserted answer" fails because `CLASS_MARK` excuses `Admiral` for ANY house:
+ * `500 Index Admiral` answers under Vanguard (VFIAX) *and* Fidelity (FXAIX).
+ * Adding one condition — THE RESOLVED TICKER'S OWN REGISTERED `className` MUST
+ * STATE ADMIRAL — restores uniqueness on every probe and abstains on the
+ * MassMutual decoy. *So the `Adm` token licenses a CLASS, not a HOUSE, and the
+ * registry is what supplies the house.*
+ *
+ * THE HOUSE SET IS DERIVED, NEVER WRITTEN: the manager phrases leading a
+ * registrant that registers a class whose name states Admiral. Today that set is
+ * exactly `{vanguard}` — 1 house from 28 registrants and 107 registered Admiral
+ * classes — and the assertion below is what makes that a measured fact rather
+ * than an assumption. A second house appearing there would mean the premise
+ * ("Admiral names Vanguard's class") no longer holds and the arm needs a
+ * uniqueness test across houses, so a THROW is the correct response and not a
+ * false red: `--check` runs in no workflow, and `sec-tickers-test` reads the
+ * COMMITTED table, so this can only ever stop a regeneration.
+ *
+ * AND THE UNIQUENESS TEST IS DELIBERATELY ABSENT RATHER THAN PRESENT-AND-DEAD.
+ * I wrote `hits.size !== 1` first; with one house it reduces to "there is an
+ * answer", which the next line already says, so it was UNREACHABLE BY
+ * CONSTRUCTION — measured at 0 blocked cells, and *a condition unreachable by
+ * construction is worse than an inert one, because it reads as a guard and is
+ * dead code*. The invariant it was pretending to enforce is asserted instead.
+ */
+const ADM_TOKEN = /(?<![a-z0-9])(?:admiral|adm)(?![a-z0-9])/i;
+const ADM_CLASS = /admiral/i;
+/* a LOOKBEHIND and not `\b`, because `_` is a word character — the flexPATH
+ * lesson of 10:5xZ, where a leading `\b` missed `… Ins Co _FLEXPATH …`. And the
+ * longer alternative FIRST: regex alternation is first-match, not longest-match
+ * (the plan-name-suffix lesson of 2026-10-05). */
+const ADM_HOUSES = new Set();
+{
+  let admClasses = 0;
+  const regs = new Set();
+  for (const [, rec] of idx.byTicker) {
+    if (!ADM_CLASS.test(rec.className || "")) continue;
+    admClasses++;
+    regs.add(rec.entity || "");
+    const t = norm(rec.entity || "").split(" ").filter(Boolean);
+    for (let n = Math.min(3, t.length); n >= 1; n--) {
+      const p = t.slice(0, n).join(" ");
+      if (idx.managers.has(p)) { ADM_HOUSES.add(p); break; }
+    }
+  }
+  console.error(`admiral house set (registry-derived): ${admClasses} registered Admiral classes across ${regs.size} registrants -> ${ADM_HOUSES.size} house(s): ${[...ADM_HOUSES].join(", ")}`);
+  if (ADM_HOUSES.size !== 1 || !ADM_HOUSES.has("vanguard"))
+    throw new Error(`gen-sec-tickers: the Admiral arm's premise is that "Admiral" names ONE house's share class, and the registry now attests ${ADM_HOUSES.size} (${[...ADM_HOUSES].join(", ")}). The arm needs a uniqueness test across houses before it can run again — refusing to write a table.`);
+}
+/* THE FILED NAME MUST NOT NAME ANOTHER HOUSE, and this condition is the only
+ * thing between the arm and a false claim on a row that says whose fund it is.
+ * `registrantAttested` CANNOT do it: that guard asks whether the registrant's
+ * distinctive words appear in the filing, and VANGUARD INDEX FUNDS contributes
+ * the PRODUCT word `500`, which `Fidelity 500 Index Admiral` repeats — so
+ * attestation ALLOWS it and the page would publish VFIAX on a row naming
+ * Fidelity. Measured over the whole reachable pool, this condition alone blocks
+ * exactly two cells and both are that harm:
+ *     "Fidelity Emerging Markets Stock Index Adm"  iss ""   -> VEMAX
+ *     "American Funds 500 Index Adm"               iss ""   -> VFIAX
+ *
+ * IT IS NOT `namesManager`, and not a vocabulary. `idx.managers` holds MAGNET
+ * entries — `emerging`, `intermediate`, `primecap`, `mutual fund`, `morningstar`
+ * are all manager phrases — so a bare manager test flags `PRIMECAP Fund Admiral
+ * Shares` and `Intermediate-Term Bond Index Admiral`, which are CORRECT. The
+ * structural exclusion is that a phrase whose tokens the DESTINATION'S OWN
+ * REGISTERED SERIES NAME also carries says nothing about a foreign house: the
+ * series is literally called `Vanguard PRIMECAP Fund`. *A count keyed on a
+ * vocabulary measures the vocabulary* — and this file already records a manager
+ * test written here once and refuted by its own output.
+ *
+ * THE STAND-DOWN COSTS NOTHING AND RECOVERS TWO CORRECT ROWS, measured: where
+ * the filing states the SUPPLIED house anywhere — name or issuer — the arm is
+ * not supplying evidence at all, the row is the recorded CONTRACTION class, and
+ * a foreign token in the name is secondary. Without it `Mutual Fund - Total
+ * Stock Market Index Admiral` [iss `The Vanguard Group`] and `Morningstar
+ * Small-Cap Index Fund Admiral` [iss `Vanguard`] are refused, and both are
+ * right. Dropping the condition entirely LOSES 0 cells, so the stand-down is
+ * free in both directions.
+ *
+ * A FOREIGN HOUSE IN THE ISSUER CELL IS DELIBERATELY NOT REFUSED, on this
+ * record's own measured rule: *the issuer cell routinely holds the CUSTODIAN or
+ * PLATFORM* — found three times and priced at approximately nothing on
+ * 2026-10-09. All eight such cells were read (`500 Index Fund Admiral Shares`
+ * [iss `Nuveen`], [iss `John Hancock Life Insurance Company (U.S.A.)`],
+ * `Information Technology Index Admiral Fund` [iss `Lincoln`], …) and in every
+ * one the NAME's own class word says Vanguard while the issuer names a platform.
+ * Where the name contradicts itself we abstain; where one weak evidence source
+ * disagrees with the name's own class word, the name wins. The vehicle question
+ * for those rows is answered independently and better by `pooledRow`, which
+ * reads the filing's TYPE cell at the call site. */
+const ADM_MGRS = [...idx.managers].map((m) => ({ p: m, t: m.split(" ") }))
+  .sort((a, b) => b.t.length - a.t.length);
+function admForeignHouse(name, iss, series, house) {
+  if (` ${norm(`${name} ${iss || ""}`)} `.includes(` ${house} `)) return null;  // stand-down
+  const hay = ` ${norm(name)} `;
+  const sv = new Set(norm(series).split(" "));
+  for (const m of ADM_MGRS) {
+    if (m.p === house) continue;
+    if (!hay.includes(` ${m.p} `)) continue;
+    if (m.t.every((w) => sv.has(w))) continue;     // the destination series says it too
+    return m.p;
+  }
+  return null;
+}
+const admForeignKeys = new Map();
+/* STRICTLY ADDITIVE, like every other arm here: `admAsk` is consulted only after
+ * every spelling in `tries` has come back empty, so a row that resolves today
+ * resolves first and identically and this arm can only ever fill a blank.
+ *
+ * TWO OF THE FIVE CONDITIONS ARE SCOPE LIMITS, NOT GUARDS, AND BOTH ARE
+ * LABELLED RATHER THAN CLAIMED — measured by neutering each one in the shipped
+ * source and re-running this file's own control block. Three break BY NAME at
+ * their own case (`className` -> `Admiral Shares Target Retirement Income Fund`
+ * reaches VTINX; the foreign-house refusal -> `Fidelity Emerging Markets Stock
+ * Index Adm` reaches VEMAX; the stand-down -> `Mutual Fund - Total Stock Market
+ * Index Admiral` loses its correct VTSAX). The other two break NOTHING:
+ *
+ *   `!r.comparable` blocks 0 cells `className` does not already block — the two
+ *   are MUTUALLY REDUNDANT, which is why they were priced TOGETHER (*a
+ *   conjunction's conditions cannot be priced one at a time when two of them
+ *   block the same population*). It stays because the call site would otherwise
+ *   count a hedged answer built on a SUPPLIED house into `gainComp`, the
+ *   owner-gated comparable half, and that population must mean what it says.
+ *
+ *   `ADM_TOKEN` is a COST limit whose verdict effect is UNMEASURED and is stated
+ *   that way. Without it the arm would prefix a house onto every one of ~550,000
+ *   unresolved names; no fixture here can construct a case where it alone
+ *   decides, because a name with no class word reaches a non-Admiral class or a
+ *   comparable and is refused one condition later. *An arm real in principle and
+ *   inert on the data is untested machinery* — so this one is recorded as
+ *   unproven rather than described as a protection. */
+function admAsk(nameRaw, nameClean, iss) {
+  for (const n of (nameRaw === nameClean ? [nameRaw] : [nameRaw, nameClean])) {
+    if (!ADM_TOKEN.test(n)) continue;
+    for (const h of ADM_HOUSES) {
+      const r = resolveHolding(idx, `${h} ${n}`, iss || "");
+      if (!r || r.comparable) continue;
+      const rec = idx.byTicker.get(String(r.ticker).toUpperCase());
+      if (!rec || !ADM_CLASS.test(rec.className || "")) continue;
+      const fh = admForeignHouse(n, iss, r.series || "", h);
+      if (fh) {
+        const key = `${iss || ""}\u0000${nameRaw}`;
+        if (!admForeignKeys.has(key))
+          admForeignKeys.set(key, { house: fh, name: nameRaw, iss: iss || "", tk: r.ticker, series: r.series || "" });
+        continue;
+      }
+      return { ...r, why: `${r.why || ""}+admclass` };
+    }
+  }
+  return null;
+}
+{
+  /* CONTROLS, each a case where the condition under test is the ONLY thing
+   * deciding the verdict, and every one drawn FROM the store rather than
+   * imagined — the record's rule is to measure a guard's blocking population
+   * over the live data. */
+  const must = [
+    /* must SEE: the positive control, so a table that comes back without this
+     * class is a failing test rather than a finding */
+    ["500 Index Adm", "", "VFIAX"],
+    ["Mid-Cap Index Fund Adm", "", "VIMAX"],
+    ["PRIMECAP Fund Admiral Shares", "", "VPMAX"],      // `primecap` IS a manager phrase
+    ["Intermediate-Term Bond Index Admiral", "", "VBILX"],  // `intermediate` likewise
+    ["Windsor II Fund - Admiral Shares", "", "VWNAX"],
+    /* the MOTIVATING ROW. It resolves here and is refused LATER by
+     * `registrantAttested`, because VANGUARD INDEX FUNDS says nothing
+     * distinctive beyond `vanguard` and the filing omits it. Pinned so the arm's
+     * reach and the guard's refusal stay separately visible. */
+    ["Growth Index Adm", "", "VIGAX"],
+    /* the stand-down is the ONLY protection on these two */
+    ["Mutual Fund - Total Stock Market Index Admiral", "The Vanguard Group", "VTSAX"],
+    ["Morningstar Small-Cap Index Fund Admiral", "Vanguard", "VSMAX"],
+    /* a foreign house in the ISSUER is deliberately not refused */
+    ["500 Index Fund Admiral Shares", "Nuveen", "VFIAX"],
+    /* must ABSTAIN: the foreign-house-in-NAME condition alone blocks these two */
+    ["Fidelity Emerging Markets Stock Index Adm", "", null],
+    ["American Funds 500 Index Adm", "", null],
+    /* must ABSTAIN: the className condition alone blocks these. Vanguard's
+     * twelve Target Retirement series register EXACTLY ONE class, `Investor
+     * Shares`, so without it the page would publish VTINX/VFORX on a row whose
+     * filing states Admiral — a wrong share class, and the registry says there
+     * is no Admiral class of that fund to mean. */
+    ["Admiral Shares Target Retirement Income Fund", "The Vanguard Group", null],
+    ["Target Retirement 2040 Fund Admiral", "Fidelity", null],
+    /* must ABSTAIN: the MassMutual decoy the 04:5xZ entry named. The protection
+     * is the MATCHER's own leftover-token rule, not a condition of mine — `mm`
+     * is unexplained, so `resolveHolding` declines and `hits` stays empty. */
+    ["MM S&P 500 Index Adm", "", null],
+    /* must ABSTAIN: no Admiral token at all */
+    ["500 Index Fund Investor Shares", "", null],
+    ["Administrative Services Fund", "", null],         // `Administrative` is not `Adm`
+  ];
+  for (const [n, iss, want] of must) {
+    const got = admAsk(n, n, iss);
+    const tk = got ? got.ticker : null;
+    if (tk !== want) throw new Error(`gen-sec-tickers: ADMIRAL CONTROL — ${JSON.stringify(n)} / ${JSON.stringify(iss)} should be ${want}, got ${tk}`);
+    if (got && !/\+admclass$/.test(got.why || ""))
+      throw new Error(`gen-sec-tickers: ADMIRAL CONTROL — ${JSON.stringify(n)} answered without the +admclass tag, so the gain cannot be attributed`);
+  }
+  admForeignKeys.clear();                 // the controls must not pollute the report
+  console.error(`admiral controls OK  (${must.filter((m) => m[2]).length} must-see incl. the motivating row and both stand-down cases, ${must.filter((m) => !m[2]).length} must-abstain incl. 2 foreign-house, 2 wrong-class and the MM decoy)`);
+}
+
 function secAsk(nameRaw, nameClean, iss) {
   const k = `${iss}\u0000${nameRaw}\u0000${nameClean}`;
   if (secCache.has(k)) return secCache.get(k);
@@ -869,8 +1090,86 @@ function secAsk(nameRaw, nameClean, iss) {
     const r = resolveHolding(idx, n, is);
     if (r) { out = r; break; }
   }
+  /* AND LAST OF ALL, the houseless ADMIRAL arm. It sits after the loop rather
+   * than inside `tries` for two reasons, both load-bearing: it needs conditions
+   * the loop cannot express (the destination's registered className, and the
+   * foreign-house refusal), and running only on `!out` is what makes it
+   * ADDITIVE BY CONSTRUCTION. The cost of that position is named and measured:
+   * 381 cells / 528 store rows reach a COMPARABLE above and so never arrive
+   * here, even though a comparable is never shipped and those readers see a
+   * blank today. Promoting them is a different claim — the matcher found the
+   * fund without our house and only the CLASS is in doubt — and belongs in its
+   * own measured ship. */
+  if (!out) out = admAsk(nameRaw, nameClean, iss);
   secCache.set(k, out);
   return out;
+}
+
+/* ---------- THE MOTIVATING ACK, PINNED BY ACK AND READ BEFORE ANY COUNT ----------
+ *
+ * The name-level controls above prove the arm reaches its cases. They cannot
+ * prove those strings are really in the store, nor what the CALL SITE does with
+ * them — and this record has twice had a pin keyed on a shared STRING match the
+ * wrong ROW (the 04:4xZ Bway/H&P pin printed `must-see ok` against the external
+ * control, the opposite of the defect). So the motivating filing is pinned by its
+ * ack, and the per-row verdict is PRINTED so it is read and not merely counted.
+ *
+ * Boston Scientific Corporation, 34,105 participants, ack
+ * 20260724162125NAL0023714354001 (shard 49), 53 funds at ratio 0.99: FOURTEEN
+ * rows filed `<product> Adm` with an EMPTY issuer cell, typed `Mutual fund`,
+ * publishing a fee and no ticker.
+ *
+ * ***AND THE PIN'S OWN NUMBERS ARE THE UNCOMFORTABLE RESULT: the arm reaches 13
+ * of the 14 and `registrantAttested` allows TWO.*** The eleven refused are the
+ * PLAIN INDEX FUNDS, whose registrant `VANGUARD INDEX FUNDS` contributes nothing
+ * distinctive beyond `vanguard` — the word the filing omits, which is the whole
+ * defect. `500 Index Adm` survives because the registrant's series name
+ * contributes `500`, and `Cash Reserves Federal MM Adm` because `VANGUARD MONEY
+ * MARKET RESERVES` contributes `reserves`. So whether a reader gets a symbol
+ * turns on an accident of which Vanguard trust holds the series and whether its
+ * legal name happens to repeat a word of the product — `VANGUARD VALLEY FORGE
+ * FUNDS` gives {valley, forge} and `Balanced Index Adm` is refused on $682,000.
+ * That is not a defect in the guard — withdrawing it is what stops `Vanguard
+ * Asset Allocation Fund` publishing VALIC's VCAAX as fact — and it is the
+ * honest ceiling on this arm, measured rather than hoped.
+ *
+ * The three pinned facts are the load-bearing ones and none of them is a row
+ * COUNT, so a DOL refresh that re-files this plan cannot redden the pin for
+ * nothing: the arm REACHES the motivating row, the guard REFUSES it, and the two
+ * survivors are the two the registry licenses. */
+{
+  const ACK = "20260724162125NAL0023714354001";
+  const f = `${ROOT}/data/lineups/49.json`;
+  const e = existsSync(f) ? JSON.parse(readFileSync(f, "utf8"))[ACK] : null;
+  if (!e || !Array.isArray(e.funds))
+    throw new Error(`gen-sec-tickers: ADMIRAL MUST-SEE — the motivating ack ${ACK} is not in shard 49; re-locate it before trusting any Admiral figure`);
+  let reach = 0, allow = 0;
+  const verdict = [];
+  for (const x of e.funds) {
+    const nm = String(x.name || "");
+    if (!ADM_TOKEN.test(nm)) continue;
+    const r = admAsk(nm, nm, x.iss || "");
+    if (!r) { verdict.push(`     ABSTAIN            ${JSON.stringify(nm)}`); continue; }
+    reach++;
+    const ok = registrantAttested(r.ticker, nm, x.iss || "");
+    if (ok) allow++;
+    verdict.push(`     ${ok ? "GAIN   " : "REFUSED"}  ${r.ticker}  ${JSON.stringify(nm).padEnd(34)} type=${JSON.stringify(x.type || "")} $${(+x.value || 0).toLocaleString()}`);
+  }
+  console.error(`\nADMIRAL MUST-SEE, Boston Scientific ${ACK} — arm reaches ${reach} rows, attestation allows ${allow}:`);
+  for (const v of verdict) console.error(v);
+  admForeignKeys.clear();                 // the pin must not pollute the report
+  if (reach < 10)
+    throw new Error(`gen-sec-tickers: ADMIRAL MUST-SEE — the arm reaches only ${reach} of Boston Scientific's Adm rows; it has stopped seeing the class it was built for`);
+  const say = (nm) => { const r = admAsk(nm, nm, ""); return r && registrantAttested(r.ticker, nm, "") ? r.ticker : null; };
+  if (say("500 Index Adm") !== "VFIAX" || say("Cash Reserves Federal MM Adm") !== "VMRXX")
+    throw new Error("gen-sec-tickers: ADMIRAL MUST-SEE — the two rows the registry licenses must survive attestation");
+  {
+    const r = admAsk("Growth Index Adm", "Growth Index Adm", "");
+    if (!r || r.ticker !== "VIGAX")
+      throw new Error("gen-sec-tickers: ADMIRAL MUST-SEE — the arm must REACH the motivating row (VIGAX)");
+    if (registrantAttested(r.ticker, "Growth Index Adm", ""))
+      throw new Error("gen-sec-tickers: ADMIRAL MUST-SEE — `Growth Index Adm` is recorded as REFUSED by attestation; if it now passes, the guard or the registry moved and the ship's figure must be re-measured");
+  }
 }
 
 const table = new Map();                 // key -> ticker  (ASSERTED only)
@@ -881,6 +1180,11 @@ const unattestedKeys = new Map();
 let pooledRefused = 0, pooledRefusedPpl = 0, suppressed = 0;
 const pooledKeys = new Set(), planPooled = new Map();
 const planExact = new Map(), planComp = new Map();
+/* the Admiral arm's own delivery, tracked separately so the ship's claim is
+ * attributable without a second regeneration */
+let admRows = 0, admDollars = 0;
+const admKeys = new Set(), admAcks = new Set(), admPlans = new Map();
+let admUnattested = 0; const admUnattestedKeys = new Set();
 const gains = [];
 const compKeys = new Set();
 
@@ -952,9 +1256,11 @@ for (let s = 0; s < 64; s++) {
         for (const m of mem) planComp.set(`${m.ein}|${m.pn}`, m.ppl);
         continue;
       }
+      const viaAdm = /\+admclass$/.test(sec.why || "");
       if (!registrantAttested(sec.ticker, f.nameRaw, f.iss || "")) {
         unattested++;
         unattestedPpl += ppl;
+        if (viaAdm) { admUnattested++; admUnattestedKeys.add(key); }
         if (!unattestedKeys.has(key)) unattestedKeys.set(key, { tk: sec.ticker, iss: f.iss || "",
           name: f.nameRaw, series: sec.series || "", why: sec.why || "",
           ent: (entitiesByTicker.get(sec.ticker) || [])[0] || "" });
@@ -962,6 +1268,13 @@ for (let s = 0; s < 64; s++) {
       }
       gainExact++;
       for (const m of mem) planExact.set(`${m.ein}|${m.pn}`, m.ppl);
+      if (viaAdm) {
+        admRows++;
+        admDollars += +f.value || 0;
+        admKeys.add(key);
+        admAcks.add(ack);
+        for (const m of mem) admPlans.set(`${m.ein}|${m.pn}`, m.ppl);
+      }
       const prev = table.get(key);
       if (prev !== undefined && prev !== sec.ticker) conflicts.push([key, prev, sec.ticker]);
       table.set(key, sec.ticker);
@@ -1011,6 +1324,18 @@ const report = [
   `LOSSES                                    0  (the arm runs last and only fills a blank)`,
 ].join("\n");
 console.error(report);
+console.error([
+  ``,
+  `THE HOUSELESS ADMIRAL ARM, attributed by the +admclass tag:`,
+  `  GAIN an ASSERTED symbol                 ${admRows.toLocaleString()} rows / ${admKeys.size.toLocaleString()} keys / ${admAcks.size.toLocaleString()} acks -> ${admPlans.size.toLocaleString()} plans / ${sum(admPlans).toLocaleString()} ppl / $${admDollars.toLocaleString()}`,
+  `  REFUSED, registrant unattested          ${admUnattested.toLocaleString()} rows / ${admUnattestedKeys.size.toLocaleString()} keys  (the plain index funds: the registrant says nothing distinctive beyond \`vanguard\` and the filing omits it)`,
+  `  REFUSED, the NAME names another house   ${admForeignKeys.size.toLocaleString()} keys`,
+].join("\n"));
+if (admForeignKeys.size) {
+  console.error(`\nEVERY key the Admiral arm refused for a foreign house in the NAME:`);
+  for (const [, a] of admForeignKeys)
+    console.error(`  [${a.house}] filed=${JSON.stringify(a.name)}  iss=${JSON.stringify(a.iss)}  would have published ${a.tk} ("${a.series}")`);
+}
 if (unattestedKeys.size) {
   console.error(`\nEVERY REFUSED KEY, so the class is read and not merely counted:`);
   for (const [, u] of unattestedKeys)
@@ -1019,17 +1344,23 @@ if (unattestedKeys.size) {
 
 if (DUMP) {
   /* a SEEDED uniform draw over the gain rows — ranking would pick the biggest
-   * plans, which are systematically different, and a rate needs a random draw */
+   * plans, which are systematically different, and a rate needs a random draw.
+   * `--why <substr>` narrows the POOL to one arm's gains, because a draw over
+   * every gain cannot read a rate for the arm that just shipped: a uniform draw
+   * over 4,700 rows will not reliably surface 800 of them (the 10:4xZ lesson,
+   * where 30 VALIC keys needed a draw aimed at the sub-population BY NAME). */
+  const pool = WHY ? gains.filter((g) => String(g.why || "").includes(WHY)) : gains;
   let h = 2166136261 >>> 0;
   for (const c of String(SEED)) h = Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0;
   const rand = () => { h ^= h << 13; h >>>= 0; h ^= h >>> 17; h ^= h << 5; h >>>= 0; return h / 4294967296; };
   const seen = new Set();
-  console.log(`\nUNIFORM DRAW of ${DUMP} gain rows, seed=${SEED} (of ${gains.length.toLocaleString()})`);
-  while (seen.size < Math.min(DUMP, gains.length)) {
-    const i = Math.floor(rand() * gains.length);
+  if (WHY && !pool.length) throw new Error(`gen-sec-tickers: --why ${WHY} selected 0 of ${gains.length} gains — the tag moved, and an empty draw reads exactly like a clean one`);
+  console.log(`\nUNIFORM DRAW of ${DUMP} gain rows, seed=${SEED} (of ${pool.length.toLocaleString()}${WHY ? ` tagged ${WHY}, from ${gains.length.toLocaleString()} total` : ""})`);
+  while (seen.size < Math.min(DUMP, pool.length)) {
+    const i = Math.floor(rand() * pool.length);
     if (seen.has(i)) continue;
     seen.add(i);
-    const g = gains[i];
+    const g = pool[i];
     console.log(`\n[${i}] ${g.sponsor}  (${g.ppl.toLocaleString()} ppl)  ack=${g.ack}`);
     console.log(`     filed name : ${JSON.stringify(g.name)}`);
     if (g.nameClean !== g.name) console.log(`     cleaned    : ${JSON.stringify(g.nameClean)}`);
