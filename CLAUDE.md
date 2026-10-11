@@ -918,7 +918,14 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
-**REPORTING-ONLY, PRE-REGISTERED 2026-10-11 08:1xZ — `tkExact` 37.88 ->
+**DELIVERED AND VERIFIED BY #634 (`success`, 09:01-09:0xZ) — THE REGISTRATION
+HELD EXACTLY: `tkExact` **37.88 -> 38.99**, and `tkComparable` 3.41 /
+`tkSampled` 87,106 / `tkShare` 25.12 / confident 60,182 / match 43,312 /
+vesting 53,023 / vestQuote 5,373 / entries 65,495 / HIGH 4 / WARN 556 / pv 203
+/ dl 93 ALL UNCHANGED.** Nothing else on the line moved, which is the whole
+safety claim for a reporting-only change.
+
+**ORIGINAL REGISTRATION, kept because it is what was predicted — `tkExact` 37.88 ->
 38.99.** `audit-data`'s ticker split was blind to TWO of app.js's arms: `f.ftk`
 (which the page reads FIRST) and the generated `sec-tickers.js` table (which it
 reads LAST, 7,350 keys / 19,413 published rows). The copy loaded `fund-er.js`

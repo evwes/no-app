@@ -102,7 +102,9 @@ cell where the real fund name was cut and only the continuation kept.
 ## What continues today
 
 The hourly cycle runs around the clock: reconcile, verdict or dispatch, mirror,
-one queue item, one participant-weighted draw read by hand. Run #634 is in
-flight on main and carries the first verdict on the corrected ticker metric —
-`tkExact` 37.88 → 38.99 is pre-registered, with every other key on the line
-unchanged. Nothing is mirrored while a run is in flight on main.
+one queue item, one participant-weighted draw read by hand.
+
+**Run #634 has landed and the corrected metric's registration held exactly:**
+`tkExact` 37.88 → **38.99**, and `tkComparable`, the sample size, `tkShare`,
+confident, match, vesting, entries, HIGH and WARN are all unchanged — which is
+the whole safety claim for a change that only alters what gets counted.
