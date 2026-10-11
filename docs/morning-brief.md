@@ -269,17 +269,63 @@ menu**. The control is the other 24 rows of the same menu — every one typed a
 collective trust or separate account, every one correctly unpriced. The only
 thing that differs is that the largest row's type cell is blank.
 
-## What continues today
+## Late evening: a registration that landed on the nose, and a gate that had been missing all along
+
+**The day's ticker work closed at `tkExact` 40.19, and the last registration
+was exact.** Run #640 was predicted at 39.04 → **40.19**, band 40.17–40.21, and
+delivered 40.19 with **exactly one of the coverage line's 35 keys moving** —
+compared key by key rather than by eye. That matters beyond the one number: it
+is the first registration since this morning's correction to how such a
+prediction is derived, and the two before it both missed high. The correction
+was to predict in the metric's *own* population — the audit samples every
+confident entry and applies neither the serving condition nor the publish gate,
+where the reader-facing arithmetic applies both.
+
+**Read the day's 37.77 → 40.19 as two unlike things added together:** roughly a
+point is the counter learning to count (it had been blind to two of the page's
+own lookup arms), and roughly 1.2 points is funds that really did gain a symbol
+— 18,802 published rows across 6.3 million readers from the Capital Group
+abbreviation arm alone. Only the second half is coverage.
+
+**Shipped and mirrored: a staleness gate on the generated SEC ticker table.**
+That asset had none, and the failure was silent in the one direction that
+matters — the table only ever fills a blank, so a ship that moves a fund's name
+publishes *nothing* rather than something wrong, and no reader, count or diff
+says a word. One regeneration this morning quietly absorbed 66 gain rows across
+9,224 participants of drift left by five earlier ships. The gate is a
+fingerprint of our own code, deliberately not of the SEC registry or the filing
+store, so a registry refresh cannot redden it; it runs in 0.3 seconds. Verified
+independently before mirroring: 12,337 keys, **added 0, removed 0, changed 0**.
+
+## What the evening's two draws found
+
+**A fabricated fee on a public company's own common stock.** `Eagle Materials,
+Inc.` publishes an expense ratio of **0.75 on $8,172,691 to 140,681 readers**;
+`American Eagle Outfitters` and `Eagle Financial Services` the same; `Wells
+Fargo & Co New` 0.45 across 14 rows. A common stock has no expense ratio, so
+unlike the other fee families this one needs no source — the fee is withdrawn,
+never corrected. About 18 rows, queued with the arm named.
+
+**And a weld that turned out to be inert, which is the more useful half.** One
+plan prefixes all 26 of its rows with `T. Rowe Price Investment Services` and
+the page answers five foreign-house rows five different ways. That looked like
+a known defect class. Both candidate fixes are refuted: stripping the prefix
+costs twenty tickers and twenty fees to win three, because the prefix is the
+house; and the replacement — asking the resolver again about what follows it —
+gains **0 of 5**, because every one of those rows resolves identically with and
+without the prefix. The inconsistency is plain coverage. *An inconsistency
+inside one menu is strong evidence that something is wrong and no evidence at
+all about what.*
+
+Both screens that found these were wrong at first and said so before publishing:
+the fee screen read 251 rows and was ~95% contaminated (this corpus truncates
+`Income` to `Inc` and `Corporate` to `Corp`, which is exactly what it keyed on),
+and the weld screen's must-see pin **threw rather than printing a population**.
+
+## What continues
 
 The hourly cycle runs around the clock: reconcile, verdict or dispatch, mirror,
-one queue item, one participant-weighted draw read by hand.
-
-**Run #634 has landed and the corrected metric's registration held exactly:**
-`tkExact` 37.88 → **38.99**, and `tkComparable`, the sample size, `tkShare`,
-confident, match, vesting, entries, HIGH and WARN are all unchanged — which is
-the whole safety claim for a change that only alters what gets counted.
-
-The MEFS ship's own effect on that line is pre-registered at or below the
-printed precision — 120 asserted rows out of 1,721,920 is 0.007%, so `tkExact`
-should read 38.99 or 39.00 and nothing else should move. Anything larger means
-the regeneration moved more than the row-level diff measured.
+one queue item, one participant-weighted draw read by hand. One item is in
+flight — whether a guard that checks a filing's own vocabulary against the fund
+registry can fairly be asked about a *repaired* spelling, which is residue three
+of today's ships share.
