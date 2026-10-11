@@ -24,6 +24,16 @@ on:
             "scripts/gen-sec-tickers.mjs", "scripts/house-core-test.mjs",
             "scripts/apppath.mjs", "scripts/match-sec-tickers.mjs",
             "scripts/fund-note-test.mjs",
+            # merge-4i carries SEVEN name repairs that rewrite the store, and
+            # until 2026-10-11 none of them was tethered here -- so a change to
+            # one ran no test of its own. `noun-repair-test` slices the leading-
+            # unit-noun arm out of this file, so the file it reads must trigger
+            # it: every other tethered source (lib-disclose, lib-4i, lib-quote,
+            # match-sec-tickers) is already in this list and merge-4i was absent
+            # only because nothing covered it. Without the entry the gate is the
+            # shape this record names for `gen-sec-tickers.mjs` -- a check that
+            # exists and is wired into no workflow.
+            "scripts/merge-4i.mjs", "scripts/noun-repair-test.mjs",
             "plans-list.json", "plans-index.json", "map-points.json"]
   workflow_dispatch:
 
