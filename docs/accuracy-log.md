@@ -7,6 +7,198 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-11 (21:4xZ) — A LEADING HOUSE WITH A SECOND HOUSE'S FUND UNDERNEATH IT: the shape is real, the menu's five-way inconsistency is real, and the mechanism I attributed it to is INERT. Refuted before anything shipped, by a pin that failed and a probe that cost six renders
+
+### What looked wrong
+
+The 21:09 draw drew The O'Connell Companies, Inc. (334 ppl, 26 funds, ratio
+0.992, OCR'd from scanned pages). **Every row of its menu carries the prefix
+`T. Rowe Price Investment Services `**, and five of them name a DIFFERENT house
+underneath it — where the page then answers the same question five ways:
+
+```
+… Fidelity Total Market Index Fund  -> FSKAX  er 0.015
+… Fidelity US Bond Index Fund       -> FXNAX  er 0.025
+… Blackrock Total Return Fund       -> (none) er 0.4
+… Victory Sycamore R6 Fund          -> (none) er 0.55
+… Fidelity Global Ex US Fund        -> (none) er (none)
+```
+
+One filer, one prefix, one type cell (`Mutual fund`), one OCR pass — so the only
+variable is our own resolver. That is the strongest kind of internal witness,
+and it is what made the row worth an hour.
+
+### Two things were refuted, in order
+
+**(1) THE STRIP, by a probe — the prefix is the HOUSE for twenty of the
+twenty-six rows.** Welded `… Retirement 2030 Fund` publishes **TRRCX at 0.55**
+and the bare remainder `Retirement 2030 Fund` publishes **nothing**; the same
+holds for TRRHX, RPMGX, TRBCX, TRRJX, PRFDX, TRRDX, TRRMX, TRRKX, PRSVX and
+TRRLX. `T. Rowe Price Investment Services` is the house plus a corporate suffix
+the resolver reads through, so this is NOT the recorded welded-trustee class and
+a strip costs this one menu twenty tickers and twenty fees to win three.
+
+**(2) THE REPLACEMENT PRESCRIPTION — "a SECOND resolver attempt on the
+remainder, consulted only where the whole string answers nothing" — GAINS 0 OF
+5, AND THE PREFIX TURNS OUT TO BE INERT.** Asked directly, with a positive
+control:
+
+```
+"Blackrock Total Return Fund"        whole tk -      remainder tk -       gains NOTHING
+"Victory Sycamore R6 Fund"           whole tk -      remainder tk -       gains NOTHING
+"Fidelity Global Ex US Fund"         whole tk -      remainder tk -       gains NOTHING
+"Fidelity Total Market Index Fund"   whole tk FSKAX  remainder tk FSKAX   gains NOTHING
+"Fidelity US Bond Index Fund"        whole tk FXNAX  remainder tk FXNAX   gains NOTHING
+"Vanguard 500 Index Fund Admiral Shares"  [CONTROL]  whole VFIAX  remainder VFIAX
+```
+
+**The weld is not the blocker on any row.** The two that resolve resolve either
+way; the three that do not fail on their own names, because those names are not
+in the tables — `Blackrock Total Return Fund` and `Victory Sycamore R6 Fund`
+reach no symbol with or without a prefix. So the menu's five-way inconsistency
+is **plain coverage**, not a weld, and there is nothing here to repair with a
+name change.
+
+***And the specific claim I had written down was wrong in a way worth naming:***
+I recorded that `sec-tickers.js`'s own PIN
+`(CL)Victory Sycamore Established Val R6` -> VEVRX proved the symbol was in our
+table and the weld was blocking it. It does not. The pinned fund is Victory
+Sycamore **Established Value**; the filed row is Victory Sycamore **R6 /
+Small Company** — *a different fund of the same family*. The symbol was never
+available to that row under any spelling.
+
+### The pin is what stopped it
+
+The whole-store sizing was written with the Victory row pinned as a must-see BY
+ACK, asserted before any count. It **threw** —
+`must-see pin FAILED: … the row is not in the gain set — the measurement is
+void` — and printed no population at all. Without the pin it would have printed
+some number of rows for a mechanism that moves nothing, and the number would
+have looked like a finding.
+
+### Prevention
+
+- ***AN INCONSISTENCY INSIDE ONE MENU IS STRONG EVIDENCE THAT SOMETHING IS
+  WRONG AND NO EVIDENCE AT ALL ABOUT WHAT.*** Holding the filer, the type cell
+  and the OCR pass constant removes every external explanation, which is why it
+  is worth reading — and it says nothing about WHICH of our stages differs. I
+  attributed it to the most salient shape in the string (the weld) and the weld
+  is inert. **Vary the suspected cause and re-render before attributing the
+  inconsistency to it**: six renders, and they are the cheapest step in the
+  whole investigation.
+- **A shape that matches a recorded class is not thereby a member of it.** The
+  welded-trustee class's lead is a TRUSTEE; this one's lead is the HOUSE. The
+  discriminator is not in the string — it is what the resolver does when the
+  lead is removed, one counterfactual render per row.
+- *A motivating case can be outside its own repair* — fourth instance, and the
+  first where the repair turned out to move **zero** rows rather than merely to
+  exclude the motivating one.
+- **Named, not fixed, and NOT this class:** the same menu publishes a row whose
+  whole filed name is the bare `T. Rowe Price Investment Services` (the recorded
+  bare-HOUSE-as-a-holding class, live at 334 readers) and one row whose fund
+  name sits in the ISSUER cell with the colon still attached
+  (`iss "T. Rowe Price Investment Services :"` / `name "Clearbridge SC Growth
+  Fund"`, no ticker, no fee) — the recorded `houseCore` class. Neither is a weld.
+
+---
+
+## 2026-10-11 (21:5xZ) — A BARE-BRAND FEE PATTERN FIRING ON A PUBLIC COMPANY'S OWN COMMON STOCK: Eagle Materials publishes an "expense ratio" of 0.75 to 140,681 readers, and the screen that found it was 95% contaminated by `Income` truncated to `Inc`
+
+### What is wrong
+
+The 19:08 draw drew Gundersen Lutheran (12,092 ppl), whose managed-account
+sleeve is itemised INTO the menu — individual equities, municipal bonds and
+closed-end funds beside the plan's real options — and one of those rows is
+
+```
+"Wells Fargo & Co New"   $10,149,680   type cell —   no ticker   er 0.45
+```
+
+A single company's common stock has **no expense ratio at all**, so the
+direction is a WITHDRAWAL and needs no source: this is the shipped
+`bankDepositFee` / `gicRow` shape, not the owner-gated re-pricing families.
+The cause is `fund-er.js:483`, `[/wells fargo|allspring/i, 0.45]` — a BARE
+BRAND pattern, which the bank's own stock satisfies. `stockRow` cannot reach it:
+that predicate is for the SPONSOR's own stock and Wells Fargo is not Gundersen's
+employer.
+
+**The largest member is not that row. Over all 1,721,920 published+served rows
+the convictable set is ~18 rows, and its biggest by readers is
+`Eagle Materials, Inc.` — $8,172,691, publishing er 0.75 to 140,681
+participants**, from `fund-er.js:484`'s `[/eagle|carillon/i, 0.75]`. The same
+bare token also prices `Eagle Financial Services, Inc.` (0.75) and
+**`American Eagle Outfitters, Inc.` (0.75)** — three unrelated public companies
+priced as though they were Carillon Eagle funds. The Wells Fargo family is 14
+rows across five spellings (`… & Co New`, `… & CO NEW`, `… & Co`, `… & Company`,
+`… & Co.`) reaching ~59,000 readers at 0.45.
+
+So the shippable arm is narrow and well-targeted: those two patterns must
+require a product token, which every real fund name supplies and no company's
+legal name does.
+
+### What the measurement said, and how badly its own screen failed
+
+Screened as "publishes a FEE, no ticker, no product word anywhere, and the name
+ENDS IN A CORPORATE LEGAL SUFFIX", over every published+served row with the
+publish gate and the serving condition applied:
+
+```
+rows walked 1,721,920
+  publishing a FEE                   912,621
+  ... and NO ticker                  292,180
+  ... and no PRODUCT word             28,226
+  ... and ending in a LEGAL suffix       251
+CANDIDATES: 251 rows / 242 acks / 985,132 ppl / $926,255,297
+```
+
+***DO NOT CARRY 251 rows / 985,132 ppl: ALL 140 DISTINCT NAMES WERE READ AND
+ABOUT 18 ROWS ARE GENUINE.*** The `LEGAL` vocabulary measured itself, five ways
+at once:
+
+- **`Inc` is `Income` TRUNCATED** — `GALLIARD FIXED INC` ($301,768,526 / 36,628
+  ppl), `Columbia Dividend Inc`, `DFA Intermed Gov't Inc I`, `JPMorgan Eqt Inc`
+  ×19, `EMP GUARANTEED INC`, `FID FDM IDX INC`, `JANUS HENDERSON GLB EQTY INC
+  I`, and ~60 more. These are real funds, and the one at the top of the list by
+  dollars is a named live instance of the owner-gated fabricated stable-value
+  fee (0.35 on a Galliard fixed-income account), not of this class.
+- **`Corp` is `Corporate`** — `Vanguard High Yield Corp` ×12 / $176,758,630, at
+  0.12, which is roughly that fund's real cost.
+- **`Company` is part of a fund's own name** — `Victory Sycamore Small Company`
+  ×24, `DFA International Small Company`, `DFA Global Small Company`.
+- **`LLC` / `Inc.` is the MANAGER's legal name published as a holding** —
+  `Galliard Capital Management, LLC`, `Neuberger Berman Management Inc.`,
+  `DFA Investment Dimension Group Inc.` — which is the recorded bare-HOUSE class
+  and has its own entry.
+- and one row is an insurer's legal name welded to a caption
+  (`Massachusetts Mutual Interest in Guaranteed Life Insurance Company`).
+
+### Prevention
+
+- ***A count keyed on a vocabulary measures the vocabulary — FIFTH instance
+  today***, after the trailing `a` (a share class), `IN` (Institutional), `AS`
+  (Asset) and the brokerage-window category nouns. Here the vocabulary is
+  LEGAL-ENTITY SUFFIXES, and it fails because **this corpus truncates fund names
+  to exactly those strings**: `Income` -> `Inc`, `Corporate` -> `Corp`. A
+  suffix vocabulary over a corpus whose damage mode is TRUNCATION cannot
+  separate a company from a cut-off product word.
+- **The member list is what saved it, and only the member list could.** The
+  screen's top row by dollars is 36x the largest genuine member, its counts are
+  plausible, its must-see pin PASSED, and 140 of 140 distinct names had to be
+  read before the 18 could be found. *Fixtures prove an arm reaches its case;
+  only reading the members proves the class is the class.*
+- **The honest witness here is not the name's shape at all — it is the PATTERN
+  that priced the row.** Three bare-brand entries in `fund-er.js` (`wells
+  fargo|allspring`, `eagle|carillon`, and `new world`) can match a company's
+  legal name; every other entry in the table carries a house AND a product word
+  and is safe by construction. So the instrument is a sweep of the fee table's
+  own patterns for ones a company name can satisfy — a bounded list of ~23
+  candidates — rather than a sweep of the data for rows that look corporate.
+- Queued, not shipped: the arm is a product-token requirement on those patterns,
+  one-directional (a fee is withdrawn, never added), and it must be measured
+  against the legacy funds those patterns exist for before it lands.
+
+---
+
 ## 2026-10-11 (19:5xZ) — THE GENERATED SEC TICKER TABLE COULD SIT BESIDE CODE THAT DID NOT PRODUCE IT, AND THE `--check` THAT WAS MEANT TO CATCH IT COULD NEVER HAVE BEEN A GATE: it compares asset BYTES, and the asset's own header interpolates the SEC registry's row count and four store-derived figures, so it reddens when the registry grows or the hourly pipeline commits one filing. Shipped: a 0.3-second fingerprint of OUR CODE ALONE, wired into `site-test` LAST, plus `--check` rewritten from a byte verdict into an attributable ADDED/REMOVED/CHANGED report
 
 ### What was wrong

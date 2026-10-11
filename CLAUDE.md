@@ -1814,6 +1814,69 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **A BARE-BRAND FEE PATTERN PRICING A PUBLIC COMPANY'S OWN COMMON STOCK —
+  ~18 reader-facing rows, and its largest is `Eagle Materials, Inc.` publishing
+  an expense ratio of **0.75 on $8,172,691 to 140,681 readers** (also
+  `American Eagle Outfitters, Inc.` and `Eagle Financial Services, Inc.`, all
+  from `fund-er.js:484`'s `[/eagle|carillon/i, 0.75]`), plus the Wells Fargo
+  family — 14 rows / ~59,000 ppl across five spellings at **0.45** from
+  `fund-er.js:483`'s `[/wells fargo|allspring/i, 0.45]`.** A single company's
+  common stock has NO expense ratio, so the direction is a WITHDRAWAL needing no
+  source — the shipped `bankDepositFee`/`gicRow` shape, not the owner-gated
+  re-pricing families. `stockRow` cannot reach it: that predicate is for the
+  SPONSOR's own stock, and Wells Fargo is not Gundersen Lutheran's employer.
+  Found by the 19:08 draw, where a managed-account sleeve is itemised INTO the
+  menu so individual equities, municipal bonds and closed-end funds sit beside
+  the plan's real options.
+  ***DO NOT CARRY MY SCREEN'S 251 rows / 985,132 ppl / $926,255,297 — ALL 140
+  DISTINCT NAMES WERE READ AND IT IS ~95% CONTAMINATED, because this corpus
+  truncates fund names to exactly the legal suffixes the screen keyed on:***
+  `Inc` is **`Income`** (`GALLIARD FIXED INC` at $301,768,526 / 36,628 ppl —
+  itself a named instance of the owner-gated stable-value 0.35, not of this
+  class; `JPMorgan Eqt Inc` ×19; `FID FDM IDX INC`), `Corp` is **`Corporate`**
+  (`Vanguard High Yield Corp` ×12 / $176,758,630 at a roughly right 0.12),
+  `Company` is part of a fund's own name (`Victory Sycamore Small Company` ×24),
+  and `LLC`/`Inc.` is the MANAGER published as a holding (`Galliard Capital
+  Management, LLC`) — the recorded bare-HOUSE class. ***A suffix vocabulary over
+  a corpus whose damage mode is TRUNCATION cannot separate a company from a
+  cut-off product word*** — fifth instance today of a count keyed on a
+  vocabulary measuring the vocabulary.
+  **THE HONEST WITNESS IS NOT THE NAME'S SHAPE BUT THE PATTERN THAT PRICED THE
+  ROW:** every other entry in `fund-er.js` carries a house AND a product word
+  and is safe by construction, so the instrument is a sweep of the fee table's
+  own ~23 bare-brand patterns for ones a company's legal name can satisfy, not a
+  sweep of the data. The arm is a product-token requirement on those patterns,
+  measured first against the legacy funds they exist for.
+  `docs/accuracy-log.md` 2026-10-11 (21:5xZ).
+- **REFUTED 2026-10-11 21:4xZ, DO NOT REBUILD IT — a LEADING HOUSE with a
+  second house's fund underneath it, where the prefix turns out to be INERT.**
+  The O'Connell Companies (334 ppl) prefixes all 26 rows with `T. Rowe Price
+  Investment Services ` and the page answers five foreign-house rows five ways
+  (`… Fidelity Total Market Index Fund` -> FSKAX 0.015 and `… Fidelity US Bond
+  Index Fund` -> FXNAX 0.025, against `… Blackrock Total Return Fund` 0.4,
+  `… Victory Sycamore R6 Fund` 0.55 and `… Fidelity Global Ex US Fund` blank,
+  all three with no symbol). **The strip is refuted first** — the prefix is the
+  HOUSE for twenty rows, welded `… Retirement 2030 Fund` publishing TRRCX at
+  0.55 where the bare remainder publishes nothing — **and the replacement
+  prescription (a SECOND resolver attempt on the remainder) GAINS 0 OF 5**: with
+  a positive control, every one of the five resolves IDENTICALLY with and
+  without the prefix. So the inconsistency is **plain coverage**, not a weld,
+  and there is nothing here to repair with a name change.
+  ***AND THE PIN IS WHAT STOPPED IT:*** the whole-store sizing pinned the
+  Victory row as a must-see BY ACK and **threw rather than printing a
+  population** — without it a number would have been published for a mechanism
+  that moves nothing. **Also withdrawn: `sec-tickers.js`'s pin
+  `(CL)Victory Sycamore Established Val R6` -> VEVRX does NOT prove the weld
+  blocks a symbol** — that is Sycamore **Established Value** and the filed row
+  is Sycamore **R6 / Small Company**, a different fund of the same family.
+  ***An inconsistency inside ONE menu is strong evidence that something is wrong
+  and no evidence at all about WHAT*** — vary the suspected cause and re-render
+  (six calls) before attributing it. Fourth instance of *a motivating case
+  outside its own repair*, and the first where the repair moves zero rows.
+  Named residue, neither a weld: that menu's bare `T. Rowe Price Investment
+  Services` row (the bare-HOUSE class) and its `iss "T. Rowe Price Investment
+  Services :"` / `name "Clearbridge SC Growth Fund"` row (the `houseCore` class,
+  colon still attached). `docs/accuracy-log.md` 2026-10-11 (21:4xZ).
 - **SHIPPED 2026-10-11 17:0xZ — THE HOUSE CONTRACTED AND THE PRODUCT WITH IT:
   18,802 published+served rows / 4,575 keys / 7,702 acks / 7,715 plans /
   6,300,982 ppl / $25,793,171,689 gain an ASSERTED symbol**, ticker lost 0 /
