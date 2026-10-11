@@ -1590,7 +1590,7 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
-- **FOUND BY THE 04:08 DRAW AND SIZED — A LADDER'S RENAMED VINTAGE: 1,076
+- **FOUND BY THE 03:08 DRAW AND SIZED — A LADDER'S RENAMED VINTAGE: 1,076
   published rows / 1,075 acks / 1,962,602 ppl / $662,789,643 publish NO ticker,
   and 1,034 publish a FEE anyway.** Alimed publishes thirteen `Fidelity Freedom
   Index <vintage> - Institutional Premium` rows; **twelve resolve and the
@@ -1618,7 +1618,7 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   **0.08** — unverified for the same reason, spanning several classes, so it
   belongs with the owner-gated fee families. Walgreen Co. (**277,328 ppl**) is
   correctly blank, its row typed `Collective trust` with `noPublicPrice`.
-  `docs/accuracy-log.md` 2026-10-11 (04:4xZ).
+  `docs/accuracy-log.md` 2026-10-11 (03:4xZ).
 - **FOUND BY THE 02:08 DRAW, UNSIZED — A PLAN'S POSTAL ADDRESS AND AN EXPENSE
   LINE PUBLISHED AS HOLDINGS, ON ONE 239,138-PARTICIPANT PAGE.** Publix Super
   Markets (15 funds, ratio 0.974) publishes **`PUBLIX SUPER MARKETS, INC. 3300
@@ -1634,7 +1634,7 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   ***THE DRAW'S OWN `--rows` LIMIT HID ALL THREE FINDINGS*** — every one sits
   below row 9, so the menu had to be re-read in full. *The row limit is one of
   the conditions a measurement must apply*, met this time on my own instrument.
-- **SHIPPED 2026-10-11 04:1xZ — A HYPHENATED SHARE CLASS STOPS BLOCKING THE
+- **SHIPPED 2026-10-11 03:3xZ — A HYPHENATED SHARE CLASS STOPS BLOCKING THE
   SYMBOL: 636 published rows / 628 acks / 636 plans / 1,878,821 ppl /
   $3,664,621,842 gain a ticker**, with ticker lost 0 / swapped 0 / **ASTERISKED
   0**, fee 0, name 0, shownType 0, and 19,026 sampled non-candidates differing
@@ -1676,7 +1676,7 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   RGAGX where `... of America Class R-6` publishes **nothing** — two spellings
   differing by a trademark glyph; and the `K-6`/`R-6` rows resolving an INVESTOR
   class (FTBFX, FBGRX) are pre-existing members of the owner-gated
-  wrong-share-class family. `docs/accuracy-log.md` 2026-10-11 (04:1xZ).
+  wrong-share-class family. `docs/accuracy-log.md` 2026-10-11 (03:3xZ).
 - **THE DOUBLE RENDER WITH NEITHER COPY QUALIFIED — SIZED 2026-10-11 02:4xZ AT
   5,754 pairs / 2,278 acks / 3,694,834 ppl / $19,181,051,166 duplicated, AND THE
   SHIPPABLE CORE IS A TRIPLE CONJUNCTION OF 572 pairs / 365 acks / 396,467 ppl /

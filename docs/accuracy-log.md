@@ -53931,7 +53931,7 @@ instance of a blank type defeating a type-reading guard; here it is not a
 suppressor that fails but the absence of any vehicle statement beside three
 rows that are not vehicles at all.
 
-## 2026-10-11 (04:1xZ) — A HYPHENATED SHARE CLASS BLOCKED THE SYMBOL, AND THE QUEUE ENTRY BLAMED THE PARENTHESES
+## 2026-10-11 (03:3xZ) — A HYPHENATED SHARE CLASS BLOCKED THE SYMBOL, AND THE QUEUE ENTRY BLAMED THE PARENTHESES
 
 **SHIPPED. 636 published+served rows / 628 acks / 636 plans / 1,878,821
 participants / $3,664,621,842 gain a ticker**, with ticker lost 0, swapped 0,
@@ -54058,7 +54058,7 @@ class (`Fidelity Total bond K-6 Fund` -> FTBFX, `Fidelity Blue Chip Growth R-6`
 -> FBGRX) are pre-existing members of the owner-gated wrong-share-class family
 and are deliberately untouched here.
 
-## 2026-10-11 (04:4xZ) — THE 04:08 DRAW: A LADDER'S RENAMED VINTEGE, AND THE REST OF THE LADDER IS THE CONTROL
+## 2026-10-11 (03:4xZ) — THE 03:08 DRAW: A LADDER'S RENAMED VINTAGE, AND THE REST OF THE LADDER IS THE CONTROL
 
 **SIZED, NOT SHIPPED: 1,076 published+served rows / 1,075 acks / 1,962,602
 participants / $662,789,643 publish NO ticker, and 1,034 of them publish a FEE
@@ -54124,3 +54124,38 @@ Grocers (26,265 ppl) publishes `Vanguard Institutional Index Fund` -> **VINIX
 at 0.02** where the 01:08 draw's Wawa publishes the same symbol at **0.1**,
 after Ross Stores / Ramaco on `FXAIX`. The symbol is honest on both pages; the
 FEE disagrees.
+
+## 2026-10-11 (04:0xZ) — I FUTURE-DATED MY OWN RECORD, AND A BLIND FIX WOULD HAVE CORRUPTED FOUR OTHER DAYS
+
+**CORRECTED IN PLACE: six labels.** The hyphenated-share-class ship was filed as
+**04:1xZ** and committed at **03:37Z**; the draw entry as **04:4xZ**, committed
+**03:43Z** and headed *"THE 04:08 DRAW"* when it was the **03:08** cycle's draw.
+The 04:08 wake is what exposed it — the clock read **04:08:18Z**, which is
+*earlier* than two entries already written down. So the log carried two
+timestamps up to an hour in the future, and a reader could not tell which cycle
+either belonged to.
+
+**IT IS THE SAME CLASS THIS FILE ALREADY GUARDS AGAINST IN DATA:**
+`scripts/fund-facts-check.mjs` refuses a **future-dated** figure, and the Current
+State block's own warning is that *a contradicted number in this file is
+asserted again every time it is read.* A timestamp is a published claim like any
+other, and mine were wrong in the direction that makes a cycle's work look later
+than it was — which also mislabels WHICH wake did the work, the one thing these
+headings exist to say. Fixed to 03:3xZ and 03:4xZ, with the draw renamed to the
+03:08 draw and a typo (`VINTEGE`) corrected.
+
+***AND THE FIX ITSELF WAS THE INTERESTING PART: `04:1xZ` APPEARS 6 TIMES AND
+`04:4xZ` 10 TIMES IN THIS FILE, AND ALL BUT TWO BELONG TO OTHER DAYS*** —
+2026-10-10 (04:2xZ), 2026-10-04 (04:4xZ), 2026-10-10 (04:4xZ) among them. A
+`sed` on the time string would have silently re-dated four unrelated entries,
+and the count would have looked like a thorough fix. *A count keyed on a string
+measures the string*, met on a TIMESTAMP — so the replacement was scoped to the
+full heading text and each substitution **asserted to match exactly once**,
+which is what turns a blind edit into a checked one. Control: no
+`2026-10-11 (04:` label remains anywhere, and the other days' labels are
+untouched.
+
+**THE HABIT THIS EARNS:** read the clock before writing a dated heading rather
+than estimating it from how long the work felt, and when correcting a label,
+anchor the match on something unique to the entry rather than on the timestamp
+being corrected.
