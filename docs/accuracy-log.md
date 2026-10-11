@@ -301,6 +301,172 @@ have looked like a finding.
 
 ---
 
+## 2026-10-11 (23:3xZ) — `wrapRepair` ABSTAINS CORRECTLY AND THE ROW STILL PUBLISHES DAMAGED: the verbatim-attestation witness reads ZERO for a thinly-held collective-trust share class, and the LADDER witness built to replace it is refuted by its own member list
+
+### What looked wrong
+
+The 23:07 draw drew Charles River Laboratories (13,269 ppl, 32 funds, ratio
+0.987), whose menu is thirteen Capital Group target-date trusts. Eleven read
+`Capital Group <vintage> Target Date Retirement Trust TD2`. Two do not:
+
+```
+row 6  "Trust TD2 Capital Group 2030 Target Date Retirement Trust TD2"   $78,123,399  6.4%
+row 9  "Trust TD2 Capital Group 2025 Target Date Retirement Income"      $32,356,724  2.6%
+```
+
+Row 6 is **`X … X`** — the exact self-wrapping duplication `wrapRepair` shipped
+for on 2026-10-10. It should have been repaired and was not.
+
+### Why the shipped arm abstained, and it is RIGHT to
+
+Sliced from `merge-4i.mjs` and replayed against the real `whole` map, rebuilt
+the way the merge builds it (`nk` = lowercase + trim, **punctuation kept**,
+confident entries only — 60,182 of 65,495 entries, 364,737 distinct whole filed
+names), **with the arm's own first fixture as a positive control**:
+
+```
+POSITIVE CONTROL "Admiral Shares Vanguard Windsor II Admiral Shares"
+  k=2 DUPLICATION FOUND
+      stripLead "Vanguard Windsor II Admiral Shares"  attested 28     -> REPAIR
+
+Charles River row 6
+  k=3 lead="Trust TD2 Capital" tail="Retirement Trust TD2"  NOT EQUAL
+  k=2 DUPLICATION FOUND
+      stripLead "Capital Group 2030 Target Date Retirement Trust TD2"  attested 0
+      stripTail "Trust TD2 Capital Group 2030 Target Date Retirement"  attested 0
+      -> ABSTAIN (floor 3 / ratio 10 not met)
+```
+
+The control fires at 28, so the harness **is** the arm. The abstention is the
+`WRAP_FLOOR = 3` doing exactly its job — and the reason is the data, not the
+rule: **`Capital Group 2030 Target Date Retirement Trust TD2` is attested ZERO
+times as any plan's whole filed name, and its own undamaged in-menu sibling
+(the 2045 vintage) is attested ONCE** — which is almost certainly this menu's
+own row 1. A `TD2` class of a Capital Group collective trust is held by too few
+plans for a verbatim-attestation witness to ever see it.
+
+***So the floor's recorded price — "61 rows refused, mostly a DIFFERENT
+family" — understates what it refuses. It also refuses a population whose
+orientation is settled by evidence the arm does not consult: the eleven
+SIBLINGS in the same menu.***
+
+### The replacement witness, and why it is refuted
+
+Tested: strip a leading run of 1..4 tokens and ask whether the REMAINDER, with
+its vintage year normalised to `@`, is the ordered form of **>= 3 OTHER rows in
+the same menu**. Row 6 answers at k=2 with **7 siblings**.
+
+This is **not** the same-menu witness closed on 2026-10-03. That one asked
+whether a BARE sibling carries the stray fragment, which a column shift
+*guarantees* — repetition read as evidence against strayness. This asks whether
+siblings differing only in a VINTAGE NUMBER share an ordered form a shift
+cannot produce: had a shift moved `Trust TD2` to the front of row 6, it would
+have moved it on rows 1-5 too.
+
+Sized over all **1,721,920** published+served rows (publish gate `lineups-index`
+bit 1, serving condition `servedLineup`): **2,061 rows / 716 acks / 4,466,807
+ppl / $11,939,961,878**, 429 carrying a stored ticker, 407 distinct leading
+runs.
+
+***AND READING THE MEMBER LIST KILLS IT, because the MAJORITY ORDERED FORM CAN
+BE THE DAMAGED SPELLING.***
+
+```
+"Fidelity Freedom 2040 Fund"    lead "Fidelity"  sibs 7   $1,059,396  9,293 ppl
+```
+
+That name is **correct and undamaged**. It fires because seven siblings in the
+same menu are filed *without the house word*, so their form `freedom @ fund`
+outvotes it — and the strip would publish `Freedom 2040 Fund`, deleting the
+house from the one row that has it. The class also holds all three recorded
+orientations at once: `Admiral Shares Vanguard Target Retirement 2055 Fund`
+(the lead is a SHARE CLASS, already publishing VFFVX — the wrong-class family,
+where stripping destroys the only evidence of the right class) and `Retirement
+R6 Fund American Funds 2045 Target Date` (a true ROTATION publishing RFHTX,
+where neither strip is a name and the repair is a reorder).
+
+**So *a floor of three lets damaged rows license the damage* — recorded for
+verbatim attestation — holds for a MAJORITY witness too, and worse: three
+damaged siblings outvote one correct row.**
+
+### What survived, sized and priced
+
+The screen's largest single bucket is a leading **punctuation-only** run (698
+of 2,061 a bare em-dash), which needs no witness at all — a token made only of
+punctuation names no fund by construction. Asked through `cleanFiledName`
+itself:
+
+```
+stored lead punct the display cleaner ALREADY removes   2,113   (reaches no reader)
+STILL leading with punctuation ON THE PAGE                805 rows / 244 acks
+                                                  6,032,073 ppl / $3,545,265,528
+  of which the REMAINDER names no fund either                166
+  priced through renderRow                                  639
+TICKER gained 1 / lost 0      FEE gained 0 / lost 0 / changed 0
+```
+
+**72% of the stored class reaches no reader** — `cleanFiledName` strips a
+leading em-dash and a hyphen today. It does **not** strip `,` (178), `.` (168),
+`+` (73), `|` (56), `@` (54), `(*)` (38), `_` (34), `;`, `*`, `#`, `«`, `|_|`,
+`:`, `©` — 53 distinct tokens. And `—_ T. Rowe Price Retirement 2030` cleans to
+**`_ T. Rowe Price Retirement 2030`**, removing one debris character and leaving
+the next: *one of two spellings is worse than neither*, met inside a shipped arm.
+
+Largest members: `® Fidelity Low-Priced Stock` ($28,983,476 / 14,426 ppl, where
+the ® has been separated from `Fidelity®` and moved to the front), `= T. Rowe
+Price Instl Large Cap Growth` ($25,582,065 / 22,720 ppl), `_ T. Rowe Price
+Retirement 2030` ($19,201,521).
+
+**It is LEGIBILITY, not coverage — one ticker gained** (`: MidCap Index` ->
+FSMDX, $297,722 / 1,772 ppl) and nothing lost. Not shipped this cycle: the
+twin lives in app.js and another agent held it.
+
+**NAMED RESIDUE, a different class and NOT strippable: the 166 whose remainder
+names no fund.** Fourteen of them are one plan (6,501 ppl) publishing a unit
+PRICE as a holding — `, $21.03/unit` on **$8,188,833**, `, $42.48/unit`,
+`, $161.27/unit` — and one is `Ź ANTONINI FREIGHT EXPRESS, INC. 401(K) &
+PROFIT SHARING PLAN`, the PLAN'S OWN NAME as a holding (the Home Depot
+form-artifact shape). These want QUALIFYING. *A row that names nothing and a
+row whose name we mangled are two classes, and one label cannot serve both.*
+
+### Two harness defects, both recorded rules, both caught by a pin or a control
+
+1. **`servedLineup(plan, idx)` takes a PLAN OBJECT and returns `{ack, from}`.**
+   I called `servedLineup(d, r)` and keyed a Map by the returned OBJECT, so
+   every lookup missed, every entry was skipped and the candidate count was
+   **0**. ***A guessed SHAPE fails as a clean zero where a guessed field NAME
+   throws*** — and the must-see pin is the only reason it read as a refusal
+   (`the measurement is void`) rather than as a finding.
+2. **`sec-tickers.js` is keyed on `(issuer, nameRaw)`, and a `cleanFiledName`
+   change moves `name` and never `nameRaw`.** My first priced run varied both
+   and reported **3 ticker LOSSES** — MFFPX on $4,748,222, RFNGX, RWIGX — every
+   one the SEC table missing a key written against the DAMAGED spelling, not the
+   strip losing a symbol. Holding `nameRaw` fixed on both sides: **lost 0.**
+   *Measure through the function the page calls, WITH THE ARGUMENT THE PAGE
+   PASSES* — and a harness that varies an input production holds constant
+   reports a loss that cannot happen.
+
+### Prevention
+
+- ***AN ABSTENTION IS NOT A GAP, AND A SHIPPED ARM'S RECORDED PRICE IS A
+  PROPERTY OF THE STORE IT WAS MEASURED ON.*** `wrapRepair`'s floor was priced
+  at "61 rows, mostly a different family" on the 2026-10-10 store. It is also
+  refusing a product family whose exact spelling no three plans share. **Before
+  calling a shipped arm's abstention a defect, replay the arm with its own
+  fixture as a control and read what the witness actually returned** — the
+  answer here was `attested 0`, which is the rule working, and the finding is
+  about the WITNESS rather than the arm.
+- **A MAJORITY WITNESS INHERITS THE FLOOR PROBLEM AND MAKES IT WORSE.** Three
+  attestations of a damaged spelling license the damage; three *siblings*
+  carrying a damaged spelling outvote the one correct row. The sibling witness
+  is cheap and internal and still cannot settle orientation.
+- **`cleanFiledName` IS PART OF EVERY NAME-CLASS MEASUREMENT.** 72% of this
+  stored class reaches no reader. Ask the display cleaner before sizing any
+  stored-name shape — this is the sixth instance of *a STORED field is not a
+  PUBLISHED one* and the first where the thing that cleaned it was the arm the
+  change would extend.
+---
+
 ## 2026-10-11 (21:5xZ) — A BARE-BRAND FEE PATTERN FIRING ON A PUBLIC COMPANY'S OWN COMMON STOCK: Eagle Materials publishes an "expense ratio" of 0.75 to 140,681 readers, and the screen that found it was 95% contaminated by `Income` truncated to `Inc`
 
 ### What is wrong

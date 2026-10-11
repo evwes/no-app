@@ -845,11 +845,16 @@ VMware and Neiman Marcus. The witness must be **BOY** assets.
 match **43,312** · vesting **53,023** · roth 38,369 · **HIGH 4** ·
 warn **556** · overshoot 370 · overshootTrust 12 ·
 aggRow 114 · dl **93** · pvTopShare **99.9** (pv **203**) ·
-tkExact **40.19** · tkComparable **3.41** · vestQuote **5,373**.
+tkExact **40.20** · tkComparable **3.41** · vestQuote **5,373**.
 (vesting/vestQuote/dl/pv re-derived from the #607 line 2026-10-09 13:0xZ, the
 first COMPLETE v203 store; `dl` 93 was HEAD-probed at 92/92 -> 403 minutes
 earlier, so the code is honest and the bucket is growing.)
-(`tkExact` **40.19** is re-derived from #640's line 2026-10-11 18:2xZ — the
+(`tkExact` **40.20** is re-derived from #642's line 2026-10-11 23:2xZ — the
+REPAIRED-SPELLING ATTESTATION ship's 71 keys, landing dead on its registered
+point estimate with exactly one of the line's 35 keys moving; the 40.19 below is
+#640's and is the figure it replaces. The reading of the day's climb stands as
+written.)
+(`tkExact` **40.19** was re-derived from #640's line 2026-10-11 18:2xZ — the
 CAPITAL GROUP ABBREVIATION ship's 4,575 keys, landing dead centre of its
 registered 40.17-40.21 with exactly one of the line's 35 keys moving. It is the
 LARGEST single-ship move this key has ever taken (+1.15), and it is real
@@ -927,6 +932,25 @@ The `dl` population has been HEAD-probed whole four times (68/68, 78/78, 23/23,
 EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
+
+**DELIVERED AND VERIFIED BY #642 (`success`, 23:13-23:22Z on `08daa39a`, data
+commit `3cc39bdb`, mirrored to main) — THE REGISTRATION HELD EXACTLY ON THE
+POINT ESTIMATE: `tkExact` **40.19 -> 40.20**, and of the line's 35 keys EXACTLY
+ONE MOVED**, compared programmatically with the line attributed by the COMMIT
+that introduced it and a guard asserting that commit appended exactly one line.
+`tkComparable` 3.41, `tkSampled` 87,106, `tkShare` 25.12, confident 60,182,
+match 43,312, vesting 53,023, vestQuote 5,373, entries 65,495, HIGH 4, WARN 556,
+overshoot 370, overshootTrust 12, aggRow 114, `dl` 93 and `pv` 203 all
+unchanged. **SO THERE IS NOTHING PRE-REGISTERED AND PENDING.**
+*This is the SECOND CONSECUTIVE registration to land dead on the point estimate,
+both derived in the metric's own population via the transcribed lookup chain
+with the BEFORE figure reproducing the shipped one as the control — against the
+two before the correction, which missed high by 0.017 and 0.02. A registration
+of 71 added keys predicting a move of 5 sampled rows across a printed rounding
+boundary (40.1913 -> 40.1971) is a fine enough prediction that landing it twice
+is evidence about the METHOD and not about the ships.*
+
+**ORIGINAL REGISTRATION, kept because it is what was predicted:**
 
 **PRE-REGISTERED 2026-10-11 20:5xZ for the next merge after the REPAIRED-SPELLING
 ATTESTATION ship — `tkExact` **40.19 -> 40.20**, band **40.19-40.21**, and
@@ -1840,6 +1864,64 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **SIZED 2026-10-11 23:3xZ, NOT SHIPPED — A LEADING PUNCTUATION RUN THAT THE
+  DISPLAY CLEANER DOES NOT REACH: 805 published+served rows / 244 acks /
+  6,032,073 ppl / $3,545,265,528, of which 639 are strippable and 166 want
+  QUALIFYING instead.** `® Fidelity Low-Priced Stock` ($28,983,476 / 14,426
+  ppl, where the ® has been separated from `Fidelity®` and moved to the front),
+  `= T. Rowe Price Instl Large Cap Growth` ($25,582,065 / 22,720 ppl), `_ T.
+  Rowe Price Retirement 2030` ($19,201,521). A token made only of punctuation
+  names no fund BY CONSTRUCTION, so this needs **no attestation witness at
+  all** — unlike every other name class on this list.
+  ***DO NOT CARRY A STORED-NAME COUNT: `cleanFiledName` ALREADY REMOVES 2,113
+  OF THEM AND THEY REACH NO READER*** — 72% of the stored class — because it
+  strips a leading em-dash and hyphen today. It does NOT strip `,` (178), `.`
+  (168), `+` (73), `|` (56), `@` (54), `(*)` (38), `_` (34), `;`, `*`, `#`,
+  `«`, `|_|`, `:`, `©` — 53 distinct tokens. And **`—_ T. Rowe Price Retirement
+  2030` cleans to `_ T. Rowe Price Retirement 2030`**, removing one debris
+  character and leaving the next: *one of two spellings is worse than neither*,
+  met INSIDE a shipped arm.
+  **PRICED, AND IT IS LEGIBILITY: ticker gained 1 / LOST 0, fee 0/0/0** through
+  both copies of `renderRow` from HEAD's own app.js (the working tree was held
+  by another agent), the one gain `: MidCap Index` -> FSMDX ($297,722 / 1,772
+  ppl). *The nameRaw discipline is the whole correctness of that figure* — see
+  the method rule below; varying `nameRaw` reported 3 losses that cannot happen.
+  **NAMED RESIDUE, a different class: the 166 whose remainder names no fund
+  either.** Fourteen are ONE plan (6,501 ppl) publishing a unit PRICE as a
+  holding — `, $21.03/unit` on **$8,188,833**, `, $161.27/unit` — and one is
+  `Ź ANTONINI FREIGHT EXPRESS, INC. 401(K) & PROFIT SHARING PLAN`, the plan's
+  OWN NAME as a holding (the Home Depot form-artifact shape). *A row that names
+  nothing and a row whose name we mangled are two classes.*
+  Not shipped this cycle because the twin lives in app.js and another agent
+  held it; the arm is a character-class widening of an existing strip plus its
+  `gen-generic-twin` slice, and `index.html` must be restamped.
+  `docs/accuracy-log.md` 2026-10-11 (23:3xZ).
+- **REFUTED 2026-10-11 23:3xZ, DO NOT REBUILD IT — THE LADDER WITNESS: a
+  majority of same-menu siblings cannot settle a name's orientation, because
+  the majority ordered form CAN BE THE DAMAGED SPELLING.** Found from Charles
+  River Laboratories (13,269 ppl), where `wrapRepair` abstains on `Trust TD2
+  Capital Group 2030 Target Date Retirement Trust TD2` ($78,123,399, 6.4% of
+  its menu) beside eleven undamaged siblings. **The abstention is the shipped
+  arm being RIGHT**: replayed with the arm's own fixture as a positive control
+  (28 attestations), the candidate `Capital Group 2030 Target Date Retirement
+  Trust TD2` is attested **ZERO** times as any plan's whole filed name and its
+  undamaged in-menu sibling **once** — a thinly-held collective-trust share
+  class can never satisfy a verbatim-attestation floor of 3. *So the floor's
+  recorded price of "61 rows, mostly a different family" is a property of the
+  store it was measured on.*
+  The replacement — strip a leading run where the vintage-normalised remainder
+  is the ordered form of >=3 OTHER rows in the same menu — reaches the row with
+  7 siblings and sizes at 2,061 rows / 716 acks / 4,466,807 ppl / $11.9B, **and
+  its own member list kills it**: `Fidelity Freedom 2040 Fund` is CORRECT and
+  fires because seven house-less siblings outvote it, so the strip would delete
+  the house from the one row that has it. The class also holds all three
+  recorded orientations — a share-class lead already publishing VFFVX (where
+  stripping destroys the only evidence of the right class) and a true ROTATION
+  publishing RFHTX (where neither strip is a name). ***A floor of three lets
+  damaged rows license the damage*** holds for a MAJORITY witness too, and
+  worse. It is NOT the witness closed on 2026-10-03 — that one read a bare
+  sibling a column shift guarantees — which is why it was worth testing.
+  `docs/accuracy-log.md` 2026-10-11 (23:3xZ).
 - **A BARE-BRAND FEE PATTERN PRICING A PUBLIC COMPANY'S OWN COMMON STOCK —
   ~18 reader-facing rows, and its largest is `Eagle Materials, Inc.` publishing
   an expense ratio of **0.75 on $8,172,691 to 140,681 readers** (also
@@ -5419,6 +5501,31 @@ These outlived the versions that produced them. The accuracy log has the case.
   members being house ABBREVIATIONS (`VANG EXPLORER ADM`, `AF EUROPAC GROWTH
   R6`) and EMPLOYER STOCK (`Costco Wholesale Corporation` =COST, $18.3B).
   `docs/accuracy-log.md` 2026-10-04 (02:0xZ).
+- **AND HOLD FIXED EVERY INPUT THE CHANGE DOES NOT MOVE (2026-10-11).** A
+  `cleanFiledName` change moves `f.name` and never `f.nameRaw` — and
+  `sec-tickers.js` is keyed on `(issuer, nameRaw)`. A harness that varied BOTH
+  reported **3 ticker LOSSES** (MFFPX on $4,748,222, RFNGX, RWIGX) for a
+  display-side strip; every one was the SEC table missing a key written against
+  the DAMAGED spelling, a question production never asks. Holding `nameRaw`
+  fixed: **lost 0.** The sibling of *measure through the function the page calls
+  WITH THE ARGUMENT THE PAGE PASSES* — here the function and all but one
+  argument were right, and the one that was wrong invented a loss that cannot
+  happen. **Name the fields the change writes, and pass every other field
+  identically on both sides.** Note also which direction the error ran: it made
+  a safe change look harmful, so the cost of this one would have been a refused
+  ship rather than a published defect — *a harness defect can over-state harm as
+  readily as hide it, and only the second kind announces itself.*
+- **AND A MUST-SEE PIN CONVERTS A GUESSED SHAPE FROM A FINDING INTO A REFUSAL
+  (2026-10-11).** `servedLineup(plan, idx)` takes a PLAN OBJECT and returns
+  `{ack, from}`; called as `servedLineup(d, r)` it returns a truthy object, so a
+  Map keyed by it missed on every lookup, every entry was skipped, and the
+  candidate count was **0**. ***A guessed SHAPE fails as a clean zero where a
+  guessed field NAME throws*** — `lib-schema`'s Proxy cannot help a caller who
+  never reaches `.plans`. The pin is what printed `the measurement is void`
+  instead of a tidy number. **And set the pin's EXPECTED COUNT, not merely its
+  presence:** pinning Charles River at 2 rows where the witness delivers 1
+  surfaced that the `Income` vintage has only one sibling and is correctly
+  refused — a presence-only pin would have passed and hidden the asymmetry.
 - **AND PRINT EVERY FIELD OF ITS ANSWER THAT THE PAGE ACTS ON (2026-10-03).**
   Calling the right function is not enough. `renderRow` returns `star`
   (= `info.comparable`) beside `tk`, and app.js prints an asterisk and a
