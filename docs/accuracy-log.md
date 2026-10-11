@@ -54057,3 +54057,70 @@ class is this size and not larger. The `K-6`/`R-6` rows resolving an INVESTOR
 class (`Fidelity Total bond K-6 Fund` -> FTBFX, `Fidelity Blue Chip Growth R-6`
 -> FBGRX) are pre-existing members of the owner-gated wrong-share-class family
 and are deliberately untouched here.
+
+## 2026-10-11 (04:4xZ) — THE 04:08 DRAW: A LADDER'S RENAMED VINTEGE, AND THE REST OF THE LADDER IS THE CONTROL
+
+**SIZED, NOT SHIPPED: 1,076 published+served rows / 1,075 acks / 1,962,602
+participants / $662,789,643 publish NO ticker, and 1,034 of them publish a FEE
+anyway.** Found by the participant-weighted draw (`--seed 20261011`), which drew
+Alimed, Inc. (226 ppl, 31 funds, ratio 0.980): it publishes thirteen
+`Fidelity Freedom Index <vintage> Fund - Institutional Premium` rows, **twelve
+resolve** (FFEDX, FFEZX, FFIZX, FFOLX, FFEGX, FFLEX, FIWTX, FFOPX, FFLDX,
+FFIKX, FIWFX) and the `Income` one publishes `er 0.12` with no symbol.
+
+***THE CONTROL IS THE REST OF THE LADDER, IN THE SAME MENU, AND THE WHOLE-STORE
+SPLIT MAKES IT A POPULATION RATHER THAN AN ANECDOTE.*** Over every
+published+served Freedom Index row, bucketed by vintage: the dated vintages
+resolve a ticker on **383-1,274 rows each (~42%)**, `RETIREMENT` on 69 of 222
+(31%), and **`INCOME` on 1 of 1,077 — 0.09%, two orders of magnitude worse.**
+213 distinct filed spellings, the commonest being a plain
+`Fidelity Freedom Index Income Fund` ×229.
+
+**THE CAUSE IS A RENAME AND THE REGISTRY SAYS SO WITHOUT ANY EXTERNAL SOURCE:**
+`sec-funds.json` registers **exactly 14** Freedom Index series and **NONE is
+`Income`**. The fourteenth is **`Fidelity Freedom Index RETIREMENT Fund`**, with
+the identical four-class structure every sibling has — Investor FIKFX,
+**Institutional Premium FFGZX**, Premier FAPIX, Premier II FATQX. So the filed
+name names the product under its FORMER name: the Oppenheimer/Spartan shape,
+where *a rename is a FACT that must be SOURCED, never inferred.* The in-repo
+evidence is strong (absence of `Income`, presence of `Retirement`, and filings
+using the NEW name resolving 340x better) but it is **circumstantial** — it
+cannot by itself exclude "the Income fund is a different product that is simply
+no longer registered."
+
+**AND THE SOURCE COULD NOT BE VERIFIED FROM THIS SANDBOX, which is why nothing
+shipped.** A web search returns an SEC 497 supplement and an eMoney fund sheet
+both stating the Income -> Retirement rename effective **2025-09-09**, with
+FFGZX named as the Institutional Premium class — but `WebFetch` cannot reach
+either host and a direct probe of `sec.gov` returns **`CONNECT tunnel failed,
+response 403`** from the egress proxy, i.e. `http=000 bytes=0`. *That is the
+recorded trap in its own right: a zero-byte fetch reports on the query, and
+printing `%{http_code}` and `%{size_download}` is what distinguishes "the page
+says nothing" from "no server was reached."* So the rename rests on a search
+summary I could not open, which is below this project's bar for publishing a
+symbol. **The next step is `data/fund-facts.json` via the `fund-facts` agent** —
+the one place a sourced ticker may live, with its URL and as-of date — not a
+`fund-er.js` rename entry written from a summary.
+
+**AND THE FEE IS A SECOND, SEPARATE CLAIM THE SAME SEARCH PUTS IN DOUBT.** Our
+page publishes **0.12** on 1,034 of these rows; the search reports FFGZX's real
+expense ratio as **0.08**. Unverified for the same reason, and it spans several
+share classes, so it belongs with the owner-gated fee families — *a fee is
+SOURCED, never derived.* Largest rows: the Lel Board of Trustees
+$137,171,000 / 42,227 ppl at 0.12, and Walgreen Co. (**277,328 ppl**)
+$47,541,021 typed `Collective trust`, where `noPublicPrice` correctly withholds
+any fee.
+
+**ALSO NAMED BY THE SAME DRAW, each a recorded class gaining a third or fourth
+instance.** Alimed publishes `Fidelity Government` — a TRUNCATED name, typed
+`Cash / short-term`, no ticker and no fee (the truncated-name class, where the
+recorded position is reconstruction and never suppression); and four rows
+publish a SYMBOL WITH NO FEE (`JHBSX`, `VSEQX`, `EICOX`, `VAIPX`) beside two
+publishing a FEE WITH NO SYMBOL (`MFS International Intrinsic Value Fund R6` at
+0.6, `Neuberger Berman Large Cap Value Fund Institutional Class` at 0.65) — the
+ticker/fee asymmetry on one 31-row menu, in both directions at once.
+**AND A THIRD NAMED PAIR FOR THE ONE-TICKER-TWO-FEES CLASS:** Southeastern
+Grocers (26,265 ppl) publishes `Vanguard Institutional Index Fund` -> **VINIX
+at 0.02** where the 01:08 draw's Wawa publishes the same symbol at **0.1**,
+after Ross Stores / Ramaco on `FXAIX`. The symbol is honest on both pages; the
+FEE disagrees.

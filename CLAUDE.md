@@ -1590,6 +1590,35 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **FOUND BY THE 04:08 DRAW AND SIZED — A LADDER'S RENAMED VINTAGE: 1,076
+  published rows / 1,075 acks / 1,962,602 ppl / $662,789,643 publish NO ticker,
+  and 1,034 publish a FEE anyway.** Alimed publishes thirteen `Fidelity Freedom
+  Index <vintage> - Institutional Premium` rows; **twelve resolve and the
+  `Income` one does not.** ***The control is the rest of the ladder and the
+  whole-store split makes it a population:*** the dated vintages resolve on
+  383-1,274 rows each (~42%), `RETIREMENT` on 69 of 222 (31%), and **`INCOME`
+  on 1 of 1,077 — 0.09%**, 213 distinct spellings.
+  **THE CAUSE NEEDS NO EXTERNAL SOURCE TO DIAGNOSE:** `sec-funds.json` registers
+  **exactly 14** Freedom Index series and **NONE is `Income`** — the fourteenth
+  is `Fidelity Freedom Index **RETIREMENT** Fund` with the identical four-class
+  structure (FIKFX / **FFGZX** / FAPIX / FATQX). So the filing names the product
+  under its FORMER name, the Oppenheimer/Spartan shape.
+  **BUT IT COULD NOT BE SOURCED FROM THIS SANDBOX, WHICH IS WHY NOTHING
+  SHIPPED.** A search returns an SEC 497 supplement and an eMoney fund sheet
+  both stating the rename effective **2025-09-09**, and `WebFetch` reaches
+  neither: a direct probe of `sec.gov` returns **`CONNECT tunnel failed,
+  response 403`**, i.e. `http=000 bytes=0`. *A zero-byte fetch reports on the
+  query — printing `%{http_code}` and `%{size_download}` is what separates "the
+  page says nothing" from "no server was reached".* The in-repo evidence is
+  strong but circumstantial, so the next step is **`data/fund-facts.json` via
+  the `fund-facts` agent**, not a `fund-er.js` rename written from a summary.
+  *A rename is a FACT that must be SOURCED, never inferred.*
+  **AND THE FEE IS A SECOND CLAIM THE SAME SEARCH PUTS IN DOUBT:** we publish
+  **0.12** on 1,034 of these rows where FFGZX's real cost is reported as
+  **0.08** — unverified for the same reason, spanning several classes, so it
+  belongs with the owner-gated fee families. Walgreen Co. (**277,328 ppl**) is
+  correctly blank, its row typed `Collective trust` with `noPublicPrice`.
+  `docs/accuracy-log.md` 2026-10-11 (04:4xZ).
 - **FOUND BY THE 02:08 DRAW, UNSIZED — A PLAN'S POSTAL ADDRESS AND AN EXPENSE
   LINE PUBLISHED AS HOLDINGS, ON ONE 239,138-PARTICIPANT PAGE.** Publix Super
   Markets (15 funds, ratio 0.974) publishes **`PUBLIX SUPER MARKETS, INC. 3300
