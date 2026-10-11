@@ -7,6 +7,69 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-11 (07:0xZ) — the houseless ADMIRAL class, SIZED with a validated witness at 5,222 rows / 2,790,684 participants — and **1,811 of them are POOLED VEHICLES my instrument could not see**, so nothing ships until the clean half is re-measured
+
+### The witness, and the probe that refuted the first one
+
+The 04:08 draw found Boston Scientific (34,105 ppl) filing **fourteen**
+`<product> Adm` rows with an EMPTY issuer cell, typed `Mutual fund`, publishing
+a fee and no ticker — `Growth Index Adm` at **0.1** where VIGAX costs ~0.05.
+`Adm` is Vanguard's own Admiral class, so **the filing states the CLASS and
+omits the HOUSE**, the inverse of every abbreviation class on this record.
+
+The prescribed instrument was "prefix every registry manager phrase and require
+a unique asserted answer", and **its own feasibility probe refused it**:
+`500 Index Admiral` answers under Vanguard (**VFIAX**) *and* Fidelity
+(**FXAIX**), because `CLASS_MARK` excuses `Admiral` for any house. Adding one
+condition — **the resolved ticker's own REGISTERED `className` must state
+Admiral** — restores uniqueness on every probe (VFIAX, VIMAX, VEIRX, VPMAX,
+VIGAX, VSMAX) and correctly ABSTAINS on `MM S&P 500 Index Adm`, the MassMutual
+decoy the queue entry named. *So the `Adm` token licenses a CLASS, not a HOUSE,
+and the registry is what supplies the house.*
+
+### Sized, and the figure splits
+
+Candidates (published+served rows with an `Adm` token and no ticker today):
+**24,525 rows / 7,600 distinct names**, of which **1,363 names resolve
+uniquely** under the witness. Gross gain **5,222 rows / 2,153 acks / 2,790,684
+participants / $8,706,430,036** across 72 destinations; **2,350 of them publish
+a FEE today**. Largest spellings: `PRIMECAP Fund Admiral Shares` → VPMAX
+($1,099,556,440 over 5 rows), `Wellesley Income Fund Admiral` → VWIAX, `Vanguard
+Equity-Inc Adm Fund` → VEIRX on 166 rows.
+
+***AND THE TYPE-CELL SPLIT IS WHY NOTHING SHIPPED: 1,811 of the 5,222 are
+POOLED VEHICLES*** — `Pooled separate account` 1,631, `Collective trust` 118,
+`Separate account` 62 — and the single largest of them is the textbook harm:
+**`Vanguard Windsor II Fund – Admiral Shares` typed `Collective trust` →
+VWNAX on $450,834,815.** A further 46 are typed `Stable value / GIC` or
+`Cash / short-term`, which trip `renderRow`'s own gates, so they are gains **no
+reader could see**.
+
+**My instrument asked only the registry question.** It printed the TYPE cell —
+which is the only reason the defect is visible — and did not APPLY it. *A
+measurement that prints a condition it does not apply is a measurement of a
+different population*, and the same rule this record wrote about the asterisk
+and about the row limit, met on the vehicle. Within the hour the same mechanism
+was found leaking in the SHIPPED table (see 06:5xZ), from the other direction.
+
+### What follows for the remedy, and it inverts today's other lesson
+
+The 06:5xZ entry concludes that the vehicle question **cannot** be asked where
+the key is written and must be asked at render time. For THIS class the
+opposite holds: `gen-sec-tickers.mjs` applies `pooledRow` **per row, before the
+asserted/comparable split**, so adding the houseless-Admiral spelling to
+`secAsk`'s candidate list gets the vehicle refusal **by construction** and all
+1,811 are refused without a new condition. *Where a rule already runs per row,
+that is the cheap stage; it is only a KEY that cannot carry it.*
+
+So the next step is to re-measure the clean half through the real generator —
+pooled refused, `registrantAttested` applied, the `renderRow` gates applied —
+and read a seeded uniform draw with each row's TYPE beside its answer. **Nothing
+ships on a half-measured class**, and the half that was measured is the half
+that would have been wrong.
+
+---
+
 ## 2026-10-11 (06:5xZ) — A POOLED VEHICLE PUBLISHED AS THE REGISTERED FUND BECAUSE THE TABLE'S KEY CANNOT CARRY THE VEHICLE: 1,748 rows / 307 keys / 839 plans / 1,017,749 participants / $16,456,667,177 stop ASSERTING a symbol. The generator-side fix was measured at 14x harmful, and the whole value of the measurement is the STAGE
 
 ### What was wrong

@@ -1590,33 +1590,46 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
-- **FOUND BY THE 04:08 DRAW, PART-SIZED, NOT SHIPPED — AN ADMIRAL SHARE CLASS
-  WITH NO HOUSE: the clean half is 198 rows** where prefixing the house makes
-  `resolveHolding` ASSERT (`500 Index Admiral` -> **VFIAX**, `Mid-Cap Index Fund
-  Adm` -> **VIMAX**, `Small-Cap Index Fund Adm` -> **VSMAX**, `Equity-Income
-  Adm` -> **VEIRX**, `PRIMECAP ADM` -> **VPMAX**). Boston Scientific (34,105
-  ppl) files **fourteen** `<product> Adm` rows with no house in the name and an
-  EMPTY issuer cell, typed `Mutual fund`, publishing a fee and no ticker —
-  `Growth Index Adm` at **0.1** where VIGAX costs ~0.05. **`Adm` is Vanguard's
-  own Admiral class, so the filing states the CLASS and omits the HOUSE** — the
-  inverse of every abbreviation class here.
-  ***DO NOT CARRY MY SCREEN'S 3,227 rows / 730,481 ppl / $2.51B — IT IS
-  CONTAMINATED:*** its largest members (`Vangrd 500 Index Fund Adm` 231,
-  `Vangrd Mid-Cap Index Fund Adm` 321, `VGD INTERM TERM TRSY IDX ADM`) all carry
-  the house CONTRACTED, and my `HOUSE` vocabulary listed `vanguard` and not
-  `vangrd`/`vgd`/the typos `Vanard`, `VANDGUARD`. *A count keyed on a vocabulary
-  measures the vocabulary* — **third instance in one cycle**, and writing the
-  rule down three times in that hour did not stop the fourth list, so the fix is
-  structural: derive the token set from the data, or test the screen against a
-  known member of each side.
-  **A DECOY IS ALREADY IN THE MEMBER LIST:** `MM S&P 500 Index Adm` (11 rows /
-  $19,745,895) — plausibly MassMutual — so ***the `Adm` token licenses a CLASS,
-  not a HOUSE***, and a rule supplying `Vanguard` to any houseless `Adm` row
-  would assert on another firm's product. **818 of the screened rows are typed
-  `Pooled separate account` and 37 `Separate account`**, so any assertion must
-  pass the recorded vehicle refusal. 3,009 stay silent even with the house
-  prefixed — the contraction class, needing the registry.
-  `docs/accuracy-log.md` 2026-10-11 (04:5xZ).
+- **SIZED 2026-10-11 07:0xZ, NOT SHIPPED — AN ADMIRAL SHARE CLASS WITH NO HOUSE:
+  5,222 rows / 2,153 acks / 2,790,684 ppl / $8,706,430,036 gross, of which
+  2,350 publish a FEE today — AND 1,811 ARE POOLED VEHICLES MY INSTRUMENT COULD
+  NOT SEE.** Boston Scientific (34,105 ppl) files **fourteen** `<product> Adm`
+  rows with an EMPTY issuer cell, typed `Mutual fund`, publishing a fee and no
+  ticker (`Growth Index Adm` at **0.1** where VIGAX costs ~0.05); `Adm` is
+  Vanguard's own Admiral class, so **the filing states the CLASS and omits the
+  HOUSE**, the inverse of every abbreviation class here.
+  **THE WITNESS IS VALIDATED AND THE PRESCRIBED ONE WAS REFUTED BY ITS OWN
+  PROBE:** "prefix every registry manager phrase, require a unique answer" fails
+  because `CLASS_MARK` excuses `Admiral` for ANY house (`500 Index Admiral`
+  answers VFIAX *and* FXAIX). Adding one condition — **the resolved ticker's own
+  REGISTERED `className` must state Admiral** — restores uniqueness on all six
+  probes and ABSTAINS on the `MM S&P 500 Index Adm` decoy, so ***the `Adm` token
+  licenses a CLASS, not a HOUSE*** and the registry supplies the house.
+  Candidates 24,525 rows / 7,600 names, 1,363 resolving uniquely, 72
+  destinations; largest `PRIMECAP Fund Admiral Shares` -> VPMAX
+  ($1,099,556,440 / 5 rows), `Vanguard Equity-Inc Adm Fund` -> VEIRX on 166.
+  ***NOTHING SHIPPED BECAUSE THE TYPE-CELL SPLIT IS 1,811 ROWS*** —
+  `Pooled separate account` 1,631 / `Collective trust` 118 / `Separate account`
+  62 — whose largest is the textbook harm, **`Vanguard Windsor II Fund – Admiral
+  Shares` typed `Collective trust` -> VWNAX on $450,834,815**; a further 46 are
+  typed `Stable value / GIC` or `Cash / short-term` and trip `renderRow`'s own
+  gates, so they are gains NO READER COULD SEE. **My instrument PRINTED the type
+  cell — the only reason this is visible — and did not APPLY it:** *a
+  measurement that prints a condition it does not apply is a measurement of a
+  different population*, the asterisk and row-limit rule met on the vehicle.
+  **AND THE REMEDY INVERTS THE SAME DAY'S OTHER LESSON:** the 06:5xZ ship
+  concludes the vehicle question cannot be asked where the KEY is written — but
+  `gen-sec-tickers.mjs` applies `pooledRow` **per row**, so adding this spelling
+  to `secAsk`'s candidate list refuses all 1,811 **by construction**. *Where a
+  rule already runs per row that is the cheap stage; it is only a KEY that
+  cannot carry it.* Next step is the clean half re-measured through the real
+  generator (pooled refused, `registrantAttested` applied, `renderRow`'s gates
+  applied) plus a seeded uniform draw printing each row's TYPE.
+  ***DO NOT CARRY MY EARLIER SCREEN'S 3,227 rows / 730,481 ppl / $2.51B — IT IS
+  CONTAMINATED:*** its largest members carry the house CONTRACTED and my `HOUSE`
+  vocabulary listed `vanguard` and not `vangrd`/`vgd`/the typos `Vanard`,
+  `VANDGUARD`. *A count keyed on a vocabulary measures the vocabulary.*
+  `docs/accuracy-log.md` 2026-10-11 (04:5xZ) and (07:0xZ).
 - **FOUND BY THE 03:08 DRAW AND SIZED — A LADDER'S RENAMED VINTAGE: 1,076
   published rows / 1,075 acks / 1,962,602 ppl / $662,789,643 publish NO ticker,
   and 1,034 publish a FEE anyway.** Alimed publishes thirteen `Fidelity Freedom
