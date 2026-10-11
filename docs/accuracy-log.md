@@ -54244,3 +54244,61 @@ vocabulary is the shape this record has measured harmful twice. So the
 expansion is general in FORM with one live product family — the same honest
 state as the recordkeeper-brand rule being general with one live house. The
 residue needs the registry, not a wider screen.
+
+## 2026-10-11 (04:5xZ) — THE 04:08 DRAW: AN ADMIRAL SHARE CLASS WITH NO HOUSE, AND MY THIRD VOCABULARY SCREEN OF THE CYCLE MEASURING ITSELF
+
+**FOUND, PART-SIZED, NOT SHIPPED.** The participant-weighted draw
+(`--seed 20261011b`) drew Boston Scientific (**34,105 ppl**, 53 funds, ratio
+0.994) — a menu that is mostly the machinery WORKING, with 21 collective trusts
+correctly carrying `noPublicPrice`, no ticker and no fee, employer stock right,
+and `TRSSX`/`JLGMX`/`RERGX`/`BAGIX`/`FSRNX`/`DVZRX` all resolving. Its tail is
+not: **fourteen rows filed as `<product> Adm` with NO house token in the name
+and an EMPTY issuer cell**, typed `Mutual fund`, publishing a pattern-table FEE
+and NO ticker — `500 Index Adm` at **0.03**, `Growth Index Adm` at **0.1** where
+VIGAX really costs about 0.05 (**double**), then `Mid-Cap Growth Index Adm`,
+`Small-Cap Growth Index Adm`, `Small-Cap Value Index Adm`, `Real Estate Index
+Adm`, `Balanced Index Adm`, `Value Index Adm`, `Mid Cap Index Adm`, `Small-Cap
+Index Adm`, `Mid-Cap Value Index Adm` all at 0.1, `Emerging Mkts Stock Idx Adm`
+at 0.06, `Short-Term Bond Index Adm` at 0.06 and `Cash Reserves Federal MM Adm`
+at 0.2. **`Adm` is Vanguard's own Admiral share class**, so the filing states
+the CLASS and omits the HOUSE — the inverse of every abbreviation class on this
+record, where the house is abbreviated and the product spelled out.
+
+***AND THE SCREEN I WROTE TO SIZE IT IS CONTAMINATED, BY THE SAME MECHANISM
+THAT HAD ALREADY BITTEN ME TWICE IN THIS ONE CYCLE.*** It reads **3,227 rows /
+1,058 acks / 730,481 ppl / $2,510,486,449**, and its largest members are
+`Vangrd 500 Index Fund Adm` (231 rows), `Vangrd Mid-Cap Index Fund Adm` (321),
+`Vangrd Small-Cap Index Fnd Adm` (277), `VGD INTERM TERM TRSY IDX ADM` (14) —
+**every one of which carries the house, CONTRACTED.** My `HOUSE` vocabulary
+listed `vanguard` and `vang\b` and not `vangrd`, `vgd`, or the filers' typos
+`Vanard` and `VANDGUARD`. **DO NOT CARRY 3,227 / 730,481.** *A count keyed on a
+vocabulary measures the vocabulary* — third instance in this cycle, after my
+`AMF` classifier called 138 American Funds products decoys and after the
+same rule was recorded in the AMF ship's own message. **Writing the rule down
+three times in one hour did not stop me writing the fourth vocabulary**, which
+is the honest lesson: the fix is structural (derive the token set from the data,
+or test the screen against a known member of each side) and not a better list.
+
+**WHAT SURVIVES IS SMALL, CLEAN AND HAS A REGISTRY WITNESS: 198 rows** where
+prefixing the house makes `resolveHolding` **ASSERT** — `500 Index Admiral` ->
+**VFIAX**, `Mid-Cap Index Fund Adm` -> **VIMAX**, `Small-Cap Index Fund Adm` ->
+**VSMAX**, `Equity-Income Adm` -> **VEIRX**, `Mid Cap Growth Index Admiral` ->
+**VMGMX**, `PRIMECAP ADM` -> **VPMAX**. 20 more reach only a comparable (the
+owner-gated half) and 3,009 stay silent, which is the contraction class needing
+the registry rather than a wider screen.
+
+**AND A DECOY IS ALREADY VISIBLE IN THE MEMBER LIST, which is why this needs its
+own pass rather than a quick arm:** `MM S&P 500 Index Adm` (11 rows,
+$19,745,895) carries `MM` — plausibly MassMutual, a DIFFERENT house — so a rule
+that supplies `Vanguard` to any houseless `Adm` row would assert a Vanguard
+symbol on another firm's product. ***The `Adm` token licenses a CLASS, not a
+HOUSE***, and that is the distinction a repair has to respect: Admiral is
+Vanguard's class name, but a row naming no house may still not be Vanguard's.
+The shippable shape is therefore the SEC-asserting 198 with a per-row check that
+nothing else in the row names another firm, measured with a derived house set.
+
+**TYPES ARE PRINTED AND THEY MATTER:** of the contaminated 3,227, **818 are
+typed `Pooled separate account` and 37 `Separate account`** — so any assertion
+here must pass the recorded vehicle refusal, since *a symbol can be right for
+the fund and wrong for the vehicle*. The must-see pin was keyed BY ACK and
+caught 14 of Boston Scientific's rows before any count printed.

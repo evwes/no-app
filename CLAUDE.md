@@ -1590,6 +1590,33 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **FOUND BY THE 04:08 DRAW, PART-SIZED, NOT SHIPPED — AN ADMIRAL SHARE CLASS
+  WITH NO HOUSE: the clean half is 198 rows** where prefixing the house makes
+  `resolveHolding` ASSERT (`500 Index Admiral` -> **VFIAX**, `Mid-Cap Index Fund
+  Adm` -> **VIMAX**, `Small-Cap Index Fund Adm` -> **VSMAX**, `Equity-Income
+  Adm` -> **VEIRX**, `PRIMECAP ADM` -> **VPMAX**). Boston Scientific (34,105
+  ppl) files **fourteen** `<product> Adm` rows with no house in the name and an
+  EMPTY issuer cell, typed `Mutual fund`, publishing a fee and no ticker —
+  `Growth Index Adm` at **0.1** where VIGAX costs ~0.05. **`Adm` is Vanguard's
+  own Admiral class, so the filing states the CLASS and omits the HOUSE** — the
+  inverse of every abbreviation class here.
+  ***DO NOT CARRY MY SCREEN'S 3,227 rows / 730,481 ppl / $2.51B — IT IS
+  CONTAMINATED:*** its largest members (`Vangrd 500 Index Fund Adm` 231,
+  `Vangrd Mid-Cap Index Fund Adm` 321, `VGD INTERM TERM TRSY IDX ADM`) all carry
+  the house CONTRACTED, and my `HOUSE` vocabulary listed `vanguard` and not
+  `vangrd`/`vgd`/the typos `Vanard`, `VANDGUARD`. *A count keyed on a vocabulary
+  measures the vocabulary* — **third instance in one cycle**, and writing the
+  rule down three times in that hour did not stop the fourth list, so the fix is
+  structural: derive the token set from the data, or test the screen against a
+  known member of each side.
+  **A DECOY IS ALREADY IN THE MEMBER LIST:** `MM S&P 500 Index Adm` (11 rows /
+  $19,745,895) — plausibly MassMutual — so ***the `Adm` token licenses a CLASS,
+  not a HOUSE***, and a rule supplying `Vanguard` to any houseless `Adm` row
+  would assert on another firm's product. **818 of the screened rows are typed
+  `Pooled separate account` and 37 `Separate account`**, so any assertion must
+  pass the recorded vehicle refusal. 3,009 stay silent even with the house
+  prefixed — the contraction class, needing the registry.
+  `docs/accuracy-log.md` 2026-10-11 (04:5xZ).
 - **FOUND BY THE 03:08 DRAW AND SIZED — A LADDER'S RENAMED VINTAGE: 1,076
   published rows / 1,075 acks / 1,962,602 ppl / $662,789,643 publish NO ticker,
   and 1,034 publish a FEE anyway.** Alimed publishes thirteen `Fidelity Freedom
