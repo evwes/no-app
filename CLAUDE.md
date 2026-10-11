@@ -1922,40 +1922,69 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   worse. It is NOT the witness closed on 2026-10-03 — that one read a bare
   sibling a column shift guarantees — which is why it was worth testing.
   `docs/accuracy-log.md` 2026-10-11 (23:3xZ).
-- **A BARE-BRAND FEE PATTERN PRICING A PUBLIC COMPANY'S OWN COMMON STOCK —
-  ~18 reader-facing rows, and its largest is `Eagle Materials, Inc.` publishing
-  an expense ratio of **0.75 on $8,172,691 to 140,681 readers** (also
-  `American Eagle Outfitters, Inc.` and `Eagle Financial Services, Inc.`, all
-  from `fund-er.js:484`'s `[/eagle|carillon/i, 0.75]`), plus the Wells Fargo
-  family — 14 rows / ~59,000 ppl across five spellings at **0.45** from
-  `fund-er.js:483`'s `[/wells fargo|allspring/i, 0.45]`.** A single company's
-  common stock has NO expense ratio, so the direction is a WITHDRAWAL needing no
-  source — the shipped `bankDepositFee`/`gicRow` shape, not the owner-gated
-  re-pricing families. `stockRow` cannot reach it: that predicate is for the
-  SPONSOR's own stock, and Wells Fargo is not Gundersen Lutheran's employer.
-  Found by the 19:08 draw, where a managed-account sleeve is itemised INTO the
-  menu so individual equities, municipal bonds and closed-end funds sit beside
-  the plan's real options.
-  ***DO NOT CARRY MY SCREEN'S 251 rows / 985,132 ppl / $926,255,297 — ALL 140
-  DISTINCT NAMES WERE READ AND IT IS ~95% CONTAMINATED, because this corpus
-  truncates fund names to exactly the legal suffixes the screen keyed on:***
-  `Inc` is **`Income`** (`GALLIARD FIXED INC` at $301,768,526 / 36,628 ppl —
-  itself a named instance of the owner-gated stable-value 0.35, not of this
-  class; `JPMorgan Eqt Inc` ×19; `FID FDM IDX INC`), `Corp` is **`Corporate`**
-  (`Vanguard High Yield Corp` ×12 / $176,758,630 at a roughly right 0.12),
-  `Company` is part of a fund's own name (`Victory Sycamore Small Company` ×24),
-  and `LLC`/`Inc.` is the MANAGER published as a holding (`Galliard Capital
-  Management, LLC`) — the recorded bare-HOUSE class. ***A suffix vocabulary over
-  a corpus whose damage mode is TRUNCATION cannot separate a company from a
-  cut-off product word*** — fifth instance today of a count keyed on a
-  vocabulary measuring the vocabulary.
-  **THE HONEST WITNESS IS NOT THE NAME'S SHAPE BUT THE PATTERN THAT PRICED THE
-  ROW:** every other entry in `fund-er.js` carries a house AND a product word
-  and is safe by construction, so the instrument is a sweep of the fee table's
-  own ~23 bare-brand patterns for ones a company's legal name can satisfy, not a
-  sweep of the data. The arm is a product-token requirement on those patterns,
-  measured first against the legacy funds they exist for.
-  `docs/accuracy-log.md` 2026-10-11 (21:5xZ).
+- **THE BARE-BRAND FEE PATTERN ON A PUBLIC COMPANY'S OWN STOCK — SIZED
+  2026-10-11 23:5xZ AT 38 published+served rows / 37 acks / 373,602 ppl /
+  $55,149,189, AND THE QUEUED ARM IS REFUTED. NOTHING SHIPPED.** `Eagle
+  Materials, Inc., 33,120 shares` still publishes **0.75 on $8,172,691 to
+  140,681 readers** from `fund-er.js:484`'s `[/eagle|carillon/i, 0.75]`; the
+  common-stock half is 24 rows / 235,754 ppl / $32,109,903 (also `American
+  Eagle Outfitters, Inc.` and five spellings of `Wells Fargo & Co New`), and the
+  rest is the bank's own DEBT, its CDs, two commercial-mortgage rows, bank
+  deposits and **two rows of GOLD BULLION** (`1 oz U.S. Gold Eagles`, $458,000)
+  that the bare token `eagle` prices.
+  **THE PRESCRIBED SWEEP WAS DONE AND IT IS THE RIGHT INSTRUMENT: `FUND_ER` has
+  159 entries, 65 carry a FIXED-PHRASE branch, and exactly ELEVEN are bare
+  brand** — `geode`, `american funds`, `victory sycamore`, `janus henderson`,
+  `dfa |dimensional`, `galliard|putnam stable|invesco stable`, `neuberger
+  berman`, `wells fargo|allspring`, `eagle|carillon`, `oakmark`, `loomis
+  sayles` — **pricing 199,019 of all 1,721,920 published+served rows**,
+  attributed by SENTINEL (each entry's ER replaced with a unique number in a
+  copy of the file, so the loop and the variant expansion are production's own;
+  control `non-sentinel price moved 0`).
+  ***THE PRODUCT-TOKEN REQUIREMENT FAILS IN BOTH DIRECTIONS, measured through
+  BOTH copies of `renderRow` over all 1,721,920 rows (13,776 candidates by a
+  superset-by-construction narrowing, 20,342 non-candidates sampled, 0
+  differing): FEE LOST 166 rows, of which 38 are the defect, 90 are a BARE
+  HOUSE name (its own recorded class) and 27 ARE REAL FUNDS LOSING A PLAUSIBLE
+  HOUSE FEE*** — `Carillon Clarivest I` ($8,802,647), `Allspring Gov Sec I` ×4,
+  `Allspring Spcl MidCpVal CIT MD`, `WELLS FARGO ADVANTAGE SPEC MD`, `Eagle MLP
+  Strategy I`, `1ST EAGLE RSNG DIV A` and more. 38 genuine against 27 wrong is
+  not a trade worth making.
+  **AND IT ADDS 50 FEE CLAIMS, which the item was registered as not doing.**
+  `issuerPricedER` (`app.js:2135`) applies `if (er === priceOf(iss)) return
+  null` — *the issuer must not supply the answer by itself* — so while the bare
+  brand prices, `iss "Allspring"` answers alone and the composed fee is
+  suppressed; narrow the entry and the guard stands down, publishing 0.45 on
+  `iss "Allspring" · name "Diversified Capital Builder"` and 49 more. ***A
+  NARROWING IN A LOOKUP TABLE IS NOT A NARROWING AT THE CALL SITE THAT COMPOSES
+  IT***, and only the differential's `fee gained` column could show it.
+  **THE FILER'S OWN TYPE CELL IS REFUTED AS THE REPLACEMENT WITNESS, with its
+  own numbers: 813 priced rows / 1,454,616 ppl / $5,605,055,636 carry a type
+  naming a non-fund and it witnesses nothing** — `Government securities` 578
+  rows is real government-bond FUNDS (`American Funds U.S. Government
+  Securities Fund R6`), `Corporate debt` 137 rows is real corporate-bond funds,
+  and `Company stock` **98 rows / 466,449 ppl / $4,783,571,417 is dominated by
+  Vanguard Target Retirement funds**, mis-filed outright. The type cell names
+  the ASSET CLASS, not the vehicle, and here it is also simply wrong.
+  **TWO CORRECTIONS TO THE 21:5xZ SIZING:** `Eagle Financial Services, Inc.` is
+  **NOT** a third company priced as a Carillon fund — in the store it is the
+  ISSUER CELL of 160+ genuine `Carillon Eagle` rows (Carillon's own legal
+  entity), and the one row where it is the NAME is the bare-HOUSE class; and the
+  Wells Fargo family is larger than the recorded 14 rows / ~59,000 ppl.
+  **DO NOT REBUILD A VOCABULARY FOR THIS.** `Eagle Materials` and `Allspring
+  Precious Metals` differ only in that `Materials` is a sector word and
+  `Precious Metals` a fund strategy, so ***the complement of a vocabulary
+  measures the complement of that vocabulary***; and a corporate-legal-form
+  conjunct re-opens the `Inc`←`Income` trap INSIDE the arm (`Allspring Ultra ST
+  Inc A`), needing a comma-position rule on top — three vocabularies for 38
+  rows. **WHAT WOULD SETTLE IT IS A REGISTRY WITNESS AND IT IS AN ASSET, NOT AN
+  ARM:** `sec-funds.json` registers `Allspring Precious Metals Fund` and
+  registers nothing for `Eagle Materials, Inc.`, but the browser must never
+  download the 29,406-row index, so it needs a generated build-time table in
+  `sec-tickers.js`'s shape carrying a per-`(issuer, nameRaw)` "the registry
+  attests a fund" bit, consulted by all eleven bare-brand entries. A new asset
+  every visitor downloads: **owner's call, sized here and not built.**
+  `docs/accuracy-log.md` 2026-10-11 (21:5xZ) and (23:5xZ).
 - **REFUTED 2026-10-11 21:4xZ, DO NOT REBUILD IT — a LEADING HOUSE with a
   second house's fund underneath it, where the prefix turns out to be INERT.**
   The O'Connell Companies (334 ppl) prefixes all 26 rows with `T. Rowe Price

@@ -7,6 +7,185 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-11 (23:5xZ) — THE BARE-BRAND FEE PATTERN IS A REAL DEFECT AT 38 ROWS / 373,602 READERS AND THE PRODUCT-TOKEN REQUIREMENT THAT WAS QUEUED FOR IT IS REFUTED: measured through both copies of `renderRow`, it withdraws 27 REAL FUNDS' fees and ADDS 50 fee claims, because narrowing a lookup-table entry defeats `issuerPricedER`'s "the issuer must not supply the answer by itself" guard one level up. The filer's own TYPE cell cannot witness it either — `Company stock` is dominated by Vanguard target-date funds. NOTHING SHIPPED
+
+### What was wrong, and it stands
+
+`fund-er.js:484`'s `[/eagle|carillon/i, 0.75]` publishes an expense ratio of
+**0.75 on $8,172,691 to 140,681 readers** for `Eagle Materials, Inc., 33,120
+shares` — a public company's own common stock, which has no expense ratio at
+all — and `fund-er.js:483`'s `[/wells fargo|allspring/i, 0.45]` does the same
+for the bank's own shares, its own bonds, its own CDs, two commercial-mortgage
+rows and, through the bare token `eagle`, **two rows of GOLD BULLION**
+(`1 oz U.S. Gold Eagles`, `1/10th oz U.S. Gold Eagle`, $458,000).
+
+### The sweep the 21:5xZ entry prescribed, done
+
+The instrument is the FEE TABLE'S OWN PATTERNS and not a sweep of the data —
+that entry refuted a legal-suffix screen over the corpus at ~95% contamination,
+because this corpus truncates `Income` -> `Inc` and `Corporate` -> `Corp`.
+
+`FUND_ER` holds **159 entries**, of which **65 have at least one FIXED-PHRASE
+branch** (79 phrases: a literal run with no regex machinery in it, so the whole
+requirement is that phrase appearing anywhere). Reading those 65, **eleven
+entries / fourteen phrases are BARE BRAND** — a house name with no product word
+in it: `geode`, `american funds`, `victory sycamore`, `janus henderson`,
+`dfa |dimensional`, `galliard|putnam stable|invesco stable`, `neuberger berman`,
+`wells fargo|allspring`, `eagle|carillon`, `oakmark`, `loomis sayles`. Every
+other entry in the table carries a house AND a product word and is safe by
+construction, exactly as that entry predicted.
+
+**Those eleven price 199,019 of all 1,721,920 published+served rows** (publish
+gate = `lineups-index` bit 1, serving condition = `lib-ledger`'s
+`servedLineup`, both imported). Attribution is by **SENTINEL** rather than by
+re-implementing `fundER`'s loop: each entry's ER value was replaced with a
+unique number in a COPY of `fund-er.js`, so the loop, its order and the variant
+expansion are production's own, and a row whose published fee equals a sentinel
+was priced by that entry. Control: `non-sentinel price moved 0`.
+
+```
+american funds      37,567 rows   37,871,373 ppl      janus henderson  7,647
+dfa|dimensional     23,439        25,457,658          wells fargo|…    6,569
+victory sycamore     3,721         6,219,210          eagle|carillon   3,603
+loomis sayles        2,301         neuberger berman   1,488   oakmark  1,024
+galliard|putnam stable|invesco stable  353            geode                3
+```
+
+### The queued arm, priced end to end — and it fails
+
+A product-token requirement on the two named entries, measured through BOTH
+copies of `renderRow` over all 1,721,920 rows (candidates 13,776 by a narrowing
+that is a SUPERSET by construction — `info.er` on the comparable branch comes
+from `FUND_COMPARABLE`/`FUND_TICKER` at `fund-er.js:1795,1805` and **never**
+from `FUND_ER`, so the arm can reach the page only through `fundERRow`;
+non-candidate discharge 20,342 sampled, **0 differing**):
+
+```
+FEE LOST     166 rows / 162 acks / 759,695 ppl / $221,559,905
+fee GAINED    50        fee changed 0
+ticker lost/gained/swapped 0/0/0   asterisk 0   name 0   shownType 0
+row membership 0
+```
+
+**All 166 withdrawn rows were read.** They are three populations:
+
+| | rows | ppl | |
+|---|---|---|---|
+| **GENUINE** — the defect | **38** | **373,602** | $55,149,189 |
+| a BARE HOUSE name with no product at all | 90 | 126,651 | its own recorded class |
+| **A REAL FUND losing a plausible house fee — HARM** | **27** | ~18,900 | $22,386,832 |
+
+The genuine 38 are company common stock **24 rows / 235,754 ppl /
+$32,109,903** (Eagle Materials 1 row / 140,681 ppl, American Eagle Outfitters,
+and five spellings of `Wells Fargo & Co New` / `& CO NEW COM STK CUSIP :
+949746101` / `& Company` / `& Co.` / `& Co`), the bank's own DEBT (`SR UNSEC
+TSFR3M`, `VAR RT Due 6/2/2028`, `3.40% 02/28/2028`, `Note 3.00%`, `CO MTN BE`,
+`Corporate Bonds-Preferred Wells Fargo & Co. 7.1%,`), CDs, two
+commercial-mortgage rows, bank deposits (`WELLS FARGO BANK NA`, `Wells Fargo
+Bank, N.A.`) and the two bullion rows.
+
+The 27 harms are real registered funds whose names simply carry no word a
+vocabulary can hold: `Carillon Clarivest I` (**$8,802,647**, 2,273 ppl) and
+four more ClariVest spellings, `Allspring Gov Sec I` ×4, `Allspring Gov MMK A`,
+`Allspring Gov't Sec A`, `ALLSPRING GOV SEC ADMIN`, `Allspring Ultra ST Inc A`,
+`Allspring Spcl MidCpVal CIT MD` ($2,050,606), `Allspring SPE`, `WELLS FARGO
+ADVANTAGE SPEC MD` / `SPEC`, `Wells Fargo Advantage Governm ent` (OCR-broken),
+`Wells Fargo Blackrock SP 500 N`, `Carillon Eagle Midcagwth` ×2, `Carillon
+Eagle McGRR6`, `Carillon Eagle`, `Eagle MLP Strategy I`, `Eagle Capital
+Select`, `1ST EAGLE RSNG DIV A`.
+
+**38 genuine withdrawals against 27 wrong ones is not a trade worth making**,
+and the 90 bare-house rows belong to a class with its own entry.
+
+### THE MECHANISM FINDING, and it is the reusable half: a one-directional WITHDRAWAL in the table is BIDIRECTIONAL at the call site
+
+The arm was registered as a withdrawal needing no source. It **ADDS 50 fee
+claims**. `issuerPricedER` (`app.js:2135`) composes `issuer + " " + name` and
+then applies condition (1), `if (er === priceOf(iss)) return null` — *the
+issuer must not supply the answer by itself*. While the bare brand prices,
+`iss "Allspring"` answers 0.45 on its own and the composed fee is correctly
+suppressed. **Narrow the entry and the bare brand stops answering, so the guard
+stands down and the composed fee is published**: `iss "Allspring" · name
+"Diversified Capital Builder"` published nothing and now publishes 0.45 on
+$3,087,627, and 49 more like it.
+
+***A NARROWING IN A LOOKUP TABLE IS NOT A NARROWING AT THE CALL SITE THAT
+COMPOSES IT*** — a guard keyed on "the table answers X by itself" inverts when
+the table stops answering. Sibling of *a safety argument belongs to a
+mechanism, not to a file*: here the mechanism is one level above the file being
+changed, and no reading of `fund-er.js` could have shown it. Only the
+differential's `fee gained` column did, and a measurement that printed only
+`fee lost` would have reported a clean one-directional result.
+
+### THE ALTERNATIVE WITNESS IS REFUTED TOO, with its own numbers
+
+The obvious replacement is the FILER'S OWN TYPE CELL — no vocabulary at all,
+the shape `gicRow` already uses. Sized over the same population: **813 priced
+rows / 1,454,616 ppl / $5,605,055,636** carry a filed type naming a non-fund,
+and it witnesses nothing.
+
+- `Government securities` **578 rows / 619,152 ppl** is dominated by real
+  government-bond FUNDS — `American Funds U.S. Government Securities Fund R6`,
+  `T. Rowe Price US Treasury Long Term Index`.
+- `Corporate debt` **137 rows** likewise — `Vanguard Hi-Yield Corporate Bond
+  Fund, Admiral Shares`, `Short-Term Corporate Bond Index Fund Admiral`,
+  `American Funds Corporate Bond R6`.
+- `Company stock` **98 rows / 466,449 ppl / $4,783,571,417** is dominated by
+  **Vanguard Target Retirement 2030/2035/2040/2045 and Vanguard Mid Cap Index**
+  — mis-filed outright.
+
+So the type cell names the ASSET CLASS and not the vehicle (already recorded
+for money-market and government funds) **and on this population it is also
+simply wrong**. It cannot be the witness.
+
+### Two corrections to the 21:5xZ entry, both from reading the store
+
+- ***`Eagle Financial Services, Inc.` IS NOT A THIRD COMPANY PRICED AS A
+  CARILLON FUND.*** In the store that string is the **ISSUER CELL of 160+
+  genuine `Carillon Eagle` rows** — Carillon's own legal entity — and the
+  single row where it is the NAME (1 row / 160 ppl / $605,997) is the
+  bare-HOUSE class. The class is two companies, not three.
+- The Wells Fargo family was recorded as "14 rows / ~59,000 ppl". Measured with
+  the serving condition and the publish gate applied, the common-stock half
+  alone is **22 rows beyond the two Eagle rows**, and the whole genuine set is
+  38 rows / 373,602 ppl.
+
+### Prevention
+
+- ***A PRODUCT VOCABULARY CANNOT SEPARATE A COMPANY FROM A FUND HERE, AND THE
+  REASON IS NAMEABLE:*** `Eagle Materials` and `Allspring Precious Metals`
+  differ only in that `Materials` is a sector word and `Precious Metals` a fund
+  strategy. Nothing in the string says which. The 21:5xZ entry was right that
+  the legal-suffix screen measured itself; this entry is the other half — **the
+  complement of a vocabulary measures the complement of that vocabulary.**
+- **A corporate-legal-form CONJUNCT re-opens the recorded truncation trap
+  INSIDE the arm.** `Allspring Ultra ST Inc A` carries `Inc` (= `Income`) and
+  no product token, so any arm reading a legal form withdraws a real fund's fee
+  unless it also demands a comma position — three vocabularies for 38 rows.
+- **A LOOKAHEAD PLACED NEXT TO THE TOKEN IT QUALIFIES MEASURES ONLY THE TEXT
+  AFTER THAT TOKEN.** The first draft wrote `(?=[\s\S]*product)(?:brand)`, so
+  the lookahead scanned forward from wherever the brand matched and a product
+  word standing BEFORE it failed — `Special Mid Cap Value A (Allspring)` lost
+  its fee for exactly that reason, and the withdrawal count read 175 instead of
+  166. Anchor both as a conjunction at position 0 (`^(?=…)(?=…)`), which is the
+  shape `fund-er.js`'s own Vanguard-trust entry already uses.
+- **What would settle it is a REGISTRY witness, and it is an ASSET and not an
+  arm.** `sec-funds.json` registers `ALLSPRING FUNDS TRUST :: Allspring
+  Precious Metals Fund` and registers nothing for `Eagle Materials, Inc.`, so
+  the question "is this string a fund at all" is answerable with no vocabulary
+  — but the browser must never download the 29,406-row index, so it needs a
+  generated build-time table in the shape of `sec-tickers.js` carrying a
+  per-`(issuer, nameRaw)` "the registry attests a fund" bit, consulted by
+  `fundER`'s bare-brand entries. That is a new generated asset every visitor
+  downloads, and it would withdraw fees across all eleven bare-brand entries,
+  not two. **Owner's call; sized here, not built.**
+- Nothing shipped: no code, no asset, no store write, so **no coverage key can
+  move and there was nothing to pre-register.** `sec-tickers-stamp-test` was
+  run and is green, so the committed table still matches the committed code and
+  no regeneration is owed.
+
+---
+
 ## 2026-10-11 (20:5xZ) — WHICH SPELLING THE ATTESTATION GUARD IS ASKED OF: a registry-attested typo repair may be attested against, a SUPPLIED house may not, and two further candidate spellings are disposed of by measurement rather than by argument. 71 refused keys ship; the Admiral half stays refused and is now a tethered invariant
 
 ### What was wrong
