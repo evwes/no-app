@@ -1,4 +1,4 @@
-# wampo brief — 2026-10-11, 09:1xZ
+# wampo brief — 2026-10-11, 10:0xZ
 
 Overwritten nightly. Decision-shaped: what shipped and what it changed in
 numbers, what was found wrong, what is held, what is waiting on the owner.
@@ -55,16 +55,43 @@ The hourly verdict noticed `tkExact` had **risen** in the same hour as a ship
 that can only ever *withdraw* symbols. The rise is honest — two other ships that
 morning moved the arm it can see. The contradiction was in what it could not.
 
-## What was found wrong and is NOT fixed
+## A seventh thing shipped after this brief was first written
 
-**A filer typo with a registry-attested correction: `MEFS` for `MFS`.** 446
-published rows / 377 plans / 335,473 participants / $601,516,389 across roughly
-290 spellings, of which 171 would gain a symbol. Zero of 29,406 registry rows
-spell `MEFS`; 695 spell `MFS`, and one filer welds both spellings into a single
-cell. **In flight as of this brief** — the repair is written at the build step,
-where the vehicle rule already refuses the 92 rows of this class that are pooled
-separate accounts or collective trusts, and the regenerated table is being
-measured.
+**A filer typo with a registry-attested correction: `MEFS` for `MFS`.** 54 rows
+/ 50 filings / 34,059 participants / $63,973,731 gain a symbol, with 0 lost, 0
+swapped, 0 fees moved and no approximations shipped. Zero of 29,406 registry
+rows spell `MEFS`; 695 spell `MFS`, four of our own cells carry both spellings
+at once, and all 303 distinct stored spellings were read with no decoys. A
+seeded draw of 24 gains read 24 of 24 correct, and none is a pooled vehicle —
+the build step applies the vehicle rule per row and refuses this class's 92
+pooled rows by construction.
+
+**Two things about it matter more than the 54 rows.**
+
+*The attestation guard refuses four fifths of the class, and it is right to.*
+Before writing a symbol the build step requires the registrant's own
+distinctive vocabulary to appear in the filed name or its issuer cell — the
+check that stops `Vanguard Asset Allocation Fund` publishing a VALIC fund's
+symbol as fact. It is asked of the name **as filed**, i.e. the misspelled one.
+So the repair lands where the product name says something distinctive of its
+own (`MEFS International Diversification R6`) and is refused wherever the house
+word is the only evidence (`MEFS Value Fund R6`): 71 keys / 106 rows / 65,542
+participants, **more readers than the ship delivers**, and the row the class
+was found on is in the refused half. Correcting that means attesting against
+the repaired spelling, which changes every arm's input and needs its own
+measurement.
+
+*And the regenerated table absorbed 66 further gain rows that had nothing to do
+with this repair* — 9,224 participants, $71,696,270 — purely because the table
+was last generated before the day's five name and resolver ships. **A lookup
+table with no staleness gate does not merely risk being wrong; it silently
+withholds the gains of every change that moved a fund name**, and nothing
+reports it: the coverage metric rises, which reads as that hour's work
+delivering. The manual discipline recorded for this asset was keyed on its
+generator; it now has to cover the name cleaner and the resolver too, which is
+an argument for the periodic regeneration job over the per-push one.
+
+## What was found wrong and is NOT fixed
 
 **An Admiral share class with no house named anywhere.** Sized at 5,222 rows /
 2,790,684 participants gross — and **1,811 of them are pooled vehicles my own
@@ -108,3 +135,8 @@ one queue item, one participant-weighted draw read by hand.
 `tkExact` 37.88 → **38.99**, and `tkComparable`, the sample size, `tkShare`,
 confident, match, vesting, entries, HIGH and WARN are all unchanged — which is
 the whole safety claim for a change that only alters what gets counted.
+
+The MEFS ship's own effect on that line is pre-registered at or below the
+printed precision — 120 asserted rows out of 1,721,920 is 0.007%, so `tkExact`
+should read 38.99 or 39.00 and nothing else should move. Anything larger means
+the regeneration moved more than the row-level diff measured.
