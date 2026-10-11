@@ -112,6 +112,20 @@ jobs:
       # with the footnote gone, which is worse than either state.
       - name: Comparable-fee disclosure — the footnote and its chain are intact
         run: node scripts/fund-note-test.mjs
+      # merge-4i strips a leading unit noun ("shares Fidelity Blue Chip Growth",
+      # "sh. Mutual fund") when the REMAINDER is attested as another filing's
+      # whole name. 274 rows / 78,586 participants / $2,483,915,336, and the
+      # witness is the only thing that can tell `sh Stock Fund` from
+      # `SH Term Corp Bond IDX ADM`, where SH abbreviates SHORT -- no pattern
+      # separates those. The queue's own named hazard is the class's largest
+      # row: unguarded, Estee Lauder's $553,288,718 holding becomes "of
+      # Registered Investment Company" and Central City Concern's 91.61% row
+      # becomes "of". The test SLICES the arm and supplies its own FROZEN
+      # attestation map, so its verdicts are a property of the code and a DOL
+      # refresh cannot redden it -- the property merge-name-test lacks, whose
+      # status has flipped three times on drift alone.
+      - name: Leading-unit-noun repair — the witness and the floors still hold
+        run: node scripts/noun-repair-test.mjs
       # index.html cache-busts its assets with a query string, and that string
       # was typed by hand until 2026-10-02 -- when it was found SEVENTEEN DAYS
       # stale, with app.js and fund-er.js both changed that same day. A

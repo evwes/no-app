@@ -1078,6 +1078,113 @@ function stripIssuerLead(iss) {
     }
     return null;
   };
+  /* A LEADING UNIT NOUN IN FRONT OF THE FUND NAME — 2026-10-11 (01:4xZ).
+   *
+   * `shares Fidelity Blue Chip Growth`, `shs Target Retirement 2045 Fund Inv`,
+   * `sh. Mutual fund`, `Shares of Dodge and Cox Stock Fund`. The 4i
+   * description column holds a unit NOUN — sometimes with the count, which
+   * `cleanFiledName` strips at display, and sometimes alone — and the fund
+   * name follows it. 475 published+served rows carry one.
+   *
+   * THE QUEUE RECORDED THIS AT "~42 rows" AND IT IS 475 / 565,946 ppl /
+   * $4,006,142,284 — ELEVEN TIMES. It was named as residue from the 00:1xZ
+   * leading-COUNT ship, sized from the handful of rows that ship's own output
+   * exposed. *A class named as residue is sized by the rows that revealed it,
+   * which is a sample of one arm's output and not a measurement.*
+   *
+   * ***THE NAIVE STRIP IS REFUTED, AND IT GAINS NOTHING.*** Asked of both
+   * copies of the page's own `renderRow` over all 475: TICKER gained **0**,
+   * FEE gained **0** — the resolvers already tolerate a leading noun, so
+   * `shares Fidelity Blue Chip Growth` publishes FBGRX today. What a strip
+   * buys is legibility, and what the unguarded form costs is a fabricated
+   * name: the queue's own named hazard is the class's LARGEST member by
+   * dollars. `Shares of Registered Investment Company` ($553,288,718, 17.43%
+   * of Estee Lauder's menu) becomes `of Registered Investment Company`;
+   * `Shares of` (91.61% of Central City Concern's menu) becomes **`of`**; and
+   * `shs. l` becomes **`l`**. ***A holding named after a preposition.***
+   *
+   * READING ALL 475 SPLITS THEM THREE WAYS AND NO FIRST-TOKEN SCREEN CAN
+   * SEPARATE THE LAST TWO:
+   *   A  noun + a REAL fund name           `shares Fidelity Blue Chip Growth`
+   *   B  noun + a TYPE CAPTION             `sh. Mutual fund` (39 rows)
+   *   C  noun + a function word or debris  `Shares of`, `Share Balance`
+   * `bwOpensWithAName` — the screen the TYPE_SUFFIX arm uses for exactly this
+   * job — refuses `of` and ADMITS `Balance` and `Allocated`, so it admits part
+   * of C; and a vocabulary of the words that may not lead is the guessed kind
+   * this record has twice measured as harmful.
+   *
+   * SO THE WITNESS IS `wrapRepair`'s, VERBATIM ATTESTATION AS A WHOLE FILED
+   * NAME — and ***the witness names the stage.*** It needs the whole-store
+   * map, which `cleanFiledName` (a pure string function shipped to the
+   * browser) cannot have, so the arm belongs here beside the other six name
+   * repairs and NOT at display, where the class was first seen.
+   * THAT CHOICE IS MEASURED, NOT ASSUMED: a display-stage form fires on 279
+   * rows and a merge-stage form with an optional leading count on 274, the
+   * merge set is a strict SUBSET, there are **0 merge-only rows and 0
+   * disagreements**, so the stage costs 5 rows and no verdict. Those 5 are
+   * named residue below.
+   *
+   * THE PREPOSITION IS CONSUMED, NOT TOLERATED. Refusing a remainder that
+   * opens on `of` was the first draft and it loses genuine names — `Shares of
+   * Dodge and Cox Stock Fund`, `Shares of American Century Small Cap Growth
+   * R6`, `Shares of mutual funds`. Taking `of` into the match is what makes
+   * both halves right: the fund name survives, and `Shares of` alone leaves
+   * NOTHING and is refused.
+   *
+   * THE TWO-TOKEN FLOOR IS THE ONE HARM THE WITNESS LETS THROUGH, and it is a
+   * textbook floor failure. `Shares Allocated` -> `Allocated` is attested
+   * **5** times as another ack's whole filed name — *a floor of three lets
+   * five damaged rows license the damage* — and `Allocated` is no fund. Every
+   * genuine remainder in the firing set is two tokens or more, so the floor
+   * removes it at a named cost of one marginal improvement (`Shares Fund` ->
+   * `Fund`, which would have become correctly nameless).
+   *
+   * EVERY PART OF THE PATTERN IS LOAD-BEARING AND TWO CANDIDATES WERE DELETED
+   * FOR NOT BEING. Measured by leave-one-out over the whole store with THIS
+   * map's normalisation: the optional leading COUNT is the only reason for 197
+   * rows, the bare `sh` for 134, the trailing punctuation run for 96 and the
+   * `of` for 81 — and a second noun after a slash (`SHARES/UNITS …`) is the
+   * only reason for **0**, because at this stage those rows still carry the
+   * type caption `MUTUAL FUNDS, AT FAIR VALUE` in front of the noun and the
+   * anchor cannot reach them. It was in the first draft and is gone: *an arm
+   * real in principle and inert on the data is untested machinery*, and a
+   * branch unreachable here reads as a guard while being dead code. The five
+   * `SHARES/UNITS` rows are named residue below.
+   *
+   * THE ATTESTATION FLOOR IS WHAT CATCHES THE ONE HAZARD I PREDICTED AND
+   * COULD NOT SCREEN FOR. `sh` is 134 rows and cannot be dropped, and it is
+   * also an abbreviation of SHORT: `SH Term Corp Bond IDX ADM` is a
+   * short-term bond fund, and stripping its first two letters publishes `Term
+   * Corp Bond IDX ADM`. No pattern separates that from `sh Stock Fund`. The
+   * witness does, because nobody files `Term Corp Bond IDX ADM` as a whole
+   * name — it is one of 159 rows the floor refuses, beside `in trust`,
+   * `collective fund` and `an investment Company si`. Sensitivity: floor 1
+   * admits 29 more and floor 5 costs 4, so the floor is not balanced on a
+   * knife edge.
+   *
+   * Asked LAST of a name no arm above touched, and measured disjoint rather
+   * than assumed. */
+  const NOUN_FLOOR = 3;
+  const LEAD_UNIT_NOUN = /^(?:(?:\d{1,3}(?:,\d{3})+|\d{5,})(?:\.\d+)?\s+)?(?:shares?|shs|units?|sh)\.?\b[\s.,:;)-]*(?:of\s+)?/i;
+  const nounRepair = (name) => {
+    const s = String(name || "").trim();
+    const m = s.match(LEAD_UNIT_NOUN);
+    if (!m || !m[0]) return null;
+    const rest = s.slice(m[0].length).trim();
+    if (!rest || rest === s) return null;
+    /* the ONE harm the attestation witness admits — see the floor note above.
+     * A three-letter test stood here too and was DELETED for being
+     * UNREACHABLE: measured by dropping BOTH, it admits exactly what dropping
+     * this floor alone admits, so it could never be the only protection. The
+     * invariant is asserted over the whole store in `noun-repair-test`
+     * instead, which is what `wrapRepair` does with its own dead condition. */
+    if (rest.split(/\s+/).length < 2) return null;
+    /* the remainder must be a name some OTHER filing states on its own. `rest`
+     * is never this row's own stored name (that one carries the noun), so no
+     * self-attestation is possible and no ratio is needed. */
+    if ((whole.get(nk(rest)) || 0) < NOUN_FLOOR) return null;
+    return rest;
+  };
   /* A BROKEN FONT SHIFTED A RUN OF THE NAME BY +29 — 2026-10-01 (15:4xZ).
    *
    * The PDF's cmap is offset, so every character of a run arrives 29 code
@@ -1492,9 +1599,9 @@ function stripIssuerLead(iss) {
     if (isGenericTypeName(head) || hasNoFundIdentity(head)) return null;   // and it must name a fund
     return head;
   };
-  let weld = 0, caps = 0, rot = 0, ciph = 0, bang = 0, iweld = 0, vrep = 0, srep = 0, wrap = 0;
+  let weld = 0, caps = 0, rot = 0, ciph = 0, bang = 0, iweld = 0, vrep = 0, srep = 0, wrap = 0, noun = 0;
   const weldAcks = new Set(), capsAcks = new Set(), rotAcks = new Set(), ciphAcks = new Set(), bangAcks = new Set();
-  const wrapAcks = new Set();
+  const wrapAcks = new Set(), nounAcks = new Set();
   const iweldAcks = new Set(), vrepAcks = new Set(), srepAcks = new Set();
   for (let i = 0; i < SHARDS; i++)
     for (const [ack, e] of Object.entries(buckets[i])) {
@@ -1544,6 +1651,15 @@ function stripIssuerLead(iss) {
          * repairs, 0 are claimed by any of them. */
         const wrep = wrapRepair(f.name);
         if (wrep) { f.name = wrep; wrap++; wrapAcks.add(ack); continue; }
+        /* the leading unit noun, asked after every arm above because it is the
+         * only one that removes LEADING FURNITURE rather than repairing the
+         * name's own characters: the arms above all need the damaged form
+         * attested or unattested as words, and a leading `shares ` run is
+         * plain ASCII that leaves their seams, caps runs and duplications
+         * exactly where they were. Measured disjoint rather than assumed — of
+         * the rows this repairs, 0 are claimed by any arm above it. */
+        const nrep = nounRepair(f.name);
+        if (nrep) { f.name = nrep; noun++; nounAcks.add(ack); continue; }
         /* asked LAST and only of a name no arm above touched. The three above
          * all require the damaged form to be attested or unattested as ASCII
          * words; a ciphered run contains a control character, which `whole`
@@ -1569,6 +1685,7 @@ function stripIssuerLead(iss) {
   if (caps) console.log(`all-caps lost-space repair: ${caps} rows across ${capsAcks.size} plans`);
   if (rot) console.log(`class-rotation repair: ${rot} rows across ${rotAcks.size} plans`);
   if (wrap) console.log(`self-wrapping-duplication repair: ${wrap} rows across ${wrapAcks.size} plans`);
+  if (noun) console.log(`leading-unit-noun repair: ${noun} rows across ${nounAcks.size} plans`);
   if (ciph) console.log(`cipher-run repair: ${ciph} rows across ${ciphAcks.size} plans`);
   if (bang) console.log(`ocr-bang repair: ${bang} rows across ${bangAcks.size} plans`);
 }

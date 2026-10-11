@@ -53559,3 +53559,152 @@ or the SEC registry, where `fund-facts` lives. The `Cash`/`Fidelity`/`CREF`
 bare-house half is the recorded PARSER-side item, where replacing the identity
 column's own text is a claim rather than a repair. Neither is this cycle's
 work, and both are now sized rather than guessed.
+
+## 2026-10-11 (01:4xZ) — THE LEADING UNIT NOUN: THE QUEUE SIZED IT AT ~42 ROWS AND IT IS 475, THE NAIVE STRIP GAINS NOTHING AND PUBLISHES A PREPOSITION, AND THE WITNESS NAMED THE STAGE
+
+**SHIPPED as `nounRepair` in `merge-4i.mjs`: 274 rows / 67 acks / 78,586 ppl /
+$2,483,915,336, every one published AND served.** Published TICKER gained
+**11** / lost 0 / swapped 0, FEE gained/lost/changed **0**, asterisk **0**,
+`shownType` moved **19**, row-count mismatches **0**; `lineups-status.json`,
+`lineups-index.json` and `plans-index.json` byte-IDENTICAL and the index bits
+differing on **0**; `confident` 60,182 unchanged, CONFIDENCE DIFF +0/−0,
+degraded swaps 0; HIGH back at the baseline **4** and WARN **556** unchanged.
+7 crawlable pages, all read. `PARSER_VERSION` stays **203** — a merge-side
+repair like its six siblings, so no bump and no re-parse.
+
+**THE QUEUE RECORDED THIS CLASS AT "~42 rows" AND IT IS 475 rows / 163 acks /
+565,946 ppl / $4,006,142,284 — ELEVEN TIMES.** It was named as residue by this
+session's own 00:1xZ leading-COUNT ship, and sized from the handful of rows
+that ship's output happened to expose. ***A class named as residue is sized by
+the rows that revealed it, which is a sample of one arm's output and not a
+measurement.***
+
+***THE NAIVE STRIP IS REFUTED AND IT GAINS NOTHING.*** Asked of both copies of
+the page's own `renderRow` over all 475: **TICKER gained 0, FEE gained 0** —
+the resolvers already tolerate a leading noun, so `shares Fidelity Blue Chip
+Growth` publishes FBGRX today. What an unguarded strip costs is a fabricated
+name, and ***the queue's own named hazard is the class's LARGEST member by
+dollars***: `Shares of Registered Investment Company` ($553,288,718, 17.43% of
+Estee Lauder's menu) becomes `of Registered Investment Company`, `Shares of`
+(91.61% of Central City Concern's menu) becomes **`of`**, and `shs. l` becomes
+**`l`**. *A holding named after a preposition.*
+
+**READING ALL 475 SPLITS THEM THREE WAYS AND NO FIRST-TOKEN SCREEN SEPARATES
+THE LAST TWO:** (A) noun + a real fund name; (B) noun + a TYPE CAPTION
+(`sh. Mutual fund` ×39, `sh. Registered investment company` ×36); (C) noun + a
+function word or debris. `bwOpensWithAName` — the screen the shipped
+`TYPE_SUFFIX` arm uses for exactly this job — refuses `of` and **ADMITS
+`Balance` and `Allocated`**, so it admits part of C.
+
+***SO THE WITNESS IS `wrapRepair`'s — VERBATIM ATTESTATION AS A WHOLE FILED
+NAME — AND THE WITNESS NAMED THE STAGE.*** It needs the whole-store map, which
+`cleanFiledName` cannot have, so the arm belongs in `merge-4i` and not at
+display where the class was first seen. **That was MEASURED and not assumed,
+and display is a strict SUPERSET:** a display-stage form fires on 279 rows, the
+merge-stage form with an optional leading count on 274, **0 merge-only rows and
+0 disagreements**, so the stage costs 5 rows and no verdict. Fifth instance of
+*a queued prescription being wrong about WHERE rather than about WHAT*, and the
+first where the right stage was the LESS complete one.
+
+**THE PREPOSITION MUST BE CONSUMED, NOT TOLERATED.** Refusing an `of`-leading
+remainder was the first draft and it loses genuine names — `Shares of Dodge and
+Cox Stock Fund` ($57,057,583), `Shares of American Century Small Cap Growth
+R6`, `Shares of mutual funds`. Taking `of` into the match makes both halves
+right at once: the fund name survives, and `Shares of` alone leaves NOTHING and
+is refused. It is the only reason for 81 rows.
+
+**THE ATTESTATION FLOOR CATCHES A HAZARD NO PATTERN CAN, and I predicted it
+before measuring it.** The bare two-letter `sh` is the only reason for **134**
+rows and cannot be dropped — and `sh` is also an abbreviation of **SHORT**:
+`SH Term Corp Bond IDX ADM` is a short-term bond fund, and stripping its first
+two letters publishes `Term Corp Bond IDX ADM`. No pattern tells that from
+`sh Stock Fund`. The witness does, because nobody files `Term Corp Bond IDX
+ADM` as a whole name — one of **159** rows the floor refuses, beside `in
+trust`, `collective fund` and `an investment Company si`. Sensitivity measured
+rather than asserted: floor 1 admits 29 more, floor 5 costs 4.
+
+**THE TWO-TOKEN FLOOR IS A TEXTBOOK FLOOR FAILURE, CAUGHT.** `Shares
+Allocated` -> `Allocated` is attested **5 times** as another filing's whole
+name — *a floor of three lets five damaged rows license the damage* — and
+`Allocated` is no fund. Every genuine remainder is two tokens or more, so the
+floor removes it at a NAMED cost of one marginal improvement (`Shares Fund` ->
+`Fund`).
+
+**TWO CONDITIONS I WROTE WERE DELETED AS DEAD CODE, each by its own
+measurement.** A second noun after a slash (`SHARES/UNITS …`) is the only
+reason for **0** rows at this stage, because those rows still carry the type
+caption `MUTUAL FUNDS, AT FAIR VALUE` in front of the noun and the anchor
+cannot reach them. And a three-letter test read necessary-for-0 beside the
+two-token floor — ***priced by dropping BOTH, which is the only honest way***,
+it admits exactly what dropping the floor alone admits, so it could never be
+the only protection. Third and fourth instances of *a condition unreachable by
+construction is worse than an inert one: it reads as a guard and is dead code.*
+Both claims are now ASSERTED over the store in `noun-repair-test` instead,
+which is what `wrapRepair` does with its own deleted condition.
+
+**A STORED FIELD IS NOT A PUBLISHED ONE, for the seventh time — and here the
+direction is the generous one.** The repair makes the SEC matcher reachable, so
+**stored `stk` gains 40 symbols, lost 0, swapped 0**, while published TICKER
+gains only **11**: the other 29 were already resolving through `lookupTicker`'s
+other arms. All 40 were read with their TYPE CELL printed beside them — *a
+symbol can be right for the fund and wrong for the vehicle* — and every one is
+typed `Mutual fund` or blank, which `secTypeAdmits` already guarantees. The
+assertion is licensed by the filing: the ISSUER cell names the fund with its
+share class stated (`Fidelity 500 Index Fund` -> FXAIX, `JPMorgan Large Cap
+Growth Fund Class R6` -> JLGMX, `Vanguard Value Index Fund Admiral Shares` ->
+VVIAX), and the two whose identity comes from the NAME alone are
+`13,116 shares of Vanguard Star Fund` -> VGSTX and `299,771 shs American
+Balanced Fund R6` -> RLBGX.
+
+**ALL 19 shownType MOVES ARE ONE DIRECTION AND ALL ARE TRUE:** a filed VEHICLE
+type (`Mutual fund` ×18, `Collective trust` ×1) replaced by *"the filing names
+no specific fund"*, on rows carrying **no ticker and no fee** — so the
+qualification displaces nothing. The noun had been defeating the nameless
+predicate in front of a bare caption.
+
+**ALL 99 DISTINCT DESTINATIONS WERE READ, and the check that they are names is
+mechanical as well as read: 0 are a single token and 0 open on a function
+word.**
+
+**THE PAGE SUPPLIED ITS OWN CONTROL, in both directions, and named the
+residue.** On Wesbanco's page `Shares Jp Morgan Large Cap Growth R6` and
+`Shares Vanguard Federal Money Market Fund` strip while **seven `Shares T. Rowe
+Price Target Retirement 20XX I Class` rows and `Shares Ishares S&P 500 Stock
+Fund Class K` are left exactly as filed**, because their remainders are not
+attested three times as a whole name; Telapex's page strips nine of eleven
+`Shs …` rows for the same reason. ***That within-menu inconsistency is the
+honest cost of the witness*** — every row is individually correct and no claim
+differs between them, where the alternative publishes `of` and `Term Corp Bond
+IDX ADM`. Named, not hidden.
+
+**`audit-generic-names` MOVES 252 -> 257 AND IS REGISTERED HERE RATHER THAN
+DISCOVERED LATER.** `audit-data` reads the STORED name through
+`cleanFiledName`, and turning `sh. Mutual fund` into the bare caption `Mutual
+fund` is exactly the shape that counter measures. It is a STANDING HIGH already
+above its 230 escalation threshold, so +5 changes no status, and the direction
+is honest: five more rows now read as the captions they are. HIGH stays 4.
+
+**MEASURED BY A DIFFERENTIAL RUN, not a snapshot** — two full merges from the
+one committed baseline with only the call site varying (`const nrep =
+nounRepair(f.name)` against `const nrep = null`), because *a standalone merge
+is not its own baseline*. The real merge printed `leading-unit-noun repair: 274
+rows across 67 plans`, the same 274 the sizing predicted, **which is also the
+DISJOINTNESS control**: the count would not agree if any of the six arms above
+it in the `continue` chain had claimed a row.
+
+**`scripts/noun-repair-test.mjs` IS CI-SAFE BY CONSTRUCTION** — it slices the
+arm from the source and supplies its OWN FROZEN attestation map, so it never
+reads the store and a DOL refresh cannot redden it. That is the property
+`merge-name-test` lacks, whose status has flipped three times on drift alone.
+7 must-fire, 10 must-not-fire, 2 single-protection mutations that each break by
+name, and 3 invariants (the two deleted conditions' claims, plus idempotence —
+the arm must not chain on its own output and eat a real `Share`/`Unit` word one
+token per merge). Wired into `site-test`.
+
+**STILL OPEN from it:** the 5 display-only rows where a type caption stands in
+front of the noun at merge stage (`MUTUAL FUNDS, AT FAIR VALUE SHARES/UNITS AB
+Large Cap Growth Fund Class A`, $37,147,585) — reaching them means letting the
+anchor skip a caption, which is a different family; and 201 of the 475 the
+witness refuses, which are overwhelmingly the `Shares of <caption>` family
+(correctly left alone), `Share Balance`, the ESOP `Shares (ESOP - Allocated)`
+rows and `Unit investment trusts`.

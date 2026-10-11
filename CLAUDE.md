@@ -1590,6 +1590,71 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **SHIPPED 2026-10-11 01:4xZ as `nounRepair` IN `merge-4i.mjs` — A LEADING UNIT
+  NOUN IN FRONT OF THE FUND NAME: 274 rows / 67 acks / 78,586 ppl /
+  $2,483,915,336**, published TICKER gained **11** / lost 0 / swapped 0, FEE
+  gained/lost/changed **0**, asterisk 0, `shownType` **19**, row membership 0;
+  `lineups-status`/`lineups-index`/`plans-index` byte-IDENTICAL with index bits
+  differing on 0, `confident` 60,182 unchanged, CONFIDENCE DIFF +0/−0, HIGH back
+  at the baseline **4**, WARN 556; 7 crawlable pages all read.
+  `PARSER_VERSION` stays 203 — a merge-side repair like its six siblings.
+  **THE QUEUE SIZED THIS AT "~42 rows" AND IT IS 475 / 163 acks / 565,946 ppl /
+  $4,006,142,284 — ELEVEN TIMES.** It was named as residue by the 00:1xZ
+  leading-COUNT ship and sized from the rows that ship's own output exposed.
+  ***A class named as residue is sized by the rows that revealed it, which is a
+  sample of one arm's output and not a measurement.***
+  ***THE NAIVE STRIP GAINS NOTHING AND THE QUEUE'S OWN NAMED HAZARD IS THE
+  CLASS'S LARGEST MEMBER BY DOLLARS.*** Over all 475 through both copies of
+  `renderRow`: TICKER gained **0**, FEE gained **0** — the resolvers already
+  tolerate a leading noun. Unguarded, `Shares of Registered Investment Company`
+  ($553,288,718, 17.43% of Estee Lauder's menu) becomes `of Registered
+  Investment Company`, `Shares of` (91.61% of Central City Concern's) becomes
+  **`of`** and `shs. l` becomes **`l`**.
+  **THE WITNESS IS `wrapRepair`'s AND IT NAMED THE STAGE — MEASURED, with
+  display a strict SUPERSET:** display fires on 279 rows, merge on 274, **0
+  merge-only and 0 disagreements**, so the stage costs 5 rows and no verdict.
+  Fifth instance of *a prescription wrong about WHERE rather than WHAT*, and the
+  first where the right stage was the LESS complete one.
+  **THE FLOOR CATCHES A HAZARD NO PATTERN CAN:** bare `sh` is the only reason
+  for 134 rows AND abbreviates **SHORT** — `SH Term Corp Bond IDX ADM` would
+  publish `Term Corp Bond IDX ADM`, one of **159** rows the floor refuses
+  (`in trust`, `collective fund`, `an investment Company si`). The `of` must be
+  CONSUMED not tolerated (81 rows; refusing an `of`-remainder loses `Shares of
+  Dodge and Cox Stock Fund`). And `Shares Allocated` -> `Allocated` is attested
+  **5 times** and is no fund — *a floor of three lets five damaged rows license
+  the damage* — refused by a two-token floor whose named cost is one row.
+  **TWO CONDITIONS I WROTE WERE DELETED AS DEAD CODE:** a `/&` second noun is
+  the only reason for **0** rows at this stage, and a three-letter test is
+  UNREACHABLE beside the two-token floor (***priced by dropping BOTH, the only
+  honest way***). Third and fourth instances of *a condition unreachable by
+  construction is worse than an inert one.* Both claims are asserted over the
+  store in the test instead.
+  **STORED `stk` GAINS 40 WHERE PUBLISHED TICKER GAINS 11** — the repair makes
+  the SEC matcher reachable; all 40 read WITH THEIR TYPE CELL, every one typed
+  `Mutual fund` or blank, and the assertion is licensed by an ISSUER cell that
+  states the share class (`Fidelity 500 Index Fund` -> FXAIX). All 19 `shownType`
+  moves are a filed VEHICLE type replaced by *"names no specific fund"* on rows
+  with no ticker and no fee. All 99 distinct destinations read; 0 are one token
+  and 0 open on a function word.
+  **THE PAGE NAMED THE RESIDUE: within one menu some rows strip and some do
+  not.** Wesbanco keeps seven `Shares T. Rowe Price Target Retirement 20XX I
+  Class` rows and `Shares Ishares S&P 500 Stock Fund Class K` because those
+  remainders are not attested; Telapex strips nine of eleven. *That is the
+  honest cost of the witness* — every row individually correct, no claim
+  differing — against an alternative that publishes `of`.
+  **`audit-generic-names` 252 -> 257, REGISTERED HERE:** `audit-data` reads the
+  STORED name, and a bare caption is what that counter measures. It is a
+  STANDING HIGH already past 230, so no status changes.
+  Measured by a DIFFERENTIAL RUN (two merges, one committed baseline, only the
+  call site varying), whose 274 is also the DISJOINTNESS control.
+  `scripts/noun-repair-test.mjs` is CI-safe by construction (sliced arm + FROZEN
+  map), 7 must-fire / 10 must-not-fire / 2 mutations breaking by name / 3
+  invariants including idempotence; in `site-test`.
+  **STILL OPEN:** the 5 display-only rows where a type caption stands in front
+  of the noun at merge stage (`MUTUAL FUNDS, AT FAIR VALUE SHARES/UNITS AB Large
+  Cap Growth Fund Class A`, $37,147,585) — a different family; and the 201 the
+  witness refuses (`Shares of <caption>`, `Share Balance`, the ESOP rows,
+  `Unit investment trusts`). `docs/accuracy-log.md` 2026-10-11 (01:4xZ).
 - **THE ONE-TOKEN SPLIT, WORKED 2026-10-11 00:4xZ — RE-DERIVED AT 5,216 rows /
   2,964 acks / 7,261,682 ppl / $38,715,423,099 unqualified (681 of 5,897 are
   already qualified), AND BOTH OF MY DISCRIMINATORS ARE NOW REFUTED.** The
