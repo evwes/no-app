@@ -154,6 +154,79 @@ full re-parse: 123 plans publishing `Employer-money vesting: Immediate` over a
 clause that only states when vesting accelerates, and IBM's wrapped description
 cell where the real fund name was cut and only the continuation kept.
 
+## Afternoon: two screens of mine refuted, and a band missed on purpose
+
+**A registration missed its band by one hundredth, and that is the cycle
+working.** The Admiral ship was pre-registered at `tkExact` 39.00 → 39.02 with
+the clause *"anything above 39.03 means the table moved more than the row-level
+diff measured"*. Run #638 delivered **39.04**, with every other key on the
+35-key line byte-identical. Attributed in half an hour: 38 sampled rows carry a
+key the ship added, one is refused by the vehicle gate, **37 newly resolve =
+0.042 points**, which is the observed move entire — and all 37 were read, every
+one a genuine Admiral row (`Wellesley Income Fund Admiral` → VWIAX on
+$559,674,579). **Nothing is wrong with the ship.**
+
+The cause is one of this project's own rules running backwards. The coverage
+metric samples confident filings and applies **neither** the serving condition
+**nor** the publish gate, while the registered figure was reader-facing — so
+the arm lands on 38 sampled rows where the reader-facing arithmetic predicts 21.
+We have recorded five times that a measurement of what a page *publishes* must
+apply every condition the page applies; the inverse was never written down:
+**a prediction of what a metric will report must apply exactly the conditions
+the metric applies, no more.** Keeping the band tight enough to be wrong is
+what forced the attribution instead of a shrug.
+
+**A screen of mine was refuted three times by its own output, each time on an
+abbreviation.** Chasing a plan that publishes `Rates of` as a holding, a
+trailing-function-word screen read 33,927 rows / 17.2M participants — and
+**32,164 of them, 94.8%, were the trailing `a`**, which is a **share class**
+(`… Series Fund - Class A`), with 6,765 publishing a ticker. Our own notes
+record that exact trap and I wrote the vocabulary anyway. With the article
+removed, the next two arms are the same error: `IN` is Institutional and `AS`
+is Asset, and **355 of that arm's 538 rows publish a ticker**. A
+trailing-token vocabulary over this corpus measures abbreviations, not grammar
+— and those 355 tickers were invisible in a count and unmissable in a list.
+
+What survived is real and is **queued, not shipped**: the participant-loan
+note's own sentence published as a fund name, **245 rows / 330,915
+participants / $295M**, with the guards already catching 425 of the 670 the
+shape reaches. Adt Llc publishes `with loan maturity dates that range from
+2025 through 2050` at $35.9M. Reading all 231 distinct names split it three
+ways, and **two of the three must be spared**: rows that name a real stable-value
+vehicle with its rate appended (nine publishing the fabricated 0.35, so the
+remedy there is a trim), and ten real corporate bonds — **all in one plan at
+56,540 readers** — correctly named by issuer.
+
+**And its obvious remedy is refuted by a pin already in our own code.**
+Widening the sentence predicate's function-word list reaches 67 rows, and the
+verb `is` carries all 67. `IS` is Institutional Shares: it would publish *"the
+filing names no specific fund"* over a real fund held by **86,817 readers at
+$41.3M**, over ~30 real brokerage equities whose names end in the custodian's
+own *"NFS LLC is a market maker"* disclosure, and over one row that publishes a
+correct ticker. The file already pins that case must-not-fire, saying *"the
+function word is the only protection"*. So grepping the fixtures for a queued
+prescription's motivating **string** is not enough — grep them for the
+**condition** the change touches.
+
+## What the draw found
+
+**A new class worth 1.76 million readers, handed to the agent this hour.** A
+448-participant plan publishes eight `AMERFUNDS 20XX TARG DATERET R6` rows
+with no ticker and no fee — **65.6% of its whole menu** — while one row away
+`AMERICAN FUNDS 2055 TARGET R6` resolves correctly. Store-wide: **7,747 rows /
+1,931 filings / 1,763,677 participants / $8.7 billion** publish no symbol,
+against a control where the house spelled in full resolves 42.5% of 153,551
+rows and the contracted spellings resolve **1.3%**. One decoy is already named
+by reading — a wrapper platform's own product, which our notes pin as correct
+as filed.
+
+**And the largest single instance yet of the fabricated stable-value fee**,
+which is the owner's call: Caesars Entertainment (45,125 participants)
+publishes `Guaranteed Long-Term` at **0.35 on $277,699,196, 14.7% of its
+menu**. The control is the other 24 rows of the same menu — every one typed a
+collective trust or separate account, every one correctly unpriced. The only
+thing that differs is that the largest row's type cell is blank.
+
 ## What continues today
 
 The hourly cycle runs around the clock: reconcile, verdict or dispatch, mirror,
