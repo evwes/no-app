@@ -42,6 +42,18 @@ Both are now written down as rules: the cheap instrument is to render the row
 through both versions of the page, and to do it *before* the predicate screen
 rather than after it.
 
+**And CI caught a third thing that every local check passed.** The ship needed
+the generated SEC ticker table rebuilt — a twenty-minute job — and I re-derived
+the page's cache-buster *before* that rebuild rather than after it. The rebuild
+rewrites one line inside the table, so the stamp was stale by construction and
+`site-test` went red on it. **The cost was not the one failed check: the four
+steps after it were skipped**, so the smoke test, the map test and the stamp
+gate itself never ran and everything past that point was unverified rather than
+passing. All four have since been run and are green, and the ordering is now a
+written rule. Nothing reached a reader incorrectly — the rebuilt table's key map
+is byte-identical, so a browser serving a cached copy gets the same answers —
+but the sequence was wrong and the gate was right.
+
 **And the obvious version of the third fix was built, measured, and refused by
 reading its own output.** Adding the word `contract` to the existing caption
 vocabulary survives every count — and two of the fifteen names it newly touches
