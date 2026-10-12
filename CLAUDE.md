@@ -1864,9 +1864,47 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
-- **SIZED 2026-10-12 07:3xZ, NOT SHIPPED — A CORRECT IDENTIFICATION PUBLISHED
-  AS AN APPROXIMATION: the one-column core is 469 published+served rows / 122
-  acks / 122 plans / 869,224 ppl / $2,707,517,686, and it moves NO FEE CELL.**
+- **SHIPPED 2026-10-12 08:5xZ — A CORRECT IDENTIFICATION STOPS BEING PUBLISHED
+  AS AN APPROXIMATION: 579 published+served rows / 157 acks / 157 plans /
+  890,938 ppl / $2,858,848,864 drop an unearned asterisk, with `star` the ONLY
+  cell that moves** — ticker 0, FEE 0, name 0, shownType 0, row membership
+  identical (30,164 both sides), 21,424 sampled non-candidates differing on 0,
+  measured as a DIFFERENTIAL through BOTH copies of `renderRow` over all
+  1,721,920 rows with one renderer per `(app.js, fund-er.js)` pair. Seeded
+  uniform draw **26 of 26** with each filed TYPE printed, and the WHOLE
+  population passes both tests: **579 of 579** state `Class K` and resolve a
+  symbol the registry registers as Class K (types `Mutual fund` 475 / blank
+  104, no pooled vehicle). `PARSER_VERSION` stays 203; `sec-tickers.js`
+  regenerated because the fingerprinted slice moved — **ADDED 0 / REMOVED 0 /
+  CHANGED 0 keys**, one line differing (the stamp). Tethered in
+  `scripts/fund-er-test.mjs`, already in `site-test`: 10 must-promote
+  spellings, 10 must-stay-comparable, a REGISTRY ATTESTATION of all 13 Class K
+  symbols against `sec-funds.json` plus its converse, and 3 single-protection
+  mutations that fail if a condition stops protecting anything.
+  ***DO NOT CARRY THE SIZING'S 469 rows / 122 plans / 869,224 ppl — AND ITS
+  "one column" WAS NOT A PROPERTY OF THE FILE EDITED BUT A MEASUREMENT THAT
+  FAILED ON ITS FIRST RUN.*** Two of my own claims were refuted:
+  **(a)** the candidate screen asked `fundTickerInfo(name, type)` where
+  `lookupTicker` asks `fundTickerInfo(iss + name, type)` FIRST, so the
+  HOUSELESS spellings (`Target Retirement 2045 Fund Class K`) looked
+  unreachable and **110 rows were missed** — the recorded *with the ARGUMENT
+  the page passes* rule, met on the composition rather than the arity, and
+  missed in the direction that makes a change look safer than it is;
+  **(b)** the first differential moved **29 FEE cells, every one `0.02 ->
+  0.03` on SSSYX**, whose Class K really does cost about 0.02 — so the fix was
+  about to make 16,826 readers' fee cells WORSE while making their ticker cells
+  right. ***THE CAUSE IS ONE FLAG DECIDING TWO QUESTIONS:*** `app.js:4301`'s
+  `star ? info.er : fundERRow(f)` made `star` answer both *"is this an
+  approximation"* and *"where does the fee come from"*. Fixed by preferring the
+  resolver's own figure when it has one, **with the starred branch left
+  byte-identical** — my first draft merged the branches and would have gained a
+  pattern fee on each of the 194 `stk`-sourced comparables. Blast radius is by
+  construction: `info.er` is set only by the comparable table and every other
+  `comparable:false` path returns a bare `{tk, comparable}`, so
+  `!star && info.er != null` can arise ONLY from this arm.
+  **ORIGINAL SIZING, kept because it is what was predicted:** the one-column
+  core is 469 published+served rows / 122 acks / 122 plans / 869,224 ppl /
+  $2,707,517,686, and it moves NO FEE CELL.
   The page publishes an asterisked COMPARABLE — its label for *"a comparable
   registered fund, not the one held"* — on a symbol the registry registers as
   EXACTLY the share class the filing states. **Paychex Retirement Llc (661,036
@@ -5910,6 +5948,33 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 These outlived the versions that produced them. The accuracy log has the case.
 
+- **A FLAG THAT ENCODES TWO CLAIMS CANNOT BE CORRECTED FOR ONE OF THEM
+  (2026-10-12).** `app.js:4301` read `star ? info.er : fundERRow(f)`, so `star`
+  answered both *"is this row an approximation"* and *"where does its fee come
+  from"*. Promoting 579 correct identifications out of their asterisk therefore
+  switched 29 of them off the fund's own figure and onto a category estimate —
+  every one `0.02 -> 0.03` on SSSYX, whose Class K really does cost about 0.02,
+  so a ticker fix was silently a FEE DEGRADATION for 16,826 readers. **When a
+  change flips such a flag, enumerate every cell that reads it before measuring
+  anything.** And when splitting one, ***APPEND the new clause rather than
+  substituting***: my first draft merged the two branches and would have gained
+  a pattern-table fee on each of the 194 `stk`-sourced comparables, because *a
+  simplification that merges two branches inherits the union of their
+  populations.*
+- **AND THE ISSUER IS PART OF THE ARGUMENT (2026-10-12).** `lookupTicker` asks
+  `fundTickerInfo(iss + name, type)` BEFORE the bare name, so a candidate
+  screen that asks only the bare name under-counts — here by **110 of 579
+  rows**, because the HOUSELESS spellings (`Target Retirement 2045 Fund Class
+  K`) return null alone and resolve once the issuer is prepended. This record
+  already names the ARITY of this very function; this adds the COMPOSITION.
+  Note the direction: the omission made the change look SAFER and smaller than
+  it was, which is the half that does not announce itself.
+- **A ONE-COLUMN CLAIM IS A MEASUREMENT, NOT A PROPERTY OF THE FILE EDITED
+  (2026-10-12).** I argued a change was one-column because a `fund-er.js` arm
+  could not reach the rows whose fee would move. The differential disagreed on
+  its first run; the claim only became true after an `app.js` change that had
+  to be made for it. *Reasoning about which file a change lives in does not
+  bound which cells it moves.*
 - **A GENERATOR GATED ON "THE PAGE HAS NOTHING" CANNOT CORRECT THE PAGE
   (2026-10-12).** `gen-sec-tickers.mjs`'s own header states it: *"a key is
   emitted only where the page resolves NOTHING, so the table can never

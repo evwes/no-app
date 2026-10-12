@@ -8,6 +8,172 @@ prevention machinery is listed at the bottom.
 ---
 
 
+
+## 2026-10-12 (08:5xZ) — SHIPPED: A CORRECT IDENTIFICATION STOPS BEING PUBLISHED AS AN APPROXIMATION — 579 ROWS / 890,938 PARTICIPANTS, `star` THE ONLY CELL THAT MOVES, AND MY OWN REGISTRATION WAS REFUTED TWICE BEFORE IT SHIPPED
+
+### What shipped
+
+**579 published+served rows / 157 acks / 157 plans / 890,938 ppl /
+$2,858,848,864 stop carrying an asterisk**, measured as a DIFFERENTIAL through
+BOTH copies of `renderRow` over all 1,721,920 rows with one renderer per
+`(app.js, fund-er.js)` pair:
+
+| | |
+|---|---|
+| `star` true -> false | **579** |
+| ticker changed | **0** |
+| **fee changed** | **0** |
+| name / shownType | 0 |
+| row membership | identical, 30,164 both sides |
+| non-candidates sampled | 21,424, **differing on 0** |
+
+Paychex Retirement Llc (**661,036 ppl**) stops publishing `~SSDEX` on
+`State Street Target Retirement 2045 Fund Class K` at $170,115,724 — SSDEX
+**is** `Class K` of that series — and eleven rows of that one menu move.
+Seeded uniform draw **26 of 26 correct** with each row's filed TYPE printed,
+and **the whole population passes both tests: 579 of 579** state `Class K` AND
+resolve a symbol the registry registers as Class K. Filed types `Mutual fund`
+475 / blank 104, so no pooled vehicle is in the set.
+
+`PARSER_VERSION` stays 203. ONE SURFACE BY CONSTRUCTION: `build-seo-pages.mjs`
+has **0** references to `fundER`/`lookupTicker`/`fundTickerInfo`/`info.er`/`stk`
+and its only `expense ratio` strings are prose about admin fees, so the
+regenerate-and-diff control is INAPPLICABLE rather than skipped.
+
+### Why a promotion is defensible here, when this record calls it the unsafe direction
+
+`lookupTicker` itself says *"REFUSING A REPAIR IS THE SAFE DIRECTION"*, and
+this record measured a promotion putting 275 rows / 151,874 ppl into an
+assertion **in the wrong share class on the largest of them**. Three things
+differ:
+
+1. The witness is the registry registering that exact symbol as exactly the
+   class the filing states — the Admiral ship's own test.
+2. **app.js already records one such promotion as correct**, naming
+   `SSSYX STATE STREET EQUITY 500 INDEX FUND - CLASS K` and concluding *"the
+   SEC registers SSSYX as Class K of that fund, one of six classes, and the
+   filing states Class K."* The shipped code had reached this judgment on ONE
+   row of this very family; 578 more had the same claim and had not been given
+   it.
+3. The control is internal and was read out of the filing, not inferred:
+   eleven rows of Paychex's menu state `Class K` on a filer-typed
+   `Mutual Fund`, **two already published their Class K symbol as FACT**
+   (`… Aggregate Bond Index Fund Class K` -> SSFEX, `… Global All Cap Equity
+   ex-U.S. … Class K` -> SSGLX, which no arm carries so they fall through to
+   `sec-tickers.js`, which ships assertions only) and nine were asterisked.
+   One house, one class word, two verdicts, and the discriminator was our own
+   table.
+
+### MY REGISTRATION SAID 469 ROWS AND 0 FEE CELLS. THE DIFFERENTIAL SAID 579 AND **29**.
+
+***THE ROW COUNT WAS WRONG BECAUSE MY CANDIDATE SCREEN ASKED
+`fundTickerInfo(name, type)` WHERE `lookupTicker` ASKS `fundTickerInfo(iss + n,
+type)` FIRST.*** The houseless spellings — `Target Retirement 2045 Fund Class
+K`, `Equity 500 Index Fund - Class K` — return NULL from the bare name, and I
+concluded they were stk-sourced and *"outside any fund-er change BY
+CONSTRUCTION"*, which is exactly the comfortable reading that made the
+one-column claim look free. **With the issuer prepended they reach the arm, and
+110 of them moved.** This is the recorded rule *measure through the function
+the page calls WITH THE ARGUMENT THE PAGE PASSES*, met on an argument I had
+already been bitten by on this very function — the record's own entry for it
+names `fundTickerInfo` called with one argument where the page passes the whole
+row.
+
+***AND THE 29 FEE CELLS WERE A REAL DEGRADATION, NOT A ROUNDING: ALL 29 READ
+`0.02 -> 0.03` ON SSSYX***, whose Class K really does cost about 0.02. So the
+promotion was about to make 16,826 readers' FEE cells worse while making their
+TICKER cells right — the recorded one-ticker-two-fees defect, newly
+manufactured by my own fix.
+
+**THE CAUSE IS THAT ONE FLAG WAS DECIDING TWO QUESTIONS.** `app.js:4301` read
+
+```js
+: star ? info.er : (noPublicPrice ? null : fundERRow(f));
+```
+
+so `star` answered both *"is this an approximation"* and *"where does the fee
+come from"*. Promoting a row therefore switched its fee off the fund's own
+number and onto a category estimate. ***A flag that encodes two claims cannot
+be corrected for one of them without moving the other.***
+
+Fixed by preferring the resolver's own figure whenever it supplied one:
+
+```js
+: star ? info.er
+: info && info.er != null ? info.er
+: (noPublicPrice ? null : fundERRow(f));
+```
+
+**THE STARRED BRANCH IS LEFT BYTE-IDENTICAL ON PURPOSE, and my first draft got
+that wrong.** I initially wrote `info && info.er != null ? info.er : …` as the
+whole replacement, which also changes STARRED rows whose `info.er` is absent —
+and that population is precisely the 194 `stk`-sourced comparables, which would
+have GAINED a pattern-table fee each. *A simplification that merges two
+branches inherits the union of their populations*, so the new clause is
+appended rather than substituted.
+
+**BLAST RADIUS IS BY CONSTRUCTION, NOT BY SAMPLE:** `info.er` is set only by
+`fund-er.js`'s comparable table, and every other path returning
+`comparable:false` returns a bare `{tk, comparable}` with no `er` at all. So
+`!star && info.er != null` can arise ONLY from the arm shipped beside it — and
+the differential confirms it, 579 rows moving `star` and **0** moving the fee.
+
+### The vehicle condition, and the one it cost
+
+**`State Street S&P 500 Index Non-Lending Series Fund Class K` is a COLLECTIVE
+TRUST and the `Class K` it states is the TRUST'S OWN UNIT CLASS** — 3 rows /
+17,643 ppl / $264,712,802, Nutrien Us Llc at **11.94% of its whole menu**. A
+trust names its unit classes the way a fund names share classes, so a stated
+class word is not evidence of a REGISTERED share class until the vehicle is
+settled. **Every other instrument read clean on these rows:**
+`pooledVehicleRow` has no token to catch, the filed type cell is BLANK so the
+type half cannot fire either (the `gicRow` shape again), the registry really
+does register SSSYX as Class K, and the filing really does say Class K. Only
+reading all 57 distinct names of the class found it.
+
+**AND MY FIRST CIT PATTERN WAS ONE SPELLING SHORT, caught by a fixture rather
+than a count.** It took `Series Fund` and `non-lending` and missed
+`NL Series N` — so a synthetic decoy `SSGA S&P 500 Index NL Series N Class K`
+PROMOTED. Widened to `non-lending | \bnl\b | series (fund|<letter>) | ser
+<letter>`, **priced at 0: not one of the 579 moved rows contains `NL` or
+`Series` as a token at all**, so the width is free. *One of two spellings of a
+CIT family is worse than neither*, and the direction here is the safe one — the
+pattern only ever refuses a promotion.
+
+### Tethered in the file that already runs
+
+`scripts/fund-er-test.mjs` (already in `site-test`, with `fund-er.js` already
+in its `paths`): **10 must-promote spellings** drawn from the store,
+**10 must-stay-comparable** (no class stated, a DIFFERENT class stated, a bare
+trailing `K`, the three CIT spellings, a pooled type cell), a **registry
+attestation** of all 13 Class K symbols against `sec-funds.json` plus its
+converse (four symbols that must NOT be in the set), and **3 single-protection
+mutations** — one per condition, anchored on the line each is meant to mutate,
+each asserted to change a specific real verdict, with the suite failing if a
+mutation changes nothing. The attestation is skipped rather than failed when
+the index is absent, because this file also runs against old refs via `--src`.
+137 must-resolve / 42 must-not-resolve / 13 of 13 attested / 3 mutations /
+0 failures.
+
+### Prevention
+
+- ***A FLAG THAT ENCODES TWO CLAIMS CANNOT BE CORRECTED FOR ONE OF THEM.***
+  `star` meant both "approximation" and "fee provenance", so a ticker fix was
+  silently a fee change on 29 rows. When a change flips such a flag, enumerate
+  every cell that reads it before measuring anything — and when splitting one,
+  APPEND the new clause rather than substituting, so the old branch's
+  population is provably untouched.
+- ***AND THE ISSUER IS PART OF THE ARGUMENT.*** `lookupTicker` tries
+  `iss + name` BEFORE the bare name, so a candidate screen that asks only the
+  bare name under-counts — here by 110 rows — and, worse, under-counts in the
+  direction that makes a change look safer than it is. The recorded rule names
+  the arity of this very function; this adds the composition.
+- **A ONE-COLUMN CLAIM IS A MEASUREMENT, NOT A PROPERTY OF THE FILE EDITED.**
+  I argued the change was one-column because a `fund-er.js` arm could not reach
+  the fee-moving rows. The differential disagreed on its first run, and only
+  then did the claim become true — by an app.js change that had to be made for
+  it.
+
 ## 2026-10-12 (07:3xZ) — THE 06:07 DRAW: A CORRECT IDENTIFICATION PUBLISHED AS AN APPROXIMATION — NINE ROWS HEDGED AND TWO ASSERTED IN ONE MENU, SAME HOUSE, SAME CLASS WORD, AND MY OWN FIRST SCREEN WAS REFUTED THREE WAYS BY ITS OWN OUTPUT
 
 Seeded participant-weighted draw (`--seed 12100607`, 3 menus, `--rows 40`).
