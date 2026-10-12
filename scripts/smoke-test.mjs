@@ -962,14 +962,24 @@ try {
     "SECURITIES", "CASH/CASH EQUIVALENTS",
     "INTEREST IN CCT", "CCTs", "CORP. DEBT INSTR. - PREFERRED",
     "CORP DEBT INSTRUMENTS; ALL OTHER", "Real Estate Secs",
+    /* the WITHDRAWAL-TERMS disjunct, 2026-10-12 — reachable ONLY through it,
+     * so the pair above stays green if a regeneration loses it */
+    "Fully Benefit-Responsive Investment Contract", "Benefit Responsive",
+    "Non Benefit-Responsive Investment Contracts",
     "Real Estate Securities Fund", "US Bond Index", "OTHER ASSETS", "Employer Common Stock",
     "Total Bond", "Stable Value", "Government Bond A", "Investment Company of America",
     "Fidelity Government", "Cash Surrender Value", "General Account", "Loans",
     "Vanguard Institutional Index Plus", "Principal Real Estate Securities Fund",
     "General Motors Common Stock", "Costco Wholesale Corp", "CIT Group Inc",
     "Voya Stable Value Fund 20 CIT", "Sec Lending Collateral Fund",
+    /* the `respons` requirement is the ONLY protection for the first two
+     * (`Security Benefit` is an insurance HOUSE, `Fully Benefit` a name cut
+     * off mid-phrase); the third is a REAL holding, 655 rows / $3.19B, held
+     * by the absence of `traditional` from WD_WORD */
+    "Security Benefit", "Fully Benefit", "TIAA Traditional Benefit Responsive",
+    "Galliard Benefit Responsive Fund",
   ];
-  const SHCAP_TRUE = 17;   /* the first N must be reached; the rest must be kept */
+  const SHCAP_TRUE = 20;   /* the first N must be reached; the rest must be kept */
   const { isScheduleHCaption } = await import("./lib-disclose.mjs");
   const shCapGot = await page.evaluate((cs) => {
     if (typeof window.__wampoCaption !== "function") return null;

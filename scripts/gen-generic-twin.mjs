@@ -991,12 +991,25 @@ const capNames = ["CORPORATE STOCK - COMMON", "CORPORATE STOCKS COMMON", "Govern
   /* must stay real — each the measured SINGLE protection for one excluded token */
   "Real Estate Securities Fund", "US Bond Index", "OTHER ASSETS", "Employer Common Stock",
   "Total Bond", "Stable Value", "Government Bond A", "Investment Company of America",
-  "Fidelity Government", "Vanguard Institutional Index Plus"];
+  "Fidelity Government", "Vanguard Institutional Index Plus",
+  /* the WITHDRAWAL-TERMS disjunct, 2026-10-12 — cases that REACH BOTH ARMS of
+   * it, because a probe on one arm is silent on the other: two that the
+   * vocabulary alone cannot reach, and two that the `respons` requirement is
+   * the ONLY protection for (`Security Benefit` is an insurance HOUSE). */
+  "Fully Benefit-Responsive Investment Contract", "Benefit Responsive",
+  "Security Benefit", "Fully Benefit", "TIAA Traditional Benefit Responsive"];
 for (const n of capNames) if (ctx.__cp(n) !== isScheduleHCaption(n)) {
   bad++; console.log(`  CAPTION DRIFT ${JSON.stringify(n)} twin=${ctx.__cp(n)} lib=${isScheduleHCaption(n)}`);
 }
 if (!ctx.__cp("CORPORATE STOCK - COMMON") || ctx.__cp("Vanguard Institutional Index Plus")) {
   bad++; console.log("  CAPTION PROBE INERT — the twin reaches neither direction");
+}
+/* the SECOND arm needs its own inert check: the pair above is satisfied
+ * entirely by CAPTION_WORD, so it stays green if the withdrawal-terms disjunct
+ * is dropped from the slice altogether. These two cases are reachable ONLY
+ * through that disjunct and its `respons` requirement. */
+if (!ctx.__cp("Benefit Responsive") || ctx.__cp("Security Benefit")) {
+  bad++; console.log("  WITHDRAWAL-CAPTION PROBE INERT — the twin is missing that disjunct or its house refusal");
 }
 /* v196: the two twins a regeneration had deleted now carry drift checks of
  * their own, with cases that REACH both arms of each rule. Without these the

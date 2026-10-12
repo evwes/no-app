@@ -3051,8 +3051,82 @@ const CAPTION_SEP = "[\\s\\-\\u2010-\\u2015\\/,.:;()&*]+";
  * wrong — the positive fixtures below are what caught it. */
 const SCHEDULE_H_CAPTION = new RegExp("^(?:" + CAPTION_SEP + ")?" + CAPTION_WORD
   + "(?:" + CAPTION_SEP + CAPTION_WORD + ")*(?:" + CAPTION_SEP + ")?$", "i");
+/* THE WITHDRAWAL-TERMS CAPTION — a SECOND disjunct rather than four more
+ * tokens in the vocabulary above, and the reason is a measured false positive.
+ *
+ * Schedule H splits a stable-value holding by whether participant-initiated
+ * withdrawals happen at contract value — "fully benefit-responsive" versus not
+ * — and a filer who puts that split in the DESCRIPTION column leaves a row
+ * whose whole published name is the accounting category: `Fully
+ * Benefit-Responsive Investment Contract`, `Benefit Responsive`,
+ * `Non-benefit responsive contract`. It is a category, not an option.
+ *
+ * ***WHY NOT `|fully|benefit|responsive|contract|contracts` IN CAPTION_WORD.***
+ * That widening was built and measured first: all five tokens come back
+ * NECESSARY by leave-one-out (297 / 345 / 339 / 320 / 30 rows), it newly
+ * reaches 416 rows / 844,976 participants, and reading all 99 newly reached
+ * names found a row it must not touch — **`Security Benefit`, 4 rows /
+ * $6,876,337, which is an insurance HOUSE.** It is reached because `security`
+ * is already in that vocabulary as a Schedule H caption word, so adding
+ * `benefit` composes two innocent tokens into a real firm's name. The
+ * vocabulary above is a WHOLE-STRING match over a closed set, so every token
+ * added to it multiplies with every token already there — and this record
+ * already pins `Fidelity Government` as a must-KEEP where the house token is
+ * the only protection. A dedicated disjunct cannot compose with CAPTION_WORD
+ * at all, which is the whole point of writing it as one.
+ *
+ * `respons` IS REQUIRED, and that is what refuses the house: `Security
+ * Benefit` carries no form of the word. It also refuses `Fully Benefit`
+ * (2 rows / $78,428,598), a name cut off mid-phrase — correctly, because this
+ * record's position on a truncated name is RECONSTRUCTION and never
+ * suppression: "the filing names no specific fund" is false of a filing whose
+ * name we lost. */
+const WD_WORD = "(?:fully|full|non|nonfully|benefit|benefits|responsive|responsiveness"
+  + "|investment|investments|contract|contracts|value|total|net|at|in|of|and|or|the|a|s)";
+const WITHDRAWAL_CAPTION = new RegExp("^(?:" + CAPTION_SEP + ")?" + WD_WORD
+  + "(?:" + CAPTION_SEP + WD_WORD + ")*(?:" + CAPTION_SEP + ")?$", "i");
+export function isWithdrawalTermsCaption(name) {
+  const s = String(name == null ? "" : name);
+  if (!/respons/i.test(s)) return false;          /* the house refusal */
+  return WITHDRAWAL_CAPTION.test(s);
+}
 export function isScheduleHCaption(name) {
-  return SCHEDULE_H_CAPTION.test(String(name == null ? "" : name));
+  return SCHEDULE_H_CAPTION.test(String(name == null ? "" : name))
+    || isWithdrawalTermsCaption(name);
+}
+/* Asserted at import, both directions. The must-SEE cases are real filed
+ * strings with their measured weight, because an arm that is BROKEN and an arm
+ * that is INERT report the same zero. The must-KEEP cases are each a measured
+ * SINGLE-PROTECTION case: `Security Benefit` and `Fully Benefit` are held by
+ * the `respons` requirement alone, `TIAA Traditional Benefit Responsive` by
+ * the absence of `traditional` from WD_WORD (655 rows / $3,192,612,506 — the
+ * commonest string in the whole benefit-responsive population, and a REAL
+ * holding whose name states the product with the split as a qualifier), and
+ * `Galliard Benefit Responsive Fund` by the absence of `fund`. */
+for (const [s, why] of [
+  ["Fully Benefit-Responsive Investment Contract", "125 rows / $324,997,503 — the commonest member"],
+  ["Fully benefit-responsive investment contract, at contract value", "23 rows — needs `at` and `value`"],
+  ["Benefit Responsive", "Yale University, 45.0% and 17.6% of two of its menus, $497,175,543 on 3 rows — the motivating row"],
+  ["Non-Benefit Responsive", "Northeastern University, 11.7% of its menu / $355,740,693"],
+  ["Non-benefit responsive contract", "7 rows / $246,214,628"],
+  ["Benefit responsive contract", "6 rows / $58,559,836"],
+  ["Fully benefit-responsive", "8 rows / $61,459,866"],
+  ["Investments in fully-benefit responsive investment contracts, at contract value", "Saint Louis University, 8.5% of its menu — needs `investments` and `in`"],
+  ["Non-fully benefit responsive", "2 rows, typed `Pooled separate account` — reached here, and held back by the call site's own blank-type condition"],
+]) if (!isWithdrawalTermsCaption(s)) {
+  throw new Error(`lib-disclose: isWithdrawalTermsCaption no longer reaches ${JSON.stringify(s)} (${why}) — the arm is inert, fix it rather than shipping a quiet guard`);
+}
+for (const [s, why] of [
+  ["Security Benefit", "4 rows / $6,876,337 — an insurance HOUSE, and the `respons` requirement is its ONLY protection"],
+  ["Fully Benefit", "2 rows / $78,428,598 — a name cut off mid-phrase; `respons` is the ONLY protection, and a truncated name wants reconstruction, not suppression"],
+  ["TIAA Traditional Benefit Responsive", "655 rows / $3,192,612,506 — a REAL holding; the absence of `traditional` is the ONLY protection"],
+  ["TIAA Traditional Non Benefit Responsive", "618 rows / $9,429,354,901 — likewise, the largest string in the population by dollars"],
+  ["Galliard Benefit Responsive Fund", "the absence of `fund` is the ONLY protection"],
+  ["Traditional Benefit-Responsive Annuity", "14 rows / $48,515,641 — `annuity` names a vehicle; two protections, labelled"],
+  ["Stable Value", "54 rows / 171,652 ppl — carries no form of `respons`"],
+  ["Vanguard 500 Index Fund", "a real fund"],
+]) if (isWithdrawalTermsCaption(s)) {
+  throw new Error(`lib-disclose: isWithdrawalTermsCaption now reaches ${JSON.stringify(s)} (${why}) — it must not`);
 }
 /* Asserted at import, both directions. The must-SEE cases are real filed
  * strings, because an arm that is BROKEN and an arm that is INERT report the

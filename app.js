@@ -1866,8 +1866,48 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
    * wrong — the positive fixtures below are what caught it. */
   const SCHEDULE_H_CAPTION = new RegExp("^(?:" + CAPTION_SEP + ")?" + CAPTION_WORD
     + "(?:" + CAPTION_SEP + CAPTION_WORD + ")*(?:" + CAPTION_SEP + ")?$", "i");
+  /* THE WITHDRAWAL-TERMS CAPTION — a SECOND disjunct rather than four more
+   * tokens in the vocabulary above, and the reason is a measured false positive.
+   *
+   * Schedule H splits a stable-value holding by whether participant-initiated
+   * withdrawals happen at contract value — "fully benefit-responsive" versus not
+   * — and a filer who puts that split in the DESCRIPTION column leaves a row
+   * whose whole published name is the accounting category: `Fully
+   * Benefit-Responsive Investment Contract`, `Benefit Responsive`,
+   * `Non-benefit responsive contract`. It is a category, not an option.
+   *
+   * ***WHY NOT `|fully|benefit|responsive|contract|contracts` IN CAPTION_WORD.***
+   * That widening was built and measured first: all five tokens come back
+   * NECESSARY by leave-one-out (297 / 345 / 339 / 320 / 30 rows), it newly
+   * reaches 416 rows / 844,976 participants, and reading all 99 newly reached
+   * names found a row it must not touch — **`Security Benefit`, 4 rows /
+   * $6,876,337, which is an insurance HOUSE.** It is reached because `security`
+   * is already in that vocabulary as a Schedule H caption word, so adding
+   * `benefit` composes two innocent tokens into a real firm's name. The
+   * vocabulary above is a WHOLE-STRING match over a closed set, so every token
+   * added to it multiplies with every token already there — and this record
+   * already pins `Fidelity Government` as a must-KEEP where the house token is
+   * the only protection. A dedicated disjunct cannot compose with CAPTION_WORD
+   * at all, which is the whole point of writing it as one.
+   *
+   * `respons` IS REQUIRED, and that is what refuses the house: `Security
+   * Benefit` carries no form of the word. It also refuses `Fully Benefit`
+   * (2 rows / $78,428,598), a name cut off mid-phrase — correctly, because this
+   * record's position on a truncated name is RECONSTRUCTION and never
+   * suppression: "the filing names no specific fund" is false of a filing whose
+   * name we lost. */
+  const WD_WORD = "(?:fully|full|non|nonfully|benefit|benefits|responsive|responsiveness"
+    + "|investment|investments|contract|contracts|value|total|net|at|in|of|and|or|the|a|s)";
+  const WITHDRAWAL_CAPTION = new RegExp("^(?:" + CAPTION_SEP + ")?" + WD_WORD
+    + "(?:" + CAPTION_SEP + WD_WORD + ")*(?:" + CAPTION_SEP + ")?$", "i");
+  function isWithdrawalTermsCaption(name) {
+    const s = String(name == null ? "" : name);
+    if (!/respons/i.test(s)) return false;          /* the house refusal */
+    return WITHDRAWAL_CAPTION.test(s);
+  }
   function isScheduleHCaption(name) {
-    return SCHEDULE_H_CAPTION.test(String(name == null ? "" : name));
+    return SCHEDULE_H_CAPTION.test(String(name == null ? "" : name))
+      || isWithdrawalTermsCaption(name);
   }
 
   /* THE TWO COMPOSITIONS, which are part of the rule and not of the call site.
