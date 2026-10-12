@@ -232,6 +232,18 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   filings whether or not a session exists, and a 44-hour worst-case gap makes
   that weaker than the word "durable" suggests.** The daily `12 5 * * *` cron
   is the real floor, and it is late too. `docs/accuracy-log.md` 2026-09-28.
+  **RE-DERIVED 2026-10-12 OVER AN INDEPENDENT 230-HOUR WINDOW, AND THE MEAN
+  REPRODUCES TO WITHIN 0.05h: 53 scheduled runs, median **4.36h**, mean
+  **4.42h** against the recorded 4.37h, 35 distinct firing minutes.** Two things
+  the first measurement did not say, both sharper than it: **the MINIMUM
+  interval in 230 hours is 1.49h and NOT ONE interval is under an hour**, so the
+  cron does not merely average out to 4 hours — it never once delivers the
+  hourly cadence it is configured for; and the distribution is 19% under 3h,
+  77% under 6h. The worst gap here is 7.4h, which does NOT refute the recorded
+  44.2h — a shorter window is less likely to sample an outlier, so that figure
+  stands unchallenged rather than improved. *A mean that reproduces across two
+  disjoint windows is the part to trust; a median that moved 3.60 -> 4.36 and a
+  worst case that did not recur are both window effects until measured again.*
   This section and the Architecture block both used to name only the daily and
   weekly crons, so "check `git log origin/main --not origin/<dev branch>`
   before every force-mirror" read as a once-a-day chore. Observed this morning:
