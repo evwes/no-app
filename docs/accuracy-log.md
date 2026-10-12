@@ -7,6 +7,144 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-12 (02:4xZ) — THE FORFEITURE AND EXPENSE ACCOUNT PUBLISHED AS A MENU CHOICE: SIZED AT 125 OF 132 ROWS, AND TWO POPULATIONS TEN TIMES LARGER WERE REFUTED FIRST BECAUSE `fee` AND `administrative` ARE SHARE-CLASS WORDS IN THIS CORPUS. NOTHING SHIPPED
+
+### The class
+
+Named UNSIZED by the 2026-10-11 02:08 draw, from Publix Super Markets
+(**225,961 ppl**) publishing `Fees paid by participants` at **$2,283,079** as an
+investment option, with a blank type cell, no ticker and no fee. The record
+noted that no shipped predicate reaches it: it names no fund yet is not a type
+caption (so `isGenericTypeName` is blind), it carries real words (so
+`hasNoFundIdentity` is too), and **`subtotalRow` reads the filed TYPE cell
+rather than the name**, so it cannot see it either.
+
+Sized over every published+served row through the real renderers:
+
+| | rows | plans | ppl | $ |
+|---|---|---|---|---|
+| **BARE ACCOUNT** — shippable | **132** | 131 | 497,196 | $999,736,087 |
+| NAMES A FUND — must be spared | 17 | 17 | 138,351 | $19,493,096 |
+| PROSE — the sentence class | 17 | 17 | 52,593 | $2,622,956 |
+| WELDED VALUE — the table class | 3 | 3 | 1,766 | $314,628 |
+
+Largest by dollars and by far: **Hartford Fire Insurance Company (31,128 ppl)
+publishes `Master Expense Account 4` at 13.04% of its menu / $961,793,000** —
+one row carrying 96% of the class's money. Then Takeda's `Nonvested forfeited
+accounts` ($10,101,427 / 37,289 ppl), BAE Systems' `12(b)(1) Fee Account`
+(58,807 ppl), Privia Health's `Unallocated Forfeitures`, and Publix.
+
+### TWO SCREENS OF MINE WERE REFUTED FIRST, AND BOTH ARE SHARE CLASSES
+
+An expense/administrative-noun screen reads **2,761 rows / 3,666,044 ppl** and
+is almost entirely two real-holding families:
+
+```
+105 rows  "Large Cap Growth Fund II Fee Class R1"     $318,179,963
+ 84 rows  "Mid Cap Growth Fund Fee Class R1"
+ 50 rows  "Stable Value Fund Fee Class R1"            er 0.35
+ 12 rows  "PIMCO Total Return Fund Administrative Class"  PTTRX 0.51
+```
+
+***`Fee Class R1` is a COLLECTIVE TRUST'S OWN SHARE CLASS*** — Great Gray,
+Putnam, Wilmington and Morley all name classes that way — and
+`Administrative Class` / `Administrative Shares` is PIMCO's, MassMutual's,
+Dreyfus's and Vanguard's REGISTERED class. So **`fee` and `administrative` are
+share-class words in this corpus**, which is the recorded abbreviation trap
+(trailing `A` = Class A, `IN` = Institutional, `AS` = Asset, `IS` =
+Institutional Shares, `IP` = Institutional Plus) **on two more tokens, and the
+first time the colliding word is a whole WORD rather than an abbreviation.**
+
+Refusing a `class` designation takes it to 505 rows — and that is still wrong,
+because the family also spells itself `Fee R1`, `FEE I1`, `Fee S`, `FEE L`,
+`Fee CL245`, `Fee Fund` and the filers' own typos **`Fee Clase R1`** and
+**`Fee Clas R1`**. *One of two spellings is worse than neither*, met on a
+share-class abbreviation. The honest screen is keyed on **forfeiture** and on
+an expense ACCOUNT, which no registered fund or share class carries.
+
+### THE DISCRIMINATOR IS THE PUBLISHED FEE, NOT A VOCABULARY — AND THAT IS THE REUSABLE HALF
+
+`not a menu choice` is TRUE of a bare forfeiture account and **FALSE** of a row
+naming the fund the forfeitures are HELD IN, where the fund *is* a menu choice
+and the row is its forfeiture sub-balance:
+
+```
+"Key Guaranteed Portfolio Fund (including forfeiture $708,522)"   er 0.35
+"American Funds Us Govt Money Market R6 (including forfeitures $18,238)"
+"Vanguard Federal MMKT Fund - Forfeitures"                        VMFXX 0.11
+"(Forfeiture Accounts) American Funds New World Fund R6"          er 0.57
+```
+
+I split those out with a HOUSE vocabulary and **it leaked 7 rows**, every one
+of which names a real vehicle:
+
+```
+"US Government Money Market Fund - Forfeitures"   iss "MassMutual"       er 0.2
+"Guaranteed Interest Fund-Forfeiture Account"     iss ""                 er 0.35
+"Stable Value Class I1 - Forfeitures"             iss "Transamerica …"   er 0.35
+"Guaranteed Long-Term Account - forfeitures/asset holding"  iss "Empower" er 0.35
+"Gov Money Market Forfeiture"                     iss ""                 er 0.2
+"Corebridge Financial Government Money Market Forfeiture Fund"           er 0.2
+```
+
+***Four carry the house only in the ISSUER cell and TWO have no house anywhere,
+so no name-side house list can do this job.*** What can: **the published FEE
+is itself the witness**, because `fundER` is a NAME-pattern table — if it
+priced the row, the row names a vehicle, by construction. A ticker is the same
+witness one step stronger. So the gate needs no vocabulary at all: refuse any
+row that publishes a fee or a ticker. **Corrected shippable count: 125 of the
+132**, and the participant and dollar figures must be RE-DERIVED with that
+refusal in place rather than subtracted from the table above.
+
+### And my prose test matched a CORPORATE SUFFIX
+
+`[a-z]\.\s+[A-Z]` is the natural way to spell "an interior sentence boundary"
+and it matches **`Inc. Fed`**, so `Nationwide Financial Services, Inc. Fed Hrms
+Gov Oblgtns Prmr (Forfeiture Acct)` — a real vehicle — landed in the PROSE
+bucket instead of the must-spare one. 1 row of 17. Same shape as the leading
+`[^\sA-Za-z0-9]` class that silently included every accented letter two hours
+earlier: *a character class written for a concept picks up everything else that
+shares its shape.*
+
+### Why nothing shipped this cycle
+
+The arm is a fourth name-side display predicate in the `isDateHeaderRow` /
+`isLoanAccountRow` shape, and it needs its canonical copy, its app.js twin, a
+CI tether, the fee-and-ticker refusal priced through both renderers, and the
+crawlable pages regenerated and read. The class is now sized with its
+discriminator measured and its two refutations recorded, which is what the next
+cycle needs in order to ship it.
+
+**NAMED RESIDUE, two existing classes rather than gaps in this one:** the 17
+PROSE rows are the shipped `isSentenceRow` family under a new vocabulary
+(`Fees paid directly to Fidelity to provide investment advisory services
+totaling` at $1,653,612), and the 3 WELDED-VALUE rows (`Forfeitures 118,632`,
+`FORFEITURE/ASSET HOLDING ACCOUNT 124095`) are the recorded welded-table-row
+class.
+
+### Prevention
+
+- ***A WORD CAN BE A SHARE CLASS.*** The recorded trap was about two-letter
+  ABBREVIATIONS colliding with share classes; `fee` and `administrative` are
+  ordinary English words that are *also* registered class names here, so the
+  collision is not a property of abbreviation. **Before screening on any noun,
+  ask whether a fund house names a share class with it** — and the cheap test
+  is to print the top distinct names by row count, where `Fee Class R1` ×105
+  announces itself immediately.
+- **AND A VOCABULARY CANNOT SPLIT A CLASS WHOSE EVIDENCE LIVES IN ANOTHER
+  COLUMN.** The must-spare half is identified by the ISSUER cell on four rows
+  and by nothing at all on two. *Prefer a witness the page already computes* —
+  here the fee and the ticker, both of which are a shipped resolver's verdict
+  that the row names a vehicle.
+- **RE-KEY A MUST-SEE PIN BY THE SERVED ACK, NOT THE ACK IN THE RECORD.** My
+  first run printed `PIN ack served: false` — the ack I carried from the draw
+  entry is not the one that serves Publix's menu — so the measurement could not
+  see its own motivating row and I would have published a number for a screen
+  blind to the case that motivated it. The pin now THROWS on a miss rather than
+  printing a note, which is what turns this from a finding into a refusal.
+
+---
+
 ## 2026-10-12 (01:4xZ) — THE ARM I SHIPPED AN HOUR EARLIER RUNS TOO EARLY IN ITS OWN CHAIN: REAL, 58 ROWS, AND A FIXED-POINT LOOP IS NET HARMFUL BY READERS. NOTHING SHIPPED
 
 ### The defect is real and it is mine

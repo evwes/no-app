@@ -2557,6 +2557,51 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   ***THE DRAW'S OWN `--rows` LIMIT HID ALL THREE FINDINGS*** — every one sits
   below row 9, so the menu had to be re-read in full. *The row limit is one of
   the conditions a measurement must apply*, met this time on my own instrument.
+  **SIZED 2026-10-12 02:4xZ AT 125 OF 132 ROWS / ~131 plans / ~497,000 ppl /
+  ~$999,736,087, AND THE DISCRIMINATOR IS THE PUBLISHED FEE RATHER THAN ANY
+  VOCABULARY. NOT SHIPPED.** Split over every published+served row through the
+  real renderers: **BARE ACCOUNT (shippable) 132 rows / 131 plans / 497,196 ppl
+  / $999,736,087**, NAMES A FUND (must be spared) 17 / 138,351 ppl, PROSE 17 /
+  52,593, WELDED VALUE 3. Largest by far: **Hartford Fire Insurance (31,128 ppl)
+  publishes `Master Expense Account 4` at 13.04% of its menu / $961,793,000** —
+  one row carrying 96% of the class's money — then Takeda's `Nonvested forfeited
+  accounts` ($10,101,427 / 37,289 ppl) and BAE Systems' `12(b)(1) Fee Account`
+  (58,807 ppl). Publix's own row is ack `20251003152925NAL0001566353001`,
+  pn=004, **225,961 ppl** (not the 239,138 above — re-derive).
+  ***TWO SCREENS TEN TIMES LARGER WERE REFUTED FIRST AND BOTH ARE SHARE
+  CLASSES: an expense-noun screen reads 2,761 rows / 3,666,044 ppl, of which
+  `Fee Class R1` ×105, `Mid Cap Growth Fund Fee Class R1` ×84 and `PIMCO Total
+  Return Fund Administrative Class` are REAL HOLDINGS*** — `Fee Class R1` is a
+  collective trust's own share-class naming (Great Gray, Putnam, Wilmington,
+  Morley) and `Administrative Class`/`Shares` is PIMCO's, MassMutual's,
+  Dreyfus's and Vanguard's registered class. **So `fee` and `administrative` are
+  SHARE-CLASS WORDS here** — the recorded abbreviation trap (`A`, `IN`, `AS`,
+  `IS`, `IP`) on two more tokens, and *the first time the colliding token is a
+  whole English WORD rather than an abbreviation.* Refusing a `class`
+  designation still reads 505, because the family also spells itself `Fee R1`,
+  `FEE I1`, `Fee S`, `FEE L`, `Fee CL245`, `Fee Fund` and the filers' typos
+  **`Fee Clase R1`** and **`Fee Clas R1`**.
+  ***AND A HOUSE VOCABULARY CANNOT SPLIT OFF THE MUST-SPARE HALF — IT LEAKED 7
+  ROWS, EVERY ONE NAMING A REAL VEHICLE*** (`US Government Money Market Fund -
+  Forfeitures` iss `MassMutual`, `Guaranteed Long-Term Account -
+  forfeitures/asset holding` iss `Empower` at 0.35 / $208,150, `Stable Value
+  Class I1 - Forfeitures`, `Corebridge Financial Government Money Market
+  Forfeiture Fund`): **four carry the house ONLY in the ISSUER cell and TWO have
+  no house anywhere.** What works needs no vocabulary at all — **the published
+  FEE is itself the witness, because `fundER` is a NAME table, so a priced row
+  names a vehicle BY CONSTRUCTION**; a ticker is the same witness one step
+  stronger. Hence 125 of 132, with the ppl and $ to be RE-DERIVED under that
+  refusal rather than subtracted. `not a menu choice` (the shipped
+  `isLoanAccountRow` label) is the honest claim and *"names no specific fund"*
+  would be FALSE — a forfeiture account is a real unallocated plan asset.
+  **AND MY PROSE TEST MATCHED A CORPORATE SUFFIX:** `[a-z]\.\s+[A-Z]` matches
+  **`Inc. Fed`**, so `Nationwide Financial Services, Inc. Fed Hrms Gov Oblgtns
+  Prmr (Forfeiture Acct)` — a real vehicle — landed in PROSE instead of
+  must-spare. **Residue is two existing classes, not gaps here:** the 17 PROSE
+  rows are the shipped `isSentenceRow` family under a new vocabulary (`Fees paid
+  directly to Fidelity to provide investment advisory services totaling`,
+  $1,653,612), and the 3 welded-value rows (`Forfeitures 118,632`) the recorded
+  table class. `docs/accuracy-log.md` 2026-10-12 (02:4xZ).
 - **SHIPPED 2026-10-11 03:3xZ — A HYPHENATED SHARE CLASS STOPS BLOCKING THE
   SYMBOL: 636 published rows / 628 acks / 636 plans / 1,878,821 ppl /
   $3,664,621,842 gain a ticker**, with ticker lost 0 / swapped 0 / **ASTERISKED
@@ -5675,6 +5720,40 @@ These outlived the versions that produced them. The accuracy log has the case.
   presence:** pinning Charles River at 2 rows where the witness delivers 1
   surfaced that the `Income` vintage has only one sibling and is correctly
   refused — a presence-only pin would have passed and hidden the asymmetry.
+  **AND KEY IT BY THE *SERVED* ACK, WHICH IS NOT THE ACK IN THE RECORD
+  (2026-10-12).** A pin carried verbatim out of a draw entry printed `PIN ack
+  served: false` — the recorded ack was not the one serving that plan's menu —
+  so a 2,761-row screen could not see its own motivating row. **A pin must THROW
+  on a miss rather than print a note**, which is the difference between a
+  finding and a refusal; and the served ack is one `servedLineup` call away.
+- **A WORD CAN BE A SHARE CLASS, NOT JUST AN ABBREVIATION (2026-10-12).** The
+  recorded trap is about two-letter abbreviations colliding with share classes
+  (`A`, `IN`, `AS`, `IS`, `IP`). **`fee` and `administrative` are ordinary
+  English words that are ALSO registered class names here** — `Fee Class R1` is
+  a collective trust's own class (Great Gray, Putnam, Wilmington, Morley) and
+  `Administrative Class`/`Shares` is PIMCO's, MassMutual's, Dreyfus's and
+  Vanguard's — so an expense-noun screen read **2,761 rows / 3.67M ppl** for a
+  class of about 125. So the collision is not a property of abbreviation:
+  **before screening on any noun, ask whether a house names a share class with
+  it**, and the cheap test is to print the top distinct names BY ROW COUNT,
+  where `Fee Class R1` ×105 announces itself in one line. *A count keyed on a
+  vocabulary measures the vocabulary*, now met on whole words.
+- **AND PREFER A WITNESS THE PAGE ALREADY COMPUTES OVER ANY VOCABULARY YOU
+  WOULD WRITE (2026-10-12).** Splitting "a bare forfeiture account" from "the
+  FUND the forfeitures are held in" with a house vocabulary leaked 7 rows,
+  every one naming a real vehicle — **four carried the house only in the ISSUER
+  cell and two had no house anywhere**, so no name-side list can do it. The
+  published **FEE** settles it with no list at all: `fundER` is a NAME-pattern
+  table, so a row it priced names a vehicle BY CONSTRUCTION, and a ticker is
+  the same witness one step stronger. *When a class must be split, look first
+  for a shipped resolver whose verdict already encodes the distinction.*
+- **AND A CHARACTER CLASS WRITTEN FOR A CONCEPT PICKS UP EVERYTHING THAT SHARES
+  ITS SHAPE (2026-10-12, twice in three hours).** `[^\sA-Za-z0-9]` for "debris"
+  silently includes every accented letter and non-Latin script; `[a-z]\.\s+[A-Z]`
+  for "an interior sentence boundary" matches **`Inc. Fed`**, so a real vehicle
+  landed in a prose bucket. Both reached one row here, so **no count would have
+  flagged either** — say what you mean (`\p{P}\p{S}`; a finite verb) rather than
+  what you do not.
 - **AND PRINT EVERY FIELD OF ITS ANSWER THAT THE PAGE ACTS ON (2026-10-03).**
   Calling the right function is not enough. `renderRow` returns `star`
   (= `info.comparable`) beside `tk`, and app.js prints an asterisk and a
