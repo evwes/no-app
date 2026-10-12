@@ -37,6 +37,13 @@ on:
             "scripts/lib-sec-fingerprint.mjs",
             "scripts/sec-tickers-stamp-test.mjs",
             "scripts/lead-punct-test.mjs",
+            # the forfeiture/expense-account rule. Its canonical copy is in
+            # `lib-disclose.mjs` and its twin is written by
+            # `gen-generic-twin.mjs`, both already in this list, so the test
+            # belongs here beside them -- and the generator is named explicitly
+            # because the twin is GENERATED and a drift in the generator is a
+            # drift in what the browser evaluates.
+            "scripts/forfeit-acct-test.mjs", "scripts/gen-generic-twin.mjs",
             # WHICH SPELLING `registrantAttested` IS ASKED OF. The guard is one
             # `||` away from admitting the cross-house magnets it exists to
             # refuse, so `sec-attest-test` pins both directions -- and it slices
@@ -161,6 +168,22 @@ jobs:
       # rots. CI-safe by construction: source files and its own literals only.
       - name: Leading-punctuation strip — conditions, twin and transcription
         run: node scripts/lead-punct-test.mjs
+      # A plan's own forfeiture or expense account stops being published as a
+      # menu choice: 58 rows / 58 plans / 411,316 participants / $983,342,432,
+      # of which 28 had a FALSE VEHICLE TYPE withdrawn -- Hartford Fire
+      # Insurance's $961,793,000 expense account was typed `Mutual fund`.
+      # The whole correctness is a 34-word strip list and, more than that, the
+      # words it OMITS: `fund`, `guaranteed`, `asset`, `cash` and `mutual` are
+      # absent on purpose and that absence is the only thing refusing a REAL
+      # vehicle's forfeiture sub-balance, so a transcription drift would
+      # relabel a priced holding and every coverage count would still read
+      # clean -- the class is 58 rows in a 1.7M-row store. Every mutation here
+      # is MEASURED rather than guessed: of all 99 live refusals only 15 absent
+      # words flip even one, and none flips a refusal that publishes a fee, so
+      # a guessed `fund` or `net` mutation aims at a row protected twice and
+      # tests nothing. CI-safe by construction: it reads source files only.
+      - name: Forfeiture/expense account — measured conditions and twin
+        run: node scripts/forfeit-acct-test.mjs
       # merge-4i strips a leading unit noun ("shares Fidelity Blue Chip Growth",
       # "sh. Mutual fund") when the REMAINDER is attested as another filing's
       # whole name. 274 rows / 78,586 participants / $2,483,915,336, and the

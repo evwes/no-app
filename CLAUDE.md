@@ -2557,9 +2557,89 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   ***THE DRAW'S OWN `--rows` LIMIT HID ALL THREE FINDINGS*** — every one sits
   below row 9, so the menu had to be re-read in full. *The row limit is one of
   the conditions a measurement must apply*, met this time on my own instrument.
-  **SIZED 2026-10-12 02:4xZ AT 125 OF 132 ROWS / ~131 plans / ~497,000 ppl /
+  **SHIPPED 2026-10-12 03:4xZ AS `isForfeitureAccountRow` — 58 published+served
+  rows / 58 acks / 58 plans / 411,316 ppl / $983,342,432, `shownType` the ONLY
+  cell that moves** (name / ticker / fee / asterisk / menu share all 0, a
+  20,369-row non-candidate discharge differing on 0, measured as a DIFFERENTIAL
+  through BOTH copies of `renderRow` against origin/main's own app.js file),
+  **of which 28 had a FALSE VEHICLE TYPE withdrawn** — `Mutual fund` 13,
+  `Cash / short-term` 9, `Collective trust` 4, `Stable value / GIC` 1,
+  `Separate account` 1. Row membership cannot move BY CONSTRUCTION: no name
+  changes and `app.js:2930`'s `ID_ONLY` drop reads the cleaned name.
+  `PARSER_VERSION` stays 203; canonical in `lib-disclose`, SLICED by
+  `gen-generic-twin`, imported by `build-seo-pages`; tethered by
+  `scripts/forfeit-acct-test.mjs` in `site-test` (step AND `paths`, with the
+  generator, because the twin is GENERATED).
+  ***DO NOT CARRY THE SIZING'S 125-OF-132 / ~497,000 ppl AS THE DELIVERY***,
+  which is the figure below: the shipped witness is the closed-world RESIDUE,
+  not the fee, and it refuses ~18 further rows (`asset` 7, `cash` 9, `annuity`
+  2) that the fee witness would have admitted.
+  **THE WITNESS CHANGED STAGE BETWEEN THE SIZING AND THE SHIP, AND THAT IS THE
+  FINDING: the fee is the right discriminator and the WRONG INPUT, because
+  `build-seo-pages` has 0 references to `fundER`/`lookupTicker` and publishes no
+  per-fund fee** — so a fee-keyed gate labels a row on the report and not on the
+  crawlable page, and ***a rule that labels a row on one surface and not the
+  other is worse than either answer.*** The shipped test asks only the NAME
+  (`isLoanAccountRow` ARM B's design) and is therefore symmetric. **THE TWO
+  WITNESSES THEN AGREE ON THE FIRING SIDE, which is the control that the
+  substitution is sound: of the 58 rows it fires on, ZERO publish a fee and ZERO
+  a ticker, while 15 of the 111 it refuses publish a fee and one publishes
+  VMFXX.**
+  **THE WORD LIST IS MEASURED: leave-one-out over all 1,721,920 rows DELETED 49
+  OF 83 candidates as necessary-for-0 and the firing set is IDENTICAL with the
+  34 survivors**, each with a single-protection case pinned by name (`account`
+  40, `forfeiture` 25, `forfeitures` 16, `expense` 12, `budget` 8, `holding` 6,
+  then a tail at 1-3 including `master` — the $961,793,000 row). **What the list
+  OMITS is more load-bearing than what it contains:** `fund`, `trust`, `money`,
+  `market`, `stable`, `guaranteed`, `interest`, `government`, `index`, `asset`,
+  `cash` and `mutual` are absent on purpose and that absence is the only thing
+  refusing a real vehicle's forfeiture sub-balance.
+  ***FIVE OF MY OWN MUTATIONS REPORTED PASS, AND THE SUITE EXITS 1 ON A PASS SO
+  IT SAID SO.*** Three were MALFORMED because `budget`, `plan`, `paid`,
+  `participants`, `account`, `expense`, `fee`, `and`, `audit` and `accounting`
+  each appear in a TRIGGER pattern as well as in the word list and
+  `String.replace` takes the FIRST occurrence — so the mutation mangled the
+  trigger and the row stayed refused for a reason unrelated to the condition
+  under test. ***ANCHOR A MUTATION ON THE LINE IT IS MEANT TO MUTATE.*** The
+  other two aimed at rows PROTECTED TWICE, and fixing that produced the
+  measurement worth keeping: **over all 99 live refusals only 15 absent words
+  flip even one, and NOT ONE flips a refusal that publishes a fee or a ticker**
+  — the real vehicles are each held by SEVERAL absent words, so a guessed
+  `fund`/`guaranteed`/`net` mutation tests nothing. The same measurement handed
+  back a strictly better trigger victim than the one I chose: `Fidelity 500
+  Index Fund` keeps a residue and was never at risk, where **`General Account`
+  is entirely bookkeeping words, so the TRIGGER is the only thing between this
+  rule and a real holding** — two live plans publish one at row 0 of their menu
+  ($63,984,082 and $31,791,981), and it is pinned must-KEEP.
+  **ONE CRAWLABLE PAGE CHANGED AND THAT IS A POSITION, NOT AN ABSENT
+  POPULATION: of the 58 labelled plan-rows, 1 is on a page inside the
+  generator's `slice(0, 12)` cut, 7 sit on a page BELOW row 12, and 55 have no
+  page at all.** Publix's own motivating row is at **row 13**, one position past
+  the cut, so the label reaches it on the report and not on the page; Takeda's
+  is at 22, BAE's at 36. *The row limit is one of the conditions a measurement
+  must apply*, deciding the page figure for the second cycle running.
+  **AND THE PAGE NAMED A RESIDUE NO SCREEN COULD — directly ABOVE the repaired
+  row on Hartford's own page sits `Clearing Account 92` at $4,383,081,000**, the
+  largest row on that page and 4.4x the dollars of this whole ship, a bare plan
+  account carrying NO expense or forfeiture word so the trigger correctly cannot
+  reach it; with `Clearing Account` (BAE, $5,961,890) and four `Holding Account`
+  rows it is a sibling class needing its own trigger, and widening to a bare
+  `account` is exactly what the `General Account` pin refuses. ***My own residue
+  probe then conflated the two***, sweeping `General Account` ×2 into a bucket
+  named for bare plan accounts — *a count keyed on a vocabulary measures the
+  vocabulary*, met inside the instrument written to name the residue of a rule
+  built to avoid one.
+  **Named residue:** the `Clearing`/`Holding` family above; `asset` 7 / `cash`
+  9 / `annuity` 2, each refused on purpose and now with an exact count rather
+  than the sizing's "≈10"; `VALIC Forfeiture Account`, a recordkeeper BRAND
+  keeping its residue exactly as recorded for `VALIC Loan Collateral Fund`; and
+  the 17 PROSE rows, which are the `isSentenceRow` family's.
+  `docs/accuracy-log.md` 2026-10-12 (03:4xZ).
+
+  **ORIGINAL SIZING, kept because it is what was predicted — SIZED 2026-10-12
+  02:4xZ AT 125 OF 132 ROWS / ~131 plans / ~497,000 ppl /
   ~$999,736,087, AND THE DISCRIMINATOR IS THE PUBLISHED FEE RATHER THAN ANY
-  VOCABULARY. NOT SHIPPED.** Split over every published+served row through the
+  VOCABULARY.** Split over every published+served row through the
   real renderers: **BARE ACCOUNT (shippable) 132 rows / 131 plans / 497,196 ppl
   / $999,736,087**, NAMES A FUND (must be spared) 17 / 138,351 ppl, PROSE 17 /
   52,593, WELDED VALUE 3. Largest by far: **Hartford Fire Insurance (31,128 ppl)
@@ -5738,6 +5818,21 @@ These outlived the versions that produced them. The accuracy log has the case.
   it**, and the cheap test is to print the top distinct names BY ROW COUNT,
   where `Fee Class R1` ×105 announces itself in one line. *A count keyed on a
   vocabulary measures the vocabulary*, now met on whole words.
+- **BUT THE WITNESS MUST BE ASKABLE ON EVERY SURFACE THAT PUBLISHES THE CLAIM,
+  AND THE WEAKEST SURFACE DECIDES WHICH COLUMN THE EVIDENCE MAY LIVE IN
+  (2026-10-12, the rule below corrected one cycle after it was written).** The
+  published FEE was the right discriminator for the forfeiture class and the
+  WRONG INPUT: `build-seo-pages` has 0 references to `fundER`/`lookupTicker` and
+  publishes no per-fund fee, so a fee-keyed gate labels a row on the report and
+  not on the crawlable page. ***A rule that labels a row on one surface and not
+  the other is worse than either answer***, so the shipped test asks only the
+  NAME — a closed-world RESIDUE, which is not the vocabulary the rule below
+  refuses but its inverse: strip the bookkeeping words and require NOTHING to
+  remain, so what the list OMITS does the refusing and no fund is enumerated.
+  **The two witnesses then AGREED on the firing side (0 of 58 priced, against 15
+  of 111 refusals priced), which is what made the substitution safe rather than
+  merely convenient.** Before building a gate on a resolved cell, ask whether
+  the other surface computes that cell at all.
 - **AND PREFER A WITNESS THE PAGE ALREADY COMPUTES OVER ANY VOCABULARY YOU
   WOULD WRITE (2026-10-12).** Splitting "a bare forfeiture account" from "the
   FUND the forfeitures are held in" with a house vocabulary leaked 7 rows,
@@ -5747,6 +5842,24 @@ These outlived the versions that produced them. The accuracy log has the case.
   table, so a row it priced names a vehicle BY CONSTRUCTION, and a ticker is
   the same witness one step stronger. *When a class must be split, look first
   for a shipped resolver whose verdict already encodes the distinction.*
+- **DERIVE A MUTATION SET FROM THE REFUSALS, NOT FROM IMAGINATION — AND ANCHOR
+  EACH MUTATION ON THE LINE IT IS MEANT TO MUTATE (2026-10-12).** A suite that
+  exits 1 when a mutation PASSES reported five passes on its first run, and the
+  cause was two different errors. Three mutations were MALFORMED: the token they
+  edited appears in a TRIGGER pattern as well as in the word list, and
+  `String.replace` with a string takes the FIRST occurrence, so the mutation
+  mangled the trigger and the row stayed refused for a reason unrelated to the
+  condition under test — which reads exactly like "that condition is not
+  load-bearing". The other two aimed at rows **protected twice**, and measuring
+  properly is what fixed them: over all 99 live refusals only **15** absent
+  words flip even one, and **none flips a refusal that publishes a fee or a
+  ticker**, because a real vehicle is held by SEVERAL absent words at once. So
+  every mutation invented before measuring was aimed at a row that was never at
+  risk. ***And the measurement supplies better victims than imagination does:***
+  it replaced an index fund (refused by the residue test anyway) with a real
+  insurer's `General Account`, which is entirely bookkeeping words and so is the
+  one case where the trigger is the ONLY protection against relabelling a
+  holding.
 - **AND A CHARACTER CLASS WRITTEN FOR A CONCEPT PICKS UP EVERYTHING THAT SHARES
   ITS SHAPE (2026-10-12, twice in three hours).** `[^\sA-Za-z0-9]` for "debris"
   silently includes every accented letter and non-Latin script; `[a-z]\.\s+[A-Z]`

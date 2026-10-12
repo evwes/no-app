@@ -319,6 +319,7 @@ try {
    * Run the BROWSER copy against the module's own boundary cases. */
   const { coverageBand, frozenClaimOk, cleanFiledName, isParticipantLoanRow, isLoanDescriptionRow,
     isAnnuityContractRow, annuityFeeIsGuaranteeOnly, isCollectiveTrustName, isLoanVocabularyRow, isLoanAccountRow, isLoanAnswerRow, isLoanMaturityRow,
+    isForfeitureAccountRow,
     isDirectionCaptionRow,
     isOfficeListRow, isPageBreakCaptionRow,
     isInvestmentContractRow, isMistypedStockRow, isBankDepositRow,
@@ -1220,6 +1221,46 @@ try {
     if (!isLoanAccountRow(n)) fail(`loan-account predicate no longer recognises a loan accounting line: ${JSON.stringify(n)}`);
   for (const n of acctCases.slice(14))
     if (isLoanAccountRow(n)) fail(`loan-account predicate would tell a reader a REAL HOLDING is a participant loan: ${JSON.stringify(n)}`);
+
+  /* THE FORFEITURE / EXPENSE ACCOUNT TWIN, cross-checked in the BROWSER against
+   * lib-disclose's own export (2026-10-12). `forfeit-acct-test.mjs` asserts the
+   * canonical rule and the slice the generator writes; THIS is the only check
+   * that the copy app.js actually SHIPS still agrees, which is the gap the
+   * generator cannot close — it regenerates before it compares, so a committed
+   * app.js edited by hand after a generation would pass there and fail here.
+   * The must-KEEP half is the load-bearing one: each of those rows is a real
+   * vehicle carrying its forfeiture sub-balance, and two of them publish a fee
+   * or VMFXX. */
+  const forfCases = [
+    /* must FIRE */
+    "Master Expense Account 4", "Fees paid by participants", "Nonvested forfeited accounts",
+    "12(b)(1) Fee Account", "Unallocated Forfeitures", "Forfeiture Account", "FORFEITURES",
+    "Forfeitures in suspense", "Expense Budget Account", "Audit and accounting",
+    "Administrative deductions", "PLAN FORFEITURE ACCOUNT",
+    /* must KEEP */
+    "Key Guaranteed Portfolio Fund (including forfeiture $708,522)",
+    "Vanguard Federal MMKT Fund - Forfeitures", "AIG Government Money Market Forfeiture",
+    "Gov Money Market Forfeiture", "Guaranteed Long-Term Account - forfeitures/asset holding",
+    "Forfeiture Holding Account Empower Trust Company, LLC", "MUTUAL FUND - FORFEITURES",
+    "FORFEITURE/ASSET HOLDING ACCOUNT", "Forfeiture Cash Account", "General Account",
+    "Large Cap Growth Fund II Fee Class R1", "PIMCO Total Return Fund Administrative Class",
+    "Fidelity 500 Index Fund"];
+  const forfGot = await page.evaluate((cs) => {
+    if (typeof window.__wampoForfeitureAccountRow !== "function") return null;
+    return cs.map((n) => window.__wampoForfeitureAccountRow(n));
+  }, forfCases);
+  if (!forfGot) fail("app.js no longer exposes __wampoForfeitureAccountRow — the forfeiture-account predicate cannot be cross-checked");
+  const forfDrift = forfCases.filter((n, i) => isForfeitureAccountRow(n) !== forfGot[i]);
+  if (forfDrift.length) {
+    for (const n of forfDrift) console.error(`  ${JSON.stringify(n)}  app.js=${forfGot[forfCases.indexOf(n)]}  module=${isForfeitureAccountRow(n)}`);
+    fail(`the forfeiture-account predicate in app.js disagrees with scripts/lib-disclose.mjs on ${forfDrift.length} of ${forfCases.length} names`);
+  }
+  /* and it must DECIDE rather than agree by being inert on both sides — the
+   * recorded trap that a broken arm and an inert arm read the same zero. */
+  for (const n of forfCases.slice(0, 12))
+    if (!isForfeitureAccountRow(n)) fail(`forfeiture-account predicate no longer recognises a plan bookkeeping account: ${JSON.stringify(n)}`);
+  for (const n of forfCases.slice(12))
+    if (isForfeitureAccountRow(n)) fail(`forfeiture-account predicate would tell a reader a REAL HOLDING is a plan expense account: ${JSON.stringify(n)}`);
 
   /* THE ANNUITY-CONTRACT PREDICATE, tethered the same way, 2026-09-29. It is a
    * TWO-CELL rule — the filed NAME against the stored TYPE — so every case here

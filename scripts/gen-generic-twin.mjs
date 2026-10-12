@@ -41,7 +41,8 @@ import { isNamelessFundRow, isLoanDescriptionRow, isAnnuityContractRow,
   isLoanAnswerRow, isLoanVocabularyRow, isLoanAccountRow, isBankDepositRow,
   employerStockSymbolOk, sponsorNameKey, trustScheduleDMenu,
   hasNoFundIdentity, isLabelOnlyName, isSentenceRow, isNonIssuerCell,
-  isScheduleHCaption, cleanFiledName, isDateHeaderRow } from "./lib-disclose.mjs";
+  isScheduleHCaption, cleanFiledName, isDateHeaderRow,
+  isForfeitureAccountRow } from "./lib-disclose.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const lib = readFileSync(ROOT + "scripts/lib-4i.mjs", "utf8");
@@ -316,6 +317,23 @@ const dhe = dis.indexOf("\n}\n", dis.indexOf("export function isDateHeaderRow(")
 if (dhe < 3) throw new Error("gen-generic-twin: isDateHeaderRow moved in lib-disclose");
 const dateheader = dis.slice(dhs, dhe).replace(/^export /gm, "");
 
+/* the FORFEITURE / EXPENSE ACCOUNT rule, VERBATIM: four trigger constants, the
+ * 34-word bookkeeping alternation, and both functions (2026-10-12). The word
+ * list IS the rule — leave-one-out over the whole published+served store
+ * deleted 49 of 83 candidates as necessary-for-0, and each of the 34 survivors
+ * is the only protection for at least one live row, so a retyped copy whose
+ * alternation drifted by one token would label a different set and the class is
+ * 58 rows in a 1.7M-row store. Equally load-bearing is what the list OMITS:
+ * `fund`, `trust`, `money`, `market`, `stable`, `guaranteed`, `asset` and
+ * `cash` are absent on purpose, and that absence is the only thing refusing a
+ * real vehicle's forfeiture sub-balance. `forfeitureAccountResidue` travels
+ * beside the boolean because it is what the boolean is. */
+const fas = dis.indexOf("const FORF_TRIGGER_WORD =");
+if (fas < 0) throw new Error("gen-generic-twin: FORF_TRIGGER_WORD moved in lib-disclose");
+const fae = dis.indexOf("\n}\n", dis.indexOf("export function isForfeitureAccountRow(")) + 3;
+if (fae < 3) throw new Error("gen-generic-twin: isForfeitureAccountRow moved in lib-disclose");
+const forfacct = dis.slice(fas, fae).replace(/^export /gm, "");
+
 const block = `  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND.
    * lib-4i derives these patterns from GENERIC_TYPE_NAME by asserted
    * replacements, so they are DERIVED and transcribing one is the move this
@@ -394,6 +412,8 @@ ${loanacct.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoLoanAccountRow = isLoanAccountRow;  // read by the smoke test only
 ${dateheader.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoDateHeaderRow = isDateHeaderRow;  // read by the smoke test only
+${forfacct.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
+  window.__wampoForfeitureAccountRow = isForfeitureAccountRow;  // read by the smoke test only
 `;
 
 /* THE END MARKER MUST BE THE BLOCK'S LAST LINE. It was `__wampoGenericName`
@@ -411,6 +431,7 @@ const MARK_S = "  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND."
  * moved and the old tail stayed — so the list only ever grows, and the cut must
  * be made at the LAST marker present, not the first one found. */
 const MARK_ENDS = [
+  "  window.__wampoForfeitureAccountRow = isForfeitureAccountRow;  // read by the smoke test only\n",
   "  window.__wampoDateHeaderRow = isDateHeaderRow;  // read by the smoke test only\n",
   "  window.__wampoLoanAccountRow = isLoanAccountRow;  // read by the smoke test only\n",
   "  window.__wampoTrustScheduleDMenu = trustScheduleDMenu;  // read by the smoke test only\n",
@@ -508,6 +529,8 @@ vm.runInContext(block
     "globalThis.__lac = isLoanAccountRow;")
   .replace("window.__wampoDateHeaderRow = isDateHeaderRow;  // read by the smoke test only",
     "globalThis.__dh = isDateHeaderRow;")
+  .replace("window.__wampoForfeitureAccountRow = isForfeitureAccountRow;  // read by the smoke test only",
+    "globalThis.__fa = isForfeitureAccountRow;")
   .replace(/^\s{2}/gm, ""), ctx);
 const names = ["Mutual funds", "Mutual Fund Shares", "Sub-total: Registered Investment Companies",
   "Commingled funds", "Pooled separate account funds", "Collective trust funds",
@@ -1066,6 +1089,30 @@ for (const [n, v] of dateRows) if (ctx.__dh(n, v) !== isDateHeaderRow(n, v)) {
  * false for everything. */
 if (!ctx.__dh("December", 312024) || ctx.__dh("December", 342024)) {
   bad++; console.log("  DATE-HEADER TWIN DECIDES NOTHING — it agrees with lib-disclose while answering the same way on both sides");
+}
+/* THE FORFEITURE / EXPENSE ACCOUNT twin, cross-checked on real filed strings
+ * from both sides of the live split. The must-KEEP half is the load-bearing
+ * one: it is held by what the 34-word list OMITS, so a transcription that
+ * added `fund`, `asset` or `cash` would relabel a real vehicle's forfeiture
+ * sub-balance and every count would still read clean. */
+const forfRows = [
+  "Master Expense Account 4", "Fees paid by participants", "Nonvested forfeited accounts",
+  "12(b)(1) Fee Account", "Unallocated Forfeitures", "Forfeiture Account", "FORFEITURES",
+  "Forfeitures in suspense", "Expense Budget Suspense Account", "Audit and accounting",
+  "Forfeitures of Participant Non-Vested Amounts", "General Forfeiture Account",
+  "Key Guaranteed Portfolio Fund (including forfeiture $708,522)",
+  "Vanguard Federal MMKT Fund - Forfeitures", "AIG Government Money Market Forfeiture",
+  "Gov Money Market Forfeiture", "Guaranteed Long-Term Account - forfeitures/asset holding",
+  "Forfeiture Holding Account Empower Trust Company, LLC", "FORFEITURE/ASSET HOLDING ACCOUNT",
+  "Forfeiture Cash Account", "MUTUAL FUND - FORFEITURES",
+  "Large Cap Growth Fund II Fee Class R1", "PIMCO Total Return Fund Administrative Class",
+  "Fidelity 500 Index Fund",
+];
+for (const n of forfRows) if (ctx.__fa(n) !== isForfeitureAccountRow(n)) {
+  bad++; console.log(`  FORFEITURE-ACCOUNT DRIFT ${JSON.stringify(n)} twin=${ctx.__fa(n)} lib=${isForfeitureAccountRow(n)}`);
+}
+if (!ctx.__fa("Master Expense Account 4") || ctx.__fa("Vanguard Federal MMKT Fund - Forfeitures")) {
+  bad++; console.log("  FORFEITURE-ACCOUNT TWIN DECIDES NOTHING — it agrees with lib-disclose while answering the same way on both sides");
 }
 /* THE BANK-DEPOSIT PROBES ARE ROWS AS OF 2026-10-02, not names — the predicate
  * reads the ISSUER cell as well, and every probe here was a bare string, so

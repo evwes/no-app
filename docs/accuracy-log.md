@@ -7,6 +7,207 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-12 (03:4xZ) — SHIPPED: A PLAN'S OWN FORFEITURE OR EXPENSE ACCOUNT STOPS BEING PUBLISHED AS A MENU CHOICE — 58 ROWS / 58 PLANS / 411,316 PPL / $983,342,432, AND 28 OF THEM HAD A FALSE VEHICLE TYPE WITHDRAWN
+
+### What shipped
+
+`isForfeitureAccountRow` + `forfeitureAccountResidue`, canonical in
+`lib-disclose.mjs`, SLICED into app.js by `gen-generic-twin.mjs`, imported by
+`build-seo-pages.mjs`. `PARSER_VERSION` stays **203** — display-side, no store
+is written, nothing to pre-register.
+
+**Measured as a differential through BOTH copies of `renderRow`, the baseline
+being origin/main's own `app.js` file rather than a retyped one, over all
+1,721,920 published+served rows:**
+
+| | |
+|---|---|
+| `shownType` moves | **58 rows / 58 acks / 58 plans / 411,316 ppl / $983,342,432** |
+| **ANY OTHER CELL** | **0** — name, ticker, fee, asterisk and menu share all unchanged |
+| non-candidates sampled | 20,369, **differing 0** (the narrowing discharged) |
+| crawlable pages | 1 changed, read in full |
+
+Row membership cannot move **by construction**: the rule changes no name, and
+`app.js:2930`'s `ID_ONLY` drop reads the cleaned name.
+
+**28 of the 58 had a FALSE VEHICLE TYPE withdrawn** — `Mutual fund` 13,
+`Cash / short-term` 9, `Collective trust` 4, `Stable value / GIC` 1,
+`Separate account` 1 — and the largest is the whole point: **Hartford Fire
+Insurance Company (31,128 ppl) published `Master Expense Account 4` at 13.04%
+of its menu / $961,793,000, typed `Mutual fund`**. One row carries 96% of the
+class's money. Then Takeda's `Nonvested forfeited accounts` ($10,101,427 /
+37,289 ppl), Privia Health's `Unallocated Forfeitures`, BAE Systems'
+`12(b)(1) Fee Account` (58,807 ppl) and **Publix Super Markets (225,961 ppl),
+whose `Fees paid by participants` at $2,283,079 is the row the 02:08 draw found.**
+
+### THE CLAIM IS DELIBERATELY THE WEAKER ONE
+
+A forfeiture account is a **REAL unallocated plan asset** awaiting
+reallocation, so *"the filing names no specific fund"* would be **FALSE** of
+it. What is false is that a participant could choose it. So the label is the
+loan family's — `Plan forfeiture or expense account — not a menu choice` — and
+it sits AHEAD of `namelessRow` in the `shownType` chain for the same reason
+`dateHeaderRow` does. The VALUE stays printed and keeps counting toward the
+menu total, as a loan row's does.
+
+### THE WITNESS CHANGED STAGE BETWEEN THE SIZING AND THE SHIP, AND THAT IS THE FINDING
+
+The 02:4xZ sizing measured the discriminator as **the published FEE**: `fundER`
+is a NAME-pattern table, so a priced row names a vehicle by construction, and
+a HOUSE vocabulary had leaked 7 rows (four carrying the house only in the
+ISSUER cell, two with no house anywhere). That witness is correct and **cannot
+be asked on both surfaces**: `build-seo-pages` has zero references to
+`fundER`/`lookupTicker`/`fundTickerInfo` and publishes no per-fund fee, so a
+fee-keyed gate would label a row on the report and not on the crawlable page.
+
+***A rule that labels a row on one surface and not the other is worse than
+either answer***, so the shipped test is the CLOSED-WORLD RESIDUE —
+`isLoanAccountRow` ARM B's shipped design — which asks only the name and is
+therefore symmetric. **THE TWO WITNESSES THEN AGREE ON THE FIRING SIDE, which
+is the control that the substitution is sound: of the 58 rows the residue
+fires on, ZERO publish a fee and ZERO publish a ticker, while 15 of the 111 it
+refuses publish a fee and one publishes VMFXX.**
+
+So this is the recorded *a prescription can be wrong about WHERE rather than
+WHAT* in a new costume — and here the prescription was wrong about neither the
+remedy nor the stage but about **which COLUMN the evidence may live in**, which
+is decided by the weaker of the two surfaces.
+
+### THE WORD LIST IS MEASURED, NOT WRITTEN — 49 OF 83 CANDIDATES DELETED
+
+Leave-one-out over all 1,721,920 published+served rows **deleted 49 of 83
+candidate words as necessary-for-0** (`reserve`, `recordkeeping`, `revenue`,
+`erisa`, `company`, `employer`, `contribution`, `the`, `for`, `with`, `other`,
+`total` …), and **the firing set is IDENTICAL with the 34 survivors.** Every
+survivor has a single-protection case pinned by name: `account` 40,
+`forfeiture` 25, `forfeitures` 16, `expense` 12, `budget` 8, `holding` 6, then
+a long tail at 1–3 including `master` (the $961,793,000 row), `audit`,
+`accounting`, `general`, and the function words `of`, `to`, `by`, `in`, `on`.
+
+**What the list OMITS is more load-bearing than what it contains.** `fund`,
+`trust`, `portfolio`, `money`, `market`, `stable`, `value`, `guaranteed`,
+`interest`, `government`, `index`, `asset`, `cash` and `mutual` are absent on
+purpose, and that absence is the only thing refusing a real vehicle's
+forfeiture sub-balance.
+
+### FIVE OF MY OWN MUTATIONS REPORTED PASS, AND THE DIAGNOSIS IS TWO DIFFERENT ERRORS
+
+`forfeit-acct-test.mjs` exits 1 if a mutation PASSES, and on its first run five
+did. Three were **malformed**, for one reason: `budget`, `plan`, `paid`,
+`participants`, `account`, `expense`, `fee`, `and`, `audit` and `accounting`
+each appear in a TRIGGER pattern as well as in the word list, and
+`String.replace` with a string takes the **FIRST** occurrence — so the mutation
+mangled the trigger rather than the list, and the row it aimed at stayed
+refused for a reason that had nothing to do with the condition under test.
+Every word-list mutation is now anchored on the `FORF_BOOKKEEPING` line.
+
+The other two aimed at rows **protected twice** — and fixing that produced the
+measurement worth keeping. Over all **99 live refusals, only 15 absent words
+flip even one of them, and NOT ONE flips a refusal that publishes a fee or a
+ticker**: the real vehicles are each held by SEVERAL absent words, so no
+single-word mutation can reach them. A guessed `fund`, `guaranteed`,
+`portfolio` or `net` mutation therefore tests nothing. ***So the honest
+mutation set has to be derived from the refusals themselves***, and it is:
+`asset` flips 7, `cash` 9, `annuity` 2, `loan` 1 (which would DOUBLE-LABEL a
+row the loan family already claims), `valic` 1, `directly` 1.
+
+**And the measurement handed back a better victim for the trigger condition
+than the one I chose.** I had pinned `Fidelity 500 Index Fund`, which keeps a
+residue and so is refused by the residue test alone — protected twice, proving
+nothing. The right victim is **`General Account`**: an insurer's general
+account is entirely bookkeeping words, so **the trigger is the only thing
+between this rule and a real holding**, and two live plans publish one at row 0
+of their menu ($63,984,082 and $31,791,981).
+
+### ONE PAGE CHANGED, AND THAT IS A POSITION RATHER THAN AN ABSENT POPULATION
+
+The regenerated tree moved exactly one file — Hartford's. The comfortable
+reading is that these plans have no pages, and it is wrong. Of the 58 labelled
+plan-rows: **1 is on a page within the generator's `slice(0, 12)` cut, 7 sit on
+a page BELOW row 12, and 55 have no page at all.** Publix's own motivating row
+is at **row 13** — one position past the cut — so the label reaches it on the
+report and not on the crawlable page; Takeda's is at row 22, BAE's at 36.
+*The row limit is one of the conditions a measurement must apply*, and this is
+the second cycle running where it decides the page figure.
+
+### AND THE PAGE NAMED A RESIDUE NO SCREEN COULD
+
+Directly ABOVE the repaired row on Hartford's own page sits **`Clearing
+Account 92` at $4,383,081,000** — the largest row on the page, 4.4x the dollars
+of everything this ship delivers, a bare plan account carrying **no expense or
+forfeiture word at all**, so the trigger correctly does not reach it. With
+`Clearing Account` (BAE, $5,961,890) and four `Holding Account` rows it is a
+sibling class needing its own trigger, and widening to a bare `account` is
+exactly what the `General Account` pin refuses.
+
+***My own residue probe then conflated the two:*** its pattern swept in
+`General Account` ×2 beside the clearing rows, i.e. it put a REAL insurer
+vehicle in a bucket named for bare plan accounts — *a count keyed on a
+vocabulary measures the vocabulary*, met inside the instrument written to name
+the residue of a rule built to avoid one. The honest residue is the
+`Clearing`/`Holding` family; `General Account` is a holding and is pinned
+must-KEEP.
+
+### Tether
+
+`scripts/forfeit-acct-test.mjs`, in `site-test` as a step AND in its `paths`
+filter (with `gen-generic-twin.mjs`, because the twin is GENERATED and a drift
+in the generator is a drift in what the browser evaluates). **22 must-fire, 38
+must-not-fire, 14 single-protection mutations, 7 invariants**, and it exits 1 if
+a mutation passes. CI-safe by construction: it reads source files and its own
+literals, never the store — `merge-name-test.mjs` reads its pins' verdicts off
+live attestations and has changed status three times on drift alone, and a gate
+that reddens on a refresh with nothing wrong is the habitually-red gate that
+once hid ten consecutive `site-test` failures.
+
+Both controls were earned rather than asserted:
+
+- the canonical must-KEEP control **throws by name** on exactly the drift its
+  comment warns about (adding `asset` ⇒
+  `would relabel "FORFEITURE/ASSET HOLDING ACCOUNT"`);
+- the generator's slice-integrity check **fails loudly on an incomplete slice**
+  (moving the start marker past the trigger constants ⇒
+  `ReferenceError: FORF_TRIGGER_WORD is not defined`);
+- and the new **browser** cross-check in `smoke-test.mjs` closes the gap the
+  generator cannot: the generator REGENERATES before it compares, so a
+  committed app.js edited by hand after a generation passes there. Proved by
+  doing it — a hand edit of the twin's hook produced
+  `SMOKE FAIL: the forfeiture-account predicate in app.js disagrees with
+  scripts/lib-disclose.mjs on 1 of 25 names`.
+
+### Named residue
+
+- **the `Clearing Account` / `Holding Account` family** above — same shape, no
+  trigger, and $4.39B of it on one page;
+- **`asset` (7 rows), `cash` (9) and `annuity` (2)**, each refused on purpose
+  and now with an exact count rather than the sizing's "≈10";
+- **`VALIC Forfeiture Account`** — a recordkeeper BRAND keeps its residue,
+  exactly as this file records for `VALIC Loan Collateral Fund`;
+- the **17 PROSE rows** (`Fees paid directly to Fidelity to provide investment
+  advisory services totaling`, $1,653,612) are the `isSentenceRow` family under
+  a new vocabulary, and the **3 welded-value rows** the recorded
+  welded-table-row class — except `Forfeitures 118,632`, which fires anyway
+  because its NAME half still names no fund.
+
+### Prevention
+
+- ***A WITNESS MUST BE ASKABLE ON EVERY SURFACE THAT PUBLISHES THE CLAIM, AND
+  THE WEAKEST SURFACE DECIDES WHICH COLUMN THE EVIDENCE MAY LIVE IN.*** The fee
+  was the right discriminator and the wrong input, because one of the two
+  display paths has no fee. Before building a gate on a resolved cell, ask
+  whether the other surface computes that cell at all.
+- **ANCHOR A MUTATION ON THE LINE IT IS MEANT TO MUTATE.** A token that appears
+  in both a trigger and a word list makes `String.replace` edit the wrong one,
+  and the result reads as "that condition is not load-bearing" when it is.
+- ***DERIVE THE MUTATION SET FROM THE REFUSALS, NOT FROM IMAGINATION.*** Of 99
+  live refusals, only 15 absent words flip even one and none flips a priced
+  row; every mutation I invented before measuring aimed at a row protected
+  twice. The same measurement then supplied a strictly better victim for the
+  trigger than the one I had chosen — a real insurer's `General Account` in
+  place of an index fund that was never at risk.
+
+---
+
 ## 2026-10-12 (02:4xZ) — THE FORFEITURE AND EXPENSE ACCOUNT PUBLISHED AS A MENU CHOICE: SIZED AT 125 OF 132 ROWS, AND TWO POPULATIONS TEN TIMES LARGER WERE REFUTED FIRST BECAUSE `fee` AND `administrative` ARE SHARE-CLASS WORDS IN THIS CORPUS. NOTHING SHIPPED
 
 ### The class

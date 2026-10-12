@@ -2483,6 +2483,36 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
   }
 
   window.__wampoDateHeaderRow = isDateHeaderRow;  // read by the smoke test only
+  const FORF_TRIGGER_WORD = /\bforfeit(?:ure|ures|ed|s)?\b/i;
+  const FORF_TRIGGER_ACCT =
+    /\b(?:expense|expenses|fee|fees)\b[^.]{0,24}\b(?:account|budget|reserve|reimbursement)\b|\b(?:account|budget|reserve)\b[^.]{0,16}\b(?:expense|expenses|fee|fees)\b/i;
+  const FORF_TRIGGER_PAID =
+    /\b(?:fees?|expenses?)\s+(?:paid|charged|borne)\b|\b(?:paid|charged)\s+by\s+(?:the\s+)?(?:participants?|plan|employer|company)\b/i;
+  /* Whole-string expense LINES the other three arms cannot reach: each is a plan
+   * expense caption filed in the holdings column, anchored end to end because
+   * every one of these words appears inside real fund names. */
+  const FORF_TRIGGER_LINE =
+    /^(?:administrative deductions|administration and recordkeeping services|audit and accounting|accrued interest|investment advisory and investment management fees\s*\.?)$/i;
+  /* 34 words, each necessary for at least one row — see the pins below. */
+  const FORF_BOOKKEEPING = /\b(?:forfeited|forfeiture|forfeitures|expense|fee|fees|account|accounts|budget|suspense|unallocated|nonvested|vested|plan|participant|participants|master|administrative|paid|holding|deductions|audit|accounting|and|of|to|by|in|on|general|non|amount|amounts|balance)\b/gi;
+  function forfeitureAccountResidue(name) {
+    return String(name || "")
+      .replace(/\d+(?:\.\d+)?\s*%/g, " ")
+      .replace(/\b\d+(?:\.\d+)?\b/g, " ")
+      .replace(FORF_BOOKKEEPING, " ")
+      .replace(/[^A-Za-z]+/g, " ")
+      .trim()
+      .split(/\s+/)
+      .filter((t) => t.length >= 2);
+  }
+  function isForfeitureAccountRow(name) {
+    const s = String(name || "").trim();
+    if (!s) return false;
+    if (!(FORF_TRIGGER_WORD.test(s) || FORF_TRIGGER_PAID.test(s) || FORF_TRIGGER_ACCT.test(s) || FORF_TRIGGER_LINE.test(s))) return false;
+    return forfeitureAccountResidue(s).length === 0;
+  }
+
+  window.__wampoForfeitureAccountRow = isForfeitureAccountRow;  // read by the smoke test only
 
   /* A SCHEDULE H PARTICIPANT-DIRECTION CAPTION IS NOT A HOLDING — the rule,
    * the Microsoft row that found it ($6,602,388,247 = 8.6% of a 50-row menu),
@@ -4013,6 +4043,7 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
        * menu. Measured: 0 of the 62 publish a ticker or a fee, so nothing is
        * suppressed and the ONLY cell that moves is the shown type. */
       const dateHeaderRow = isDateHeaderRow(f.name || "", f.value);
+      const forfeitAcctRow = isForfeitureAccountRow(f.name || "");
       /* AN INSURANCE ANNUITY CONTRACT TYPED `Mutual fund` — the rule and its
        * whole safety argument live in scripts/lib-disclose.mjs; this is the
        * generated twin's call site. It suppresses the ticker and the fee for
@@ -4312,6 +4343,14 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
          * rather than money. A row that names nothing and a row that is a date
          * are two classes, and one label cannot serve both. */
         : dateHeaderRow ? "Date from the filing's table — not a holding"
+        /* AHEAD of `namelessRow` for the same reason, and the reason is that
+         * the weaker claim is the TRUE one: a forfeiture or expense account is
+         * a REAL unallocated plan asset, so "the filing names no specific
+         * fund" would be FALSE of it. What is false is that a participant
+         * could choose it, which is exactly what the loan family already
+         * says. The VALUE stays printed and keeps counting toward the menu
+         * total, as a loan row's does. */
+        : forfeitAcctRow ? "Plan forfeiture or expense account — not a menu choice"
         : namelessRow ? "Filing names no specific fund"
         : annuityRow ? "Annuity contract"
         : contractRow ? "Investment contract"

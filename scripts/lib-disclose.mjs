@@ -2286,6 +2286,161 @@ for (const [s, why] of [
   throw new Error(`lib-disclose: isLoanAccountRow would relabel ${JSON.stringify(s)} (${why}) — it names a holding, fix the predicate rather than the control`);
 }
 
+/* A PLAN'S FORFEITURE OR EXPENSE ACCOUNT IS NOT A MENU CHOICE — 2026-10-12.
+ *
+ * Found by the 02:08 draw, from Publix Super Markets (225,961 ppl) publishing
+ * `Fees paid by participants` at $2,283,079 as an investment option, and sized
+ * the cycle after. No shipped predicate reaches these: they name no fund yet
+ * are not type captions (so `isGenericTypeName` is blind), they carry real
+ * words (so `hasNoFundIdentity` is), and `subtotalRow` reads the filed TYPE
+ * cell rather than the name. Largest member by far is Hartford Fire Insurance
+ * (31,128 ppl) publishing `Master Expense Account 4` at 13.04% of its menu /
+ * $961,793,000 — one row carrying 96% of the class's money.
+ *
+ * THE CLAIM IS DELIBERATELY THE WEAKER ONE. A forfeiture account is a REAL
+ * unallocated plan asset awaiting reallocation, so `the filing names no
+ * specific fund` would be FALSE; what is false is that a participant could
+ * choose it. So the label is `isLoanAccountRow`'s — NOT A MENU CHOICE — and
+ * the value stays printed and keeps counting toward the menu total.
+ *
+ * TWO POPULATIONS TEN TIMES LARGER WERE REFUTED BEFORE THIS SHAPE, AND BOTH
+ * ARE SHARE CLASSES. An expense/administrative-noun screen reads 2,761 rows /
+ * 3,666,044 ppl, dominated by `Large Cap Growth Fund II Fee Class R1` (×105)
+ * and `PIMCO Total Return Fund Administrative Class` — `Fee Class R1` is a
+ * collective trust's OWN share-class naming (Great Gray, Putnam, Wilmington,
+ * Morley) and `Administrative Class`/`Shares` is PIMCO's, MassMutual's,
+ * Dreyfus's and Vanguard's REGISTERED class. So `fee` and `administrative` are
+ * share-class words in this corpus — the recorded abbreviation trap (`A`,
+ * `IN`, `AS`, `IS`, `IP`) on two more tokens, and the first time the colliding
+ * token is a whole English WORD. Refusing a `class` designation still reads
+ * 505, the family also spelling itself `Fee R1`, `FEE I1`, `Fee S`, `FEE L`,
+ * `Fee CL245` and the filers' typos `Fee Clase R1` and `Fee Clas R1`.
+ *
+ * AND A HOUSE VOCABULARY CANNOT SPLIT OFF THE MUST-SPARE HALF — it leaked 7
+ * rows, every one naming a real vehicle, FOUR carrying the house only in the
+ * ISSUER cell and TWO with no house anywhere (`Gov Money Market Forfeiture`,
+ * `Guaranteed Interest Fund-Forfeiture Account`). The witness measured there
+ * was the published FEE — `fundER` is a NAME table, so a priced row names a
+ * vehicle by construction — BUT THAT WITNESS CANNOT BE ASKED ON BOTH SURFACES:
+ * `build-seo-pages` has zero references to `fundER`/`lookupTicker` and
+ * publishes no per-fund fee, so a fee-keyed gate would label a row on one
+ * surface and not the other. So the test is the CLOSED-WORLD RESIDUE instead,
+ * which is `isLoanAccountRow` ARM B's shipped design: strip the bookkeeping
+ * words and require NOTHING to remain. `fund`, `trust`, `portfolio`, `money`,
+ * `market`, `stable`, `value`, `guaranteed`, `interest`, `government`, `index`
+ * and `asset` are DELIBERATELY ABSENT, which is why every real vehicle keeps a
+ * residue and is refused without one fund name being enumerated.
+ *
+ * THE TWO WITNESSES AGREE ON THE FIRING SIDE, which is the control that the
+ * substitution is sound: of the 58 rows this fires on, ZERO publish a fee and
+ * ZERO publish a ticker, while 15 of the 111 it refuses publish a fee and one
+ * publishes VMFXX.
+ *
+ * THE WORD LIST IS MEASURED, NOT WRITTEN. Leave-one-out over the whole
+ * published+served store DELETED 49 of 83 candidate words as necessary-for-0
+ * (`reserve`, `recordkeeping`, `revenue`, `erisa`, `company`, `employer`, `the`,
+ * `for`, `with`, `other`, `total` …), and the firing set is IDENTICAL with the
+ * 34 survivors. Every survivor below has a single-protection case pinned. */
+const FORF_TRIGGER_WORD = /\bforfeit(?:ure|ures|ed|s)?\b/i;
+const FORF_TRIGGER_ACCT =
+  /\b(?:expense|expenses|fee|fees)\b[^.]{0,24}\b(?:account|budget|reserve|reimbursement)\b|\b(?:account|budget|reserve)\b[^.]{0,16}\b(?:expense|expenses|fee|fees)\b/i;
+const FORF_TRIGGER_PAID =
+  /\b(?:fees?|expenses?)\s+(?:paid|charged|borne)\b|\b(?:paid|charged)\s+by\s+(?:the\s+)?(?:participants?|plan|employer|company)\b/i;
+/* Whole-string expense LINES the other three arms cannot reach: each is a plan
+ * expense caption filed in the holdings column, anchored end to end because
+ * every one of these words appears inside real fund names. */
+const FORF_TRIGGER_LINE =
+  /^(?:administrative deductions|administration and recordkeeping services|audit and accounting|accrued interest|investment advisory and investment management fees\s*\.?)$/i;
+/* 34 words, each necessary for at least one row — see the pins below. */
+const FORF_BOOKKEEPING = /\b(?:forfeited|forfeiture|forfeitures|expense|fee|fees|account|accounts|budget|suspense|unallocated|nonvested|vested|plan|participant|participants|master|administrative|paid|holding|deductions|audit|accounting|and|of|to|by|in|on|general|non|amount|amounts|balance)\b/gi;
+export function forfeitureAccountResidue(name) {
+  return String(name || "")
+    .replace(/\d+(?:\.\d+)?\s*%/g, " ")
+    .replace(/\b\d+(?:\.\d+)?\b/g, " ")
+    .replace(FORF_BOOKKEEPING, " ")
+    .replace(/[^A-Za-z]+/g, " ")
+    .trim()
+    .split(/\s+/)
+    .filter((t) => t.length >= 2);
+}
+export function isForfeitureAccountRow(name) {
+  const s = String(name || "").trim();
+  if (!s) return false;
+  if (!(FORF_TRIGGER_WORD.test(s) || FORF_TRIGGER_PAID.test(s) || FORF_TRIGGER_ACCT.test(s) || FORF_TRIGGER_LINE.test(s))) return false;
+  return forfeitureAccountResidue(s).length === 0;
+}
+/* Asserted at import, both directions. Every must-SEE case is a real filed
+ * string from the live store and names the word it is the ONLY protection for;
+ * every must-KEEP case is a measured refusal or is labelled as a shape pin. */
+for (const [s, why] of [
+  ["Master Expense Account 4", "Hartford Fire Insurance, 31,128 ppl — $961,793,000, 13.04% of its menu, 96% of the class's money; `master` is its only protection"],
+  ["Fees paid by participants", "Publix Super Markets, 225,961 ppl — the motivating row, $2,283,079; `fees`, `paid`, `by` and `participants` are each necessary for exactly it"],
+  ["Nonvested forfeited accounts", "Takeda, 37,289 ppl — $10,101,427"],
+  ["12(b)(1) Fee Account", "BAE Systems, 58,807 ppl — $2,693,529; `fee` is its only protection"],
+  ["Unallocated Forfeitures", "Privia Health — $2,899,635"],
+  ["Forfeiture Account", "8 rows, the commonest member, so a regression to 0 would look quiet"],
+  ["FORFEITURES", "3 rows — `forfeitures` is the one word that empties a residue ALONE"],
+  ["Forfeitures in suspense", "`in` is necessary for exactly this row"],
+  ["FORFEITURE HOLDING ACCOUNT", "`holding` is necessary for 6"],
+  ["Expense Budget Account", "5 rows — `budget` is necessary for 8"],
+  ["Expense Budget Suspense Account", "`suspense` is necessary for 3"],
+  ["Forfeitures of Participant Non-Vested Amounts", "`of`, `participant`, `vested`, `non` and `amounts` are each necessary for exactly it"],
+  ["Forfeiture Account Unallocated", "`unallocated` is necessary for 3"],
+  ["PLAN FORFEITURE ACCOUNT", "`plan` is necessary for 2"],
+  ["General Forfeiture Account", "`general` is necessary for exactly it"],
+  ["Administrative deductions", "2 rows — an expense LINE; `administrative` and `deductions` are each necessary for 2"],
+  ["Audit and accounting", "`audit`, `accounting` and `and` are its only protections"],
+  ["Forfeiture/Expense Account", "`expense` is necessary for 12"],
+  ["Forfeiture suspense account", ""],
+  ["Forfeitures, holding", ""],
+  ["Forfeiture account balance", "`balance` is necessary for 2"],
+  ["Forfeiture/Unallocated account", ""],
+  ["Forfeitures 118,632", "NAMED RESIDUE that fires anyway: the welded-table-row class, where the NAME half still names no fund, so `not a menu choice` is true of it"],
+  ["2024 and 2023, balance on forfeited nonvested accounts amount to $14,175 and", "prose; `to`, `on` and `amount` are each necessary for exactly it"],
+]) if (!isForfeitureAccountRow(s)) {
+  throw new Error(`lib-disclose: isForfeitureAccountRow no longer reaches ${JSON.stringify(s)} (${why}) — the arm is inert, fix it rather than shipping a quiet guard`);
+}
+for (const [s, why] of [
+  ["Key Guaranteed Portfolio Fund (including forfeiture $708,522)", "$4,102,992 at er 0.35 — a REAL vehicle carrying its forfeiture sub-balance; `guaranteed`, `portfolio` and `fund` keep the residue"],
+  ["Key Guaranteed Portfolio Fund & Forfeitures", "$635,293 at er 0.35"],
+  ["Vanguard Federal MMKT Fund - Forfeitures", "carries ticker VMFXX at er 0.11 — the one refused row that publishes a symbol"],
+  ["American Funds Us Govt Money Market R6 (including forfeitures $18,238)", "$528,506 at er 0.4"],
+  ["(Forfeiture Accounts) American Funds New World Fund R6", "er 0.57 — the house leads and the forfeiture words trail"],
+  ["Putnam Stable Value Fund/ Forfeiture Account Balance", "$1,066,524 — a real stable value fund"],
+  ["Galliard Stable Return Fund - Forfeiture Asset Holding Acct", "$349,355"],
+  ["AIG Government Money Market Forfeiture", "er 0.2 — NO HOUSE WORD AT ALL, which is why the house vocabulary leaked it and the residue does not"],
+  ["Gov Money Market Forfeiture", "likewise houseless, er 0.2 — the second of the two rows that killed the house list"],
+  ["Guaranteed Interest Fund-Forfeiture Account", "er 0.35, houseless"],
+  ["Guaranteed Long-Term Account - forfeitures/asset holding", "iss `Empower`, er 0.35 — the house is in the ISSUER cell only"],
+  ["Empower Select Guaranteed Fund - Forfeitures", "$196,421 at er 0.35"],
+  ["Stable Value Class I1 - Forfeitures", "iss `Transamerica`, er 0.35"],
+  ["US Government Money Market Fund - Forfeitures", "iss `MassMutual`, er 0.2"],
+  ["Corebridge Financial Government Money Market Forfeiture Fund", "er 0.2"],
+  ["Nationwide Financial Services, Inc. Fed Hrms Gov Oblgtns Prmr (Forfeiture Acct)", "a real vehicle — and the row my own prose test mis-bucketed, because `[a-z]\\.\\s+[A-Z]` matches `Inc. Fed`"],
+  ["Forfeiture Holding Account Empower Trust Company, LLC", "$12,022,525 — the largest refusal; a trustee's name in the residue"],
+  ["MUTUAL FUND - FORFEITURES", "`mutual` and `fund` are absent from the strip list on purpose"],
+  ["Forfeiture American Balance R6 Fund", "a real American Funds row"],
+  ["FORFEITURE/ASSET HOLDING ACCOUNT", "NAMED RESIDUE, refused on purpose and now MEASURED: adding `asset` would flip 7 live refusals, so the shape is left alone until those 7 are read"],
+  ["Forfeiture Cash Account", "likewise `cash`, which would flip 9 — the largest absent-word family"],
+  ["Non-Interest Bearing Cash - Forfeiture", "likewise — and `interest` is a Schedule H line item"],
+  ["Annuity Forfeiture", "likewise `annuity`, which would flip 2"],
+  ["Forfeitures and Loan", "`loan` would DOUBLE-LABEL this row — the loan family already claims it, and two labels on one cell is worse than either"],
+  ["VALIC Forfeiture Account", "NAMED RESIDUE: a recordkeeper BRAND keeps its residue, exactly as this file records for `VALIC Loan Collateral Fund`"],
+  ["General Account", "SHAPE PIN and the TRIGGER's single protection: an insurer's general account is entirely bookkeeping words, so the residue test alone would relabel a real holding"],
+  ["Fees paid directly to Fidelity to provide investment advisory services totaling", "$1,653,612 — PROSE, which belongs to the `isSentenceRow` family and not here"],
+  ["Employer - Net of forfeitures", "$7,612,654 — `net` keeps the residue"],
+  ["Additions - balances forfeited during the year", "$2,053,869"],
+  ["Forfeitures during the year", "$365,287 — a movement, not a balance"],
+  ["Large Cap Growth Fund II Fee Class R1", "SHAPE PIN: ×105 rows at $318,179,963 — a collective trust's own SHARE CLASS, the family that refuted the expense-noun screen"],
+  ["MORLEY STABLE VALUE FEE CL245", "SHAPE PIN: the same family spelled without the word `Class`"],
+  ["PIMCO Total Return Fund Administrative Class", "SHAPE PIN: PTTRX at 0.51 — a REGISTERED Administrative class"],
+  ["Dreyfus Government Securities Cash Management Administrative Shares", "SHAPE PIN, likewise registered"],
+  ["Fidelity 500 Index Fund", "SHAPE PIN: an ordinary holding must not trigger at all"],
+  ["Vanguard Institutional Index Fund", "SHAPE PIN, likewise"],
+]) if (isForfeitureAccountRow(s)) {
+  throw new Error(`lib-disclose: isForfeitureAccountRow would relabel ${JSON.stringify(s)} (${why}) — it names a holding, fix the predicate rather than the control`);
+}
+
 /* THE FILING NAMED NO FUND — one decision, asked by both display paths.
  *
  * A row whose whole name is a bare vehicle type (`Mutual funds`,

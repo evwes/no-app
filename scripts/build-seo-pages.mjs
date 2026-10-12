@@ -10,7 +10,7 @@
  * EIN-PN (stable forever, no orphans when a sponsor renames). */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { matchQuoteOk, vestingQuoteOk, quoteTrim, accelerationOnlyVesting } from "./lib-quote.mjs";
-import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow, hasNoFundIdentity, isLoanDescriptionRow, isLoanAnswerRow, isLoanMaturityRow, isLoanVocabularyRow, isLoanAccountRow, isDateHeaderRow, isDirectionCaptionRow, isOfficeListRow, isPageBreakCaptionRow, isLabelOnlyName, isSentenceRow, isNonIssuerCell, captionFiledType, trustShareBound, trustScheduleDMenu } from "./lib-disclose.mjs";
+import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow, hasNoFundIdentity, isLoanDescriptionRow, isLoanAnswerRow, isLoanMaturityRow, isLoanVocabularyRow, isLoanAccountRow, isDateHeaderRow, isDirectionCaptionRow, isOfficeListRow, isPageBreakCaptionRow, isLabelOnlyName, isSentenceRow, isNonIssuerCell, captionFiledType, trustShareBound, trustScheduleDMenu, isForfeitureAccountRow } from "./lib-disclose.mjs";
 import { isGenericTypeName } from "./lib-4i.mjs";
 
 const BASE = "https://evwes.github.io/no-app"; // becomes the custom domain when DNS lands
@@ -316,6 +316,18 @@ for (const r of d.plans.slice(0, TOP_N)) {
        * participants, and the amount TRACKS THE FILING YEAR, which is what
        * makes it a date rather than a holding. */
       + (isDateHeaderRow(nm, f.value) ? " — a date from the filing's table, not a holding" : "")
+      /* THE PLAN'S OWN FORFEITURE OR EXPENSE ACCOUNT — 2026-10-12, and it goes
+       * BEFORE the nameless phrase because the weaker claim is the true one: a
+       * forfeiture account is a REAL unallocated plan asset, so "names no
+       * specific fund" would be FALSE of it, while "not a menu choice" is
+       * exactly right. Same disjunct reasoning as the loan family above, and
+       * the same label. lib-disclose.mjs carries the measurement, the two
+       * share-class populations it refuted, and why the witness is a
+       * closed-world residue rather than the published fee — a fee-keyed gate
+       * is unaskable HERE, this file having no resolver and no fee column, and
+       * a rule that labels a row on one surface and not the other is worse
+       * than either answer. */
+      + (isForfeitureAccountRow(nm) ? " — a plan forfeiture or expense account, not a menu choice" : "")
       + (nameless ? " — the filing names no specific fund" : "");
     /* A SCHEDULE H ASSET-CLASS CAPTION, WHOSE ONLY PROTECTION ON THE REPORT IS A
      * COLUMN THIS PAGE DOES NOT HAVE — 2026-10-09. 70 rows / 54 pages / 801,791
