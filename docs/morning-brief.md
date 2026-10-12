@@ -1,4 +1,4 @@
-# wampo brief — 2026-10-12, 05:3xZ
+# wampo brief — 2026-10-12, 08:1xZ
 
 Overwritten nightly. Decision-shaped: what shipped and what it changed in
 numbers, what was found wrong, what is held, what is waiting on the owner.
@@ -80,13 +80,60 @@ rows, and `sweep` one row at $70. So the class is about thirty rows by count
 and one row by dollars — and that row turned out not to be a labelling question
 at all.
 
+## Sized overnight and awaiting a decision: we hedge 869,224 readers on an answer we have right
+
+**The page publishes an asterisked *comparable* — its label for "a comparable
+registered fund, not the one held" — on a symbol the registry registers as
+exactly the share class the filing states. 469 rows / 122 plans / 869,224
+participants / $2.71B, and it moves no fee cell.** Paychex Retirement Llc
+(661,036 ppl) publishes `~SSDEX` on `State Street Target Retirement 2045 Fund
+Class K` at $170,115,724 — and SSDEX *is* Class K of that series. Nine rows of
+that one menu, $1.17B.
+
+Every other share-class item on the record is a wrong class published as fact.
+This is the right class published as a hedge, and an asterisk is a whole
+category of claim. **The control sits inside the same menu:** eleven rows state
+Class K on a filer-typed `Mutual Fund` — read out of the filing itself, which
+also confirms every value to the dollar — two publish their Class K symbol as
+fact, and nine are asterisked. The discriminator is only whether our own
+pattern table happens to carry a hardcoded arm for that vintage.
+
+**Why the SEC table cannot fix it is the interesting part:** its keys are
+emitted only where the page resolves *nothing*, which is its whole safety
+claim — so an answer the page already publishes is outside its reach by
+design. Safety and blindness are the same property.
+
+Split by fee direction, which is the decision: 472 rows / 886,867 ppl move the
+asterisk and **nothing else**; a further 194 rows / 45,781 ppl would *gain* a
+pattern-table fee, so that half belongs with the owner-gated fee families. No
+published fee is withdrawn or changed anywhere in the class.
+
+**One false positive, found only by reading all 57 names in the class** — and
+it is the second-largest row by dollars. `State Street S&P 500 Index
+Non-Lending Series Fund Class K` ($264,712,802; Nutrien at 11.94% of its menu)
+is a *collective trust*, and the "Class K" the filing states is the trust's own
+unit class, not a registered share class. Every instrument read clean on it.
+
+## What was corrected in my own work
+
+My first screen of that class read 3,969 rows / 4,548,795 participants and was
+refuted three ways by its own output: the registry's class column holds the
+*series* name for several registrants, 3,002 rows were pooled vehicles where
+the asterisk is right (Microsoft's 183,509-participant row is a commingled
+pool), and the alarming fee movements were all pooled rows. The honest class is
+six times smaller on rows.
+
 ## What continues today
 
-- **#644 is in flight** — an incremental sweep dispatched on the dev branch at
-  05:2xZ because no pipeline run had fired in 5.5 hours, above the measured
-  3.6-hour median, with the 1–7 AM ET floor open. Registered to come back
-  **byte-identical on all 35 coverage keys** (no store-side change since #643);
-  a `dl` rise above 93 means the EFAST2 bucket grew. Verdict and mirror on
-  completion.
-- The hourly cycle is healthy: the self-bound Routine fired twice in the last
-  seventy minutes, which is stronger evidence than any listing.
+- **#644 and #645 are both complete and verified.** #644's registration held in
+  its strongest form: of the 35 coverage keys, the only one that moved is the
+  date field. Main and the dev branch had each taken a data commit; the
+  structural diff proved them the same data twice — trail 445 lines both sides
+  with zero unique either way, 69,046 status acks with zero differing entries,
+  all nine stores identical once timestamps are stripped — so they were
+  converged rather than rebased, losslessly. Mirrored; `pages build and
+  deployment #1022` confirms the deployment on main's HEAD.
+- The audit issue is at its baseline 4 HIGHs: three contribution outliers and
+  the standing `fabricated-name` finding.
+- The hourly cycle is healthy: the self-bound Routine fired on schedule again
+  at 07:26, which is stronger evidence than any listing.
