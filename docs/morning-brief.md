@@ -53,12 +53,17 @@ unrelated caption families. Re-measured as a per-page set difference: 19
 gained, 0 lost, every one a benefit-responsive caption. The same comparison
 found the typed row that no label count could see.
 
-**And CI caught something local tests could not.** The ship went red on the
-`sec-tickers` staleness gate — correctly: the change moved code inside the
-fingerprinted slice that the generated ticker table is stamped against, so the
-table had to be regenerated. That is the gate doing exactly its job, at its
-documented cost of a twenty-minute regeneration, and it is the second time this
-week a guard has reddened for the right reason rather than a wrong one.
+**And CI caught something every local test passed.** The ship went red on the
+`sec-tickers` staleness gate — correctly. The new rule lives in
+`lib-disclose.mjs`, whose twin `app.js` carries *inside* the fingerprinted
+resolver slice the generated ticker table is stamped against, so the stamp no
+longer matched the committed code. The gate's own invariant already records why
+that file is not hashed directly: it reaches the table only through that twin.
+Paid: **21m8s of regeneration, after which exactly one line of the 12,445-line
+asset differs — the stamp.** The key map is byte-identical, so no published
+cell moved. That is the documented price of a gate that is exact about code
+rather than guessing about keys, and `site-test #215` is green on the fix with
+`pages build and deployment #1027` confirming it live on main's HEAD.
 
 ## Verified: the registration held exactly, for the third run running
 
@@ -95,6 +100,25 @@ Unchanged from yesterday, and all of them large:
   bearing` Schedule H caption (14 rows). Each is reachable only by relaxing the
   one condition that refuses the insurance house, so each is a separate
   measurement rather than a free widening.
+
+## The 09:07 draw
+
+Two menus, 79,668 participants between them, **and no new class** — which is
+worth saying because an absence is a result. Freedom Care Llc (59,785 ppl)
+reads at ratio 1.000 and Sandia (19,883) at 0.991; Sandia is collective trusts
+end to end and is the machinery working, every Vanguard vintage asterisked at
+0.08 with no fee claimed, the stable-value row correctly unpriced, the managed
+account labelled as such. The four gaps on Freedom Care are each an item
+already sized and queued, and the one worth naming is a live reader-facing
+instance of the bare-brand fee family: `Janus Henderson Balanced N Fund`
+publishing **0.7** with no ticker. That is the benign half of it — a real Janus
+fund, so the figure is plausible-but-unsourced rather than fabricated — so it
+adds a named instance and changes nothing about the decision.
+
+Sandia also confirms, on a second plan at $1.0B, that the comparable branch
+reaching past the no-public-price gate is a design and not a defect: the report
+footnote names it as a ceiling, and `fund-note-test` is what keeps that
+paragraph from being reworded away.
 
 ## What continues today
 
