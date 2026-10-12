@@ -933,6 +933,42 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
+**PRE-REGISTERED 2026-10-12 12:5xZ for the next merge after the CASH-CAPTION
+(`non` token) ship, which is `cf081af6` — THE COVERAGE LINE MUST BE
+BYTE-IDENTICAL ON ALL 35 KEYS, date included.** `tkExact` 40.23, `tkComparable`
+3.38, tkSampled 87,106, tkShare 25.12, confident 60,182, match 43,312, vesting
+53,023, vestQuote 5,373, entries 65,495, lineups 59,833, rk 63,916, HIGH 4, WARN
+556, overshoot 370, overshootTrust 12, aggRow 114, `dl` 93 and **`pv` 203** all
+unchanged; a `dl` rise means the EFAST2 bucket grew.
+**THIS ONE IS SETTLED BY CONSTRUCTION RATHER THAN BY MEASUREMENT, which is a
+stronger claim than a point estimate and is worth the two greps it took.** The
+ship added one token to `CAPTION_WORD` in `lib-disclose.mjs` — and that file has
+exactly TWO pipeline consumers, each importing ONE function:
+`audit-data.mjs:17` takes `cleanFiledName` and `merge-4i.mjs:7` takes
+`hasNoFundIdentity`. **Neither function's body references `CAPTION_WORD`,
+`CAPTION_SEP`, `SCHEDULE_H_CAPTION`, `isScheduleHCaption` or
+`isWithdrawalTermsCaption`** (asserted by brace-matching both bodies out of the
+source, 1,070 lines and 1 respectively), so the token is UNREACHABLE from
+anything that writes a coverage key. The other two keys a non-store ship can
+touch are `tkExact`/`tkComparable`, and `audit-data` RE-IMPLEMENTS the lookup
+chain reading `fund-er.js` (byte-unchanged) and `sec-tickers.js` (regenerated at
+ADDED 0 / REMOVED 0 / CHANGED 0, one line differing — the stamp) and **never
+reads `app.js`**, so the regenerated twin cannot reach it either.
+*A registration derived from the IMPORT GRAPH refutes itself the moment a new
+import appears, where a point estimate only ever gets closer or further.*
+
+**DELIVERED AND VERIFIED BY #647 (`success`, 11:28-11:37Z on `458d8f77`, data
+commit `ad0932ae`) — THE WITHDRAWAL-TERMS CAPTION REGISTRATION HELD IN THE
+STRONGEST FORM AVAILABLE: the line is BYTE-IDENTICAL to its predecessor on all
+35 keys WITH THE DATE INCLUDED**, compared programmatically against the line
+attributed by the COMMIT that introduced it, with guards asserting that commit
+appended exactly one line and rewrote none. `tkExact` 40.23, `pv` 203, HIGH 4,
+WARN 556, `dl` 93 and every other key unchanged — which is the whole safety
+claim for a display-side caption split that writes no store. **So #647 is also
+an identical-line merge**, and per this file's own rule the recorded
+identical-line run count is RE-DERIVED and never incremented, so it stays at 19
+until a measurement replaces it.
+
 **DELIVERED AND VERIFIED BY #646 (`success`, 09:15-09:25Z on `93ed2e46`, data
 commit `abe66dfb`) — THE REGISTRATION HELD EXACTLY ON BOTH POINT ESTIMATES:
 `tkExact` **40.20 -> 40.23** and `tkComparable` **3.41 -> 3.38**, EXACTLY 2 of
@@ -945,10 +981,11 @@ that previously resolved nothing. confident 60,182, match 43,312, vesting
 overshootTrust 12, aggRow 114, tkSampled 87,106, tkShare 25.12, `dl` 93 and `pv`
 203 all unchanged, compared programmatically against the line attributed by the
 COMMIT that introduced it with a guard asserting that commit appended exactly
-one line. **SO THERE IS NOTHING PRE-REGISTERED AND PENDING** — the
-withdrawal-terms caption ship that followed is display-side, writes no store and
-moves no coverage key (shownType only; `audit-data` carries no shownType
-figure).
+one line. **That block's closing "SO THERE IS NOTHING PRE-REGISTERED AND
+PENDING" is SUPERSEDED TWICE OVER** — the withdrawal-terms caption ship was
+pending when it was written and #647 has since delivered it, and the cash-caption
+ship registered above is pending now. *A sentence like that is true only until
+the next ship, and leaving it up makes the file assert both.*
 *THIRD CONSECUTIVE REGISTRATION TO LAND DEAD ON THE POINT ESTIMATE, all three
 derived in the metric's own population via the transcribed lookup chain with the
 BEFORE figure reproducing the shipped one as the control. This one adds a
