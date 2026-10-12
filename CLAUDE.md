@@ -933,6 +933,53 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
+**PRE-REGISTERED 2026-10-12 13:3xZ for the next merge after the CONTRACT-BASIS
+CAPTION ship, which is `4d213557` — THE COVERAGE LINE MUST BE BYTE-IDENTICAL ON
+ALL 35 KEYS, date included.** `tkExact` 40.23, `tkComparable` 3.38, tkSampled
+87,106, tkShare 25.12, confident 60,182, match 43,312, vesting 53,023,
+vestQuote 5,373, entries 65,495, lineups 59,833, rk 63,916, HIGH 4, WARN 556,
+overshoot 370, overshootTrust 12, aggRow 114, `dl` 93 and **`pv` 203** all
+unchanged; a `dl` rise means the EFAST2 bucket grew.
+**SETTLED BY CONSTRUCTION, by the same import-graph argument #648 delivered —
+and the argument is RE-CHECKED rather than carried, because this record's own
+rule is that a safety argument belongs to a mechanism and not to a file.** The
+ship adds a THIRD disjunct to `isScheduleHCaption` in `lib-disclose.mjs`, whose
+only two pipeline consumers each import ONE function: `audit-data.mjs:17` takes
+`cleanFiledName` and `merge-4i.mjs:7` takes `hasNoFundIdentity`. Neither body
+references `isScheduleHCaption`, `isContractBasisCaption`, `CT_WORD`,
+`BASIS_CAPTION`, `CAPTION_WORD` or `CAPTION_SEP`, so the new arm is unreachable
+from anything that writes a coverage key. `tkExact`/`tkComparable` read
+`fund-er.js` (byte-unchanged) and `sec-tickers.js`, which was regenerated at
+**ADDED 0 / REMOVED 0 / CHANGED 0 keys with exactly one line differing — the
+stamp** — and `audit-data` never reads `app.js`, so the regenerated twin cannot
+reach them either. `PARSER_VERSION` stays 203 and no store is written.
+
+**DELIVERED AND VERIFIED BY #648 (`success`, 12:48-12:58Z on `9163bb8b`, data
+commit `e2538675`) — THE CASH-CAPTION REGISTRATION HELD IN THE STRONGEST FORM
+AVAILABLE: the line is BYTE-IDENTICAL to its predecessor on all 35 keys WITH
+THE DATE INCLUDED**, compared programmatically against the line attributed by
+the COMMIT that introduced it, with guards asserting that commit appended
+exactly one line and rewrote none. **That was the first registration here
+derived from the IMPORT GRAPH rather than from a measurement in the metric's
+own population, and it is a stronger claim than a point estimate: it refutes
+itself the moment a new import appears, where a point estimate only ever gets
+closer or further.**
+
+**AND #648's DATA COMMIT WAS DROPPED, DELIBERATELY AND LOSSLESSLY.** #649
+(scheduled, main, 13:03-13:09Z) committed `26f76cd9` five minutes later, so the
+refs diverged by one data commit each way — the recorded SAME-DATA-TWICE case,
+and the recorded rule that *timing is not evidence in either direction* was
+followed rather than quoted. The structural diff: every store **IDENTICAL once
+`generated` is stripped** (mtias, plans-list, plans-index, fee-percentiles,
+lineups-index), `plans-all` **112,652 rows with 0 only-on-main, 0 only-on-dev
+and 0 differing rows**, `lineups-status` **69,046 acks with 0 differences**, and
+the coverage trail **448 lines on BOTH with 0 unique either way — so both runs
+appended the IDENTICAL line.** A rebase of the duplicate conflicted on all
+eight single-line stores (the timestamps), so only the ship was replayed
+(`git rebase --onto origin/main e2538675`) and the duplicate dropped. *A
+textual diff could not have answered this — every store is ONE LINE — and
+`mirror-gate`'s +0/-0 is lineup-keyed and blind to the other seven files.*
+
 **PRE-REGISTERED 2026-10-12 12:5xZ for the next merge after the CASH-CAPTION
 (`non` token) ship, which is `cf081af6` — THE COVERAGE LINE MUST BE
 BYTE-IDENTICAL ON ALL 35 KEYS, date included.** `tkExact` 40.23, `tkComparable`
