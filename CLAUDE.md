@@ -945,6 +945,18 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
+**DELIVERED AND VERIFIED BY #650 (`success`, 13:34-13:4xZ on `a7ec3a88`, data
+commit `a3e41f11`) — THE CONTRACT-BASIS REGISTRATION HELD IN THE STRONGEST FORM
+AVAILABLE: the line is BYTE-IDENTICAL to its predecessor on all 35 keys WITH
+THE DATE INCLUDED**, compared programmatically against the line attributed by
+the COMMIT that introduced it. **THIRD CONSECUTIVE REGISTRATION DERIVED FROM
+THE IMPORT GRAPH AND THIRD TO HOLD EXACTLY** (#648, #649's quiet line, #650),
+and the premise was RE-CHECKED each time rather than carried — which is the
+whole discipline, since *a safety argument belongs to a mechanism and not to a
+file.* **SO THERE IS NOTHING PRE-REGISTERED AND PENDING.**
+
+**ORIGINAL REGISTRATION, kept because it is what was predicted:**
+
 **PRE-REGISTERED 2026-10-12 13:3xZ for the next merge after the CONTRACT-BASIS
 CAPTION ship, which is `4d213557` — THE COVERAGE LINE MUST BE BYTE-IDENTICAL ON
 ALL 35 KEYS, date included.** `tkExact` 40.23, `tkComparable` 3.38, tkSampled
