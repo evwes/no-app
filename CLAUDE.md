@@ -933,6 +933,38 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
+**PRE-REGISTERED 2026-10-12 09:1xZ for the next merge after the REPAIRED-ASTERISK
+(Class K promotion) ship, dispatched as #646 on `93ed2e46` — `tkExact` **40.20 ->
+40.23** (band **40.22-40.24**) AND `tkComparable` **3.41 -> 3.38** (band
+**3.37-3.39**), AND NOTHING ELSE MOVES.** This is the first registration here
+where TWO keys move, and they must move **equally and oppositely**: the ship
+relabels a row from comparable to exact and resolves no new row, so
+`tkExact + tkComparable` is **UNCHANGED** — measured 35,014 + 2,970 = 35,040 +
+2,944 = **37,984 sampled rows both sides**. That sum is the structural control
+and is stronger than either figure alone: a move in the sum means the promotion
+reached a row that previously resolved nothing, which it cannot do.
+**DERIVED IN THE METRIC'S OWN POPULATION**, per the recorded correction:
+`audit-data.mjs:802`'s chain was transcribed and run over the identical
+`ackHash(ack) % 20` sample with BOTH `fund-er.js` versions, and **the BEFORE
+figures reproduce #642's shipped 40.20 / 3.41 to the digit — the control that
+the transcription IS the metric.** 87,106 sampled rows, **26 of them move**
+(40.1970 -> 40.2269 and 3.4096 -> 3.3798), and **any other kind of change read
+0**, which is the registration's own refutation condition. A must-see pin
+asserts a Class-K-stating row is IN the metric's sample and THROWS otherwise,
+because the sample applies neither the serving condition nor the publish gate
+and a registration measured on an empty intersection reads as a clean zero.
+`tkSampled` 87,106, `tkShare` 25.12 (it asks `fundTickerInfo` one argument on
+the bare name, so the promotion's two-argument arm is unreachable from it),
+confident 60,182, match 43,312, vesting 53,023, vestQuote 5,373, entries 65,495,
+HIGH 4, WARN 556, overshoot 370, overshootTrust 12, aggRow 114, `dl` 93 and
+**`pv` 203** all unchanged — no store is written and `PARSER_VERSION` does not
+move. `sec-tickers.js` was regenerated at ADDED 0 / REMOVED 0 / CHANGED 0 keys,
+so the chain's last arm is byte-identical on both sides and cannot contribute.
+A `dl` rise means the EFAST2 bucket grew.
+*The app.js fee-provenance fix that shipped beside it reads no coverage key —
+the line carries no fee figure — so it is registered as moving nothing, and the
+`fee changed 0` in the ship's own differential is what that rests on.*
+
 **DELIVERED AND VERIFIED BY #642 (`success`, 23:13-23:22Z on `08daa39a`, data
 commit `3cc39bdb`, mirrored to main) — THE REGISTRATION HELD EXACTLY ON THE
 POINT ESTIMATE: `tkExact` **40.19 -> 40.20**, and of the line's 35 keys EXACTLY
@@ -941,7 +973,8 @@ that introduced it and a guard asserting that commit appended exactly one line.
 `tkComparable` 3.41, `tkSampled` 87,106, `tkShare` 25.12, confident 60,182,
 match 43,312, vesting 53,023, vestQuote 5,373, entries 65,495, HIGH 4, WARN 556,
 overshoot 370, overshootTrust 12, aggRow 114, `dl` 93 and `pv` 203 all
-unchanged. **SO THERE IS NOTHING PRE-REGISTERED AND PENDING.**
+unchanged. **That sentence is SUPERSEDED by the registration above** — it is
+true only until the next ship, and leaving it up makes the file assert both.
 *This is the SECOND CONSECUTIVE registration to land dead on the point estimate,
 both derived in the metric's own population via the transcribed lookup chain
 with the BEFORE figure reproducing the shipped one as the control — against the
