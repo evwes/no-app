@@ -6288,6 +6288,21 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 These outlived the versions that produced them. The accuracy log has the case.
 
+- **RE-DERIVE THE CACHE-BUSTER *AFTER* THE `sec-tickers.js` REGEN, NEVER BEFORE
+  IT (2026-10-12).** `sec-tickers.js` is a STAMPED asset and the regen rewrites
+  its `SEC_TICKERS_CODE` line, so a stamp taken before the regen is stale **by
+  construction** — `site-test #217` went red on step 16 for exactly that, with
+  the stamp reading `107e46d2` where the regenerated asset hashes to
+  `51936438`. ***And the cost is not one failed check: steps 17-20 SKIPPED***,
+  so the Playwright install, the smoke test, the map test and
+  `sec-tickers-stamp-test` itself never ran — this file's own *a red gate early
+  in a job is not one failure, it is a job that stopped* met on the very gate
+  that enforces stamping. The order for a ship that moves the fingerprinted
+  slice is therefore: edit, regenerate the twin, **regen the table, THEN
+  `node scripts/stamp-assets.mjs`**, and re-run the smoke test afterwards
+  because it loads the asset the regen rewrote. `--check` is the one-second
+  confirmation and it belongs immediately before the commit, not before the
+  regen.
 - **A COMPOSED GATE'S ARMS ARE NOT ALL IN THE FILE YOU ARE EDITING — AND ONE OF
   THEM IS THE PARSER'S (2026-10-12).** Sizing a new disjunct of
   `isScheduleHCaption` at 39 reader-facing rows, I asked every display
