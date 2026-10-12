@@ -2795,12 +2795,42 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   other*); and `smoke-test`'s `__wampoCaption` cross-check, which is what catches
   a hand-edited twin since the generator rewrites `app.js` before probing.
   **STILL OPEN, named residue and none of it a gap in this arm:** `At contract
-  value` (24 rows / $167,946,996), bare `contract` (4), `Investment Contract`
-  (3) and `Cash, non-interest bearing` (14 rows, a genuine Schedule H line-1a
-  caption) are each reachable only by dropping the `respons` requirement or
-  widening `CAPTION_WORD`, so they are a separate measurement; and the 186
-  issuer-carrying rows want the TYPE, not a nameless label.
-  `docs/accuracy-log.md` 2026-10-12 (09:4xZ).
+  value` (24 rows / $167,946,996), bare `contract` (4) and `Investment
+  Contract` (3) are reachable only by dropping the `respons` requirement, so
+  they are a separate measurement; and the 186 issuer-carrying rows want the
+  TYPE, not a nameless label.
+  **THE CASH HALF OF THAT RESIDUE IS CLOSED — SHIPPED 2026-10-12 11:4xZ, ONE
+  TOKEN: 22 published+served rows / 22 acks / 22 plans / 15,855 ppl /
+  $2,050,182 gain the nameless label and 3 crawlable pages each gain one
+  `— asset type as filed: Cash / short-term`**, with `shownType` the ONLY cell
+  that moves (name / ticker / fee / asterisk 0, row membership identical at
+  4,098 both sides, a 21,473-row non-candidate discharge differing on 0, the
+  narrowing discharged over all 412,783 distinct stored names at 0 failures).
+  `Cash, non-interest bearing` is Schedule H line 1a's OWN caption and `non`
+  was the single token `CAPTION_WORD` lacked. `PARSER_VERSION` stays 203.
+  ***THE RULE THIS SHIP'S PREDECESSOR EARNED WAS APPLIED RATHER THAN QUOTED.***
+  That entry says a token added to a closed whole-string vocabulary multiplies
+  with every token already in it — and its prescription has an ESCAPE CLAUSE,
+  *read every newly reached name*, which is the half that licenses a widening
+  rather than forbidding one. All **49** newly reached distinct names were
+  enumerated and READ: **15 blank-typed, every one a spelling of the one
+  caption** (`Cash (non-interest bearing)`, `CASH, non- interest bearing`,
+  `Cash – Non Interest Bearing`), and **34 typed, of which 33 are
+  `Cash / short-term`** (`Non-interest bearing cash` ×145) and ONE is
+  `PREFERRED STOCK, NON` typed `Collective trust`, a caption cut mid-phrase
+  that gains only the type SENTENCE and correctly not the nameless label.
+  **0 DECOYS**, and structurally so: `non` matches as a WHOLE TOKEN, so
+  `Nontraditional` and `Nuveen` are single tokens this vocabulary does not
+  carry, and a real fund that negates something is held by the tokens it
+  deliberately omits (`equity`, `index`, `fund`, `lending`). Those pins are
+  **labelled nearest-reachable shapes, not measured single-protection cases**,
+  because the store holds no real fund this token reaches and a fixture must
+  not claim to be one. ***DO NOT CARRY the predicate-level 25 rows / 17,212
+  ppl*** — 3 rows carry an ISSUER and are held by the call-site gate, the same
+  discrepancy as this entry's own 386 -> 171. **Named cost, real and invisible
+  today: every token added to this vocabulary in future now composes with
+  `non` as well.**
+  `docs/accuracy-log.md` 2026-10-12 (09:4xZ) and (11:4xZ).
 - **FOUND BY THE 02:08 DRAW, UNSIZED — A PLAN'S POSTAL ADDRESS AND AN EXPENSE
   LINE PUBLISHED AS HOLDINGS, ON ONE 239,138-PARTICIPANT PAGE.** Publix Super
   Markets (15 funds, ratio 0.974) publishes **`PUBLIX SUPER MARKETS, INC. 3300
@@ -6078,6 +6108,20 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 These outlived the versions that produced them. The accuracy log has the case.
 
+- **AND THE ESCAPE CLAUSE IN A REFUSAL RULE IS PART OF THE RULE (2026-10-12,
+  two hours after the rule below).** That rule's headline is *prefer a dedicated
+  disjunct*; its condition is *read every newly reached name*. Applied
+  mechanically, the headline would have refused a one-token close of a named
+  residue — Schedule H line 1a's own `Cash, non-interest bearing`, where `non`
+  was the single missing token. Applied properly, the condition cost ONE
+  measurement, enumerated all 49 newly reached names, read them, found **0
+  decoys**, and licensed the widening. ***The difference between the token that
+  must be refused and the token that may ship is not the size of the change —
+  `benefit` composed with a long-present `security` into a firm's name and
+  `non` composes into nothing — and only the member list can tell them
+  apart.*** So a rule written as a refusal is a rule about EVIDENCE: quote the
+  headline to justify refusing and you have skipped the test the rule exists to
+  demand.
 - **A TOKEN ADDED TO A CLOSED WHOLE-STRING VOCABULARY MULTIPLIES WITH EVERY
   TOKEN ALREADY IN IT (2026-10-12).** Five candidate tokens for
   `isScheduleHCaption`'s `CAPTION_WORD` all measured NECESSARY by leave-one-out

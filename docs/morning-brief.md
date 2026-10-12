@@ -120,6 +120,41 @@ reaching past the no-public-price gate is a design and not a defect: the report
 footnote names it as a ceiling, and `fund-note-test` is what keeps that
 paragraph from being reworded away.
 
+## Shipped since: one token, and a rule used the way it was meant
+
+**Schedule H line 1a's own caption — `Cash, non-interest bearing` — stopped
+being published as a fund: 22 rows / 22 plans / 15,855 participants, plus three
+crawlable pages each gaining `asset type as filed: Cash / short-term`.** The
+shown type is the only cell that moves. Small, and it closes the cash half of a
+residue this morning's larger caption ship named.
+
+**The interesting part is the method, because this change is exactly the shape
+the morning's own hard-won rule warns against** — adding a word to a closed
+vocabulary that matches whole strings, where the danger is that the new word
+*combines* with one already there. That is how `benefit` combined with
+`security` into `Security Benefit`, a real insurance company, six hours ago.
+But that rule has a condition attached: read every name the new word newly
+reaches. Doing so took one measurement — **all 49 were enumerated and read, 48
+of them spellings of the one cash caption, and not a single real fund among
+them.** So the rule did not forbid the change; it priced it. *A rule written as
+a refusal is really a rule about evidence, and quoting the headline to justify
+refusing skips the test it exists to demand.*
+
+## Verified: the morning's caption ship moved nothing it should not
+
+**#647's coverage line is byte-identical to its predecessor on all 35 keys.**
+That is the whole safety claim for a display-side change that writes no store,
+and it is the strongest form the check can take. The run before it, #646, had
+delivered both predicted figures exactly, with their sum — a conservation law
+the change could not violate — holding to the digit.
+
+**And the random draw found that ship working on a plan nobody named.** Trinity
+Preparatory School of Florida publishes two rows, 19.3% of its whole menu,
+reading `Non-Benefit Responsive Contract` and `Benefit Responsive Contract` —
+both now labelled as naming no specific fund. The ship was measured on one
+population and is confirmed on another, which is a kind of evidence no count
+provides.
+
 ## What continues today
 
 - The hourly cycle is healthy; the self-bound Routine fired on schedule again.

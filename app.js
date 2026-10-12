@@ -1856,6 +1856,38 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
      * six. Both of those names are blocked by tokens OUTSIDE this vocabulary
      * anyway, so the instinct bought nothing it can be credited for. */
     + "|cct|ccts|corp|corps|instr|instrs|sec|secs"
+    /* THE NEGATION PARTICLE, added 2026-10-12 — Schedule H line 1a's own caption
+     * is `Cash, non-interest bearing`, and `non` was the single token this
+     * vocabulary lacked. It is added as a TOKEN rather than as a new disjunct
+     * because the form itself negates its captions this way, and because the
+     * measurement below licenses it.
+     *
+     * ***THIS IS THE EXACT SHAPE THE WITHDRAWAL-TERMS ENTRY WARNS ABOUT*** — a
+     * token added to a closed WHOLE-STRING vocabulary multiplies with every
+     * token already in it, which is how `benefit` composed with the long-present
+     * `security` into `Security Benefit`, an insurance HOUSE. So the rule was
+     * applied rather than quoted: the token was added, EVERY newly reached
+     * distinct name in the published+served store was enumerated, and ALL 49
+     * WERE READ.
+     *   BLANK-typed (reach `isNamelessFundRow`): 25 rows / 25 acks / 25 plans /
+     *     17,212 ppl / $2,133,228 across **15 names, every one a spelling of the
+     *     one caption** — `Cash, non-interest bearing` ×8, `Cash (non-interest
+     *     bearing)` ×3, `CASH, non-interest bearing` ×2, and singletons down to
+     *     the filers' own `Cash, non- interest bearing` and `Cash – Non Interest
+     *     Bearing`.
+     *   TYPED (reach `captionFiledType` on the crawlable pages): 284 rows / 34
+     *     names, of which **33 are `Cash / short-term`** — `Non-interest bearing
+     *     cash` ×145 the commonest — and ONE is `PREFERRED STOCK, NON` typed
+     *     `Collective trust`, a caption cut off mid-phrase. That row gains only
+     *     the type sentence, which states the filed type and is true of it; it is
+     *     NOT given the nameless label, which would be the claim this record
+     *     refuses for a name we cut.
+     * **0 DECOYS: not one real fund is newly reached.** The reason is structural
+     * and worth keeping — `non` is matched as a WHOLE TOKEN, so `Nontraditional`
+     * and `Nuveen` are single tokens this vocabulary does not carry, and a real
+     * fund that negates something (`Non-US Equity Index Fund`) is held by the
+     * tokens this vocabulary deliberately omits (`equity`, `index`, `fund`). */
+    + "|non"
     + "|value|other|all|and|or|the|at|of|in)";
   const CAPTION_SEP = "[\\s\\-\\u2010-\\u2015\\/,.:;()&*]+";
   /* NOTE the non-capturing wrappers on the optional leading and trailing

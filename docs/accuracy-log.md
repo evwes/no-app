@@ -11,6 +11,154 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-12 (11:5xZ) — THE 11:07 DRAW: THE MORNING'S CAPTION SHIP CONFIRMED LIVE ON A PLAN NOBODY NAMED, AT 19.3% OF ONE MENU
+
+Seeded participant-weighted draw (`--seed 12101107`, 2 menus, `--rows 40`).
+
+### The 09:4xZ withdrawal-terms ship, working on a plan it never named
+
+**Trinity Preparatory School Of Florida** (307 ppl, 52 funds, ratio 0.999)
+publishes, as rows 0 and 5 of its menu:
+
+| row | published | share |
+|---|---|---|
+| 0 | `Non-Benefit Responsive Contract` — **Filing names no specific fund** | **13.7% / $4,289,074** |
+| 5 | `Benefit Responsive Contract` — **Filing names no specific fund** | 5.6% / $1,749,938 |
+
+**19.3% of that menu is the accounting split, and both rows now say so**, with
+`namelessRow` set. The ship was measured at 171 rows and sized from Yale; this
+is an independent plan reached by the same rule two hours later, which is the
+confirmation a count cannot give. Both also carry `guaranteeOnlyFee`, so
+neither publishes a fabricated expense ratio.
+
+### The CREF class, live for the third time
+
+Five `CREF … R1` rows (`Stock` 4.7%, `Growth` 4.6%, `Global Equities`, `Core
+Bond`, `Equity Index`), every one with **no ticker**, and **`CREF Equity Index
+R1` publishing a 0.06 FEE** while its four siblings publish nothing — exactly
+the recorded internal control, where the index account collides with
+`fund-er.js:498`'s generic pattern and the rest do not. Third plan on this
+record; the figures hold. Owner-gated, unchanged.
+
+### The bare-brand fee family, in both menus and in its benign half both times
+
+`Janus Henderson Enterprise I` at **0.7** (Trinity) and **`Carillon Eagle Mid
+Cap Growth Fund Class R5` at 0.75** on $5,967,854 / 2.5% (Boulder Community
+Health, 2,853 ppl), plus `Victory Sycamore Established Value I Fund` at 0.55.
+All three are REAL funds of the house whose bare brand priced them, so the
+figures are plausible-but-unsourced rather than fabricated — **the benign half
+for the second cycle running.** The 23:5xZ sizing measured the convictable core
+at 38 rows against 27 real funds that would LOSE a plausible fee, and these
+rows are on the 27's side of that trade. Nothing changes.
+
+### Boulder Community Health — a healthy American Funds menu, and three recorded coverage gaps
+
+35 funds, ratio 0.979, with the whole `American Funds Retirement 20XX R6`
+ladder resolving (RFETX, RFHTX, RFGTX, RFDTX, RFKTX, RFUTX, RRCTX, RFVTX,
+RFJTX, RFTTX, RFBFX) at the house-wide **0.4**, beside RERGX at 0.46 and RLBGX
+at 0.28 — so the ladder's single figure is the pattern table being imprecise
+rather than wrong, the owner-gated fee family. Three blanks, each an already
+recorded class and none new: `Oppenheimer Invesco Global Y Fund` (the retired
+brand — *a rename is a FACT that must be SOURCED*), `Alliance Bernstein Large
+Cap Growth Z Fund` (the issuer-repair family's spelling), and `Fidelity
+Emerging Markets K FD` (the `FD` abbreviation).
+
+### No new class
+
+Both ratios at 0.999 and 0.979, every gap already sized and queued. *An absence
+is a result*, and the draw's real yield this hour is the live confirmation
+above: a ship measured on one population, found working on another.
+
+
+---
+
+## 2026-10-12 (11:4xZ) — SHIPPED: SCHEDULE H LINE 1a's OWN CASH CAPTION, ONE TOKEN — AND THE RULE EARNED TWO HOURS EARLIER WAS APPLIED RATHER THAN QUOTED
+
+### What shipped
+
+`Cash, non-interest bearing` is Schedule H line 1a's own caption, and **`non`
+was the single token `CAPTION_WORD` lacked.** Added as one token.
+
+| | |
+|---|---|
+| rows whose `shownType` moved | **22** |
+| name / ticker / fee / asterisk | **0 / 0 / 0 / 0** |
+| row membership | identical, 4,098 both sides |
+| non-candidate discharge | 21,473 rows sampled, **differing on 0** |
+| narrowing discharge | all 412,783 distinct stored names, **0 failures** |
+
+**22 rows / 22 acks / 22 plans / 15,855 ppl / $2,050,182**, 0 publishing a
+ticker or a fee. On the crawlable pages the same predicate reaches
+`captionFiledType`: **3 pages, each one row gaining `— asset type as filed:
+Cash / short-term`**, row counts identical and nothing else moved.
+`PARSER_VERSION` stays 203.
+
+***DO NOT CARRY THE PREDICATE-LEVEL 25 rows / 17,212 ppl / $2,133,228.*** That
+is the count with the blank-type condition applied and nothing else; **3 rows
+carry an ISSUER and are correctly held by the call-site gate**, exactly as the
+09:4xZ ship recorded for 186 of its own 386. *A predicate count is not a reader
+count, and the gap is always the call site.*
+
+### THE RULE FROM TWO HOURS EARLIER WAS THE WHOLE METHOD HERE
+
+The 09:4xZ entry records: ***a token added to a closed WHOLE-STRING vocabulary
+multiplies with every token already in it***, which is how `benefit` composed
+with the long-present `security` into **`Security Benefit`, an insurance
+HOUSE** — and its prescription is to prefer a dedicated disjunct, or, if a
+widening really is the right shape, **to read every newly reached name.**
+
+So that is what was done, and the prescription's own escape clause is what this
+ship takes. The token was added, every newly reached distinct name in the
+published+served store was enumerated, and **ALL 49 WERE READ**:
+
+- **15 BLANK-typed names, every one a spelling of the one caption** — `Cash,
+  non-interest bearing` ×8, `Cash (non-interest bearing)` ×3, `CASH,
+  non-interest bearing` ×2, down to the filers' own `Cash, non- interest
+  bearing`, `Cash – Non Interest Bearing` and `Cash - non-interest-bearing`.
+- **34 TYPED names, of which 33 are `Cash / short-term`** (`Non-interest
+  bearing cash` ×145 the commonest), and **ONE is `PREFERRED STOCK, NON` typed
+  `Collective trust`** — a caption cut off mid-phrase. It gains only the type
+  SENTENCE, which states the filed type and is true of it; it is **not** given
+  the nameless label, which is the claim this record refuses for a name we cut.
+
+**0 DECOYS. Not one real fund is newly reached**, and the reason is structural
+rather than lucky: `non` matches as a WHOLE TOKEN, so `Nontraditional` and
+`Nuveen` are single tokens this vocabulary does not carry, and a real fund that
+negates something (`Non-US Equity Index Fund`, `Non-Lending Russell 1000
+Index`) is held by the tokens this vocabulary **deliberately omits** —
+`equity`, `index`, `fund`, `lending`, `russell`. Those three are pinned as
+must-KEEP and **labelled as nearest-reachable shapes rather than measured
+single-protection cases**, because the store contains no real fund this token
+reaches and an honest fixture cannot claim to be one.
+
+***So the rule did not forbid the widening; it priced it.*** The difference
+between this token and `benefit` is not the size of the change — it is that
+`benefit` composed into a firm's name and `non` composes into nothing at all,
+and only enumerating the members could tell the two apart.
+
+### Why a token and not a disjunct
+
+The 09:4xZ ship chose a dedicated disjunct because its five tokens composed.
+Here one token suffices and a disjunct would duplicate `CAPTION_WORD`'s own
+cash subset (`cash`, `interest`, `bearing`, `equivalents`, `other`,
+`investments`) to gain nothing. **The form itself negates its captions this
+way**, so `non` belongs in the vocabulary that spells the form's captions.
+*The named cost, recorded because it is real and invisible today: every token
+added to this vocabulary in future now composes with `non` as well.*
+
+### Prevention
+
+- **The escape clause in a refusal rule is part of the rule.** *Prefer a
+  dedicated disjunct* is the default and *read every newly reached name* is the
+  condition under which the default may be set aside. Applying the headline
+  mechanically would have cost a one-token close of a named residue; applying
+  the condition cost one measurement and licensed it.
+- **A predicate count is not a reader count.** 25 → 22 is the call-site issuer
+  gate, the second consecutive ship where that is the whole discrepancy.
+
+
+---
+
 ## 2026-10-12 (09:5xZ) — THE 09:07 DRAW: FOUR RECORDED CLASSES CONFIRMED ON TWO NEW PLANS, A NAMED LIVE INSTANCE OF THE BARE-BRAND FEE, AND NO NEW CLASS
 
 Seeded participant-weighted draw (`--seed 12101007`, 2 menus, `--rows 40`) over

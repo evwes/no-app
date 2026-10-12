@@ -3041,6 +3041,38 @@ const CAPTION_WORD = "(?:interest|interests|bearing|cash|equivalent|equivalents|
    * six. Both of those names are blocked by tokens OUTSIDE this vocabulary
    * anyway, so the instinct bought nothing it can be credited for. */
   + "|cct|ccts|corp|corps|instr|instrs|sec|secs"
+  /* THE NEGATION PARTICLE, added 2026-10-12 — Schedule H line 1a's own caption
+   * is `Cash, non-interest bearing`, and `non` was the single token this
+   * vocabulary lacked. It is added as a TOKEN rather than as a new disjunct
+   * because the form itself negates its captions this way, and because the
+   * measurement below licenses it.
+   *
+   * ***THIS IS THE EXACT SHAPE THE WITHDRAWAL-TERMS ENTRY WARNS ABOUT*** — a
+   * token added to a closed WHOLE-STRING vocabulary multiplies with every
+   * token already in it, which is how `benefit` composed with the long-present
+   * `security` into `Security Benefit`, an insurance HOUSE. So the rule was
+   * applied rather than quoted: the token was added, EVERY newly reached
+   * distinct name in the published+served store was enumerated, and ALL 49
+   * WERE READ.
+   *   BLANK-typed (reach `isNamelessFundRow`): 25 rows / 25 acks / 25 plans /
+   *     17,212 ppl / $2,133,228 across **15 names, every one a spelling of the
+   *     one caption** — `Cash, non-interest bearing` ×8, `Cash (non-interest
+   *     bearing)` ×3, `CASH, non-interest bearing` ×2, and singletons down to
+   *     the filers' own `Cash, non- interest bearing` and `Cash – Non Interest
+   *     Bearing`.
+   *   TYPED (reach `captionFiledType` on the crawlable pages): 284 rows / 34
+   *     names, of which **33 are `Cash / short-term`** — `Non-interest bearing
+   *     cash` ×145 the commonest — and ONE is `PREFERRED STOCK, NON` typed
+   *     `Collective trust`, a caption cut off mid-phrase. That row gains only
+   *     the type sentence, which states the filed type and is true of it; it is
+   *     NOT given the nameless label, which would be the claim this record
+   *     refuses for a name we cut.
+   * **0 DECOYS: not one real fund is newly reached.** The reason is structural
+   * and worth keeping — `non` is matched as a WHOLE TOKEN, so `Nontraditional`
+   * and `Nuveen` are single tokens this vocabulary does not carry, and a real
+   * fund that negates something (`Non-US Equity Index Fund`) is held by the
+   * tokens this vocabulary deliberately omits (`equity`, `index`, `fund`). */
+  + "|non"
   + "|value|other|all|and|or|the|at|of|in)";
 const CAPTION_SEP = "[\\s\\-\\u2010-\\u2015\\/,.:;()&*]+";
 /* NOTE the non-capturing wrappers on the optional leading and trailing
@@ -3152,6 +3184,9 @@ for (const [s, why] of [
   ["CORP DEBT INSTRUMENTS; ALL OTHER", "PepsiCo — a semicolon is a separator"],
   ["Real Estate Secs", "Sterling Computers — the `sec` abbreviation"],
   ["U. S. GOVERNMENT SECURITIES", "Verizon's trust, $2,765,872,513 on 4 member plans / 153,901 ppl — the SPACED abbreviation, sitting in the same twelve rows as two captions already reached"],
+  ["Cash, non-interest bearing", "Schedule H line 1a's own caption, 8 blank-typed rows — the motivating string, and `non` is the ONLY token it was missing"],
+  ["Non-interest bearing cash", "145 rows typed `Cash / short-term`, the commonest spelling in the class"],
+  ["CASH, non- interest bearing", "a filer's own spacing — the separator run is what carries it"],
 ]) if (!isScheduleHCaption(s)) {
   throw new Error(`lib-disclose: isScheduleHCaption no longer reaches ${JSON.stringify(s)} (${why}) — the arm is inert, fix it rather than shipping a quiet guard`);
 }
@@ -3182,6 +3217,14 @@ for (const [s, why] of [
   ["Sec Lending Collateral Fund", "a securities-lending vehicle, not a caption"],
   ["U S TREASURY NOTE", "a REAL security wearing the spaced abbreviation — `note` IS in this vocabulary, so the absence of `treasury` is the ONLY protection"],
   ["Cohen & Steers U S Realty CIT Class A", "likewise, a real collective trust"],
+  /* the `non` token, 2026-10-12. The store holds NO real fund this token newly
+   * reaches, so these are the nearest reachable shapes rather than measured
+   * single-protection cases, and they are labelled as such: each is held by a
+   * token this vocabulary deliberately omits, which is the protection that
+   * makes a bare negation particle safe to add at all. */
+  ["Non-US Equity Index Fund", "`equity`, `index` and `fund` are each absent from this vocabulary"],
+  ["Nontraditional Bond Fund", "`non` matches as a WHOLE TOKEN, so a word merely starting with it is untouched"],
+  ["Non-Lending Russell 1000 Index", "`lending`, `russell` and `index` are absent"],
   /* THE `103-12 investment entities` CAPTION — REFUSED 2026-10-09 BY READING
    * THE FILINGS, and the refusal is not about the vocabulary at all.
    *
