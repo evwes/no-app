@@ -9,6 +9,164 @@ prevention machinery is listed at the bottom.
 
 
 
+---
+
+## 2026-10-12 (09:4xZ) — SHIPPED: A STABLE-VALUE CONTRACT'S WITHDRAWAL-TERMS ACCOUNTING SPLIT STOPS BEING PUBLISHED AS AN INVESTMENT OPTION — 171 ROWS / 480,837 PARTICIPANTS, AND THE VOCABULARY WIDENING THAT WOULD HAVE DONE IT WAS REFUSED BY ITS OWN MEMBER LIST
+
+### What shipped
+
+Schedule H splits a stable-value holding by whether participant-initiated
+withdrawals happen at contract value — **fully benefit-responsive** versus not
+— and a filer who puts that split in the DESCRIPTION column leaves a row whose
+whole published name is the accounting category. It is a category, not an
+option a participant can choose.
+
+Measured as a DIFFERENTIAL through BOTH copies of `renderRow` over all
+**1,721,920** published+served rows, one renderer per `app.js`:
+
+| | |
+|---|---|
+| rows whose `shownType` moved | **171** |
+| name / ticker / fee / asterisk | **0 / 0 / 0 / 0** |
+| row membership | identical, 6,695 both sides |
+| non-candidate discharge | 21,441 rows sampled, **differing on 0** |
+| narrowing discharge | over all 412,783 distinct stored names, **0 failures** |
+
+**171 rows / 168 acks / 168 plans / 480,837 ppl / $1,550,287,842**, of which
+**27 are at ≥10% of their own menu** and **0 publish a ticker or a fee**, so
+the harm was the CLAIM alone. Northeastern University (14,949 ppl) stops
+publishing `Non Benefit-Responsive Investment Contracts` at **11.70% of its
+menu / $355,740,693**; Universal Health Services 80,921 ppl, Cisco Systems
+72,556, Hackensack Meridian 49,029, Saint Louis University at 8.47%, TTM
+Technologies at 12.05%, Yale, Lifespan, Avery Dennison, Lear, Summa Health.
+
+`PARSER_VERSION` stays 203.
+
+### WHY A SECOND DISJUNCT AND NOT FIVE MORE TOKENS IN `CAPTION_WORD` — THE WIDENING WAS BUILT, MEASURED, AND REFUSED BY READING ITS OWN OUTPUT
+
+The obvious change is to add `fully|benefit|responsive|contract|contracts` to
+`isScheduleHCaption`'s vocabulary, and it survives every count: **all five
+tokens come back NECESSARY by leave-one-out** over the whole store (297 / 345 /
+339 / 320 / 30 rows), four of the five are sufficient-alone for 0 — the
+recorded `instr` signature — and it newly reaches **416 rows / 396 plans /
+844,976 ppl / $3,249,607,047**.
+
+**Reading all 99 newly reached names found a row it must not touch.**
+***`Security Benefit`, 4 rows / $6,876,337, is an insurance HOUSE.*** It is
+reached because `security` is ALREADY in that vocabulary as a Schedule H
+caption word (`Government securities`), so adding `benefit` composes two
+innocent tokens into a real firm's name.
+
+***`CAPTION_WORD` IS A WHOLE-STRING MATCH OVER A CLOSED SET, SO EVERY TOKEN
+ADDED TO IT MULTIPLIES WITH EVERY TOKEN ALREADY THERE*** — and this record
+already pins `Fidelity Government` as a must-KEEP where the house token is the
+only protection, which is the same collision one step away. A dedicated
+disjunct cannot compose with `CAPTION_WORD` at all, which is the whole point of
+writing it as one: its blast radius is the phrase, measurable on its own.
+
+**`respons` IS REQUIRED, and that one condition is what refuses the house.**
+It also refuses `Fully Benefit` (2 rows / **$78,428,598**), a name cut off
+mid-phrase — correctly, because this record's position on a truncated name is
+RECONSTRUCTION and never suppression: *"the filing names no specific fund" is
+false of a filing whose name we lost.*
+
+### THE MOTIVATING ROW IS OUTSIDE ITS OWN REPAIR, AND THE DRAW RECORD PREDICTED IT
+
+The 08:07 draw found Yale publishing TWO rows: `Benefit Responsive` · iss
+`TIAA Traditional Annuity Contract` at 17.6%, and `Non-Benefit Responsive` ·
+iss **empty** at 9.4%. That entry recorded them as **two classes, not one** —
+both surfaces print `issuer · name`, so the first row's reader IS told what the
+holding is and *"names no specific fund"* would be FALSE of it.
+
+**The call site's own issuer gate enforces exactly that split with no new
+code**, and the measurement confirms it: of 386 caption-only rows store-wide,
+**186 carry an issuer that names something and are correctly untouched**. So
+the row that started this does not move and its sibling does. *A queue entry
+that splits a class before any predicate is written is what makes the shipped
+gate do the work.*
+
+### TWO SURFACES, TWO CLAIMS, ONE SHARED PREDICATE — the shipped design, inherited rather than written
+
+`isNamelessFundRow` requires a BLANK type cell, so on the report all 171 rows
+gain **"Filing names no specific fund"** and a TYPED caption is untouched there
+— its filed type is already in a column, which is why the differential read
+**0 false vehicle types withdrawn**. On the crawlable pages the same predicate
+reaches `captionFiledType`, whose wording is a SENTENCE: **20 pages, 19 rows
+gaining "— the filing names no specific fund" and 1 gaining "— asset type as
+filed: Collective trust"** (AT&T's $14,749,000 row), with **0 rows LOSING a
+label and no page carrying any other difference.** The typed half is **29 rows
+/ 29 plans / 50,787 ppl / $93,676,026** store-wide, 21 of them inside a page's
+twelve-row cut but only 1 on a plan that has a page.
+
+### THE PAGE MEASUREMENT NEEDED A SET DIFFERENCE, NOT A GREP
+
+My first page check grepped the `+` side of the unified diff for the label and
+reported it appearing on **seven unrelated caption families** — `Mutual Funds`,
+`Cash And Cash Equivalents`, `Collective Investment Trusts`, `4,595,829 Units`,
+`Fund F`. ***The whole fund table is ONE line, so the `+` side carries every
+label that was already there***, and a grep cannot tell a gained label from a
+pre-existing one. Re-measured as a per-page SET DIFFERENCE: 19 gained, **0
+lost**, every one a benefit-responsive caption. *A line-oriented diff of a
+line-oriented document is not a row-oriented measurement* — and the artifact
+ran in the direction of over-claiming, which is the half that does not announce
+itself.
+
+The same comparison surfaced the typed row above, as a difference the label
+counts could not see at all.
+
+### The CPU-starvation trap, met and worked around rather than waited out
+
+The first sizing called `renderRow` on all 1.7M rows in a BACKGROUND process
+and made no progress: this container gives a background process CPU only while
+a turn is active. **The fix is not patience** — the screen requires a form of
+`respons` in the name, and `cleanFiledName` only ever REMOVES characters, so
+pre-filtering on the RAW name is a SUPERSET BY CONSTRUCTION. That cut the walk
+to 6,696 candidates. **A narrowing is a claim and was discharged exhaustively**
+(the implication `respons(clean(n)) => respon(n)` checked on all 412,783
+distinct names, with the script exiting 1 on any failure) rather than sampled,
+because *sampling cannot establish a superset.*
+
+**And the wait loop that hid it was self-matching:** `until ! pgrep -f
+"br.mjs"` matches the loop's OWN shell, whose command line contains that
+string, so it could never terminate and the walk looked alive after it had
+been killed. *A process-name wait predicate must exclude the waiter.*
+
+### Tethered three ways
+
+1. **`lib-disclose`'s own import-time controls**, which THROW and therefore
+   fire in every surface and every test that imports the file: **9 must-see
+   real filed strings** with their measured weight, and **8 must-KEEP**, each
+   of the latter a measured single-protection case — `Security Benefit` and
+   `Fully Benefit` held by `respons` alone, `TIAA Traditional Benefit
+   Responsive` (655 rows / **$3,192,612,506**, the commonest string in the
+   whole population and a REAL holding whose name states the product with the
+   split as a qualifier) held by the absence of `traditional`, `Galliard
+   Benefit Responsive Fund` by the absence of `fund`.
+2. **`gen-generic-twin`'s caption drift probe**, 16 → 21 names, plus **its own
+   inert check** — because the existing inert pair is satisfied entirely by
+   `CAPTION_WORD` and would stay green if the new disjunct were lost from the
+   slice altogether, which is the exact failure four hand-written twins died
+   of. *A probe on one arm of a disjunction is silent on the other.*
+3. **`smoke-test`'s `__wampoCaption` cross-check**, 3 must-reach and 4
+   must-keep cases appended, which is what catches a hand-edited twin — the
+   generator rewrites `app.js` before probing, so its own probe cannot.
+
+### Prevention
+
+- ***A TOKEN ADDED TO A CLOSED WHOLE-STRING VOCABULARY MULTIPLIES WITH EVERY
+  TOKEN ALREADY IN IT.*** Leave-one-out said all five were necessary and the
+  count said 416 rows; only the member list said one of them composes into an
+  insurance house's name. **Prefer a dedicated disjunct whose blast radius is
+  the phrase** — and when a widening IS the right shape, read every newly
+  reached name, because the harm is a COMPOSITION and no per-token measurement
+  can see it.
+- ***A LINE-ORIENTED DIFF CANNOT COUNT ROWS IN A ONE-LINE TABLE.*** Grepping
+  the `+` side counts pre-existing labels as gains. Use a per-file SET
+  DIFFERENCE of the rendered rows, which also surfaces the changes the label
+  grep is blind to.
+- **A process-name wait predicate must exclude the waiter**, or the loop
+  matches its own command line and never terminates.
+
 
 ## 2026-10-12 (09:1xZ) — THE 08:07 DRAW: A SCHEDULE H ACCOUNTING CAPTION PUBLISHED AS 27% OF ONE MENU, REACHED BY NO SHIPPED PREDICATE — AND THE CREF CLASS CONFIRMED LIVE
 

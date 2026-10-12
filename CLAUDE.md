@@ -933,6 +933,31 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
+**DELIVERED AND VERIFIED BY #646 (`success`, 09:15-09:25Z on `93ed2e46`, data
+commit `abe66dfb`) — THE REGISTRATION HELD EXACTLY ON BOTH POINT ESTIMATES:
+`tkExact` **40.20 -> 40.23** and `tkComparable` **3.41 -> 3.38**, EXACTLY 2 of
+the line's 35 keys moved, and THE STRUCTURAL CONTROL HELD TO THE DIGIT —
+`tkExact + tkComparable` **43.61 -> 43.61**.** That sum was the registration's
+strongest claim and the one worth keeping: a promotion relabels a row and
+resolves no new one, so a move in the sum would have meant the arm reached a row
+that previously resolved nothing. confident 60,182, match 43,312, vesting
+53,023, vestQuote 5,373, entries 65,495, HIGH 4, WARN 556, overshoot 370,
+overshootTrust 12, aggRow 114, tkSampled 87,106, tkShare 25.12, `dl` 93 and `pv`
+203 all unchanged, compared programmatically against the line attributed by the
+COMMIT that introduced it with a guard asserting that commit appended exactly
+one line. **SO THERE IS NOTHING PRE-REGISTERED AND PENDING** — the
+withdrawal-terms caption ship that followed is display-side, writes no store and
+moves no coverage key (shownType only; `audit-data` carries no shownType
+figure).
+*THIRD CONSECUTIVE REGISTRATION TO LAND DEAD ON THE POINT ESTIMATE, all three
+derived in the metric's own population via the transcribed lookup chain with the
+BEFORE figure reproducing the shipped one as the control. This one adds a
+different kind of evidence: predicting TWO keys moving equally and oppositely is
+a sharper claim than predicting one, because the sum is a conservation law the
+arm cannot violate without being wrong about its own mechanism.*
+
+**ORIGINAL REGISTRATION, kept because it is what was predicted:**
+
 **PRE-REGISTERED 2026-10-12 09:1xZ for the next merge after the REPAIRED-ASTERISK
 (Class K promotion) ship, dispatched as #646 on `93ed2e46` — `tkExact` **40.20 ->
 40.23** (band **40.22-40.24**) AND `tkComparable` **3.41 -> 3.38** (band
@@ -2704,6 +2729,78 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   `Brokerage window` with `brokRow`, which the same draw printed correctly on
   another plan. At ~15 rows the arm must be very well targeted to be worth it.
   `docs/accuracy-log.md` 2026-10-11 (18:2xZ).
+- **SHIPPED 2026-10-12 09:4xZ — A STABLE-VALUE CONTRACT'S WITHDRAWAL-TERMS
+  ACCOUNTING SPLIT STOPS BEING PUBLISHED AS AN INVESTMENT OPTION: 171
+  published+served rows / 168 acks / 168 plans / 480,837 ppl / $1,550,287,842,
+  `shownType` THE ONLY CELL THAT MOVES** — name 0, ticker 0, fee 0, asterisk 0,
+  row membership identical at 6,695 both sides, a 21,441-row non-candidate
+  discharge differing on 0, measured as a DIFFERENTIAL through BOTH copies of
+  `renderRow` over all 1,721,920 rows. 27 rows are at >=10% of their own menu
+  and **0 publish a ticker or a fee, so the harm was the CLAIM alone**.
+  Northeastern University (14,949 ppl) stops publishing `Non Benefit-Responsive
+  Investment Contracts` at **11.70% / $355,740,693**; Universal Health Services
+  80,921 ppl, Cisco 72,556, Hackensack Meridian 49,029, Saint Louis University
+  8.47%, TTM 12.05%. `PARSER_VERSION` stays 203; canonical in `lib-disclose`,
+  SLICED by `gen-generic-twin`, imported by `build-seo-pages`.
+  ***THE OBVIOUS CHANGE WAS BUILT, MEASURED, AND REFUSED BY READING ITS OWN
+  OUTPUT.*** Adding `fully|benefit|responsive|contract|contracts` to
+  `isScheduleHCaption`'s `CAPTION_WORD` survives every count — **all five
+  tokens NECESSARY by leave-one-out** (297 / 345 / 339 / 320 / 30 rows), four
+  sufficient-alone for 0 (the recorded `instr` signature), newly reaching **416
+  rows / 844,976 ppl / $3,249,607,047** — and reading all 99 newly reached names
+  found a row it must not touch: **`Security Benefit`, 4 rows / $6,876,337, is
+  an insurance HOUSE**, reached because `security` is ALREADY in that vocabulary
+  as a Schedule H caption word. ***A TOKEN ADDED TO A CLOSED WHOLE-STRING
+  VOCABULARY MULTIPLIES WITH EVERY TOKEN ALREADY IN IT***, and this file already
+  pins `Fidelity Government` as a must-KEEP where the house token is the only
+  protection. So the arm is a DEDICATED DISJUNCT that cannot compose with
+  `CAPTION_WORD` at all, with **`respons` REQUIRED** — the one condition that
+  refuses the house, and that also refuses `Fully Benefit` (2 rows /
+  $78,428,598), a name cut off mid-phrase, correctly: *a truncated name wants
+  reconstruction, not suppression.*
+  **THE MOTIVATING ROW IS OUTSIDE ITS OWN REPAIR AND THE DRAW RECORD PREDICTED
+  IT.** Yale files `Benefit Responsive` · iss `TIAA Traditional Annuity
+  Contract` at 17.6% AND `Non-Benefit Responsive` · iss empty at 9.4%; the
+  09:1xZ draw entry recorded them as **two classes, not one**, and the call
+  site's own issuer gate enforces exactly that with no new code — of 386
+  caption-only rows store-wide, **186 carry an issuer that names something and
+  are correctly untouched.** *A queue entry that splits a class before any
+  predicate is written is what makes the shipped gate do the work.*
+  **TWO SURFACES, TWO CLAIMS, ONE SHARED PREDICATE, inherited rather than
+  written:** `isNamelessFundRow` requires a BLANK type cell, so the report's 171
+  rows gain *"Filing names no specific fund"* and a TYPED caption is untouched
+  there (its filed type is already in a column — hence **0 false vehicle types
+  withdrawn**), while on the crawlable pages the same predicate reaches
+  `captionFiledType`, whose wording is a SENTENCE: **20 pages, 19 rows gaining
+  the label and 1 gaining `— asset type as filed: Collective trust`** (AT&T's
+  $14,749,000 row), **0 rows LOSING a label** and no page carrying any other
+  difference. The typed half is **29 rows / 29 plans / 50,787 ppl /
+  $93,676,026** store-wide.
+  ***AND THE PAGE FIGURE NEEDED A SET DIFFERENCE, NOT A GREP:*** my first check
+  grepped the `+` side of the unified diff and reported the label appearing on
+  **seven unrelated caption families**, because **the whole fund table is ONE
+  line and the `+` side carries every label that was already there.** Re-measured
+  per page as a set difference: 19 gained, 0 lost, every one a benefit-responsive
+  caption — and the same comparison surfaced the typed row, which no label count
+  could see. *The artifact ran in the direction of over-claiming.*
+  **DO NOT CARRY the sizing's 386 rows / 691,533 ppl**: 186 are held by the
+  issuer gate and the rest lack `respons`. Tethered three ways — `lib-disclose`'s
+  own import-time THROWS (9 must-see real filed strings, 8 must-KEEP each a
+  measured single-protection case, including **`TIAA Traditional Benefit
+  Responsive`, 655 rows / $3,192,612,506**, a REAL holding whose name states the
+  product with the split as a qualifier); `gen-generic-twin`'s caption probe 16
+  -> 21 names **plus its own inert check**, because the existing inert pair is
+  satisfied entirely by `CAPTION_WORD` and would stay green if the disjunct were
+  lost from the slice (*a probe on one arm of a disjunction is silent on the
+  other*); and `smoke-test`'s `__wampoCaption` cross-check, which is what catches
+  a hand-edited twin since the generator rewrites `app.js` before probing.
+  **STILL OPEN, named residue and none of it a gap in this arm:** `At contract
+  value` (24 rows / $167,946,996), bare `contract` (4), `Investment Contract`
+  (3) and `Cash, non-interest bearing` (14 rows, a genuine Schedule H line-1a
+  caption) are each reachable only by dropping the `respons` requirement or
+  widening `CAPTION_WORD`, so they are a separate measurement; and the 186
+  issuer-carrying rows want the TYPE, not a nameless label.
+  `docs/accuracy-log.md` 2026-10-12 (09:4xZ).
 - **FOUND BY THE 02:08 DRAW, UNSIZED — A PLAN'S POSTAL ADDRESS AND AN EXPENSE
   LINE PUBLISHED AS HOLDINGS, ON ONE 239,138-PARTICIPANT PAGE.** Publix Super
   Markets (15 funds, ratio 0.974) publishes **`PUBLIX SUPER MARKETS, INC. 3300
@@ -5980,6 +6077,33 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 ### Method rules, each earned and each already paid for once
 
 These outlived the versions that produced them. The accuracy log has the case.
+
+- **A TOKEN ADDED TO A CLOSED WHOLE-STRING VOCABULARY MULTIPLIES WITH EVERY
+  TOKEN ALREADY IN IT (2026-10-12).** Five candidate tokens for
+  `isScheduleHCaption`'s `CAPTION_WORD` all measured NECESSARY by leave-one-out
+  and the widening newly reached 416 rows / 844,976 ppl — and one of them
+  composed with a token already there (`security`) into **`Security Benefit`,
+  an insurance HOUSE**. No per-token measurement can see that, because the harm
+  is a COMPOSITION; only the member list can. **Prefer a dedicated disjunct
+  whose blast radius is the phrase**, and when a widening really is the right
+  shape, read every newly reached name. The sibling already on this record is
+  `Fidelity Government` as a must-KEEP where the house token is the only
+  protection: that is the same collision one token away.
+- **A LINE-ORIENTED DIFF CANNOT COUNT ROWS IN A ONE-LINE TABLE (2026-10-12).**
+  A crawlable page's whole fund table is a single line, so grepping the `+`
+  side of a unified diff for a label counts every label that was ALREADY there
+  — it reported a 20-page change as having touched seven unrelated caption
+  families. Use a per-file **SET DIFFERENCE** of the rendered rows, which also
+  catches the differences a label grep is blind to (it is what surfaced the one
+  `captionFiledType` row). Note the direction: the artifact OVER-claims, which
+  is the half that does not announce itself.
+- **AND A PROCESS-NAME WAIT PREDICATE MUST EXCLUDE THE WAITER (2026-10-12).**
+  `until ! pgrep -f "br.mjs"` matches the loop's OWN shell, whose command line
+  contains that string, so it can never terminate — and the walk it was waiting
+  on looked alive long after it had been killed. Worth a line because this
+  container gives a background process CPU only while a turn is active, so a
+  wait loop is the normal way to run a long measurement and a self-matching one
+  silently burns the cycle.
 
 - **A FLAG THAT ENCODES TWO CLAIMS CANNOT BE CORRECTED FOR ONE OF THEM
   (2026-10-12).** `app.js:4301` read `star ? info.er : fundERRow(f)`, so `star`
