@@ -2566,6 +2566,17 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   `Cash / short-term` 9, `Collective trust` 4, `Stable value / GIC` 1,
   `Separate account` 1. Row membership cannot move BY CONSTRUCTION: no name
   changes and `app.js:2930`'s `ID_ONLY` drop reads the cleaned name.
+  ***AND ITS DOLLAR FIGURE IS CORRECTED — THE CLASS IS ≈$21,553,000, NOT
+  $983,342,432, BECAUSE THE ROW I CALLED 96% OF ITS MONEY WAS FABRICATED BY OUR
+  OWN PARSE (2026-10-12 05:3xZ).*** Hartford's filing reads
+  `Master Expense Account / *HARTFORD MASTER EXPENSE FUND ** $ 4` in a schedule
+  marked `($ In Thousands)`, so the real value is **$4,000**; the $961,793,000 we
+  publish is the NEXT summary line's total (`Mutual Funds` 961,793). The LABEL
+  stands and the rule still fires; the row, plan and participant counts are
+  unaffected. ***A measurement can be right about the PAGE and wrong about the
+  FILING*** — every priced column here was measured correctly through both
+  renderers, and the error was quoting the largest number in a correct
+  measurement as a fact about the plan. See the mis-pairing entry below.
   `PARSER_VERSION` stays 203; canonical in `lib-disclose`, SLICED by
   `gen-generic-twin`, imported by `build-seo-pages`; tethered by
   `scripts/forfeit-acct-test.mjs` in `site-test` (step AND `paths`, with the
@@ -2619,16 +2630,32 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   is at 22, BAE's at 36. *The row limit is one of the conditions a measurement
   must apply*, deciding the page figure for the second cycle running.
   **AND THE PAGE NAMED A RESIDUE NO SCREEN COULD — directly ABOVE the repaired
-  row on Hartford's own page sits `Clearing Account 92` at $4,383,081,000**, the
-  largest row on that page and 4.4x the dollars of this whole ship, a bare plan
-  account carrying NO expense or forfeiture word so the trigger correctly cannot
-  reach it; with `Clearing Account` (BAE, $5,961,890) and four `Holding Account`
-  rows it is a sibling class needing its own trigger, and widening to a bare
-  `account` is exactly what the `General Account` pin refuses. ***My own residue
-  probe then conflated the two***, sweeping `General Account` ×2 into a bucket
-  named for bare plan accounts — *a count keyed on a vocabulary measures the
+  row on Hartford's own page sits `Clearing Account 92`, published at
+  $4,383,081,000**, the largest row on that page, a bare plan account carrying
+  NO expense or forfeiture word so the trigger correctly cannot reach it; with
+  `Clearing Account` (BAE, $5,961,890) and four `Holding Account` rows it looked
+  like a sibling class needing its own trigger, and widening to a bare `account`
+  is exactly what the `General Account` pin refuses. ***My own residue probe
+  then conflated the two***, sweeping `General Account` ×2 into a bucket named
+  for bare plan accounts — *a count keyed on a vocabulary measures the
   vocabulary*, met inside the instrument written to name the residue of a rule
   built to avoid one.
+  **SIZED AND REFUTED AS A LABELLING CLASS 2026-10-12 05:3xZ — IT IS 85% A REAL
+  INSURER VEHICLE AND ITS ONE BIG ROW IS A PARSER DEFECT.** The bare
+  bookkeeping-account screen reads 270 rows / 270 plans / 250,260 ppl /
+  $4,854,269,061 and is dominated by `General Account` ×165 + `GENERAL ACCOUNT`
+  ×52 + five more spellings — **52 typed `Stable value / GIC` BY THE FILER**,
+  issuer cells naming `MN Life Insurance Co.`, `Empower Annuity Insurance Co`,
+  `Transamerica Stable Value Option`, and one reading `General Account -
+  944754-01`, **a group annuity CONTRACT NUMBER**. Of the 22 distinct names
+  `clearing` carries **99.998% of the candidate dollars in 2 rows**, `trust` 1,
+  `reserve` 1 at $4,106, `sweep` 1 at **$70**. Two more are rescued by the
+  ISSUER cell both surfaces print (`Unallocated account` · iss `Fixed Income
+  Guaranteed Option`; `Participant accounts` · iss `Self-Direct PCRA Option`, a
+  Schwab brokerage window whose honest label is the shipped `Brokerage window`).
+  ***So the class is ~30 rows by count and one row by dollars, and that row is
+  not a labelling question at all*** — see the mis-pairing item below.
+  `docs/accuracy-log.md` 2026-10-12 (05:3xZ).
   **Named residue:** the `Clearing`/`Holding` family above; `asset` 7 / `cash`
   9 / `annuity` 2, each refused on purpose and now with an exact count rather
   than the sizing's "≈10"; `VALIC Forfeiture Account`, a recordkeeper BRAND
@@ -4221,6 +4248,33 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   one* — which is a stronger claim than the class's own framing, and still
   PARSER-side. Also in that menu and correct: `Managed account holdings (492
   positions)` and `Walmart Inc. Equity Securities` -> WMT via `stockRow`.
+- **A SUMMARY TABLE'S SMALL VALUE WELDED INTO ITS OWN NAME, THE ROW THEN TAKING
+  THE *NEXT* SECTION'S TOTAL — PARSER-SIDE, DIAGNOSED 2026-10-12 05:3xZ FROM THE
+  FILING, UNSIZED ACROSS THE STORE, OWNER'S CALL.** Hartford Fire Insurance
+  (31,128 ppl, ack `20251013155458NAL0000790179001`, ratio **1.03**) publishes
+  `Clearing Account 92` at **$4,383,081,000 / 59.42%** and `Master Expense
+  Account 4` at **$961,793,000 / 13.04%**. The filing's `($ In Thousands)`
+  category summary reads `Clearing Account 92` / `Collective Investment Trusts
+  4,383,081` / … / `Master Expense Account 4` / `Mutual Funds 961,793`, and the
+  detail pages name the real holdings (`STATE STREET BANK AND TRUST ** $ 92`,
+  `*HARTFORD MASTER EXPENSE FUND ** $ 4`). ***Where a summary row's value is
+  small enough to sit inline with its name, the parser consumes it as a name
+  token and pairs the name with the FOLLOWING row's value*** — so **$5,344,874,000,
+  74.5% of that page's own $7.17B, is on the wrong names and the two LARGEST
+  real sections (`Collective Investment Trusts`, `Mutual Funds`) are absent from
+  the published menu entirely.**
+  ***NOTHING CAN CATCH IT TODAY BECAUSE A MIS-PAIRING CONSERVES THE SUM:*** every
+  dollar is present, the ratio reads 1.03, `lineup-overshoot` cannot fire and no
+  coverage key can move — the recorded *a ratio is only as meaningful as its
+  denominator*, with the ratio coming out PERFECT rather than meaningless. The
+  defect is also **selected for by SMALLNESS and publishes the LARGEST figures on
+  the page**, which is why it reads as plausible. **The cheap witness is ABSENCE:
+  a summary's named section missing from the parsed menu while its arithmetic
+  still closes** — nothing looks for that.
+  **Needs a `PARSER_VERSION` bump and a full re-parse, and must be SIZED by SHAPE
+  first** (an inline value in a two-column summary), because the recorded
+  summary-candidate scoring bonus steers the parser TOWARD exactly this
+  construction. `docs/accuracy-log.md` 2026-10-12 (05:3xZ).
 - A CATEGORY TABLE published as a fund menu (Bayer $4.87B in one row, Paramount
   59.5% of its plan across two). **ATTEMPTED AND REVERTED 2026-10-01** — the
   rule is v74's own split and the gate it needs does not exist. Three pieces,
@@ -5784,6 +5838,26 @@ These outlived the versions that produced them. The accuracy log has the case.
   members being house ABBREVIATIONS (`VANG EXPLORER ADM`, `AF EUROPAC GROWTH
   R6`) and EMPLOYER STOCK (`Costco Wholesale Corporation` =COST, $18.3B).
   `docs/accuracy-log.md` 2026-10-04 (02:0xZ).
+- **VERIFY A HEADLINE DOLLAR FIGURE AGAINST THE FILING, NOT ONLY AGAINST THE
+  PAGE — A MEASUREMENT CAN BE RIGHT ABOUT THE PAGE AND WRONG ABOUT THE FILING
+  (2026-10-12).** The forfeiture ship's headline was *"$961,793,000, one row
+  carrying 96% of the class's money"*, measured correctly through both copies of
+  `renderRow` with every priced column clean — and the figure is **our own
+  parser's**, the filing reading `$ 4` in a schedule marked `($ In Thousands)`.
+  The class's honest dollar size is ≈$21.5M. *The page is the artifact* is about
+  whether a change REACHES readers and says nothing about whether the number the
+  page shows is TRUE; for a headline figure that is a separate question with a
+  separate source. **Before publishing the largest member of any class, read its
+  filing** — one `curl` and one `grep` settled this one, and the same discipline
+  the operating protocol already demands for diagnosing a CAUSE applies to a
+  figure.
+- **AND A CHECK BUILT ON A SUM CANNOT SEE A MIS-PAIRING (2026-10-12).** The same
+  page attributes $5.34B to the wrong names and its `coverageRatio` reads
+  **1.03**, because every dollar is still present and only the pairing moved. So
+  `lineup-overshoot`, the coverage line and `audit-dominant-row` are blind BY
+  CONSTRUCTION. **The witness is ABSENCE rather than arithmetic** — a summary's
+  own named section missing from the parsed menu while its total still closes —
+  and nothing currently looks for it.
 - **PRICE ROW MEMBERSHIP ON EVERY NAME CHANGE — THE PRICED COLUMNS CANNOT SEE
   A ROW THE PAGE DROPS (2026-10-12).** `cleanFiledName` runs UPSTREAM of
   `app.js:2930`, which drops any row whose cleaned name matches `ID_ONLY`, so a

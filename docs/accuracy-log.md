@@ -7,6 +7,137 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-12 (05:3xZ) — A SUMMARY TABLE'S SMALL VALUE IS WELDED INTO ITS OWN NAME AND THE ROW TAKES THE **NEXT** SECTION'S TOTAL: $5.34B MIS-ATTRIBUTED ON ONE 31,128-PARTICIPANT PAGE, TWO REAL SECTIONS VANISH, AND IT CORRECTS A FIGURE I PUBLISHED NINETY MINUTES EARLIER
+
+### What the filing says
+
+Hartford Fire Insurance Company, ack `20251013155458NAL0000790179001`, 31,128
+ppl, 13 published rows, `coverageRatio` **1.03**. The Schedule H 4i attachment
+is `($ In Thousands)` and ends with the filer's own category summary:
+
+```
+    Subtotal All Funds                       Total Current Value
+       Chartwell Equity Securities       $            86,956
+       Clearing Account                                   92
+       Collective Investment Trusts                4,383,081
+       Loomis Sayles Growth Fund                     452,670
+       …
+       Master Expense Account                              4
+       Mutual Funds                                  961,793
+    Total Schedule of Assets             $         7,172,108
+```
+
+### The defect
+
+| published | real name | real value | value we attached | whose value it is |
+|---|---|---|---|---|
+| `Clearing Account 92` @ **$4,383,081,000** (59.42%) | Clearing Account | **$92,000** | 4,383,081 | the NEXT line, `Collective Investment Trusts` |
+| `Master Expense Account 4` @ **$961,793,000** (13.04%) | Master Expense Account | **$4,000** | 961,793 | the NEXT line, `Mutual Funds` |
+
+***Where a summary row's value is small enough to sit inline with its name, the
+parser welds the value into the NAME and then pairs that name with the
+FOLLOWING row's value.*** The two sections whose totals were consumed —
+`Collective Investment Trusts` ($4.38B) and `Mutual Funds` ($961.8M), the two
+LARGEST lines in the summary — **do not appear in the published menu at all.**
+So one page mis-attributes **$5,344,874,000, 74.5% of its own $7.17B**, and
+drops the two real categories that money belongs to.
+
+The per-section detail pages confirm both readings and name the real holdings:
+`Clearing Account / STATE STREET BANK AND TRUST ** $ 92` and
+`Master Expense Account / *HARTFORD MASTER EXPENSE FUND ** $ 4`.
+
+### WHY NOTHING CAUGHT IT, which is the reusable half
+
+**Every dollar is still present and the total is still right — the money is
+merely on the wrong names.** `coverageRatio` reads 1.03, so
+`lineup-overshoot` cannot fire, the coverage line cannot move, and
+`audit-dominant-row` sees a 59% row whose value is genuinely in the filing.
+***A mis-PAIRING conserves the sum, so every check built on sums is blind to it
+by construction*** — which is the same shape as the recorded trust-denominator
+finding (*a ratio is only as meaningful as its denominator*) with the ratio
+coming out perfect rather than meaningless.
+
+The two rows are also the only ones in that summary with values small enough to
+sit inline (92 and 4), so **the defect is selected for by SMALLNESS and then
+publishes the LARGEST figures on the page** — the inversion is why it reads as
+plausible.
+
+### IT CORRECTS A FIGURE I PUBLISHED NINETY MINUTES EARLIER
+
+The 03:4xZ forfeiture ship is headlined *"Hartford Fire Insurance (31,128 ppl)
+publishes `Master Expense Account 4` at 13.04% of its menu / $961,793,000 — one
+row carrying 96% of the class's money."* **The LABEL claim stands** — it is a
+plan expense account and not a menu choice, and the shipped rule still fires on
+it — **but the dollar figure is OURS, not the filing's.** Its real value is
+$4,000.
+
+So that class's honest dollar size is **≈$21,553,000, not $983,342,432**: the
+single row I called 96% of the money was 97.8% of it and was fabricated by our
+own parse. The row and participant counts (58 rows / 58 plans / 411,316 ppl) are
+unaffected, and so is every column the differential priced.
+
+***A measurement can be right about the page and wrong about the filing.*** I
+measured what the page publishes, correctly and through both renderers, and
+quoted the biggest number in the result as though it were filed. The discipline
+this record already carries — *the page is the artifact* — is about verifying
+that a change reaches readers; it says nothing about whether the number the page
+shows is TRUE, and for a headline figure that is a separate question with a
+separate source: the filing.
+
+### Not shipped — and the reason is not caution
+
+This is a PARSER defect in region/row pairing, so it needs a `PARSER_VERSION`
+bump and a full re-parse: **the owner's call** by the standing protocol. It also
+must not be guessed at from one filing — the mechanism is nameable (an inline
+value in a two-column summary, consumed as a name token, with the row then
+taking the next value) and the right next step is to size that SHAPE across the
+store before touching `lib-4i`, since a summary page with inline values is
+exactly the construction the recorded summary-candidate scoring bonus steers
+the parser TOWARD.
+
+### Named residue from the class I was actually sizing
+
+The screen that found this was for a BARE PLAN BOOKKEEPING ACCOUNT with no
+expense or forfeiture word — the sibling the forfeiture trigger cannot reach.
+**It reads 270 rows / 270 plans / 250,260 ppl / $4,854,269,061, and it is 85%
+A REAL INSURER VEHICLE THAT MY OWN SHIPPED PIN ALREADY PROTECTS:**
+`General Account` ×165 + `GENERAL ACCOUNT` ×52 + five more spellings, of which
+**52 rows are typed `Stable value / GIC` BY THE FILER**, the issuer cells name
+`MN Life Insurance Co.`, `Empower Annuity Insurance Co`, `Transamerica Stable
+Value Option` and `Mutual of America Interest Accumu`, and one reads
+`General Account - 944754-01` — **a group annuity CONTRACT NUMBER.**
+
+And the candidate nouns split the same way: of the 22 distinct names, `clearing`
+reaches 2 rows carrying **99.998% of the candidate dollars**, `trust` 1 row,
+`reserve` 1 row at $4,106 and `sweep` 1 row at **$70**.
+
+***So the class is one row by dollars and about thirty by count, and that one row
+turned out not to be a labelling question at all.*** Two further members are
+rescued by the ISSUER cell, which both surfaces print: `Unallocated account` ·
+iss `Fixed Income Guaranteed Option` and `General unallocated account` · iss
+`Mutual of America Interest Accumu` name real vehicles, and `Participant
+accounts` · iss `Self-Direct PCRA Option` is a Schwab brokerage window whose
+honest label is the shipped `Brokerage window`, not "not a menu choice".
+
+### Prevention
+
+- ***A CHECK BUILT ON A SUM CANNOT SEE A MIS-PAIRING.*** Conservation of the
+  total is what makes this class invisible to `coverageRatio`,
+  `lineup-overshoot` and every coverage key. The witness that would see it is
+  per-ROW: a summary page's own printed total against the row the parser paired
+  it with, or simply that two of the summary's named sections are absent from
+  the parsed menu while its arithmetic still closes. **Absence of a section is
+  the cheap signal, and nothing currently looks for it.**
+- ***AND VERIFY A HEADLINE DOLLAR FIGURE AGAINST THE FILING, NOT ONLY AGAINST
+  THE PAGE.*** Every priced column of the forfeiture ship was measured
+  correctly; the error was quoting the largest number in a correct measurement
+  as a fact about the plan. One `curl` and one `grep` settled it. **The rule is
+  cheap and narrow: before publishing the largest member of any class, read its
+  filing** — the same discipline the operating protocol already requires for
+  diagnosing a CAUSE, applied to a figure.
+
+---
+
 ## 2026-10-12 (03:5xZ) — THE 03:08 DRAW: ONE MENU ANSWERS THE SAME STATED SHARE CLASS TWO DIFFERENT WRONG WAYS, TWO ROWS APART — AND IT COMPLETES THE DODGE & COX FAMILY TO FOUR
 
 Seeded participant-weighted draw (`--seed 12102026`, 3 menus, 60 rows), so the
