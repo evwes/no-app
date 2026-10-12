@@ -1036,6 +1036,32 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
      * whole-population check that no control character sits inside a word. */
     s = s.replace(/[\u0000-\u001f\u007f]+/g, " ").replace(/\s{2,}/g, " ").trim();
     s = s.replace(/^[—–-]+\s*/, "");
+    /* AND THE REST OF THE LEADING DEBRIS — twin of the arm in
+     * scripts/lib-disclose.mjs, which carries the measurement and the three
+     * conditions. The short version: the arm above takes only a dash, so
+     * `—_ T. Rowe Price Retirement 2030` kept its `_`; `\p{P}\p{S}` rather
+     * than a negated alphanumeric class, because the latter matches an
+     * accented LETTER; `*` and `+` refused by name as party-in-interest
+     * markers; and the trailing `(?=\s)` is what spares a balanced
+     * parenthetical the filer meant.
+     *
+     * The fourth condition is the one the measurement earned: the strip must
+     * ABSTAIN where the remainder is identifier-only, because `ID_ONLY` below
+     * DROPS such a row and `; CUSIP: BJQ0C55` -> `CUSIP: BJQ0C55` would have
+     * deleted 20 rows / $62,612,555 from a 146,003-participant menu whose own
+     * siblings prove those are real holdings with the name column lost. */
+    const ID_ONLY_TWIN = /^(?:\s*(?:CUSIP|SEDOL|ISIN)\s*[:#]?\s*[A-Z0-9]{0,12}\s*)+$/i;
+    /* …and a run carrying an OPENING PAREN is refused: `(` opens something,
+     * so removing it orphans the `)` that closes it. Comcast publishes
+     * `($ In Thousands) Interest In The Comcast Corporation Employee` on
+     * $392,317,000, where `(` is followed by `$` rather than a letter, so
+     * condition (3) never sees it and the run eats both — leaving `In
+     * Thousands) Interest In …`, which is WORSE than what it replaced.
+     * Found by reading the 9 changed crawlable pages; every returned cell
+     * read clean, because the change is a name change and that is exactly
+     * what the arm is for. *The page is the artifact.* */
+    const plead = s.replace(/^(?:(?![*+(])[\p{P}\p{S}])+(?=\s)/u, "").trim();
+    if (plead !== s && /[A-Za-z]{3}/.test(plead) && !ID_ONLY_TWIN.test(plead)) s = plead;
     /* AN EMPTY PARENTHETICAL — a column that held nothing, captured as bare
      * parens and welded to the name: Parker Hannifin publishes `Parker Stock
      * Match Fund ( )` at 23.4% of its menu. 1,161 rows / 63 plans / 138,083

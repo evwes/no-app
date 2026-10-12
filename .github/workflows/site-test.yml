@@ -36,6 +36,7 @@ on:
             "scripts/lib-ledger.mjs", "scripts/lib-schema.mjs",
             "scripts/lib-sec-fingerprint.mjs",
             "scripts/sec-tickers-stamp-test.mjs",
+            "scripts/lead-punct-test.mjs",
             # WHICH SPELLING `registrantAttested` IS ASKED OF. The guard is one
             # `||` away from admitting the cross-house magnets it exists to
             # refuse, so `sec-attest-test` pins both directions -- and it slices
@@ -148,6 +149,18 @@ jobs:
       # with the footnote gone, which is worse than either state.
       - name: Comparable-fee disclosure — the footnote and its chain are intact
         run: node scripts/fund-note-test.mjs
+      # THE LEADING-PUNCTUATION STRIP, whose four conditions were each earned by
+      # something going wrong. Two are the kind no count can see: a negated
+      # alphanumeric class matches an ACCENTED LETTER, and the strip must abstain
+      # where the remainder is identifier-only, because the page DROPS such a row
+      # -- without that, 20 rows / $62,612,555 vanish from Tenet Healthcare's
+      # 146,003-participant menu whose own siblings prove they are real holdings
+      # with the name column lost. It also asserts the HAND-MAINTAINED app.js
+      # twin has not drifted and that `ID_ONLY_TWIN` still matches the shipped
+      # `ID_ONLY` it transcribes, since a transcription of a shipped expression
+      # rots. CI-safe by construction: source files and its own literals only.
+      - name: Leading-punctuation strip — conditions, twin and transcription
+        run: node scripts/lead-punct-test.mjs
       # merge-4i strips a leading unit noun ("shares Fidelity Blue Chip Growth",
       # "sh. Mutual fund") when the REMAINDER is attested as another filing's
       # whole name. 274 rows / 78,586 participants / $2,483,915,336, and the

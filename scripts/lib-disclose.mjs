@@ -787,6 +787,99 @@ export function cleanFiledName(name) {
    * knows, and `… Fund<0x02>2050 Mutual funds` loses its vehicle caption. */
   s = s.replace(/[\u0000-\u001f\u007f]+/g, " ").replace(/\s{2,}/g, " ").trim();
   s = s.replace(/^[—–-]+\s*/, "");
+  /* AND THE REST OF THE LEADING DEBRIS, which the arm above does not reach —
+   * 2026-10-12 (00:3xZ), from the 23:07 draw.
+   *
+   * The arm above takes an em-dash, an en-dash or a hyphen and nothing else,
+   * so `—_ T. Rowe Price Retirement 2030` ($19,201,521 / 22,720 ppl) came out
+   * as `_ T. Rowe Price Retirement 2030`: it removed one debris character and
+   * left the next. *One of two spellings is worse than neither*, met inside a
+   * shipped arm. Measured through `cleanFiledName` itself over every
+   * published+served row, 805 still led with punctuation ON THE PAGE across
+   * 53 distinct tokens — `,` 178, `.` 168, `|` 56, `@` 54, `_` 34, `;`, `#`,
+   * `«`, `|_|`, `:`, `©` — while 2,113 further rows were already handled and
+   * reach no reader. `® Fidelity Low-Priced Stock` ($28,983,476 / 14,426 ppl)
+   * is the ® separated from `Fidelity®` and moved to the front.
+   *
+   * A token made only of punctuation names no fund BY CONSTRUCTION, so this
+   * is the one name class here that needs no attestation witness at all.
+   *
+   * THREE CONDITIONS, each of which a cheaper spelling gets wrong:
+   *
+   * (1) `\p{P}\p{S}` AND NOT a negated alphanumeric class. The sizing screen
+   *     used `[^\sA-Za-z0-9]`, which matches an ACCENTED LETTER — it caught
+   *     `Ź ANTONINI FREIGHT EXPRESS…` — so that spelling generalises to
+   *     stripping a leading `É` or `Ø` off a European fund's name. The
+   *     Unicode property escapes exclude `\p{L}` by construction.
+   *
+   * (2) `*` AND `+` ARE REFUSED BY NAME. A leading `*` is the schedule's
+   *     PARTY-IN-INTEREST marker, not a footnote — this file records that at
+   *     the top — and writing `+` into a character class on 2026-10-07 cost
+   *     three tickers, because `INST+` is `Institutional Plus`, a SHARE
+   *     CLASS. The cost of refusing them is named rather than hidden: 22 rows
+   *     keep a leading `*`, 73 a leading `+`, and the 38 `(*)` rows are
+   *     refused too, since the run stops at the `*` and the lookahead then
+   *     fails on the `)`.
+   *
+   * (3) THE RUN MUST BE FOLLOWED BY WHITESPACE. That is what spares a
+   *     balanced parenthetical the filer meant: `(T. Rowe Price Equity Income
+   *     Fund)` is Sentry Insurance's own filed name and resolves PRFDX at
+   *     0.68, and its `(` is followed by a letter, so it is outside this arm
+   *     by construction rather than by a vocabulary. A run at end-of-string
+   *     is likewise not stripped — there would be nothing left to keep.
+   *
+   * PRICED THROUGH BOTH COPIES OF `renderRow`, and it is LEGIBILITY: ticker
+   * gained 1 (`: MidCap Index` -> FSMDX, $297,722 / 1,772 ppl) and lost 0,
+   * fee 0/0/0. `nameRaw` is held fixed on both sides of that measurement,
+   * which is the whole correctness of the figure — `sec-tickers.js` is keyed
+   * on `(issuer, nameRaw)` and this arm moves only `name`, so a harness that
+   * varied both reported 3 ticker LOSSES that production cannot have.
+   *
+   * NAMED RESIDUE, a DIFFERENT class: 166 of the 805 name no fund after the
+   * strip either — fourteen of them one plan's unit PRICE published as a
+   * holding (`, $21.03/unit` on $8,188,833) and one the plan's OWN NAME. The
+   * strip leaves those no worse and does not qualify them; *a row that names
+   * nothing and a row whose name we mangled are two classes.*
+   *
+   * (4) AND THE FOURTH CONDITION IS THE ONE THE MEASUREMENT EARNED — THE
+   *     STRIP MUST NOT MAKE THE ROW VANISH. `app.js:2930` drops any row whose
+   *     CLEANED name matches `ID_ONLY`, so a name change can change ROW
+   *     MEMBERSHIP, and the first run of this arm would have DELETED 20 rows
+   *     / $62,612,555 from Tenet Healthcare's menu — 146,003 participants —
+   *     because `; CUSIP: BJQ0C55` strips to `CUSIP: BJQ0C55`, which that
+   *     pattern then matches. A pricing pass that counts only ticker, fee and
+   *     type cannot see it: every one of those columns read 0.
+   *
+   *     The comfortable reading is that `ID_ONLY` exists precisely to drop an
+   *     identifier-only row, so the `;` was merely defeating a shipped drop
+   *     and removing it is a promotion — the recorded `isNamelessFundRow`
+   *     precedent. ***THE MENU REFUTES IT.*** Ten rows of that same menu are
+   *     REAL collective trusts with a CUSIP appended and are kept today
+   *     (`MFB Coltv Daily 1-5 Yr Cr Bd ; 2.385%; CUSIP: 786993972`,
+   *     $34,591,222), so the 20 are that shape with the NAME COLUMN LOST —
+   *     our parse, not the filing. *A row that names nothing and a row whose
+   *     name we CUT IN HALF are two classes*, and deleting a real holding is
+   *     a worse answer than publishing an unreadable name: a visible artifact
+   *     warns the reader where a missing row reads as knowledge, and it moves
+   *     every percentage on the page besides.
+   *
+   *     So the arm ABSTAINS where the remainder is identifier-only. The
+   *     pattern mirrors `app.js`'s `ID_ONLY` and `lead-punct-test` asserts the
+   *     two agree, because a transcription of a shipped expression rots. The
+   *     20 rows are named residue for the truncated-name class, which wants
+   *     reconstruction and never suppression. */
+  const ID_ONLY_TWIN = /^(?:\s*(?:CUSIP|SEDOL|ISIN)\s*[:#]?\s*[A-Z0-9]{0,12}\s*)+$/i;
+  /* …and a run carrying an OPENING PAREN is refused: `(` opens something,
+   * so removing it orphans the `)` that closes it. Comcast publishes
+   * `($ In Thousands) Interest In The Comcast Corporation Employee` on
+   * $392,317,000, where `(` is followed by `$` rather than a letter, so
+   * condition (3) never sees it and the run eats both — leaving `In
+   * Thousands) Interest In …`, which is WORSE than what it replaced.
+   * Found by reading the 9 changed crawlable pages; every returned cell
+   * read clean, because the change is a name change and that is exactly
+   * what the arm is for. *The page is the artifact.* */
+  const plead = s.replace(/^(?:(?![*+(])[\p{P}\p{S}])+(?=\s)/u, "").trim();
+  if (plead !== s && /[A-Za-z]{3}/.test(plead) && !ID_ONLY_TWIN.test(plead)) s = plead;
   /* AN EMPTY PARENTHETICAL — a column that held nothing, captured as bare
    * parens and welded to the name. 2026-10-03 (05:3xZ draw).
    *

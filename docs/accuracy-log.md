@@ -7,6 +7,193 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-12 (00:5xZ) — THE LEADING-DEBRIS STRIP: 586 published+served rows / 209 plans / 602,588 ppl / $2,781,032,071, and the condition that matters most was earned when the first version DELETED $62.6M of real holdings from a 146,003-participant menu
+
+### What was wrong
+
+`cleanFiledName`'s leading-dash arm (`lib-disclose.mjs:789`) took an em-dash, an
+en-dash or a hyphen **and nothing else**, so
+
+```
+"—_ T. Rowe Price Retirement 2030"   ->   "_ T. Rowe Price Retirement 2030"
+```
+
+— it removed one debris character and left the next. *One of two spellings is
+worse than neither*, met inside a shipped arm.
+
+Measured through `cleanFiledName` itself over every published+served row,
+**805 names still led with punctuation ON THE PAGE** across 53 distinct tokens
+(`,` 178, `.` 168, `|` 56, `@` 54, `_` 34, plus `;` `#` `«` `|_|` `:` `©` …),
+while **2,113 further rows were already handled and reach no reader** — 72% of
+the stored class, which is why a stored-name count would have been wrong by
+nearly 4x. Largest: `® Fidelity Low-Priced Stock` ($28,983,476 / 14,426 ppl,
+the ® separated from `Fidelity®` and moved to the front), `= T. Rowe Price
+Instl Large Cap Growth` ($25,582,065 / 22,720 ppl), `_ T. Rowe Price Retirement
+2030` ($19,201,521).
+
+### The change
+
+One arm beside the dash arm, canonical in `lib-disclose.mjs` with the
+HAND-MAINTAINED app.js twin updated beside it. **Delivered: 586 rows / 206 acks
+/ 209 plans / 602,588 participants (plan-deduplicated) / $2,781,032,071**, with
+TICKER gained **1** (`: MidCap Index` -> FSMDX, $297,722 / 1,772 ppl) / lost
+**0** / swapped **0**, asterisk **0**, FEE **0/0/0**, `shownType` **0**, **row
+membership 0/0**, and a non-candidate control of 20,251 sampled rows differing
+on **0** — measured through BOTH copies of `renderRow`, one renderer per app.js
+copy. 8 crawlable pages, all read. `PARSER_VERSION` stays 203.
+
+**So it is LEGIBILITY, with one real coverage gain.** The published figure is
+plan-DEDUPLICATED: summing a plan's participants once per ROW read 5,852,043,
+which is the recorded 8x error in miniature.
+
+### Five conditions, and three were earned by something going wrong
+
+1. **`\p{P}\p{S}`, NOT a negated alphanumeric class.** The sizing screen used
+   `[^\sA-Za-z0-9]`, which **matches an ACCENTED LETTER** — it caught
+   `Ź ANTONINI FREIGHT EXPRESS…` — so that spelling generalises to stripping a
+   leading `É` or `Ø` off a European fund's name. The Unicode property escapes
+   exclude `\p{L}` by construction.
+
+2. **`*` and `+` refused BY NAME.** A leading `*` is the schedule's
+   PARTY-IN-INTEREST marker, not a footnote — this project's own memory records
+   that at the top — and writing `+` into a character class on 2026-10-07 cost
+   three tickers, because `INST+` is `Institutional Plus`, a SHARE CLASS. The
+   cost is named rather than hidden: 22 rows keep a leading `*`, 73 a leading
+   `+`, and the 38 `(*)` rows are refused too.
+
+3. **The run must be followed by WHITESPACE** — which spares a balanced
+   parenthetical the filer meant (`(T. Rowe Price Equity Income Fund)` is
+   Sentry Insurance's own filed name and resolves PRFDX at 0.68).
+
+4. **A run carrying `(` is refused**, because `(` opens something and removing
+   it orphans the `)` that closes it.
+
+5. **ABSTAIN where the remainder is identifier-only.**
+
+### Conditions 4 and 5 are the ones worth the entry
+
+**(5) THE FIRST VERSION WOULD HAVE DELETED TWENTY REAL HOLDINGS, AND EVERY
+PRICED COLUMN READ ZERO.** `app.js:2930` drops any row whose CLEANED name
+matches `ID_ONLY`, so a name change can change ROW MEMBERSHIP. `; CUSIP:
+BJQ0C55` strips to `CUSIP: BJQ0C55`, which that pattern then matches, and the
+differential reported:
+
+```
+ROW MEMBERSHIP: newly DROPPED 20 / newly KEPT 0
+   "; CUSIP: BJQ0C55"    -> "CUSIP: BJQ0C55"     ppl 146,003   $4,930,080
+   ... 19 more, $62,612,555 in all
+```
+
+All twenty are on **Tenet Healthcare (146,003 participants)**. Ticker, fee,
+asterisk and type all read 0 on those rows, so **a pricing pass that counts
+only the columns `renderRow` returns cannot see this at all** — last cycle's
+sizing priced exactly those columns and called the class safe.
+
+***And the comfortable reading is wrong.*** `ID_ONLY` exists precisely to drop
+an identifier-only row, so the `;` was merely defeating a shipped drop and
+removing it is a promotion — the recorded `isNamelessFundRow` precedent, where
+a doubled string had been defeating a generic-name test. **The menu refutes
+it.** Ten rows of that same menu are REAL collective trusts with a CUSIP
+appended and are kept today:
+
+```
+"MFB Coltv Daily 1-5 Yr Cr Bd ; 2.385%; CUSIP: 786993972"   $34,591,222
+"MFB NT Coltv Asset-Backed; 0.597%; CUSIP: 003999AF6"       $27,269,080
+```
+
+So the 20 are that same shape **with the name column lost — our parse, not the
+filing**. *A row that names nothing and a row whose name we CUT IN HALF are two
+classes*, and deleting a real holding is a worse answer than publishing an
+unreadable name: a visible artifact warns the reader where a missing row reads
+as knowledge, and it would move every percentage on the page besides.
+
+**(4) ONLY THE PAGE COULD HAVE CAUGHT THE PAREN.** With conditions 1-3 and 5 in
+place every returned cell read clean and the whole-store diff was spotless —
+and regenerating the crawlable pages and reading all 9 showed one had got
+WORSE. Comcast publishes `($ In Thousands) Interest In The Comcast Corporation
+Employee` on **$392,317,000**, where `(` is followed by `$` rather than a
+letter, so condition (3) never sees it and the run eats **both**, leaving `In
+Thousands) Interest In …` with an orphaned `)`. Adding the `(` refusal took the
+changed pages from 9 to 8 and the Comcast page out of the set entirely.
+***The page is the artifact***, and a name-only change is exactly the class of
+change a cell diff is blind to, because every cell it returns is supposed to
+move.
+
+### The `(?=\s)` condition had to be measured, not argued
+
+Its first pinned case was the balanced parenthetical — and that case is
+**protected twice**, since the `(` refusal covers it too, so the mutation
+PASSED and the suite exited 1. *A case protected by two conditions proves
+neither.* Measured through the REAL cleaner on both sides (a mutated copy of
+`lib-disclose.mjs` with only that lookahead removed), `(?=\s)` is the only
+protection for **320 distinct names / 328 rows**, and its best member is OCR
+damage:
+
+```
+"£ID S00 INDEX"  ->  "ID S00 INDEX"     $10,040,427
+```
+
+`£` is a garbled `F`: the filing says **FID 500 INDEX**, so stripping it
+*invents a name from OCR damage*. Also protected: `$4,377,590,614.97 857444590
+Series Fund` ($4.38B — the recorded welded-table-row class, where the `$` is
+what marks the string as a dollar figure), `&&&HARRIS SDA ASSET` ($917,574,441
+— `&&&` is the custodian's own country-caption marker), `~v1utual Fund`,
+`[fot`, and `,t AllianceBernstein Large Cap Growth A Fund` (which would keep a
+stray `t`). **Its named cost:** it also refuses genuine glued debris —
+`|Fidelity Growth Company Fund` ($12,787,944) and `_T. Rowe Price Retirement
+2025` ($13,603,171) keep their prefixes. That is the right trade, and the cost
+is residue rather than a defect.
+
+### The tether
+
+`scripts/lead-punct-test.mjs`, wired into `site-test` **as a step AND in the
+`paths` filter** — *a gate the file it guards cannot trigger is
+indistinguishable from no gate.* 9 must-strip, 11 must-not-strip, 5
+single-protection mutations each breaking BY NAME (the suite exits 1 if a
+mutation PASSES), and invariants over 120 generated combinations asserting the
+arm only ever removes a PREFIX. It also asserts two things that rot silently:
+the hand-maintained **app.js twin** still carries a byte-identical regex and
+guard, and **`ID_ONLY_TWIN` still matches the shipped `ID_ONLY` it
+transcribes**. CI-safe by construction — source files and its own literals, no
+store, no registry, no network — so a DOL refresh cannot redden it.
+
+### And the day-old fingerprint gate fired for the second real time
+
+`scripts/sec-tickers-stamp-test.mjs` shipped at 19:5xZ on 2026-10-11 and went
+red here: *"sec-tickers.js is STALE: it was generated by DIFFERENT CODE than is
+committed."* Correct — `cleanFiledName` is inside `apppath`'s slice, so a
+change to it stales the table by construction, which is the invariant that
+entry recorded in place of hashing `lib-disclose.mjs` directly. The table was
+regenerated in the same commit. **Two real occasions in the six hours after it
+shipped**, both genuine, neither a false positive.
+
+### Prevention
+
+- ***PRICE ROW MEMBERSHIP ON EVERY NAME CHANGE.*** The columns `renderRow`
+  returns — name, ticker, fee, asterisk, shown type — cannot see a row the page
+  DROPS, and `cleanFiledName` runs upstream of that drop. This is the recorded
+  *a name change can change ROW MEMBERSHIP* warning met for the first time as a
+  live harm: 20 rows and $62.6M on one 146,003-participant menu, with all four
+  priced columns reading 0.
+- **WHEN A DROP BECOMES REACHABLE, ASK WHETHER THE ROW IS NAMELESS OR
+  MANGLED.** The precedent on this record is a promotion (a doubled string
+  defeating a generic-name test), so "the guard was being defeated and now
+  works" is the expected reading — and the discriminator is the SIBLING ROWS,
+  not the predicate. Ten rows of that menu carry the same CUSIP suffix on an
+  intact name, which proves the parser can read that filing's name column and
+  that these twenty are our damage.
+- **A SINGLE-PROTECTION CASE MUST BE MEASURED AGAINST THE WHOLE CONDITION SET,
+  not chosen for being illustrative.** The parenthetical was the obvious case
+  for `(?=\s)` and was covered by a condition added later in the same cycle;
+  the mutation failing is what sent me to measure the condition's real
+  population, which produced both a better case and an honest cost.
+- **AND A LETTER IS NOT PUNCTUATION.** A negated-alphanumeric character class
+  is the natural way to write "debris" and it silently includes every accented
+  letter, every CJK character and every non-Latin script. Over this corpus it
+  reached exactly one row, so no count would have flagged it — the fix is to
+  say what you mean (`\p{P}\p{S}`) rather than what you do not.
+---
+
 ## 2026-10-11 (23:5xZ) — THE BARE-BRAND FEE PATTERN IS A REAL DEFECT AT 38 ROWS / 373,602 READERS AND THE PRODUCT-TOKEN REQUIREMENT THAT WAS QUEUED FOR IT IS REFUTED: measured through both copies of `renderRow`, it withdraws 27 REAL FUNDS' fees and ADDS 50 fee claims, because narrowing a lookup-table entry defeats `issuerPricedER`'s "the issuer must not supply the answer by itself" guard one level up. The filer's own TYPE cell cannot witness it either — `Company stock` is dominated by Vanguard target-date funds. NOTHING SHIPPED
 
 ### What was wrong, and it stands

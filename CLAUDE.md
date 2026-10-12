@@ -1864,7 +1864,48 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
-- **SIZED 2026-10-11 23:3xZ, NOT SHIPPED — A LEADING PUNCTUATION RUN THAT THE
+- **SHIPPED 2026-10-12 00:5xZ — A LEADING PUNCTUATION RUN THE DISPLAY CLEANER
+  DID NOT REACH: 586 published+served rows / 206 acks / 209 plans / 602,588 ppl
+  (plan-deduplicated) / $2,781,032,071**, TICKER gained **1** (`: MidCap Index`
+  -> FSMDX) / lost 0 / swapped 0, asterisk 0, FEE 0/0/0, `shownType` 0, **row
+  membership 0/0**, a 20,251-row non-candidate control differing on 0, and 8
+  crawlable pages all read. `PARSER_VERSION` stays 203; tethered by
+  `scripts/lead-punct-test.mjs` in `site-test` (step AND `paths`).
+  ***DO NOT CARRY THE SIZING'S 805 rows / 6,032,073 ppl:*** that figure summed a
+  plan's participants once per ROW (the recorded 8x error — Tenet alone
+  contributed 20 x 146,003), and the `*`/`+`/`(*)` refusals and the
+  identifier-only abstention below take the row count down as well.
+  **THE CONDITION THAT MATTERS WAS EARNED BY A LIVE HARM THE PRICED COLUMNS
+  COULD NOT SEE: the first version DELETED 20 rows / $62,612,555 from Tenet
+  Healthcare's 146,003-participant menu**, because `; CUSIP: BJQ0C55` strips to
+  `CUSIP: BJQ0C55` and `app.js:2930` DROPS any row matching `ID_ONLY`. Ticker,
+  fee, asterisk and type all read 0 on those rows. And the comfortable reading
+  — that the `;` was merely defeating a shipped drop, the recorded
+  `isNamelessFundRow` promotion — **is refuted by the menu**: ten of its rows
+  are REAL collective trusts with a CUSIP appended and kept today
+  (`MFB Coltv Daily 1-5 Yr Cr Bd ; 2.385%; CUSIP: 786993972`, $34,591,222), so
+  the 20 are that shape with the NAME COLUMN LOST. *A row that names nothing
+  and a row whose name we CUT IN HALF are two classes.*
+  **AND ONLY THE PAGE CAUGHT THE FOURTH CONDITION:** with every cell reading
+  clean, regenerating the crawlable pages showed Comcast's
+  `($ In Thousands) Interest In The Comcast Corporation Employee`
+  (**$392,317,000**) had become `In Thousands) Interest In …` — `(` is followed
+  by `$`, so the whitespace condition never saw it and the run ate both. The
+  `(` refusal took the changed pages from 9 to 8.
+  **`(?=\s)` IS LOAD-BEARING AND ITS COST IS NAMED:** its first pinned case was
+  protected TWICE (the `(` refusal covers the parenthetical), so the mutation
+  passed and the suite exited 1; measured through the real cleaner it is the
+  only protection for **320 distinct names / 328 rows**, best member
+  `£ID S00 INDEX` -> `ID S00 INDEX` ($10,040,427) where **`£` is a garbled `F`**
+  and the filing says FID 500 INDEX. It also refuses genuine glued debris —
+  `|Fidelity Growth Company Fund`, `_T. Rowe Price Retirement 2025` — which is
+  residue, not a defect.
+  **Named residue:** the 166 rows whose remainder names no fund either (fourteen
+  one plan's unit PRICE, `, $21.03/unit` on $8,188,833) are untouched and want
+  QUALIFYING; the 22 `*`, 73 `+` and 38 `(*)` rows keep their markers.
+  `docs/accuracy-log.md` 2026-10-12 (00:5xZ).
+- **ORIGINAL SIZING, kept because it is what was predicted:**
+  **SIZED 2026-10-11 23:3xZ — A LEADING PUNCTUATION RUN THAT THE
   DISPLAY CLEANER DOES NOT REACH: 805 published+served rows / 244 acks /
   6,032,073 ppl / $3,545,265,528, of which 639 are strippable and 166 want
   QUALIFYING instead.** `® Fidelity Low-Priced Stock` ($28,983,476 / 14,426
@@ -5530,6 +5571,21 @@ These outlived the versions that produced them. The accuracy log has the case.
   members being house ABBREVIATIONS (`VANG EXPLORER ADM`, `AF EUROPAC GROWTH
   R6`) and EMPLOYER STOCK (`Costco Wholesale Corporation` =COST, $18.3B).
   `docs/accuracy-log.md` 2026-10-04 (02:0xZ).
+- **PRICE ROW MEMBERSHIP ON EVERY NAME CHANGE — THE PRICED COLUMNS CANNOT SEE
+  A ROW THE PAGE DROPS (2026-10-12).** `cleanFiledName` runs UPSTREAM of
+  `app.js:2930`, which drops any row whose cleaned name matches `ID_ONLY`, so a
+  strip can make a row VANISH — and the first version of the leading-debris arm
+  deleted **20 rows / $62,612,555 from a 146,003-participant menu** with
+  ticker, fee, asterisk and shown type all reading 0. The recorded warning (*a
+  name change can change ROW MEMBERSHIP*) had never been met as a live harm.
+  **Two further halves of it:** when a strip makes a shipped DROP reachable,
+  the precedent on this record is a PROMOTION, so "the guard was being defeated
+  and now works" is the expected reading — and the discriminator is the SIBLING
+  ROWS rather than the predicate, because ten rows of that menu carry the same
+  CUSIP suffix on an intact name and prove the twenty are our damage; and ***a
+  letter is not punctuation*** — `[^\sA-Za-z0-9]` is the natural way to write
+  "debris" and silently includes every accented letter and non-Latin script,
+  reaching exactly one row here, so no count would have flagged it.
 - **AND HOLD FIXED EVERY INPUT THE CHANGE DOES NOT MOVE (2026-10-11).** A
   `cleanFiledName` change moves `f.name` and never `f.nameRaw` — and
   `sec-tickers.js` is keyed on `(issuer, nameRaw)`. A harness that varied BOTH

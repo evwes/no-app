@@ -12442,4 +12442,4 @@ const SEC_TICKERS_PIN = {"key":"\u0000(CL)Victory Sycamore Established Val R6","
  * was not regenerated, so every key that change would add is silently
  * withheld — which is how 66 gain rows / 9,224 participants accumulated
  * unreported across five ships on 2026-10-11. */
-const SEC_TICKERS_CODE = "sha256:ad0d01d161dadb92fbe21a9166187c7ff8bd00388b0fe71377e15cb6f777f292";
+const SEC_TICKERS_CODE = "sha256:9418c146e710df2844fb091ae4cc9ab4b5d9b4dac25582b7d10370de62377ff5";
