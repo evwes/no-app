@@ -2902,6 +2902,15 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   Global (DODWX / **DOXWX**). An unusually clean instance of the owner-gated
   wrong-share-class item: the class is in the filed name, registered, and the
   fee is wrong in the same direction as the symbol.
+  **THE FAMILY IS NOW COMPLETE AT FOUR — the 03:08 draw of 2026-10-12 adds
+  INCOME.** Billerud Americas (1,319 ppl) files `Dodge & Cox Income X` and
+  publishes **DODIX at 0.41** on $16,688,974 (4.6% of its menu), where
+  `sec-funds.json` registers `DODIX Class I` and **`DOXIX Class X`** for the one
+  series. Stock, International, Global and Income all carry the same defect,
+  each found on a different plan's page — *a repeated spelling is a population
+  where a unique one is an anecdote*, so this is ONE defect on four sibling
+  products rather than four coincidences. `docs/accuracy-log.md` 2026-10-12
+  (03:5xZ).
 - **AND THE CONTRACTION CLASS IS CONFIRMED BY A SECOND FILER USING THE IDENTICAL
   STRING — which is what makes it sizable.** Korn Ferry publishes `Vanguard Ext
   Mk Index Inst Fd` with no ticker and 0.1, *character for character the string
@@ -3102,6 +3111,21 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   filing. **Split the measurement on `star` before anything ships:** the
   asserted half is one-directional, the comparable half is the owner's.
   `docs/accuracy-log.md` 2026-10-10 (23:3xZ).
+  ***AND THE ABBREVIATION IS REFUTED AS THE CAUSE — the 03:08 draw of
+  2026-10-12 found BOTH halves in ONE menu with the house and product spelled
+  out in FULL.*** Billerud Americas (1,319 ppl, ratio 1.001) files
+  `Vanguard Small Cap Index Inst` and publishes **VSMAX asserted at 0.05** on
+  $24,313,309 (6.7%) where `Inst` is Institutional = **VSCIX** and VSMAX is
+  ADMIRAL; two rows above, `Vanguard Intermediate Term Bond Index Inst`
+  publishes **NO ticker** and a 0.06 fee on $27,229,954 (7.5%) where **VBIMX**
+  is registered as exactly Institutional Shares. Same house, same class word,
+  same spelling, same menu — one row gets a different class as FACT and the
+  other gets nothing — with the control one row further up
+  (`Vanguard Growth Index Adm` -> VIGAX, correct, Admiral being the class the
+  resolver carries). **So what the resolver cannot read is the CLASS WORD
+  `Inst`, not the contraction around it**, and this entry's framing from the
+  contracted `VANG SM CAP IDX INST` was narrower than the defect.
+  `docs/accuracy-log.md` 2026-10-12 (03:5xZ).
 - **FOUND BY THE 23:08 DRAW, UNSIZED — A UNIT COUNT WELDED IN FRONT OF A TYPE
   CAPTION, WITH THE REAL FUND IN THE ISSUER CELL.** St Moritz Security Services
   (2,781 ppl) publishes `1,341.08 Common/Collective Trust` at 2.3% and

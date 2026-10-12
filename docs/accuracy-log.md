@@ -7,6 +7,95 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-12 (03:5xZ) — THE 03:08 DRAW: ONE MENU ANSWERS THE SAME STATED SHARE CLASS TWO DIFFERENT WRONG WAYS, TWO ROWS APART — AND IT COMPLETES THE DODGE & COX FAMILY TO FOUR
+
+Seeded participant-weighted draw (`--seed 12102026`, 3 menus, 60 rows), so the
+whole menu was read rather than its first nine. Billerud Americas Corporation
+(1,319 ppl, ack `20251007114424NAL0002433107002`, 31 funds, ratio **1.001**) is
+a healthy menu, and that is what makes its rows convictable.
+
+**Every claim below is read out of `sec-funds.json`, not recalled.**
+
+### THE SHARPEST WITNESS YET FOR THE OWNER-GATED WRONG-SHARE-CLASS ITEM: ONE HOUSE, ONE CLASS WORD, TWO ROWS, TWO DIFFERENT WRONG ANSWERS
+
+| row | filed | published | registry says |
+|---|---|---|---|
+| 5 | `Vanguard Small Cap Index Inst` | **VSMAX asserted, er 0.05**, $24,313,309 (6.7%) | `Inst` = **VSCIX** Institutional Shares; **VSMAX is ADMIRAL** |
+| 2 | `Vanguard Intermediate Term Bond Index Inst` | **no ticker**, er 0.06, $27,229,954 (7.5%) | `Inst` = **VBIMX**, registered as exactly Institutional Shares |
+
+Both rows state the SAME class word, in the same spelling, from the same house,
+in the same menu — and one gets a different class published as FACT while the
+other gets nothing at all. The control is row 1 of the same menu: `Vanguard
+Growth Index Adm` → **VIGAX**, correct, because Admiral is the class the
+resolver carries.
+
+**AND THIS REFUTES THE ABBREVIATION AS THE CAUSE.** The 2026-10-10 23:3xZ draw
+found this defect on `VANG SM CAP IDX INST` and the mechanism was written up
+with the contracted spelling in the frame. Here the house and product are
+spelled out in full and the defect is identical, so what the resolver cannot
+read is the CLASS WORD `Inst`, not the contraction around it. Third and fourth
+rows for the recorded *"stating a registered share class makes the matcher
+answer worse than stating none"* class, and the first time both halves of it
+appear in one menu under one spelling.
+
+### THE DODGE & COX CLASS X FAMILY IS NOW COMPLETE AT FOUR
+
+Row 7 files `Dodge & Cox Income X` and publishes **DODIX at 0.41** on
+$16,688,974 (4.6%). The registry:
+
+```
+DODIX   Class I   DODGE & COX FUNDS :: Dodge & Cox Income Fund
+DOXIX   Class X   DODGE & COX FUNDS :: Dodge & Cox Income Fund
+```
+
+So the filing STATES Class X, the registry REGISTERS Class X, and the page
+publishes Class I's symbol **and Class I's fee**. This record already names the
+same pair for Stock (DODGX/**DOXGX**), International (DODFX/**DOXFX**) and
+Global (DODWX/**DOXWX**); Income completes the family to four, every one found
+on a different plan's page. *A repeated spelling is a population where a unique
+one is an anecdote* — this is the same defect on four sibling products.
+
+### AND A CLEARING BROKER PUBLISHED AS A MUTUAL FUND
+
+Row 22 publishes **`NATIONAL FINANCIAL SERVICES`** at $3,523,567 (1.0%), typed
+**`Mutual fund`**, with no ticker and no fee. NFS is Fidelity's clearing
+broker: **0 of the registry's 29,406 rows name it**, so it is not a registered
+fund under any class. A named instance of the bare-HOUSE-name class with a
+FALSE VEHICLE TYPE on top — and the menu shows the parse can read both columns,
+because row 3's `Self-Directed Brokerage Account` is correctly typed
+`Brokerage window` and row 21's `Participant loans` correctly `Not a menu
+choice`.
+
+### AND MY OWN PROBE REPORTED A CLEAN ZERO ACROSS THE WHOLE REGISTRY
+
+The first run of the probe printed `registry rows: 0` and `(nothing)` for all
+four queries — i.e. *"the registry is silent on Dodge & Cox Income"*, which is
+the shape of a publishable claim and was false. `sec-funds.json` is an OBJECT
+whose rows live under **`.funds`** beside `generated`, `source` and `count`;
+I read it as an array and then guessed `.rows` and `.series`.
+
+***A guessed SHAPE fails as a clean zero where a guessed field NAME throws***,
+and this file already records that about this exact file, which has no
+`lib-schema` loader. What caught it was the recorded rule rather than the
+output: a both-sided zero across a whole population reports on the QUERY. The
+probe now asserts `Array.isArray(list) && list.length >= 20000` and THROWS, so
+the same mistake cannot return a tidy answer again.
+
+### Prevention
+
+- **A PLAUSIBILITY THROW ON THE SHAPE OF ANY STORE WITHOUT A `lib-schema`
+  LOADER.** `loadPlans`/`loadStatus`/`loadTrusts` name the real fields when a
+  caller guesses; `sec-funds.json`, `lineups-index.json` and `sec-tickers.js`
+  have no such loader, and every one of them has now produced a clean zero in a
+  measurement at least once. One line — assert the row count is in the right
+  order of magnitude — converts that silence into a failure.
+- **DRAW WITH `--rows` WIDE ENOUGH TO READ THE WHOLE MENU.** All four findings
+  here sit at rows 2, 5, 7 and 22 of a 31-row menu; the default nine-row print
+  would have shown only two of them, and the 02:08 draw lost three findings to
+  exactly that.
+
+---
+
 ## 2026-10-12 (03:4xZ) — SHIPPED: A PLAN'S OWN FORFEITURE OR EXPENSE ACCOUNT STOPS BEING PUBLISHED AS A MENU CHOICE — 58 ROWS / 58 PLANS / 411,316 PPL / $983,342,432, AND 28 OF THEM HAD A FALSE VEHICLE TYPE WITHDRAWN
 
 ### What shipped
