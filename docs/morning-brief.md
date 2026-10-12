@@ -1,4 +1,4 @@
-# wampo brief — 2026-10-12, 08:1xZ
+# wampo brief — 2026-10-12, 09:2xZ
 
 Overwritten nightly. Decision-shaped: what shipped and what it changed in
 numbers, what was found wrong, what is held, what is waiting on the owner.
@@ -80,12 +80,16 @@ rows, and `sweep` one row at $70. So the class is about thirty rows by count
 and one row by dollars — and that row turned out not to be a labelling question
 at all.
 
-## Sized overnight and awaiting a decision: we hedge 869,224 readers on an answer we have right
+## Shipped: we stopped hedging 890,938 readers on an answer we had right
 
-**The page publishes an asterisked *comparable* — its label for "a comparable
-registered fund, not the one held" — on a symbol the registry registers as
-exactly the share class the filing states. 469 rows / 122 plans / 869,224
-participants / $2.71B, and it moves no fee cell.** Paychex Retirement Llc
+**The page was publishing an asterisked *comparable* — its label for "a
+comparable registered fund, not the one held" — on a symbol the registry
+registers as exactly the share class the filing states. 579 rows / 157 plans /
+890,938 participants / $2.86B now drop that asterisk, and `star` is the only
+cell that moves: ticker, fee, name, shown type and row membership all zero,
+with 21,424 sampled non-candidates differing on nothing.** `site-test #213` is
+green on the shipped commit and `pages build and deployment #1025` confirms it
+live on main's HEAD. Paychex Retirement Llc
 (661,036 ppl) publishes `~SSDEX` on `State Street Target Retirement 2045 Fund
 Class K` at $170,115,724 — and SSDEX *is* Class K of that series. Nine rows of
 that one menu, $1.17B.
@@ -103,10 +107,16 @@ emitted only where the page resolves *nothing*, which is its whole safety
 claim — so an answer the page already publishes is outside its reach by
 design. Safety and blindness are the same property.
 
-Split by fee direction, which is the decision: 472 rows / 886,867 ppl move the
-asterisk and **nothing else**; a further 194 rows / 45,781 ppl would *gain* a
-pattern-table fee, so that half belongs with the owner-gated fee families. No
-published fee is withdrawn or changed anywhere in the class.
+**Two of my own claims were refuted before it shipped, and both mattered.**
+The row count: my candidate screen asked the resolver without the issuer, where
+the page asks *with* it first — so 110 rows looked unreachable, in the
+direction that makes a change look safer than it is. The fee: the first
+differential moved 29 fee cells, every one 0.02 → 0.03 on a fund whose real
+cost is about 0.02, because one flag was deciding two questions — whether a row
+is an approximation *and* where its fee comes from. Fixed by preferring the
+resolver's own figure, with the starred branch left byte-identical; my first
+draft of that merged the branches and would have gained a pattern fee on 194
+other rows.
 
 **One false positive, found only by reading all 57 names in the class** — and
 it is the second-largest row by dollars. `State Street S&P 500 Index

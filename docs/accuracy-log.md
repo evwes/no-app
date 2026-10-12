@@ -9,6 +9,69 @@ prevention machinery is listed at the bottom.
 
 
 
+
+## 2026-10-12 (09:1xZ) — THE 08:07 DRAW: A SCHEDULE H ACCOUNTING CAPTION PUBLISHED AS 27% OF ONE MENU, REACHED BY NO SHIPPED PREDICATE — AND THE CREF CLASS CONFIRMED LIVE
+
+Seeded participant-weighted draw (`--seed 12100907`, 2 menus, `--rows 40`).
+**Yale University** (8,440 ppl, ack `20251009121414NAL0015470930001`, 21 funds,
+ratio 0.983).
+
+### NEW AND UNSIZED: the benefit-responsive accounting split published as two holdings
+
+| row | published | share |
+|---|---|---|
+| 1 | `Benefit Responsive` · iss `TIAA Traditional Annuity Contract`, type `—` | **17.6% / $104,326,453** |
+| 3 | `Non-Benefit Responsive` · iss **empty**, type `—` | **9.4% / $55,479,522** |
+
+**27.0% of Yale's whole menu / $159,805,975 is two accounting captions.**
+Benefit-responsive versus non-benefit-responsive is the Schedule H split for a
+stable-value contract's withdrawal terms — it is an ACCOUNTING CATEGORY, not an
+investment option a participant can choose.
+
+**NO SHIPPED PREDICATE REACHES EITHER, asserted with a positive control:**
+`isGenericTypeName`, `hasNoFundIdentity`, `isLabelOnlyName`, `isSentenceRow`,
+`isScheduleHCaption`, `isForfeitureAccountRow`, `isDateHeaderRow` and
+`isLoanAccountRow` all read false on both, while `Collective investment
+trusts` is reached by two of them — so the instruments are live and the gap is
+real. Neither row publishes a ticker or a fee, so the harm is the CLAIM alone.
+
+***The two rows are NOT one class, which is the part to size before building
+anything.*** Row 1's ISSUER cell names the contract, and both surfaces print
+`issuer · name`, so its reader IS told what the holding is — the honest change
+there is the TYPE, not a "names no specific fund" label, which would be false.
+Row 3 names nothing in either column. Same split as the recorded caption
+families: *a row that names nothing and a row whose identity sits in the other
+column are two classes.*
+
+### The owner-gated CREF class, confirmed live on a second plan
+
+Eleven `CREF … R3`/`R4` rows (Stock 4.3%, Growth 3.1%, Social Choice, Global
+Equities, Core Bond, Inflation-Linked Bond, Equity Index, Money Market), of
+which **four publish a pattern-table FEE** — `CREF Equity Index R3` 0.06,
+`CREF Money Market R3` 0.2 — and the rest blank, every one typed `Mutual fund`
+with no ticker. Exactly the recorded 15,028-row class and its internal control
+(the index and money-market accounts priced because they collide with
+`fund-er.js:498`'s generic patterns, the rest blank). No new information;
+recorded because a second plan is a population and the figures held.
+
+### And the contraction class on the LARGEST row of the menu
+
+`Vanguard Total St Mk Ix In Pl` at **30.1% / $177,947,372** publishes NO ticker
+and NO fee. `In Pl` is Institutional Plus = **VSMPX**, so this is the recorded
+CONTRACTION class and the recorded *stating a registered share class makes the
+matcher answer worse than stating none* class at once, on the biggest row Yale
+has. Two more in the same menu publish a FEE with no symbol —
+`VAN Developed Mkts Idx InsPlus` 0.05, `VAN Emerging Mkts Idx Ins Plus` 0.1 —
+where `VAN` is the filer's house abbreviation. Both need the registry as the
+witness, not a wider screen.
+
+### Prevention
+
+- **ASK THE SHIPPED PREDICATES BEFORE CALLING A ROW UNREACHED, AND ASK THEM
+  WITH A POSITIVE CONTROL.** Eight predicates reading false is a finding only
+  once a string they MUST reach reads true in the same call — otherwise a bad
+  import or a renamed export produces the same eight falses.
+
 ## 2026-10-12 (08:5xZ) — SHIPPED: A CORRECT IDENTIFICATION STOPS BEING PUBLISHED AS AN APPROXIMATION — 579 ROWS / 890,938 PARTICIPANTS, `star` THE ONLY CELL THAT MOVES, AND MY OWN REGISTRATION WAS REFUTED TWICE BEFORE IT SHIPPED
 
 ### What shipped
