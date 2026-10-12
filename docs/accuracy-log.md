@@ -11,6 +11,71 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-12 (09:5xZ) — THE 09:07 DRAW: FOUR RECORDED CLASSES CONFIRMED ON TWO NEW PLANS, A NAMED LIVE INSTANCE OF THE BARE-BRAND FEE, AND NO NEW CLASS
+
+Seeded participant-weighted draw (`--seed 12101007`, 2 menus, `--rows 40`) over
+the pool of **60,070 published menus reaching 100,151,069 participants**.
+
+### Freedom Care Llc — 59,785 ppl, 38 funds, ratio **1.000**
+
+A healthy menu where most rows resolve correctly (SWPPX 0.04, RNWGX 0.57,
+VSMAX, VVIAX, VIGAX, VIMAX, VMGMX, VMVAX, RERGX 0.46, CSXRX), and the eighteen
+`Principal Lifetime <vintage>` rows are typed `Pooled separate account` with
+`noPublicPrice` holding, so they correctly publish neither ticker nor fee.
+Four gaps, every one a recorded class and none new:
+
+| row | published | class |
+|---|---|---|
+| `Janus Henderson Balanced N Fund` | **0.7**, no ticker, $792,500 | the BARE-BRAND fee |
+| `Ishares Msci Eafe International Index K Fund` | 0.06, no ticker, $2,323,374 / **9.9%** | the iShares abbreviated-name family |
+| `Tiaa-Cref Large-Cap Value Index Institutional Fund` | 0.1, no ticker, $1,059,163 | a stated share class the matcher refuses |
+| `Hartford Strategic Income R6 Fund` | **HSNVX with NO fee** | the ticker/fee asymmetry |
+
+**The `Janus Henderson` row is a NAMED LIVE INSTANCE of the bare-brand fee
+family** — `janus henderson` is one of the eleven bare brand entries the
+2026-10-11 23:5xZ sizing attributed by sentinel, pricing **199,019 of all
+1,721,920 published rows between them**. It is the BENIGN half of that family
+rather than the Eagle Materials harm: this really is a Janus Henderson fund, so
+0.7 is plausible-but-unsourced rather than fabricated. *A fee is SOURCED, never
+derived*, and that item is owner-gated with a measured 38-row convictable core
+against 27 real funds that would LOSE a plausible house fee — so this row
+changes nothing about the decision and adds a reader-facing instance to it.
+
+### National Technology & Engineering Solutions Of Sandia — 19,883 ppl, 41 funds, ratio **0.991**
+
+**The machinery working, on a menu that is collective trusts end to end.** All
+41 rows are typed `Collective trust`, `Pooled separate account`, `Stable value
+/ GIC` or `Managed account`; every Vanguard target-date vintage publishes its
+asterisked comparable at 0.08 with `noPublicPrice` set, `Interest Income Fund`
+correctly publishes NO fee under `gicRow` (not the fabricated-0.35 class), and
+`Managed account holdings (67 positions)` is labelled as such.
+
+**It confirms the 2026-10-10 01:4xZ `noPublicPrice` finding on a second plan
+at scale, and confirms it as a DESIGN rather than a defect.** Rows 1 and 2
+publish a fee *through* `noPublicPrice` — `~FDGRX 0.61` on **$1,004,710,321**
+and `~FCNTX 0.39` on $815,882,004 — because `app.js:4073` reads
+`star ? info.er : (noPublicPrice ? null : fundERRow(f))`, so the COMPARABLE
+branch takes `info.er` unconditionally. That entry sized the asymmetry at
+45,067 rows / 34.3M ppl and closed it as correct, because the report's
+`fund-note` paragraph names the provenance, the direction and the epistemic
+status — *read it as a ceiling, not the plan's price*. Microsoft's $8.2B
+`Fidelity Growth Company Pool Class S` was the recorded named instance; Sandia
+is the second, at $1.0B, and `scripts/fund-note-test.mjs` is what keeps the
+paragraph those two rows rest on from being reworded away.
+
+### What the draw did NOT find, recorded because an absence is a result
+
+No new class, and nothing convictable on either page. Both menus' ratios are
+1.000 and 0.991, both are typed honestly row by row, and the four gaps above
+are each already sized and queued. *Two clean draws in a row is evidence about
+the store rather than about the instrument* — and the instrument's own
+exclusions printed as they should: 1,265 stored menus / 10,317,233 participants
+excluded as NOT PUBLISHED, and 93 publishable menus / 2,918,940 participants
+excluded as served their OWN menu instead.
+
+
+---
+
 ## 2026-10-12 (09:4xZ) — SHIPPED: A STABLE-VALUE CONTRACT'S WITHDRAWAL-TERMS ACCOUNTING SPLIT STOPS BEING PUBLISHED AS AN INVESTMENT OPTION — 171 ROWS / 480,837 PARTICIPANTS, AND THE VOCABULARY WIDENING THAT WOULD HAVE DONE IT WAS REFUSED BY ITS OWN MEMBER LIST
 
 ### What shipped
