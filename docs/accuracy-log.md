@@ -7,6 +7,254 @@ prevention machinery is listed at the bottom.
 
 ---
 
+
+## 2026-10-12 (07:3xZ) — THE 06:07 DRAW: A CORRECT IDENTIFICATION PUBLISHED AS AN APPROXIMATION — NINE ROWS HEDGED AND TWO ASSERTED IN ONE MENU, SAME HOUSE, SAME CLASS WORD, AND MY OWN FIRST SCREEN WAS REFUTED THREE WAYS BY ITS OWN OUTPUT
+
+Seeded participant-weighted draw (`--seed 12100607`, 3 menus, `--rows 40`).
+**Paychex Retirement Llc, 661,036 ppl**, ack
+`20251008165529NAL0005841041001`, 25 funds, ratio 0.979.
+
+### The defect runs OPPOSITE to every recorded share-class finding
+
+Nine rows publish an **asterisked comparable** — the page's label for *"a
+comparable registered fund, not the one held"* — on a symbol that is the
+EXACT registered class the filing states:
+
+| filed | published | registry says |
+|---|---|---|
+| `State Street Target Retirement 2045 Fund Class K` | **`~SSDEX`** @ $170,115,724 (9.8%) | SSDEX **IS** `Class K` of that series |
+| `… 2035 Fund Class K` | `~SSCKX` @ $167,192,357 | SSCKX **IS** Class K |
+| `… 2060 / 2050 / 2040 / 2055 / 2030 / 2025 / 2020 / 2065 Fund Class K` | `~SSDYX` … | each **IS** Class K |
+| `State Street Equity 500 Index Fund Class K` | `~SSSYX` @ $105,745,173 | SSSYX **IS** Class K |
+
+Every recorded share-class defect on this record is a WRONG class published as
+FACT. This is the RIGHT class published as a HEDGE — and an asterisk is a whole
+category of claim, so 661,036 readers are told we are approximating where we
+are not.
+
+### THE FILING CONFIRMS IT AND SUPPLIES THE DECISIVE CELL
+
+Downloaded and read (`http=200`, 581,672,819 bytes, 327,158 lines of layout
+text). Every one of those rows carries the **filer's own type cell reading
+`Mutual Fund`**, and the values match what we publish to the dollar:
+
+```
+State Street Target Retirement 2045 Fund Class K     Mutual Fund   (1)  $ 170,115,724
+State Street Equity 500 Index Fund Class K           Mutual Fund        105,745,173
+State Street Retirement Fund Class K                 Mutual Fund         16,061,008
+State Street Aggregate Bond Index Fund Class K       Mutual Fund          6,101,990
+```
+
+So these are the registered funds and not collective trusts — which is the one
+population where the hedge cannot be defended.
+
+### THE CONTROL IS INSIDE THE SAME MENU, AND THE DISCRIMINATOR IS OUR OWN TABLE
+
+Eleven rows of that menu state `Class K` on a filer-typed `Mutual Fund`.
+**Two publish their Class K symbol as FACT** — `State Street Aggregate Bond
+Index Fund Class K` -> **SSFEX** @ 0.04 and `State Street Global All Cap Equity
+ex-U.S. Index Fund Class K` -> **SSGLX** @ 0.05 — and **nine publish it
+asterisked.** One menu, one house, one class word, two verdicts.
+
+**MECHANISM, read not guessed.** `fund-er.js:1313-1316` is
+
+```js
+[/(state street|ssga).*target retirement 2045/i, ["SSDEX", 0.09, true]],
+```
+
+— the third element is the `comparable` flag, hardcoded **true**. So the arm
+answers `SSDEX` for Class A, Class I and Class K alike: the asterisk is
+CORRECT on the first two and unearned on the third. The two asserting rows have
+no such arm and fall through to `sec-tickers.js`, which ships assertions only.
+
+### WHY THE SEC TABLE CANNOT FIX IT, AND IT IS THE SAFETY PROPERTY ITSELF
+
+`gen-sec-tickers.mjs`'s own header states the gate: *"THE GATE IS 'THE PAGE HAS
+NOTHING' … a key is emitted only where the page resolves NOTHING, so the table
+can never contradict an answer the page already publishes."* `fund-er.js`
+answers first, with a comparable, so no key is ever written — probed and
+confirmed: `sec-tickers.js` has **12,408 keys and none for this name**.
+
+***A generator gated on "the page has nothing" is additive by construction, and
+that very property makes it structurally unable to correct an answer the page
+already publishes, however weak or wrong.*** This record cites "additive by
+construction" as a safety claim in three separate ships; this is the first time
+its COST is named. Safety and blindness are the same property here.
+
+### SIZED: 666 rows / 198 plans / 932,648 ppl / $3,270,140,527, AND THE SPLIT BY FEE DIRECTION IS WHAT MAKES IT ACTIONABLE
+
+Measured over all **1,721,920** published+served rows through the tracked
+harness, with the serving condition applied, the page's own
+`pooledVehicleRow` asked on BOTH spellings exactly as `app.js:2968` asks it,
+and the registry's class field required to BE a class designation. Refusals:
+**21,735** rows where the registry's class field holds the series name,
+**469** pooled vehicles. Filed TYPE of what survives: `Mutual fund` 514,
+blank 149, `Cash / short-term` 3 — no pooled vehicles left.
+
+Promoting switches which branch supplies the fee, so the class splits by
+DIRECTION, and the direction is the decision:
+
+| | rows | plans | ppl | $ |
+|---|---|---|---|---|
+| **FEE UNCHANGED — one column** | **472** | 125 | **886,867** | $2,972,230,488 |
+| fee `null -> value` (ADDS a fee claim) | 194 | 73 | 45,781 | $297,910,039 |
+| fee `value -> null` (WITHDRAWS) | **0** | 0 | 0 | 0 |
+| fee `value -> other` (CHANGES) | **0** | 0 | 0 | 0 |
+
+**No published fee is withdrawn or changed anywhere in the class**, and 95% of
+the people sit in the one-column core. That core is homogeneous: all 472 are
+registry class **`Class K`**, all State Street / SSgA, 12 distinct symbols
+(SSSYX 93, SSDQX 43, SSDLX 43, SSCKX 42, SSDEX 42, SSCQX 41, SSDYX 41,
+SSBYX 40, SSBSX 37, SSBOX 26, SSFKX 21, SSFOX 3).
+
+### ALL 57 DISTINCT NAMES OF THE CORE WERE READ, AND ONE IS A FALSE POSITIVE — THE SECOND-LARGEST ROW IN IT BY DOLLARS
+
+**`State Street S&P 500 Index Non-Lending Series Fund Class K` — 3 rows /
+3 plans / 17,643 ppl / $264,712,802**, type cell BLANK, Nutrien Us Llc's copy
+**11.94% of its whole menu**. That product is a **COLLECTIVE INVESTMENT
+TRUST**, not the Equity 500 Index mutual fund, and asserting SSSYX on it is
+the recorded pooled-vehicle harm exactly.
+
+***AND THE MECHANISM IS NEW AND SHARP: THE "CLASS K" THE FILING STATES IS THE
+TRUST'S OWN UNIT CLASS, NOT A REGISTERED SHARE CLASS.*** A collective trust
+has unit classes of its own and names them the same way a fund names share
+classes, so *a stated class word is not evidence of a REGISTERED share class
+until the vehicle is settled.* Every instrument read clean on these rows:
+`pooledVehicleRow` has no token to catch (`Non-Lending Series Fund` carries
+none of `trust|commingled|collective|pool`), the type cell is blank so the
+type half cannot fire either, the registry genuinely registers SSSYX as
+Class K, and the filing genuinely says Class K. **Only reading all 57 names
+found it.**
+
+Honest core after sparing them: **469 rows / 122 plans / 869,224 ppl /
+$2,707,517,686.** A `non-lending` / `series fund` / `ser <letter>` screen is
+State Street's own CIT naming and hits **0** rows of the fee-ADDS half, so it
+costs nothing elsewhere.
+
+Needing care rather than conviction, 3 rows / $10.8M:
+`State Street Target Retirement Income Fund Class K` ->
+**SSFOX**, where the registry's series is the non-dated
+`State Street Target Retirement Fund`. Probably the same product; not asserted
+on a probably.
+
+### NOT SHIPPED THIS CYCLE, AND THE FEE IS WHY FOR THE SMALLER HALF
+
+app.js computes `er = star ? info.er : fundERRow(f)`, so **promoting a
+comparable SWITCHES WHICH BRANCH SUPPLIES THE FEE.** Measured per row rather
+than argued. On the narrowed class it is one-directional — 194 rows / 45,781
+ppl GAIN a fee where they publish none, 0 withdraw and 0 change — so that half
+adds 194 pattern-table fee claims and belongs with the owner-gated
+fee-pre-emption family: *a fee is SOURCED, never derived.* **The 469-row core
+moves no fee cell at all and is a one-column change.**
+
+(The first screen's fee moved on **1,045 of 3,969** rows with `0.39 -> 0.45`,
+`0.04 -> 0.02`, `0.39 -> null` — every one of those a POOLED row, so the
+alarming direction was an artifact of the contamination below, not of the
+class.)
+
+**THE REMEDY IS LOCAL AND IN THE FILE'S OWN IDIOM**, which is why this is a
+queue item and not a research project: the twelve State Street arms get a
+Class-K-stating sibling ahead of them with the flag set false, e.g.
+`[/(state street|ssga).*target retirement 2045.*\bclass k\b/i, ["SSDEX", 0.09, false]]`,
+the assertion licensed by the registry at test time and never at runtime. It
+needs the CIT-name refusal above, a seeded uniform draw printing each row's
+type, and the whole-store differential through both copies of `renderRow`.
+
+### THE DIRECTION IS THE UNSAFE ONE IN GENERAL, AND THAT IS NOT AN ARGUMENT AGAINST THIS GATE
+
+This record measured a promotion putting 275 rows / 151,874 participants into
+an assertion **in the wrong share class on the largest of them**, and
+"REFUSING A REPAIR IS THE SAFE DIRECTION" is written into `lookupTicker`
+itself. What makes this sub-case different is the witness: the promotion is
+gated on the registry registering that exact symbol as exactly the class the
+filing states — the Admiral ship's own test — and **app.js already records one
+such promotion as correct for precisely this reason**, naming
+`SSSYX STATE STREET EQUITY 500 INDEX FUND - CLASS K` and concluding *"that
+promotion is correct: the SEC registers SSSYX as Class K of that fund, one of
+six classes, and the filing states Class K."* So the shipped code has already
+reached this judgment on one row of this very family; the finding is that 469
+more rows have the same claim and have not been given it.
+
+### MY FIRST SCREEN READ 3,969 ROWS / 1,020 PLANS / 4,548,795 PPL / $83,293,609,004 — DO NOT CARRY IT. IT IS REFUTED THREE WAYS BY ITS OWN OUTPUT.
+
+**(a) MY PREDICATE WAS NOT TESTING A SHARE CLASS AT ALL.** For several
+registrants `sec-funds.json`'s fourth field holds the **SERIES name** rather
+than a class designation, so the className histogram reads
+`"T. Rowe Price Retirement 2045 Fund"` ×169, `"Fidelity Contrafund"` ×378,
+`"Fidelity Blue Chip Growth Fund"` ×51. Against those, "does the filed name
+state this class?" reduces to "does the filed name contain the fund's own
+name?", which is trivially true. **~2,400 of the 3,969 rows are that.**
+***A count keyed on a FIELD measures the field***, met on a registry column
+whose contents are not uniform.
+
+**(b) 3,002 OF 3,969 ROWS ARE POOLED VEHICLES, where the asterisk is exactly
+right** — `Collective trust` 1,850, `Pooled separate account` 1,086,
+`Separate account` 66. `Fidelity Contrafund Commingled Pool`,
+`FIDELITY CONTRAFUND COM POOL`, `T. Rowe Price Retirement 2035 Fund Trust
+Class K`; **Microsoft's 183,509-participant row is `Fidelity Contrafund Pool
+Class S`.** The plan holds a trust that invests in the fund, at the trust's own
+cost. Promoting those is the recorded harm in its purest form, and my screen
+PRINTED the type cell without APPLYING it — *a measurement that prints a
+condition it does not apply is a measurement of a different population*, now
+the third instance on the vehicle cell specifically.
+
+**(c) THE FEE, above.**
+
+### AND A SYNTHETIC ROW IS NOT A REAL ROW FOR THE SEC ARM
+
+Probing the two asserting controls through a hand-built row returned **no
+ticker**, where the real rows assert SSFEX and SSGLX. `sec-tickers.js` is keyed
+on **`(issuer, nameRaw)`**, so only a row carried out of the store holds the
+key. ***A synthetic probe UNDER-states any arm keyed on the row's own fields***
+— it is adequate for `fund-er.js`, whose table is asked a string, and silently
+blind to the generated table. The walk uses real rows, which is why the walk
+and not the probe is the measurement.
+
+### Also named by the same draw
+
+- **`State Street Retirement Fund Class K`, $16,061,008, publishes NO ticker**
+  while all nine dated siblings resolve. The registry HAS it —
+  `State Street Target Retirement Fund` Class K = **SSFOX** — and the filer
+  dropped the series word `Target`. That is the recorded
+  `Vanguard Total Stock Market Admiral` mechanism (a dropped structural word),
+  not a new class, and not the Freedom Index `Income` RENAME either, since here
+  the registry is not silent.
+- **`MA Inv GR STK R6`** (Sp Management Services, 13,249 ppl) at 6.2% /
+  $25,374,839 publishes no ticker and no fee: `MA Inv` is the filer's
+  contraction of **Massachusetts Investors Growth Stock**, whose registry rows
+  are MIGFX/MIGHX/MIGKX — the recorded CONTRACTION class, needing the registry
+  and not a wider screen.
+- **`DREYFUS INS RSRV PR MONEY 6546`** (Goldman Sachs, 49,526 ppl) carries a
+  welded ACCOUNT NUMBER, and that menu's 40+ itemized REIT common stocks
+  (`VENTAS INC`, `SIMON PROPERTY GROUP INC`, `REALTY INCOME CORP`) are all
+  filed as `Mutual fund` — a false vehicle type on individual equities, inside
+  a menu whose row 0 `Managed account holdings (1253 positions)` is correctly
+  typed.
+- Two more rows of the recorded one-ticker-two-fees class: Sp Management's
+  `500 Index Fund` -> **FXAIX at 0.03** (against 0.015 as
+  `Fidelity 500 Index Fund`) and `Mid Cap Index Fund` -> **FSMDX at 0.1**
+  (against 0.025). Fourth and fifth named rows for that pair.
+
+### Prevention
+
+- ***A GENERATOR GATED ON "THE PAGE HAS NOTHING" CANNOT CORRECT THE PAGE.***
+  Before reaching for a build-time table to fix a published answer, read its
+  emission gate: if it is additive by construction, the class where the page is
+  already answering is outside its reach by design, and the fix has to be at
+  the arm that answers first.
+- ***A REGISTRY COLUMN IS NOT UNIFORM — ASSERT ITS CONTENTS, NOT ITS NAME.***
+  `className` holds genuine designations (`Class K`, `Admiral Shares`, `R6`)
+  AND whole series names. A predicate reading it must test the SHAPE of what it
+  found; the cheap tell is to print the field's own histogram, where
+  `"Fidelity Contrafund"` as a class name announces itself in one line.
+- ***PRINT THE TYPE CELL AND THEN APPLY IT.*** Third instance. The shipped
+  `pooledVehicleRow` is the predicate, and it must be taken WHOLE, not sliced:
+  a slice of the function alone throws `TRUST_CLASS is not defined` because it
+  closes over its file's constants. Lifting it out of a full evaluation of
+  `fund-er.js` is what keeps the constants it was measured with — and the five
+  controls that caught the broken slice ran BEFORE the walk, which is the only
+  reason it cost one minute instead of twenty-five.
+
 ## 2026-10-12 (05:3xZ) — A SUMMARY TABLE'S SMALL VALUE IS WELDED INTO ITS OWN NAME AND THE ROW TAKES THE **NEXT** SECTION'S TOTAL: $5.34B MIS-ATTRIBUTED ON ONE 31,128-PARTICIPANT PAGE, TWO REAL SECTIONS VANISH, AND IT CORRECTS A FIGURE I PUBLISHED NINETY MINUTES EARLIER
 
 ### What the filing says

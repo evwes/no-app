@@ -1864,6 +1864,97 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **SIZED 2026-10-12 07:3xZ, NOT SHIPPED — A CORRECT IDENTIFICATION PUBLISHED
+  AS AN APPROXIMATION: the one-column core is 469 published+served rows / 122
+  acks / 122 plans / 869,224 ppl / $2,707,517,686, and it moves NO FEE CELL.**
+  The page publishes an asterisked COMPARABLE — its label for *"a comparable
+  registered fund, not the one held"* — on a symbol the registry registers as
+  EXACTLY the share class the filing states. **Paychex Retirement Llc (661,036
+  ppl, found by the 06:07 draw)** publishes `~SSDEX` on
+  `State Street Target Retirement 2045 Fund Class K` at $170,115,724 / 9.8%,
+  and SSDEX **IS** `Class K` of that series; nine rows of that menu, $1.17B.
+  ***THIS RUNS OPPOSITE TO EVERY OTHER SHARE-CLASS ITEM HERE*** — all of those
+  are a WRONG class published as FACT; this is the RIGHT class published as a
+  HEDGE, and *an asterisk is a whole category of claim.*
+  **THE CONTROL IS INSIDE THE SAME MENU AND THE DISCRIMINATOR IS OUR OWN
+  TABLE:** eleven rows state `Class K` on a filer-typed `Mutual Fund` (read out
+  of the filing, `http=200`, which also confirms every value to the dollar);
+  **two publish their Class K symbol as FACT** (`… Aggregate Bond Index Fund
+  Class K` -> SSFEX 0.04, `… Global All Cap Equity ex-U.S. … Class K` ->
+  SSGLX 0.05) and **nine are asterisked.** Mechanism, read not guessed:
+  `fund-er.js:1313-1316` is
+  `[/(state street|ssga).*target retirement 2045/i, ["SSDEX", 0.09, true]]` —
+  the third element is the `comparable` flag, hardcoded **true**, so Class A,
+  Class I and Class K all get the Class K symbol as a hedge. The asterisk is
+  CORRECT on the first two and unearned on the third; the asserting rows have
+  no such arm and fall through to `sec-tickers.js`, which ships assertions
+  only.
+  ***AND THE SEC TABLE CAN NEVER FIX IT, BY ITS OWN SAFETY PROPERTY.***
+  `gen-sec-tickers.mjs`'s header states the gate: *"THE GATE IS 'THE PAGE HAS
+  NOTHING' … a key is emitted only where the page resolves NOTHING, so the
+  table can never contradict an answer the page already publishes."* fund-er
+  answers first, so no key is written — confirmed, 12,408 keys and none for
+  this name. **A generator additive by construction is structurally unable to
+  correct an answer the page already publishes, however weak.** Safety and
+  blindness are the same property, and this is the first time its COST is
+  named on this record.
+  **SPLIT BY FEE DIRECTION, which is the decision:** FEE UNCHANGED 472 rows /
+  886,867 ppl (the core), fee `null -> value` **194 rows / 73 plans / 45,781
+  ppl** (ADDS a pattern-table claim — owner-gated with the fee-pre-emption
+  family, *a fee is SOURCED, never derived*), WITHDRAWS **0**, CHANGES **0**.
+  So no published fee moves anywhere in the class and 95% of the people are in
+  a one-column change.
+  **ALL 57 DISTINCT NAMES OF THE CORE WERE READ AND ONE IS A FALSE POSITIVE —
+  THE SECOND-LARGEST ROW IN IT BY DOLLARS.**
+  `State Street S&P 500 Index Non-Lending Series Fund Class K`, 3 rows / 17,643
+  ppl / **$264,712,802** (Nutrien Us Llc **11.94% of its whole menu**), is a
+  **COLLECTIVE INVESTMENT TRUST** and asserting SSSYX on it is the recorded
+  pooled-vehicle harm exactly. ***The mechanism is new: the `Class K` the
+  filing states is the TRUST'S OWN UNIT CLASS, not a registered share class***
+  — a trust names its unit classes the way a fund names share classes, so *a
+  stated class word is not evidence of a REGISTERED share class until the
+  VEHICLE is settled.* Every instrument read clean: `pooledVehicleRow` has no
+  token to catch, the type cell is BLANK so the type half cannot fire (the
+  `gicRow` shape again), the registry really does register SSSYX as Class K and
+  the filing really does say Class K. A `non-lending` / `series fund` /
+  `ser <letter>` refusal is State Street's own CIT naming and costs **0** rows
+  of the fee-ADDS half. Needing care rather than conviction, 3 rows / $10.8M:
+  `State Street Target Retirement Income Fund Class K` -> SSFOX, whose registry
+  series is the non-dated `State Street Target Retirement Fund`.
+  **WHY IT IS SHIPPABLE DESPITE PROMOTION BEING THE UNSAFE DIRECTION:**
+  `lookupTicker` itself says *"REFUSING A REPAIR IS THE SAFE DIRECTION"* and
+  this record measured a promotion putting 275 rows / 151,874 ppl into an
+  assertion in the WRONG class. The witness is what differs — the registry must
+  register that exact symbol as exactly the class the filing states, the Admiral
+  ship's own test — and **app.js already records one such promotion as
+  correct**, naming `SSSYX … CLASS K` and concluding *"the SEC registers SSSYX
+  as Class K of that fund, one of six classes, and the filing states Class K."*
+  The shipped code has reached this judgment on one row of this very family;
+  469 more have the same claim and have not been given it.
+  **Remedy is local and in the file's own idiom:** twelve Class-K-stating
+  siblings ahead of the existing State Street arms with the flag false, plus the
+  CIT-name refusal, a seeded uniform draw printing each row's TYPE, and the
+  whole-store differential through both copies of `renderRow`. One surface by
+  construction (`build-seo-pages` has no ticker resolver); `PARSER_VERSION`
+  stays 203; `fund-er.js` is stamped, so `index.html` must be restamped.
+  ***DO NOT CARRY MY FIRST SCREEN'S 3,969 rows / 1,020 plans / 4,548,795 ppl /
+  $83,293,609,004 — refuted three ways by its own output.*** (a) For several
+  registrants `sec-funds.json`'s class field holds the **SERIES name**
+  (`"T. Rowe Price Retirement 2045 Fund"` ×169, `"Fidelity Contrafund"` ×378),
+  so "does the filed name state this class?" reduced to "does it contain the
+  fund's own name?" — ~2,400 rows, and *a count keyed on a FIELD measures the
+  field*; (b) **3,002 of 3,969 rows are POOLED VEHICLES** where the asterisk is
+  exactly right (`Collective trust` 1,850, `Pooled separate account` 1,086,
+  Microsoft's 183,509-participant row being `Fidelity Contrafund Pool Class S`)
+  — my screen PRINTED the type cell without APPLYING it, the third instance on
+  that cell; (c) its alarming fee moves (`0.39 -> 0.45`, `0.39 -> null`) were
+  all pooled rows and vanish on the narrowed class.
+  **AND A SYNTHETIC ROW UNDER-STATES THE SEC ARM:** probing the two asserting
+  controls through a hand-built row returns NO ticker where the real rows assert
+  SSFEX/SSGLX, because `sec-tickers.js` is keyed on `(issuer, nameRaw)` and only
+  a row carried out of the store holds the key. Adequate for `fund-er.js`
+  (asked a string), silently blind to the generated table.
+  `docs/accuracy-log.md` 2026-10-12 (07:3xZ).
 - **SHIPPED 2026-10-12 00:5xZ — A LEADING PUNCTUATION RUN THE DISPLAY CLEANER
   DID NOT REACH: 586 published+served rows / 206 acks / 209 plans / 602,588 ppl
   (plan-deduplicated) / $2,781,032,071**, TICKER gained **1** (`: MidCap Index`
@@ -5819,6 +5910,57 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 These outlived the versions that produced them. The accuracy log has the case.
 
+- **A GENERATOR GATED ON "THE PAGE HAS NOTHING" CANNOT CORRECT THE PAGE
+  (2026-10-12).** `gen-sec-tickers.mjs`'s own header states it: *"a key is
+  emitted only where the page resolves NOTHING, so the table can never
+  contradict an answer the page already publishes."* That is its whole safety
+  claim — and it means the class where the page already answers WEAKLY or
+  WRONGLY is outside the table's reach **by design**: 469 rows publish an
+  asterisked comparable on a symbol the registry registers as exactly the
+  stated class, and `sec-tickers.js` has 12,408 keys and none for them.
+  ***Safety and blindness are the same property.*** This record cites "additive
+  by construction" as a safety argument in several ships; before reaching for a
+  build-time table to repair a published answer, read its emission gate — if it
+  is additive, the fix has to be at the arm that answers FIRST.
+- **A STATED CLASS WORD IS NOT EVIDENCE OF A REGISTERED SHARE CLASS UNTIL THE
+  VEHICLE IS SETTLED (2026-10-12).** `State Street S&P 500 Index Non-Lending
+  Series Fund **Class K**` is a COLLECTIVE TRUST, and a trust names its UNIT
+  classes exactly the way a fund names share classes — so the filing says
+  Class K, the registry registers that symbol as Class K, and the two Class Ks
+  are different things. 3 rows / $264,712,802, Nutrien at 11.94% of its menu.
+  Every instrument read clean: `pooledVehicleRow` had no token to catch, the
+  TYPE cell was BLANK so the type half could not fire either (the `gicRow`
+  shape again), and only reading all 57 distinct names of the class found it.
+  A share-class promotion therefore needs the vehicle established from
+  something other than the class word, and `non-lending` / `series fund` /
+  `ser <letter>` is State Street's own CIT naming.
+- **A REGISTRY COLUMN IS NOT UNIFORM — ASSERT WHAT IS IN IT, NOT WHAT IT IS
+  CALLED (2026-10-12).** `sec-funds.json`'s fourth field holds genuine class
+  designations (`Class K`, `Admiral Shares`, `R6`) **and, for several
+  registrants, the whole SERIES name** (`"T. Rowe Price Retirement 2045 Fund"`
+  ×169, `"Fidelity Contrafund"` ×378). A predicate reading it as a class turned
+  into "does the filed name contain the fund's own name", which is trivially
+  true, and inflated a class by ~2,400 rows. *A count keyed on a FIELD measures
+  the field.* The cheap tell is to print the field's own histogram, where
+  `"Fidelity Contrafund"` as a class name announces itself in one line.
+- **A SYNTHETIC ROW UNDER-STATES ANY ARM KEYED ON THE ROW'S OWN FIELDS
+  (2026-10-12).** `sec-tickers.js` is keyed on `(issuer, nameRaw)`, so a
+  hand-built row returns NO ticker where the real row asserts one — two
+  controls read `-` in a probe and `SSFEX`/`SSGLX` in the draw. A synthetic
+  probe is adequate for `fund-er.js`, whose table is asked a STRING, and
+  silently blind to the generated table. Carry the row out of the store, and
+  when a probe and a draw disagree, the draw is the measurement.
+- **SLICE A SHIPPED PREDICATE WHOLE WHEN IT CLOSES OVER ITS FILE'S CONSTANTS
+  (2026-10-12).** Brace-matching `pooledVehicleRow` out of `fund-er.js` throws
+  `TRUST_CLASS is not defined`; evaluating the WHOLE file and lifting the
+  function out of that scope is the only way it keeps the constants it was
+  measured with. **The five controls that caught the broken slice ran BEFORE
+  the walk, which is the only reason it cost one minute rather than
+  twenty-five** — put a predicate's own controls above the loop that uses it,
+  always. (Adding it to `apppath`'s exposed `fns` would be tidier and is
+  refused: that wrapper is inside the source `lib-sec-fingerprint` hashes, so
+  it would redden `sec-tickers-stamp-test` and cost a 20-minute regen for a
+  measurement convenience.)
 - **AND PRINT EVERY FIELD OF THE ARGUMENT THE RESOLVER READS — the INPUT half,
   and the more expensive direction (2026-10-04).** The 02:0xZ draw read
   Amedisys's `Income Fund` → **=DODIX** as a bare product name resolved to one
