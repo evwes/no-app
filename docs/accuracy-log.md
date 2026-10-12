@@ -7,6 +7,133 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-12 (01:4xZ) — THE ARM I SHIPPED AN HOUR EARLIER RUNS TOO EARLY IN ITS OWN CHAIN: REAL, 58 ROWS, AND A FIXED-POINT LOOP IS NET HARMFUL BY READERS. NOTHING SHIPPED
+
+### The defect is real and it is mine
+
+`cleanFiledName` applies its arms in order, and the leading-debris strip that
+shipped at 00:5xZ sits beside the leading-DASH arm near the top. Several LATER
+arms remove a leading TYPE CAPTION, and whatever they expose my arm has already
+walked past:
+
+```
+"Mutual Fund, , $21.03/unit"                   ->  ", $21.03/unit"
+"Pooled Separate Account, @ $265.815586/unit"  ->  "@ $265.815586/unit"
+```
+
+Found by sizing that ship's own named residue, not by a review. It is the same
+shape as the recorded `lib-disclose.mjs:690` ordering defect — the trailing-bar
+arm anchored 436 lines before `TYPE_SUFFIX` — and as the
+`"—_ T. Rowe Price Retirement 2030"` non-idempotence the ship was written to
+close. ***One of two spellings is worse than neither, met INSIDE the arm written
+to stop exactly that*** — so the recorded rule now has an instance where the
+offending code is the fix for its previous instance.
+
+### Sized over every published+served row, and the shape of the residue is the finding
+
+Measured through the shipped cleaner itself (not a transcription), with both a
+must-see control on the motivating row and an identity control on a clean name:
+
+| | rows | acks | plans | ppl | $ |
+|---|---|---|---|---|---|
+| still lead with punctuation after the whole cleaner | **1,261** | 435 | 435 | **1,123,895** | $12,624,654,725 |
+| of those, a SECOND pass changes the name (ORDER) | **58** | 12 | 12 | 18,666 | $39,453,910 |
+| the rest — my arm's own deliberate REFUSALS | 1,203 | | | | |
+
+**The leading-token histogram is what proves the 1,203 are refusals rather than
+misses**: `(` 597, `$` 248, `+` 82, `*` 56, which are precisely the four
+conditions the 00:5xZ ship earned by measurement — the `(` refusal (one Comcast
+page), `*`/`+` as party-in-interest markers, and the `(?=\s)` lookahead that
+spares `$4,377,590,614.97 857444590 Series Fund` and `£ID S00 INDEX`. *A
+residue dominated by exactly the tokens a change refuses is the change
+working.*
+
+### The obvious fix is refuted, and the refutation is in the reader counts
+
+All 58 were read and classified by WHAT A SECOND PASS BUYS:
+
+| | rows | plans | ppl |
+|---|---|---|---|
+| **GAIN** — a real name or house freed | 9 (8 genuine) | 8 | 3,243 |
+| **NEITHER** — neither spelling is a name | 47 | 3 | 5,442 |
+| **HARM** — the leading `$` is the marker | **2** | 2 | **10,236** |
+
+***So a fixed-point loop harms more readers than it helps, 10,236 against
+2,988, and buys about six clean names.*** The two harms are the recorded
+welded-table-row class:
+
+```
+"$ 256,144 $ - BOARD OF TRUSTEES OF SMART LOCAL UNION N"   4,078 ppl
+      ->  "256,144 $ - BOARD OF TRUSTEES OF SMART LOCAL UNION N"
+"$ 225,036 $ - BOARD OF TRUSTEES FOR THE PLUMBER'S RETI"   6,158 ppl
+```
+
+The `(?=\s)` entry from one hour earlier already names why: **the `$` is what
+marks the string as a dollar figure**, so removing it turns a visibly-wrong
+table row into a plausible number-led name. The condition protects these when
+the `$` is glued to its digits and cannot when the filer typed a space.
+
+### And the 47-row bulk wants no strip at all, because the fund is in the ISSUER cell
+
+T/J Inspection (30 rows), Harmon City (16) and A&W publish a unit PRICE in the
+name column while the ISSUER column carries the fund:
+
+```
+iss "Fidelity Advisor Contrafund"        name ", $21.03/unit"          $8,188,833
+iss "American Funds Trgt Date Ret 2050 R6"  name "@ $265.815586/unit"    $769,355
+iss "Vanguard 500 Index Adm"             name "@ $376.462539/unit"       $565,219
+```
+
+Both surfaces print `issuer · name`, so the reader IS told the fund — and
+16 of these rows resolve a correct TICKER off the issuer cell (FSKAX, DODIX,
+FXNAX, FSSNX, FSPSX). *So "names no specific fund" would be FALSE here*, which
+rules out qualification, and `$265.815586/unit` is no better a name than
+`@ $265.815586/unit`, which rules out the strip. The honest change is to
+WITHDRAW the price from the name column so the cell reads the issuer alone —
+a different change, with its own display question about what the page prints
+for an empty name, over **11 plans / 27,860 ppl**.
+
+### The price-as-a-name class, sized in full while here
+
+Published+served rows whose published name is a price or a bare money figure:
+**180 rows / 11 acks / 11 plans / 27,860 ppl / $72,915,858**, of which the page
+already qualifies 20 and **160 are published as a holding** (16 with a ticker,
+2 with a fee, 2 asterisked). Filed type cells: blank 111, `Pooled separate
+account` 30, `Mutual fund` 16, and one each of `Company stock`,
+`Exchange-traded fund` and `Cash / short-term`. Largest: Calvert Masonry's
+`at $25.82 per Share` at **87.88% of its whole menu** / $10,085,008, typed
+`Company stock`.
+
+**One row inside it is a named instance of a gated class:** T/J Inspection
+publishes `@ $376.462539/unit` with iss `Vanguard 500 Index Adm`, typed
+**`Pooled separate account`**, resolving **VFIAX at 0.04** — a mutual fund's
+symbol and fee on a pooled vehicle, which is the 2026-10-11 06:5xZ
+`pooledVehicleRow` class reached through the ISSUER cell rather than the name.
+Unsized by that route.
+
+### Prevention
+
+- **AN ARM'S POSITION IN A CHAIN IS PART OF THE CHANGE, AND THE TEST IS A
+  SECOND PASS.** Running the shipped cleaner twice and counting what moves
+  separates an ORDERING defect from a deliberate refusal in one query, and the
+  two want opposite changes. It costs one script and it is the only reason this
+  was found an hour after the ship rather than by a reader. Ask it of any arm
+  added to an ordered chain.
+- **AND A REFUSAL-DOMINATED RESIDUE IS EVIDENCE, NOT DEBT.** 1,203 of 1,261 are
+  the four conditions working, and the leading-token histogram says so without
+  reading a row. *Before treating a residue as unfinished work, check whether
+  its composition is the shape of your own guards.*
+- **A COUNT KEYED ON A VOCABULARY MEASURES THE VOCABULARY — met on my own
+  three-letter test.** My classifier put `@ $29.6068 fad` -> `$29.6068 fad` in
+  the GAIN bucket because `fad` is three consecutive letters; it is OCR damage
+  for `bid`. One row of nine, so the bucket's headline was wrong by 11% and
+  only reading all nine showed it.
+- **THE READER COUNT IS THE ARITHMETIC, NOT THE ROW COUNT.** On rows a
+  fixed-point loop reads 9 gains against 2 harms and looks obvious; on readers
+  it is 2,988 against 10,236 and inverts. Both figures are plan-deduplicated.
+
+---
+
 ## 2026-10-12 (00:5xZ) — THE LEADING-DEBRIS STRIP: 586 published+served rows / 209 plans / 602,588 ppl / $2,781,032,071, and the condition that matters most was earned when the first version DELETED $62.6M of real holdings from a 146,003-participant menu
 
 ### What was wrong

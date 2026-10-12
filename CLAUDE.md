@@ -1901,9 +1901,59 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   `|Fidelity Growth Company Fund`, `_T. Rowe Price Retirement 2025` — which is
   residue, not a defect.
   **Named residue:** the 166 rows whose remainder names no fund either (fourteen
-  one plan's unit PRICE, `, $21.03/unit` on $8,188,833) are untouched and want
-  QUALIFYING; the 22 `*`, 73 `+` and 38 `(*)` rows keep their markers.
-  `docs/accuracy-log.md` 2026-10-12 (00:5xZ).
+  one plan's unit PRICE, `, $21.03/unit` on $8,188,833) are untouched; the 22
+  `*`, 73 `+` and 38 `(*)` rows keep their markers.
+  **AND THE RESIDUE'S OWN PRESCRIPTION — "want QUALIFYING" — IS REFUTED, SIZED
+  2026-10-12 01:4xZ: "names no specific fund" WOULD BE FALSE, because the fund
+  is in the ISSUER cell.** Both surfaces print `issuer · name`, so T/J
+  Inspection publishes `American Funds Trgt Date Ret 2050 R6 · @
+  $265.815586/unit` and Harmon City `Fidelity Advisor Contrafund · ,
+  $21.03/unit` — the reader IS told the fund, and **16 of these rows resolve a
+  correct TICKER off that cell** (FSKAX, DODIX, FXNAX, FSSNX, FSPSX). Nor is a
+  strip worth it: `$265.815586/unit` is no better a name than
+  `@ $265.815586/unit`. The honest change is to WITHDRAW the price from the name
+  column so the cell reads the issuer alone, which is a display question about
+  what the page prints for an empty name, over **11 plans / 27,860 ppl**.
+  **WHOLE CLASS: 180 published+served rows / 11 acks / 11 plans / 27,860 ppl /
+  $72,915,858**, of which the page already qualifies 20 and 160 publish as a
+  holding (16 ticker, 2 fee, 2 asterisked); filed types blank 111, `Pooled
+  separate account` 30, `Mutual fund` 16. Largest: Calvert Masonry's `at $25.82
+  per Share` at **87.88% of its whole menu** / $10,085,008, typed `Company
+  stock`. **One named instance of a gated class inside it:** T/J Inspection's
+  `@ $376.462539/unit` · iss `Vanguard 500 Index Adm`, typed **`Pooled separate
+  account`**, resolves **VFIAX at 0.04** — the 06:5xZ `pooledVehicleRow` class
+  reached through the ISSUER cell rather than the name, unsized by that route.
+  `docs/accuracy-log.md` 2026-10-12 (00:5xZ) and (01:4xZ).
+- **REFUTED 2026-10-12 01:4xZ, DO NOT BUILD IT — THE 00:5xZ ARM RUNS TOO EARLY
+  IN ITS OWN CHAIN, THAT IS REAL AT 58 ROWS, AND A FIXED-POINT LOOP IS NET
+  HARMFUL BY READERS.** Several LATER arms of `cleanFiledName` strip a leading
+  TYPE CAPTION and expose debris the arm has already walked past
+  (`Mutual Fund, , $21.03/unit` -> `, $21.03/unit`) — the
+  `lib-disclose.mjs:690` ordering shape again, and ***one of two spellings is
+  worse than neither met INSIDE the arm written to close its previous
+  instance.*** Over every published+served row: **1,261 rows / 435 plans /
+  1,123,895 ppl / $12.6B still lead with punctuation, of which only 58 / 12
+  plans / 18,666 ppl are ORDER** (a second pass of the shipped cleaner changes
+  them) and **1,203 are the arm's own deliberate refusals** — asserted without
+  reading a row by the leading-token histogram, `(` 597 / `$` 248 / `+` 82 /
+  `*` 56, which is exactly the four conditions that ship earned. *A residue
+  dominated by the tokens a change refuses is the change working.*
+  **ALL 58 READ AND THE ARITHMETIC INVERTS BETWEEN ROWS AND READERS: GAIN 9
+  rows (8 genuine) / 3,243 ppl · NEITHER 47 / 5,442 · HARM 2 rows / 2 plans /
+  10,236 ppl.** On rows a loop reads 9-against-2 and looks obvious; on readers
+  it is 2,988 against 10,236. The two harms are the welded-table-row class —
+  `$ 256,144 $ - BOARD OF TRUSTEES OF SMART LOCAL UNION N` (4,078 ppl) and the
+  Plumbers Local 130 twin (6,158) — where **the `$` is what marks the string as
+  a dollar figure**, exactly as the `(?=\s)` entry one hour earlier records; the
+  condition protects these when the `$` is glued to its digits and cannot when
+  the filer typed a space. Six clean names are the whole prize (Canton's
+  `Voya`, Robotic And Ai's `Fidelity International Index`, New Chapter's `MFS
+  Massachusetts Investors Fund`, Standley's `INT'L EQUITY INDEX`, Bankers
+  Healthcare ×2). ***And a count keyed on a vocabulary measures the vocabulary,
+  met on my own three-letter test:*** the classifier put `@ $29.6068 fad` ->
+  `$29.6068 fad` in GAIN because `fad` is three letters, and it is OCR damage
+  for `bid` — one row of nine, visible only by reading all nine.
+  `docs/accuracy-log.md` 2026-10-12 (01:4xZ).
 - **ORIGINAL SIZING, kept because it is what was predicted:**
   **SIZED 2026-10-11 23:3xZ — A LEADING PUNCTUATION RUN THAT THE
   DISPLAY CLEANER DOES NOT REACH: 805 published+served rows / 244 acks /
@@ -4008,6 +4058,20 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 - The bare HOUSE name as a holding: 5,752 rows / 4,585 plans / 8,370,934 ppl.
   93 rows at ≥30% of a menu. PARSER-side: replacing the identity column's own
   text is a claim, not a repair.
+  **LARGEST INSTANCE BY READERS, NAMED BY THE 2026-10-12 01:08 DRAW: Walmart
+  Inc., 1,996,659 ppl**, publishes `Fiera Asset Management USA` — the FIRM and
+  no product — at **$1,773,620,398 / 3.2% of its menu**, with an EMPTY issuer
+  cell, typed `Collective trust`, `noPublicPrice` holding so no ticker and no
+  fee. **The menu is otherwise healthy and that is what makes the row
+  convictable**: ratio 0.952, and its 41 sibling rows name a product every time
+  (`Russell 1000 Index Non-Lendable Fund` at 28.1% / $15.8B, `GQG Partners
+  International Equity CIT`, `Altrinsic International Equity Collective`), with
+  the firm correctly in the ISSUER cell on 20 of them (`BlackRock Institutional
+  Trust Comp…`, `Reliance Trust Company`, `Great Gray Trust Company`). *So the
+  parse can read this filing's two columns and on this row it kept the wrong
+  one* — which is a stronger claim than the class's own framing, and still
+  PARSER-side. Also in that menu and correct: `Managed account holdings (492
+  positions)` and `Walmart Inc. Equity Securities` -> WMT via `stockRow`.
 - A CATEGORY TABLE published as a fund menu (Bayer $4.87B in one row, Paramount
   59.5% of its plan across two). **ATTEMPTED AND REVERTED 2026-10-01** — the
   rule is v74's own split and the gate it needs does not exist. Three pieces,
