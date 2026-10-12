@@ -1937,9 +1937,77 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
     if (!/respons/i.test(s)) return false;          /* the house refusal */
     return WITHDRAWAL_CAPTION.test(s);
   }
+  /* THE MEASUREMENT-BASIS CAPTION — a THIRD disjunct, and again not four more
+   * tokens in CAPTION_WORD, for the same measured reason one token later.
+   *
+   * Schedule H reports a benefit-responsive contract AT CONTRACT VALUE rather
+   * than at fair value, and a filer who puts that basis in the DESCRIPTION
+   * column leaves a row whose whole published name is the basis: `At contract
+   * value`, `Investment Contract`, `(at contract value)`, bare `contract`. It is
+   * an accounting basis, not an option a participant can choose.
+   *
+   * ***THE BROAD WIDENING WAS BUILT FIRST AND ITS OWN MEMBER LIST KILLED IT.***
+   * Adding `contract|contracts` to CAPTION_WORD newly reaches 45 rows / 15
+   * names, and reading all 15 found TWO that are names WE CUT — both among the
+   * three largest by dollars, 48% of the class's money:
+   *   `Company Investment - contract value`  King Ranch, $8,137,434 at 10.22% —
+   *       the SECOND HALF of `New York Life Insurance Company Investment -
+   *       contract value`, proved by the ADJACENT row carrying `New York Life
+   *       Insurance` at the IDENTICAL value. That is the recorded double-render
+   *       class, and that menu's ratio is 1.08 — the signature.
+   *   `Contract — shares`  Brown University, $47,346,040 at 3.18% — row 0 of the
+   *       same menu is `TIAA Traditional — shares` and row 12 `Fixed income —
+   *       shares`, so `— shares` is a COLUMN artifact and the product name is
+   *       what we lost.
+   * `company` and `shares` have been in CAPTION_WORD for weeks, so this is the
+   * composition hazard for the THIRD time (after `security` + `benefit`), and
+   * the first time it has produced a name we cut rather than a firm's name. A
+   * dedicated disjunct cannot compose with CAPTION_WORD at all. *A row that
+   * names nothing and a row whose name we cut in half are two classes, and one
+   * label cannot serve both.*
+   *
+   * SEVEN TOKENS SHIP AND SIX WERE REFUSED AS NECESSARY-FOR-0 by leave-one-out
+   * over all 393,435 distinct stored names — `total`, `net`, `the`, `of`, `a`,
+   * `s`, every one of them a token WD_WORD carries, which is why the vocabulary
+   * is written out here rather than shared with it. Survivors, with what each
+   * alone is responsible for: `contract` 17 names, `at` 11, `value` 11,
+   * `investment` 9, `contracts` 7, `investments` 1 (`Investments at Contract`),
+   * `in` 1 (`Contracts in`).
+   *
+   * THE REFUSALS ARE PRICED, and the two that matter are the decoys above:
+   * +`company` would admit 2 names / $10,520,388, +`shares` 1 name /
+   * $47,346,040, and each is the ONLY protection for its decoy. Also refused,
+   * and these are RESIDUE rather than protection — a real product class states
+   * itself and is not merely a basis: +`guaranteed` 9 names / 67 rows /
+   * $1,241,700,778, +`annuity` 12 / 77 / $2,127,789,272, +`insurance` 8 / 19 /
+   * $631,495,921, +`traditional` 6 / 19 / $114,990,811 (consistent with
+   * WD_WORD's own `traditional` refusal, which protects TIAA Traditional),
+   * +`trust` 2 / 4 / $279,856,537, +`general` 2 / 4, +`stable` 3 / 3, +`fund`
+   * 1 / 1. That residue is ~$4.4B and is a DIFFERENT question, because those
+   * strings name an asset class the plan really holds.
+   *
+   * ***AND THERE IS NO SUBJECT REQUIREMENT, DELIBERATELY — the `respons`
+   * analogue would be DEAD CODE HERE.*** The first draft required a form of
+   * `contract` to appear, by analogy with the withdrawal arm, and over the live
+   * store that condition refuses ZERO names. It is not merely inert but
+   * unreachable BY CONSTRUCTION: every token in CT_WORD except `contract` and
+   * `contracts` is ALSO in CAPTION_WORD, so any string this arm can spell
+   * WITHOUT a form of `contract` is spelled entirely in CAPTION_WORD and is
+   * already reached by the arm above. *A condition unreachable by construction
+   * is worse than an inert one: it reads as a guard and is dead code.* So the
+   * subset property is ASSERTED at import instead, and a future token that
+   * breaks it says so by name — at which point this arm needs the subject
+   * requirement the first draft wrote. */
+  const CT_WORD = "(?:contract|contracts|investment|investments|at|value|in)";
+  const BASIS_CAPTION = new RegExp("^(?:" + CAPTION_SEP + ")?" + CT_WORD
+    + "(?:" + CAPTION_SEP + CT_WORD + ")*(?:" + CAPTION_SEP + ")?$", "i");
+  function isContractBasisCaption(name) {
+    return BASIS_CAPTION.test(String(name == null ? "" : name));
+  }
   function isScheduleHCaption(name) {
     return SCHEDULE_H_CAPTION.test(String(name == null ? "" : name))
-      || isWithdrawalTermsCaption(name);
+      || isWithdrawalTermsCaption(name)
+      || isContractBasisCaption(name);
   }
 
   /* THE TWO COMPOSITIONS, which are part of the rule and not of the call site.

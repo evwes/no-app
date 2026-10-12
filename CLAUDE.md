@@ -1959,6 +1959,55 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **FOUND BY THE 12:07 DRAW AND SIZED — TWO SHAPES ON ONE 192,505-PARTICIPANT
+  PAGE, BOTH READ OFF THE COMMITTED CRAWLABLE PAGE SO NEITHER NEEDS A HARNESS.**
+  At&T Inc. (ratio 0.989, $42.7B) publishes
+  `Teaf50020002 · Bgi Equity Index Fund F` at $8,803,529,822 and
+  `Teaf10100002 · 00206r102 At&T Inc` at **$3,859,276,939** — **eleven of the
+  twelve rows the page shows lead with AT&T's own internal fund code**, which
+  sits in the ISSUER cell that both surfaces print as `issuer · name`, and one
+  of them carries a CUSIP in front of the company's own name, title-cased by
+  the page into lower case.
+  **(A) THE ISSUER CELL AS AN OPAQUE CODE — 166 rows / 16 acks / 24 plans /
+  597,335 ppl / $46,376,749,332**, 139 distinct strings (`ALCF19407002` ×9,
+  `RN2F19407002` ×8, `BOEF13110002`, `AEG766000`). ***The screen is CONTAMINATED
+  and the figure is an UPPER BOUND***: it admits `RET2030 I` and five sibling
+  vintages, which are a target-date CLASS designation rather than an identifier,
+  because my "no three-letter word" test cannot tell `RET2030` from
+  `TEAF50020002` — *a count keyed on a character shape measures the character
+  shape.* Adjacent to the shipped `isNonIssuerCell` class and a DIFFERENT
+  mechanism: that one refuses a dangling preposition, this is an opaque
+  identifier.
+  **(B) A LEADING CUSIP ON THE NAME — 264 rows / 14 acks / 23 plans / 515,346
+  ppl / $48,030,909,906**, 259 distinct names, 23 publishing a ticker and 42 a
+  fee. Largest `06739T663 Equity Index Fund F` **$6,233,138,627**, then AT&T's
+  own stock, `999E98387 BGI MSCI ACWI EX-US INDEX SUPERFUND F` $2,433,092,758,
+  the `EEG0nnnnn DELTA AIR LINES LIFEPATH <vintage> UNITIZED A` ladder and
+  `31565A620 FIAM GROUP TR FOR EMPLOYEES COMMINGLED POOL CL F` ×8.
+  ***THE STRIP IS MEASURED AT ZERO YIELD BEFORE ANY ARM IS WRITTEN:*** seven of
+  the largest rows rendered as filed and with the 9-character run removed,
+  varying only that, come back **IDENTICAL on ticker, fee, shown type and every
+  flag**. So it is a LEGIBILITY class and not an identification one — the
+  resolvers reach nothing either way, `Equity Index Fund F` being a collective
+  trust with no ticker to find. Worth doing for half a million readers, worth
+  nothing in the priced columns, and a name change still carries the recorded
+  `ID_ONLY` row-membership risk, so it needs a full differential.
+  **AND THE EMPLOYER-STOCK BLANK IS NOT CAUSED BY EITHER OF THEM.**
+  `plans-all` carries `ticker: "T"` for this plan. Varying one thing at a time
+  on the REAL plan record — as filed, CUSIP removed, issuer removed, rewritten
+  to `AT&T Inc. Common Stock` — leaves `stockRow` FALSE and `tk` EMPTY in all
+  four, and the draw shows no flags on the real row either. ***The cause is
+  undiagnosed and may be my harness rather than the page***, since a plan object
+  assembled field by field is exactly the *guessed SHAPE fails as a clean zero*
+  trap, so it is recorded as an open question needing the real render path and
+  NOT as a diagnosed defect. What is certain from the committed page:
+  **$3,859,276,939 of this plan's own employer stock publishes no ticker.**
+  `docs/accuracy-log.md` 2026-10-12 (13:4xZ).
+- **AND A ONE-PLAN RESIDUE FROM THE SAME DRAW: `CERT. OF DEP.` typed `—` is not
+  labelled**, because `cert` and `dep` are abbreviations `CAPTION_WORD` does not
+  carry — the `corp`/`instr` shape again, at $30,043 on one plan. Named, not
+  sized, and below the threshold where a vocabulary addition pays for the
+  composition risk it now also carries with `non`.
 - **SHIPPED 2026-10-12 08:5xZ — A CORRECT IDENTIFICATION STOPS BEING PUBLISHED
   AS AN APPROXIMATION: 579 published+served rows / 157 acks / 157 plans /
   890,938 ppl / $2,858,848,864 drop an unearned asterisk, with `star` the ONLY
@@ -2831,11 +2880,58 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   lost from the slice (*a probe on one arm of a disjunction is silent on the
   other*); and `smoke-test`'s `__wampoCaption` cross-check, which is what catches
   a hand-edited twin since the generator rewrites `app.js` before probing.
-  **STILL OPEN, named residue and none of it a gap in this arm:** `At contract
-  value` (24 rows / $167,946,996), bare `contract` (4) and `Investment
-  Contract` (3) are reachable only by dropping the `respons` requirement, so
-  they are a separate measurement; and the 186 issuer-carrying rows want the
-  TYPE, not a nameless label.
+  **STILL OPEN, named residue:** the 186 issuer-carrying rows want the TYPE,
+  not a nameless label.
+  **THE CONTRACT HALF OF THAT RESIDUE IS CLOSED — SHIPPED 2026-10-12 13:0xZ as
+  `isContractBasisCaption`, a THIRD dedicated disjunct: 15 published+served
+  rows / 15 acks / 15 plans / 155,492 ppl / $35,565,497**, with `shownType` the
+  ONLY cell that moves (name / ticker / asterisk / fee 0, row membership
+  identical at 4,324 both sides, a 21,470-row non-candidate discharge differing
+  on 0, the narrowing discharged over all 412,783 distinct stored names at 0
+  failures), **0 crawlable pages**, 6 rows at >=10% of their own menu (Keltec
+  **30.60%**, Achieva 26.88%), largest by readers **Tenet Healthcare, 149,730
+  ppl** on a bare `contracts`. `PARSER_VERSION` stays 203.
+  ***DO NOT CARRY THIS ENTRY'S OWN `At contract value` 24 rows / $167,946,996 —
+  IT REACHES NO READER, AND THE SIZING WAS 2.6x THE DELIVERY.*** Four names are
+  ALREADY qualified on origin/main and they are the four LARGEST by dollars:
+  `At contract value` (24 rows / $167,946,996), `Contract Value` (2 /
+  **$486,386,519**, typed), `At Contract Value`, `Contract Value)`. ***The arm
+  that beats this one is `isGenericTypeName`, which lives in `lib-4i.mjs` — the
+  PARSER's closed vocabulary — and is reached through the call site's COMPOSED
+  `isGenericName` callback.*** I grepped lib-disclose's own display predicates,
+  got `false` from every one, and concluded the rows were unqualified; the
+  winning arm was never in the file I was reading. **So the motivating string
+  of this very entry, and the single largest row in the class, move nothing.**
+  **THE BROAD WIDENING WAS BUILT FIRST AND ITS OWN MEMBER LIST KILLED IT**:
+  `contract|contracts` in `CAPTION_WORD` newly reaches 45 rows / 15 names, and
+  reading all 15 found TWO that are names WE CUT, both among the three largest
+  by dollars and 48% of the class's money — `Company Investment - contract
+  value` (King Ranch, $8,137,434 at 10.22%, the SECOND HALF of `New York Life
+  Insurance Company Investment - contract value`, proved by the ADJACENT row at
+  the IDENTICAL value, menu ratio **1.08**, the double-render signature) and
+  `Contract — shares` (Brown University, **$47,346,040**, where row 0 is `TIAA
+  Traditional — shares` and row 12 `Fixed income — shares`, so `— shares` is a
+  COLUMN artifact). `company` and `shares` have been in that vocabulary for
+  weeks: **the composition hazard for the THIRD time, and the first to produce
+  a name we CUT rather than a firm's name.**
+  **SEVEN TOKENS SHIP AND SIX WERE REFUSED AS NECESSARY-FOR-0** (`total`,
+  `net`, `the`, `of`, `a`, `s` — every one a token `WD_WORD` carries, which is
+  why the vocabulary is written out rather than shared), and **the `respons`
+  analogue would have been DEAD CODE**: the subject requirement refuses 0 names
+  and is unreachable BY CONSTRUCTION, every other `CT_WORD` token being in
+  `CAPTION_WORD` too, so a string lacking `contract` is already reached. It is
+  ASSERTED in both directions instead. *And the mutual-redundancy trap fired on
+  the way: against my FIRST token set that requirement looked load-bearing at
+  **$400,743,085** (`Net investments`), and dropping `net`/`total` as inert
+  removed the string from reach — two conditions blocking the same population
+  must be priced against each other's FINAL state.*
+  **STILL OPEN FROM IT, ~$4.4B and a DIFFERENT question — a real product class
+  states itself and is not merely a basis:** +`guaranteed` 9 names / 67 rows /
+  **$1,241,700,778**, +`annuity` 12 / 77 / **$2,127,789,272**, +`insurance` 8 /
+  19 / $631,495,921, +`traditional` 6 / 19 / $114,990,811 (consistent with
+  `WD_WORD`'s own `traditional` refusal, which protects TIAA Traditional),
+  +`trust` 2 / 4 / $279,856,537, +`general` 2 / 4, +`stable` 3 / 3, +`fund`
+  1 / 1 — each measured, each currently refused.
   **THE CASH HALF OF THAT RESIDUE IS CLOSED — SHIPPED 2026-10-12 11:4xZ, ONE
   TOKEN: 22 published+served rows / 22 acks / 22 plans / 15,855 ppl /
   $2,050,182 gain the nameless label and 3 crawlable pages each gain one
@@ -6145,6 +6241,35 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 These outlived the versions that produced them. The accuracy log has the case.
 
+- **A COMPOSED GATE'S ARMS ARE NOT ALL IN THE FILE YOU ARE EDITING — AND ONE OF
+  THEM IS THE PARSER'S (2026-10-12).** Sizing a new disjunct of
+  `isScheduleHCaption` at 39 reader-facing rows, I asked every display
+  predicate in `lib-disclose.mjs` whether it already reached the class, got
+  `false` from all of them, and was wrong by **2.6x**: `isNamelessFundRow` ends
+  `return !!isGenericName(name)`, that callback is composed at the two render
+  call sites, and one of its arms is `isGenericTypeName` **imported from
+  `lib-4i.mjs`** — which already qualified the four largest names in the class,
+  including the motivating string (24 rows / $167,946,996) and a $486,386,519
+  row. ***A grep of one file's predicates is not a question about the
+  composition***, and the arm that wins may live in a file this record forbids
+  widening. The instrument that gets it right is the one already prescribed —
+  render the row through both copies of `renderRow` — so reach for the
+  differential BEFORE the predicate screen, not after it.
+- **AND ASK WHETHER YOUR ARM IS THE *REASON*, NOT WHETHER IT FIRES
+  (2026-10-12).** A predicate can be true for strings an earlier arm already
+  reaches — for the contract arm that is a deliberate subset property — so a
+  screen keyed on "does my arm answer true" collected `Investments in`, `VALUE`
+  and `Investment in`, none of which contains the word the arm is about. Key it
+  on `mine(nm) && !everythingBefore(nm)`. *The same error as the headline one
+  above, in my own instrument, one hour later.*
+- **A FIXTURE LOOP BELONGS BELOW THE FUNCTION IT TESTS WHEN THAT FUNCTION IS
+  SLICED INTO app.js (2026-10-12).** `gen-generic-twin` slices from
+  `const CAPTION_WORD` to the end of `isScheduleHCaption`, so an import-time
+  assertion written ABOVE that function is SHIPPED TO THE BROWSER — where a
+  throw does not report a stale vocabulary, it stops app.js loading and the
+  whole page goes. Every other fixture loop in that file is below its subject
+  for this reason; mine was caught by noticing the slice boundary, not by a
+  test.
 - **AND THE ESCAPE CLAUSE IN A REFUSAL RULE IS PART OF THE RULE (2026-10-12,
   two hours after the rule below).** That rule's headline is *prefer a dedicated
   disjunct*; its condition is *read every newly reached name*. Applied
@@ -6185,6 +6310,17 @@ These outlived the versions that produced them. The accuracy log has the case.
   container gives a background process CPU only while a turn is active, so a
   wait loop is the normal way to run a long measurement and a self-matching one
   silently burns the cycle.
+  **AND THE SECOND HALF, MET THE SAME DAY: THE BRACKET TRICK FIXES THE LOOP AND
+  NOT THE DIAGNOSTIC.** `pgrep -f "[g]en-sec-tickers"` correctly skips the
+  waiter, but it still matches the Bash tool's own WRAPPER SHELL, whose command
+  line carries the whole invocation — so `ps -o time= -p $(pgrep … | head -1)`
+  read the wrapper and printed **0 seconds of CPU on a 15-minute-old job**,
+  which reads exactly like a stalled process. The real child had 15:46 of CPU
+  on 15:53 elapsed and was perfectly healthy. ***A liveness predicate and a
+  PROGRESS predicate are different questions: `pgrep` is adequate for the
+  first, and the second needs the actual child's PID*** (`ps -eo
+  pid,ppid,time,comm | awk '$NF=="node"'`), after which `kill -0 <pid>` is both
+  exact and immune to every command-line coincidence.
 
 - **A FLAG THAT ENCODES TWO CLAIMS CANNOT BE CORRECTED FOR ONE OF THEM
   (2026-10-12).** `app.js:4301` read `star ? info.er : fundERRow(f)`, so `star`

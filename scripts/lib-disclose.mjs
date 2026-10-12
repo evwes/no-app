@@ -3122,9 +3122,137 @@ export function isWithdrawalTermsCaption(name) {
   if (!/respons/i.test(s)) return false;          /* the house refusal */
   return WITHDRAWAL_CAPTION.test(s);
 }
+/* THE MEASUREMENT-BASIS CAPTION — a THIRD disjunct, and again not four more
+ * tokens in CAPTION_WORD, for the same measured reason one token later.
+ *
+ * Schedule H reports a benefit-responsive contract AT CONTRACT VALUE rather
+ * than at fair value, and a filer who puts that basis in the DESCRIPTION
+ * column leaves a row whose whole published name is the basis: `At contract
+ * value`, `Investment Contract`, `(at contract value)`, bare `contract`. It is
+ * an accounting basis, not an option a participant can choose.
+ *
+ * ***THE BROAD WIDENING WAS BUILT FIRST AND ITS OWN MEMBER LIST KILLED IT.***
+ * Adding `contract|contracts` to CAPTION_WORD newly reaches 45 rows / 15
+ * names, and reading all 15 found TWO that are names WE CUT — both among the
+ * three largest by dollars, 48% of the class's money:
+ *   `Company Investment - contract value`  King Ranch, $8,137,434 at 10.22% —
+ *       the SECOND HALF of `New York Life Insurance Company Investment -
+ *       contract value`, proved by the ADJACENT row carrying `New York Life
+ *       Insurance` at the IDENTICAL value. That is the recorded double-render
+ *       class, and that menu's ratio is 1.08 — the signature.
+ *   `Contract — shares`  Brown University, $47,346,040 at 3.18% — row 0 of the
+ *       same menu is `TIAA Traditional — shares` and row 12 `Fixed income —
+ *       shares`, so `— shares` is a COLUMN artifact and the product name is
+ *       what we lost.
+ * `company` and `shares` have been in CAPTION_WORD for weeks, so this is the
+ * composition hazard for the THIRD time (after `security` + `benefit`), and
+ * the first time it has produced a name we cut rather than a firm's name. A
+ * dedicated disjunct cannot compose with CAPTION_WORD at all. *A row that
+ * names nothing and a row whose name we cut in half are two classes, and one
+ * label cannot serve both.*
+ *
+ * SEVEN TOKENS SHIP AND SIX WERE REFUSED AS NECESSARY-FOR-0 by leave-one-out
+ * over all 393,435 distinct stored names — `total`, `net`, `the`, `of`, `a`,
+ * `s`, every one of them a token WD_WORD carries, which is why the vocabulary
+ * is written out here rather than shared with it. Survivors, with what each
+ * alone is responsible for: `contract` 17 names, `at` 11, `value` 11,
+ * `investment` 9, `contracts` 7, `investments` 1 (`Investments at Contract`),
+ * `in` 1 (`Contracts in`).
+ *
+ * THE REFUSALS ARE PRICED, and the two that matter are the decoys above:
+ * +`company` would admit 2 names / $10,520,388, +`shares` 1 name /
+ * $47,346,040, and each is the ONLY protection for its decoy. Also refused,
+ * and these are RESIDUE rather than protection — a real product class states
+ * itself and is not merely a basis: +`guaranteed` 9 names / 67 rows /
+ * $1,241,700,778, +`annuity` 12 / 77 / $2,127,789,272, +`insurance` 8 / 19 /
+ * $631,495,921, +`traditional` 6 / 19 / $114,990,811 (consistent with
+ * WD_WORD's own `traditional` refusal, which protects TIAA Traditional),
+ * +`trust` 2 / 4 / $279,856,537, +`general` 2 / 4, +`stable` 3 / 3, +`fund`
+ * 1 / 1. That residue is ~$4.4B and is a DIFFERENT question, because those
+ * strings name an asset class the plan really holds.
+ *
+ * ***AND THERE IS NO SUBJECT REQUIREMENT, DELIBERATELY — the `respons`
+ * analogue would be DEAD CODE HERE.*** The first draft required a form of
+ * `contract` to appear, by analogy with the withdrawal arm, and over the live
+ * store that condition refuses ZERO names. It is not merely inert but
+ * unreachable BY CONSTRUCTION: every token in CT_WORD except `contract` and
+ * `contracts` is ALSO in CAPTION_WORD, so any string this arm can spell
+ * WITHOUT a form of `contract` is spelled entirely in CAPTION_WORD and is
+ * already reached by the arm above. *A condition unreachable by construction
+ * is worse than an inert one: it reads as a guard and is dead code.* So the
+ * subset property is ASSERTED at import instead, and a future token that
+ * breaks it says so by name — at which point this arm needs the subject
+ * requirement the first draft wrote. */
+const CT_WORD = "(?:contract|contracts|investment|investments|at|value|in)";
+const BASIS_CAPTION = new RegExp("^(?:" + CAPTION_SEP + ")?" + CT_WORD
+  + "(?:" + CAPTION_SEP + CT_WORD + ")*(?:" + CAPTION_SEP + ")?$", "i");
+export function isContractBasisCaption(name) {
+  return BASIS_CAPTION.test(String(name == null ? "" : name));
+}
 export function isScheduleHCaption(name) {
   return SCHEDULE_H_CAPTION.test(String(name == null ? "" : name))
-    || isWithdrawalTermsCaption(name);
+    || isWithdrawalTermsCaption(name)
+    || isContractBasisCaption(name);
+}
+/* THE SUBSET PROPERTY the absent subject requirement rests on. Asked of
+ * SCHEDULE_H_CAPTION directly, so it is the shipped vocabulary under test and
+ * not a transcription of it.
+ *
+ * It lives BELOW `isScheduleHCaption` on purpose: `gen-generic-twin` slices
+ * from `const CAPTION_WORD` to the end of that function into app.js, so an
+ * assertion placed above it would be SHIPPED TO THE BROWSER, where a throw
+ * does not report a stale vocabulary — it stops app.js loading at all and the
+ * whole page goes. Every other fixture loop in this file is below the function
+ * it tests for the same reason. */
+for (const t of ["investment", "investments", "at", "value", "in"]) {
+  if (!SCHEDULE_H_CAPTION.test(t)) {
+    throw new Error(`lib-disclose: CT_WORD carries ${JSON.stringify(t)} and CAPTION_WORD does not, so isContractBasisCaption can now reach a string with no form of \`contract\` in it — restore the subject requirement (\`if (!/\\bcontracts?\\b/i.test(s)) return false\`) rather than deleting this assertion`);
+  }
+}
+for (const t of ["contract", "contracts"]) {
+  if (SCHEDULE_H_CAPTION.test(t)) {
+    throw new Error(`lib-disclose: CAPTION_WORD now reaches ${JSON.stringify(t)} on its own, so this whole arm is redundant — and the two decoys it exists to refuse (\`Company Investment - contract value\`, \`Contract — shares\`) are now reachable through CAPTION_WORD's own compositions`);
+  }
+}
+/* Asserted at import, both directions, and ONE ARM AT A TIME — the must-SEE
+ * cases are asked of `isContractBasisCaption` rather than of the disjunction,
+ * because a probe on one arm of a disjunction is silent on the other and the
+ * withdrawal arm would answer several of these for its own reasons. The first
+ * version of this control expected `Fully Benefit-Responsive Investment
+ * Contract` to be TRUE here and failed: the CONTROL was wrong, not the arm —
+ * `fully|benefit|responsive` are outside CT_WORD on purpose and that string is
+ * the other arm's. */
+for (const [s, why] of [
+  ["At contract value", "24 rows / $167,946,996 — the commonest member and the motivating string"],
+  ["At Contract Value", "2 rows — the capitalised spelling"],
+  ["contract", "4 rows / $5,421,281 — bare; `contract` alone is sufficient for exactly this shape"],
+  ["contracts", "Tenet Healthcare, 149,730 ppl — the bare plural, on the largest plan in the class"],
+  ["Contracts", "Daigle Oil — capitalised"],
+  ["Investment Contract", "3 rows / $1,718,596 — the generic category"],
+  ["Investment contract at contract value", "2 rows / $8,516,245 — Achieva, 26.88% of its whole menu"],
+  ["(at contract value)", "Keltec, 30.60% of its whole menu — parenthesised, and the parens are separators"],
+  ["Investments at Contract", "`investments` is the ONLY protection for this one"],
+  ["Contracts in", "`in` is the ONLY protection for this one"],
+  ["Investment contract ‐ at contract value", "a filer's own unicode hyphen in the separator run"],
+  ["Contract Value", "2 rows / $486,386,519 typed `Stable value / GIC` — a stable-value wrap's accounting line among 26 fully-named siblings; typed, so it gains only the type sentence"],
+]) if (!isContractBasisCaption(s)) {
+  throw new Error(`lib-disclose: isContractBasisCaption no longer reaches ${JSON.stringify(s)} (${why}) — the arm is inert, fix it rather than shipping a quiet guard`);
+}
+for (const [s, why] of [
+  ["Company Investment - contract value", "King Ranch, $8,137,434 — the SECOND HALF of `New York Life Insurance Company Investment - contract value`, proved by the adjacent row at the IDENTICAL value. The absence of `company` is the ONLY protection"],
+  ["COMPANY - AT CONTRACT VALUE", "the same decoy's sibling spelling, 2 rows with it / $10,520,388"],
+  ["Contract — shares", "Brown University, $47,346,040 — `— shares` is a COLUMN artifact shared with `TIAA Traditional — shares` two rows up, so the product name is what WE cut. The absence of `shares` is the ONLY protection"],
+  ["Guaranteed Investment Contracts", "9 names / 67 rows / $1,241,700,778 — a real product CLASS, not a basis; the absence of `guaranteed` is the ONLY protection"],
+  ["Annuity Contracts", "12 names / 77 rows / $2,127,789,272 — likewise, `annuity` names a vehicle"],
+  ["Insurance Contract", "8 names / 19 rows / $631,495,921 — likewise"],
+  ["Traditional Investment Contract", "6 names / 19 rows / $114,990,811 — and WD_WORD refuses `traditional` for the same reason, because TIAA Traditional is a REAL holding"],
+  ["Trust at contract value", "2 names / 4 rows / $279,856,537 — `trust` names a vehicle"],
+  ["Stable value contract", "3 names — `stable` is the ONLY protection"],
+  ["General Investment Contract", "2 names / 4 rows — `general` is the ONLY protection"],
+  ["Fund (contract value)", "`fund` is the ONLY protection"],
+  ["Vanguard 500 Index Fund", "a real fund"],
+]) if (isContractBasisCaption(s)) {
+  throw new Error(`lib-disclose: isContractBasisCaption now reaches ${JSON.stringify(s)} (${why}) — it must not`);
 }
 /* Asserted at import, both directions. The must-SEE cases are real filed
  * strings with their measured weight, because an arm that is BROKEN and an arm

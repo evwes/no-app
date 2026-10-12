@@ -966,6 +966,9 @@ try {
      * so the pair above stays green if a regeneration loses it */
     "Fully Benefit-Responsive Investment Contract", "Benefit Responsive",
     "Non Benefit-Responsive Investment Contracts",
+    /* and the MEASUREMENT-BASIS disjunct, 2026-10-12 — likewise reachable only
+     * through it, so neither pair above can see it go missing */
+    "At contract value", "Investment Contract", "(at contract value)",
     "Real Estate Securities Fund", "US Bond Index", "OTHER ASSETS", "Employer Common Stock",
     "Total Bond", "Stable Value", "Government Bond A", "Investment Company of America",
     "Fidelity Government", "Cash Surrender Value", "General Account", "Loans",
@@ -978,8 +981,19 @@ try {
      * by the absence of `traditional` from WD_WORD */
     "Security Benefit", "Fully Benefit", "TIAA Traditional Benefit Responsive",
     "Galliard Benefit Responsive Fund",
+    /* the measurement-basis disjunct's own refusals. The first two are names WE
+     * CUT and each is a measured SINGLE-protection case — `Company Investment -
+     * contract value` is the second half of `New York Life Insurance Company
+     * Investment - contract value` ($8,137,434, proved by the adjacent row at
+     * the identical value) and is held by the absence of `company`; `Contract —
+     * shares` lost its product name to the `— shares` column artifact
+     * ($47,346,040, Brown University) and is held by the absence of `shares`.
+     * The last two are real product CLASSES rather than a basis, 67 and 77 rows
+     * carrying $1.24B and $2.13B. */
+    "Company Investment - contract value", "Contract \u2014 shares",
+    "Guaranteed Investment Contracts", "Annuity Contracts",
   ];
-  const SHCAP_TRUE = 20;   /* the first N must be reached; the rest must be kept */
+  const SHCAP_TRUE = 23;   /* the first N must be reached; the rest must be kept */
   const { isScheduleHCaption } = await import("./lib-disclose.mjs");
   const shCapGot = await page.evaluate((cs) => {
     if (typeof window.__wampoCaption !== "function") return null;

@@ -7,6 +7,282 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-12 (13:4xZ) — THE 12:07 DRAW: AT&T's OWN PAGE LEADS ELEVEN OF TWELVE ROWS WITH AN INTERNAL ACCOUNTING CODE, AND ITS OWN STOCK CARRIES A CUSIP INSTEAD OF A TICKER
+
+Seeded participant-weighted draw (`--seed 12101207`, 2 menus, `--rows 40`).
+
+### At&T Inc. — 192,505 ppl, $42.7B, ratio 0.989, and TWO new shapes
+
+Read off the committed crawlable page, which needs no harness:
+
+```
+Teaf50020002 · Bgi Equity Index Fund F              $8,803,529,822
+Teaf11040002 · Stable Vl Fd Grp Trust Mtu           $4,626,236,082
+Teaf10100002 · 00206r102 At&T Inc                   $3,859,276,939
+Teaf11010002 · Us Equity Fd Group Trust Mtu         $3,247,966,330
+```
+
+**Eleven of the twelve rows the page shows lead with `Teafnnnnnnnn`** — AT&T's
+own internal fund code, sitting in the ISSUER cell, which both surfaces print
+as `issuer · name`. The reader is shown an accounting identifier where the
+provider belongs. And row 2 is **AT&T's OWN EMPLOYER STOCK at 9.0% of the menu,
+published as `00206r102 At&T Inc` with NO TICKER**, the CUSIP title-cased into
+lower case by the page.
+
+**(A) THE ISSUER CELL AS AN OPAQUE CODE — 166 rows / 16 acks / 24 plans /
+597,335 ppl / $46,376,749,332**, 139 distinct strings (`ALCF19407002` ×9,
+`RN2F19407002` ×8, `BOEF13110002`, `AEG766000`). ***The screen is CONTAMINATED
+and the figure is an upper bound***: it admits `RET2030 I` ×2 and five sibling
+vintages, which are a target-date CLASS designation and not an identifier — my
+"no three-letter word" test cannot tell `RET2030` from `TEAF50020002`. *A count
+keyed on a character shape measures the character shape.* This is adjacent to
+the shipped `isNonIssuerCell` class but a different mechanism: that one refuses
+a dangling preposition (`Shares of`), this is an opaque identifier.
+
+**(B) A LEADING CUSIP ON THE NAME — 264 rows / 14 acks / 23 plans / 515,346 ppl
+/ $48,030,909,906**, 259 distinct names, of which 23 publish a ticker and 42 a
+fee. Largest: `06739T663 Equity Index Fund F` **$6,233,138,627**, AT&T's own
+stock $3,859,276,939, `999E98387 BGI MSCI ACWI EX-US INDEX SUPERFUND F`
+$2,433,092,758, the whole `EEG0nnnnn DELTA AIR LINES LIFEPATH <vintage>
+UNITIZED A` ladder, `31565A620 FIAM GROUP TR FOR EMPLOYEES COMMINGLED POOL CL
+F` ×8.
+
+***AND THE STRIP IS MEASURED AT ZERO YIELD, WHICH IS THE HALF WORTH KNOWING
+BEFORE ANY ARM IS WRITTEN.*** Seven of the largest rows were rendered as filed
+and with the 9-character run removed, varying only that: **ticker, fee, shown
+type and every flag are IDENTICAL on all seven.** So this is a LEGIBILITY class
+and not an identification one — the resolvers reach nothing either way, and
+`Equity Index Fund F` is a collective trust that has no ticker to find. Worth
+doing for 515,346 readers, worth nothing in the priced columns, and the name
+change carries the recorded `ID_ONLY` row-membership risk, so it still needs a
+full differential.
+
+### AND THE EMPLOYER-STOCK BLANK IS **NOT** CAUSED BY EITHER OF THEM
+
+`plans-all` carries `ticker: "T"` for this plan, so the symbol is in hand.
+Varying one thing at a time on the REAL plan record: as filed, CUSIP removed,
+issuer removed, and rewritten to `AT&T Inc. Common Stock` — **`stockRow` is
+false and `tk` empty in all four**, and the draw shows no flags on the real row
+either. So neither the CUSIP nor the issuer code nor the name spelling is the
+blocker. ***The cause is undiagnosed and may be my harness rather than the
+page*** — a plan object assembled field by field is exactly the *guessed SHAPE
+fails as a clean zero* trap — so it is recorded as an open question needing the
+real render path, not as a diagnosed defect. What IS certain from the committed
+page: **$3,859,276,939 of a 192,505-participant plan's own employer stock
+publishes no ticker.**
+
+### Vesuvius Usa Corporation — 1,454 ppl, 36 funds, ratio 0.974, the machinery working
+
+Nearly every row resolves (FXAIX 0.015, FPURX, TRMCX, OTCHX, RWIHX, MEIKX, the
+whole Vanguard target-date ladder at 0.08, FSPSX 0.035, FXNAX 0.025), **four
+rows are correctly labelled nameless** (`UNIT`, `CASH`, `GOVERNMENT BOND`,
+`PREFERRED STOCK`), `COMMON STOCK` is correctly flagged `stockRow`, and
+`CORPORATE BOND` typed `Corporate debt` is correctly left alone. Three gaps,
+each an already-recorded class: `GALLIARD STBLE RTN C` at the owner-gated
+fabricated **0.35**, `NYLI W LRG CP GR A` blank (the MainStay -> NYLI rename,
+where *a rename is a FACT that must be SOURCED*), and `MFS NEW DISCOVERY R3`
+publishing **MNDHX with no fee** — the ticker/fee asymmetry.
+
+**One small new residue: `CERT. OF DEP.` typed `—` is not labelled**, because
+`cert` and `dep` are abbreviations `CAPTION_WORD` does not carry — the same
+shape as the `corp`/`instr` additions, at $30,043 on one plan.
+
+### No new class on the second menu
+
+*An absence is a result.* The draw's yield this hour is AT&T: two sized shapes,
+one of them with its remedy's yield already measured at zero, and one open
+question honestly left open.
+
+---
+
+## 2026-10-12 (13:0xZ) — SHIPPED: THE MEASUREMENT-BASIS CAPTION — AND THE SIZING WAS 2.6x THE DELIVERY BECAUSE THE PARSER'S OWN VOCABULARY ALREADY WON ON THE FOUR LARGEST NAMES
+
+### What shipped
+
+Schedule H reports a benefit-responsive contract **at contract value** rather
+than at fair value, and a filer who puts that basis in the DESCRIPTION column
+leaves a row whose whole published name is an accounting basis. Shipped as
+`isContractBasisCaption`, a THIRD dedicated disjunct of `isScheduleHCaption`.
+
+| | |
+|---|---|
+| rows whose `shownType` moved | **15** |
+| name / ticker / asterisk / fee | **0 / 0 / 0 / 0** |
+| row membership | identical, 4,324 both sides |
+| non-candidate discharge | 21,470 rows sampled, **differing on 0** |
+| narrowing discharge | all 412,783 distinct stored names, **0 failures** |
+| crawlable pages | **0 changed**, fully accounted for below |
+
+**15 rows / 15 acks / 15 plans / 155,492 ppl / $35,565,497**, 0 publishing a
+ticker or a fee, **6 at >=10% of their own menu** (Keltec **30.60%**, Achieva
+26.88%, Employee Benefit Plan Of Pressley 25.46%, Lifesteps 23.08%, Eastern
+Colorado Services 20.93%, Unity Bank 13.27%). Largest by readers: **Tenet
+Healthcare, 149,730 ppl**, publishing a bare `contracts` at $14,165,220.
+`PARSER_VERSION` stays 203. Measured as a DIFFERENTIAL through BOTH copies of
+`renderRow` over all 1,721,920 published+served rows, origin/main's own app.js
+against the working tree's, with a must-MOVE pin (Tenet, by ack) and a
+must-HOLD pin (King Ranch, by ack) that both fired.
+
+### THE SIZING WAS 2.6x THE DELIVERY, AND THE ARM THAT ALREADY WON IS IN ANOTHER FILE
+
+The predicate-level screen read **39 reader-facing rows / $59,531,361**. The
+differential reads **15 / $35,565,497**. The whole difference is **four names
+the baseline ALREADY qualifies — and they are the four largest by dollars**:
+
+| name | rows | $ |
+|---|---|---|
+| `At contract value` | 24 | **$167,946,996** |
+| `Contract Value` | 2 | **$486,386,519** (typed) |
+| `At Contract Value` | 2 | $577,942 |
+| `Contract Value)` | 1 | $1,357,231 |
+
+So **the motivating string of the queue entry, and the single largest row in the
+class, reach no reader change at all.**
+
+***THE ARM THAT BEATS MINE IS `isGenericTypeName` — WHICH LIVES IN
+`lib-4i.mjs`, THE PARSER'S CLOSED VOCABULARY, AND IS REACHED THROUGH THE CALL
+SITE'S COMPOSED `isGenericName` CALLBACK.*** `isNamelessFundRow` ends
+`return !!isGenericName(name)`, and that callback is composed at the two render
+call sites out of four predicates, one of which is imported from the parser.
+This record already says *a predicate count is not a reader count* and *a flag
+that flips is not a cell that changes* — this is a sharper form of both:
+**I grepped lib-disclose's own display predicates, got `false` from every one of
+them, and concluded the rows were unqualified. The winning arm was never in the
+file I was reading.** `hasNoFundIdentity`, `isLabelOnlyName` and
+`isSentenceRow` all answer false for `At contract value`; `isGenericTypeName`
+answers true.
+
+***So: when sizing a change to one disjunct of a composed gate, ask the
+COMPOSITION — and remember that one of its arms is imported from the parser,
+where this file is forbidden to widen it.*** The cheap instrument was available
+the whole time and is the one that got the right answer: render the row through
+both copies, which is what the shipped ship was measured with.
+
+### THE BROAD WIDENING WAS BUILT FIRST AND ITS OWN MEMBER LIST KILLED IT
+
+Adding `contract|contracts` to `CAPTION_WORD` — the obvious change, and the one
+the queue entry implied — newly reaches 45 rows / 15 names, and **reading all 15
+found TWO that are names WE CUT, both among the three largest by dollars, 48%
+of the class's money**:
+
+- **`Company Investment - contract value`** — King Ranch, $8,137,434 at 10.22%
+  of its menu. The ADJACENT row is `New York Life Insurance` at the **IDENTICAL
+  $8,137,434**, so this is one name split across two rows and the filing names
+  New York Life. That is the recorded **double-render** class, and the menu's
+  ratio is **1.08** — the signature.
+- **`Contract — shares`** — Brown University, **$47,346,040** at 3.18%. Row 0
+  of the same menu is `TIAA Traditional — shares` and row 12 `Fixed income —
+  shares`, so **`— shares` is a COLUMN artifact** and the product name is what
+  we lost.
+
+`company` and `shares` have been in `CAPTION_WORD` for weeks. **This is the
+composition hazard for the THIRD time** (after `security` + `benefit` -> an
+insurance house, and the `non` token's clean pass) **and the first time it
+produces a name we CUT rather than a firm's name** — for which this record's
+position is reconstruction, never suppression. *A row that names nothing and a
+row whose name we cut in half are two classes, and one label cannot serve both.*
+
+So the ship is a dedicated disjunct, which cannot compose with `CAPTION_WORD`
+at all.
+
+### SEVEN TOKENS SHIP, SIX WERE REFUSED AS NECESSARY-FOR-0, AND THE REFUSALS ARE PRICED
+
+Leave-one-out over all 393,435 distinct stored names. Survivors and what each
+alone is responsible for: `contract` 17 names, `at` 11, `value` 11,
+`investment` 9, `contracts` 7, `investments` 1 (`Investments at Contract`),
+`in` 1 (`Contracts in`). **Refused as necessary for 0: `total`, `net`, `the`,
+`of`, `a`, `s`** — every one a token `WD_WORD` carries, which is why this
+vocabulary is written out rather than shared with it. The `instr` signature in
+reverse: *a token-alone test detects an inert arm; a leave-one-out decides
+whether one ships.*
+
+Each refusal has a measured population, and the two that matter are the decoys:
++`company` admits 2 names / $10,520,388, +`shares` 1 name / $47,346,040, and
+each is the ONLY protection for its decoy. **Named RESIDUE rather than
+protection** — a real product class states itself and is not merely a basis:
++`guaranteed` 9 names / 67 rows / **$1,241,700,778**, +`annuity` 12 / 77 /
+**$2,127,789,272**, +`insurance` 8 / 19 / $631,495,921, +`traditional` 6 / 19 /
+$114,990,811 (consistent with `WD_WORD`'s own `traditional` refusal, which
+protects TIAA Traditional), +`trust` 2 / 4 / $279,856,537, +`general` 2 / 4,
++`stable` 3 / 3, +`fund` 1 / 1. **~$4.4B, and a different question.**
+
+### THE `respons` ANALOGUE WOULD HAVE BEEN DEAD CODE, AND MEASURING IT IS WHAT SHOWED THAT
+
+The first draft required a form of `contract` to appear in the name, by analogy
+with the withdrawal arm's `respons` requirement. Over the live store that
+condition refuses **ZERO** names — and it is not merely inert but **unreachable
+BY CONSTRUCTION**: every token in `CT_WORD` except `contract` and `contracts`
+is ALSO in `CAPTION_WORD`, so any string this arm can spell without a form of
+`contract` is spelled entirely in `CAPTION_WORD` and is already reached by the
+arm above. *A condition unreachable by construction is worse than an inert one:
+it reads as a guard and is dead code.* Deleted, and the subset property is
+ASSERTED at import instead, in both directions, so a future token that breaks
+it says so by name and names the remedy.
+
+**AND THE MUTUAL-REDUNDANCY TRAP FIRED ON THE WAY THERE.** Measured against my
+FIRST token set the subject requirement looked load-bearing at
+**$400,743,085** — it was the only thing refusing `Net investments`. Dropping
+`net` and `total` as necessary-for-0 removed that string from reach, and
+re-pricing the requirement against the FINAL set gave 0. *Two conditions that
+block the same population must be priced against each other's final state, not
+once each.*
+
+### THE ASSERTIONS SIT BELOW THE FUNCTION ON PURPOSE
+
+`gen-generic-twin` slices from `const CAPTION_WORD` to the end of
+`isScheduleHCaption` into app.js. My first draft put the subset assertions
+ABOVE that function — **inside the slice**, so they would have been SHIPPED TO
+THE BROWSER, where a throw does not report a stale vocabulary: **it stops
+app.js loading at all and the whole page goes.** Every other fixture loop in
+that file is below the function it tests for exactly this reason. Moved.
+
+### 0 CRAWLABLE PAGES, FULLY ACCOUNTED FOR
+
+Regenerated all 5,000: **0 files changed**, and per this record's own rule that
+is a POSITION and not a dead call site, so it was traced. Of the 25 plans the
+arm touches, **22 have no page at all**, **2 moved rows sit below
+`build-seo-pages`'s `slice(0, 12)` cut** (at index 35 and 30), and **the ONE
+in-cut row was already labelled**: `360781620|023` row 1 reads
+`Contract Value — the filing names no specific fund` on the committed page,
+put there by the same `isGenericTypeName` arm. My page instrument flagged that
+as a DEFECT and was right to make me look.
+
+### Three instrument defects, each a recorded rule
+
+- **`renderRow` takes FOUR arguments** (`plan, fund, tab, total`) and my first
+  harness passed two, so the positive control reported both renderers agreeing
+  and the run aborted. It aborted on the CONTROL rather than printing a tidy
+  zero, which is the whole reason the control is there.
+- **My page instrument asked whether the arm FIRES where it should have asked
+  whether the arm is the REASON.** `isContractBasisCaption` is true for strings
+  `CAPTION_WORD` already reaches — that is the subset property — so it printed
+  `Investments in`, `VALUE` and `Investment in`, none of which contains a form
+  of `contract`. *The same error as the headline one, in my own instrument, one
+  hour later.*
+- **Two of my controls were wrong rather than the arm.** `Fully
+  Benefit-Responsive Investment Contract` must be refused by THIS arm (it is
+  the withdrawal arm's), and `At contract value` must be refused by
+  `CAPTION_WORD` (it is the parser vocabulary's). *A probe on one arm of a
+  disjunction is silent on the other, and a disjunction is only tested one arm
+  at a time.*
+
+### Prevention
+
+- `isContractBasisCaption` in `lib-disclose.mjs` with 12 must-SEE and 12
+  must-KEEP import-time throws, every must-KEEP a measured single-protection
+  case with its population.
+- The subset property asserted in both directions, below the sliced region.
+- `gen-generic-twin`'s caption probe 21 -> 26 names **plus a THIRD inert
+  check**: the two existing pairs are satisfied by `CAPTION_WORD` and the
+  withdrawal arm, so they stay green if this disjunct is lost from the slice.
+  The probe's two cases were asserted to be decided by the new arm ALONE before
+  being pinned.
+- `smoke-test`'s `__wampoCaption` cross-check: 3 must-reach and 4 must-keep
+  added, `SHCAP_TRUE` 20 -> 23. That is the layer which catches a hand-edited
+  twin, since the generator rewrites app.js before probing.
+
+---
+
 
 
 ---

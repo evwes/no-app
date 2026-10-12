@@ -997,7 +997,17 @@ const capNames = ["CORPORATE STOCK - COMMON", "CORPORATE STOCKS COMMON", "Govern
    * vocabulary alone cannot reach, and two that the `respons` requirement is
    * the ONLY protection for (`Security Benefit` is an insurance HOUSE). */
   "Fully Benefit-Responsive Investment Contract", "Benefit Responsive",
-  "Security Benefit", "Fully Benefit", "TIAA Traditional Benefit Responsive"];
+  "Security Benefit", "Fully Benefit", "TIAA Traditional Benefit Responsive",
+  /* the MEASUREMENT-BASIS disjunct, 2026-10-12 — same reason, a third time:
+   * two the other two arms cannot reach, and the two DECOYS whose only
+   * protection is a token this disjunct leaves out. Both decoys are names WE
+   * CUT (`Company Investment - contract value` is the second half of `New York
+   * Life Insurance Company Investment - contract value`; `Contract — shares`
+   * lost its product name to a column artifact), so a drift that admitted them
+   * would publish "names no specific fund" about a filing that named one. */
+  "At contract value", "Investment Contract",
+  "Company Investment - contract value", "Contract \u2014 shares",
+  "Guaranteed Investment Contracts"];
 for (const n of capNames) if (ctx.__cp(n) !== isScheduleHCaption(n)) {
   bad++; console.log(`  CAPTION DRIFT ${JSON.stringify(n)} twin=${ctx.__cp(n)} lib=${isScheduleHCaption(n)}`);
 }
@@ -1010,6 +1020,13 @@ if (!ctx.__cp("CORPORATE STOCK - COMMON") || ctx.__cp("Vanguard Institutional In
  * through that disjunct and its `respons` requirement. */
 if (!ctx.__cp("Benefit Responsive") || ctx.__cp("Security Benefit")) {
   bad++; console.log("  WITHDRAWAL-CAPTION PROBE INERT — the twin is missing that disjunct or its house refusal");
+}
+/* and the THIRD arm likewise — neither pair above can see it, so without this
+ * the measurement-basis disjunct could vanish from the slice and every check
+ * here would stay green. `At contract value` is reachable only through it and
+ * `Contract — shares` only refused by the token it leaves out. */
+if (!ctx.__cp("At contract value") || ctx.__cp("Contract \u2014 shares")) {
+  bad++; console.log("  BASIS-CAPTION PROBE INERT — the twin is missing that disjunct or its column-artifact refusal");
 }
 /* v196: the two twins a regeneration had deleted now carry drift checks of
  * their own, with cases that REACH both arms of each rule. Without these the
