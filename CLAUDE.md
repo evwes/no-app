@@ -477,6 +477,48 @@ that changing visibility also unpublishes GitHub Pages.
 
 ## Work cadence (owner directive 2026-09-01)
 
+> **PAUSED 2026-10-12 ~13:5xZ UNTIL 2026-10-15T23:00:00Z (Thursday 7:00 PM ET).**
+> Owner: *"pause this project again until the thursday restart."* Both "again"
+> and "the thursday restart" point at the same weekly reset the 2026-10-05
+> pause used, so the expiry MATCHES that precedent rather than being guessed.
+> **The expiry is the instruction: delete this block at it, do not obey it
+> past it.** The live copy of the state, with the Routine ids, is the `PAUSED`
+> key in `docs/cadence-state.json`.
+>
+> **What is paused:** agent work. The three Wampo Routines are DISABLED so the
+> pause is real rather than advisory — `trig_017vdX5dSSYh5v68Cwe6EUBu` (hourly
+> cycle, the one that matters), `trig_01X6KxJQfanGsm3tcHkCtwt3` (daily sweep)
+> and `trig_01P9LK37jGLKc5FSAMerRZ7C` (weekly status).
+> **What is NOT:** the Actions pipeline, deliberately, exactly as through the
+> last pause — it is the durable data layer and stopping it would stop
+> ingesting filings.
+> **Not this project and left alone:** `trig_014Rfs763HEEenzB6HYn1yJ9`
+> "Daily fintech watch".
+>
+> **RESUME CHECKLIST — written for a session with NO memory of this one:**
+> 1. `git fetch origin main claude/wampo-401k-live-nx1t4o` and check BOTH
+>    `--not` directions. Expect ~15-20 scheduled data commits on main; the
+>    merge job fast-forwards the dev branch when it is a strict ancestor, so
+>    the refs may already be converged. If they diverged, the stores are
+>    probably the same data twice — **run the structural diff, never judge it
+>    by timing** (the recorded rule, and the procedure is in the 2026-10-12
+>    13:3xZ registration block).
+> 2. Re-enable the three Routines above with `update_trigger` (`enabled: true`)
+>    and confirm `next_run_at` on each.
+> 3. Delete the `PAUSED` key from `docs/cadence-state.json` and this block.
+> 4. **Re-derive the Current-state block from the store** — it will be stale
+>    by three days. `docs/coverage-history.jsonl`, `lineups-status.json`,
+>    `lib-4i`'s `PARSER_VERSION`.
+> 5. **The one unfinished measurement**, and it is the owner's own question:
+>    `node scripts/display-delta.mjs <a ref from 2026-10-02>` answers "what did
+>    the display work actually change for readers, deduplicated". It was
+>    launched 2026-10-12 and killed by the pause at 21 minutes of CPU. It
+>    takes ~20-25 min in the FOREGROUND (a background process gets CPU only
+>    while a turn is active). The commit that added it explains why summing the
+>    individual ships' participant figures is the wrong answer.
+> 6. Nothing is pre-registered and pending: #650 delivered the last
+>    registration byte-identical.
+
 **Work, report, continue. NEVER delay finished work for a clock.**
 
 *(The one deliberate exception on this record: the owner paused all work
