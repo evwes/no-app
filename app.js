@@ -4298,7 +4298,28 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
       const er = tab !== "menu" || stockRow || gicRow || subtotalRow || loanRow || annuityRow
         || (guaranteeOnlyFee && !tk) || contractRow || mistypedGuaranteeFee || namelessRow
         || bankDepositFee ? null
-        : star ? info.er : (noPublicPrice ? null : fundERRow(f));
+        /* THE RESOLVER'S OWN FIGURE OUTRANKS THE PATTERN TABLE WHEN IT HAS
+         * ONE, whether or not the row is a comparable (2026-10-12). Before
+         * this, `star` decided BOTH questions at once — "is this an
+         * approximation" and "where does the fee come from" — so promoting a
+         * correct identification out of its asterisk also switched the fee off
+         * the fund's own number and onto a category estimate: all 29 affected
+         * rows read `0.02 -> 0.03` on SSSYX, whose Class K really does cost
+         * about 0.02, so the promotion would have made 16,826 readers' fee
+         * cells WORSE while making their ticker cell right.
+         *
+         * BLAST RADIUS IS EXACTLY THAT POPULATION, BY CONSTRUCTION rather than
+         * by measurement: `info.er` is set only by `fund-er.js`'s comparable
+         * table, and every other path that returns `comparable:false` returns
+         * no `er` at all (`FUND_TICKER` and the non-always-comparable entries
+         * both return a bare `{tk, comparable}`). So `!star && info.er != null`
+         * can arise ONLY from the Class K promotion this shipped beside, and
+         * the whole-store differential confirms it: 579 rows move `star`, 0
+         * move the fee. A starred row is untouched — it already read
+         * `info.er`. */
+        : star ? info.er
+        : info && info.er != null ? info.er
+        : (noPublicPrice ? null : fundERRow(f));
       // the brokerage window is a menu choice with no holdings of its own —
       // tint it so it reads as a doorway, not a fund (owner request)
       const brokRow = /brokerage window/i.test(f.type || "")

@@ -1458,6 +1458,88 @@ const FUND_COMPARABLE = [
  * comments included — including the 2-space indent, which is what keeps
  * `gen-sec-tickers.mjs`'s slice (anchored `^  const pooled = ` … `.test(type
  * || "");$`) matching, so the generator and the page cannot drift apart. */
+/* A CORRECT IDENTIFICATION PUBLISHED AS AN APPROXIMATION (2026-10-12).
+ *
+ * The twelve State Street target-date arms below, and the S&P 500 arm, are
+ * marked ALWAYS-COMPARABLE -- `["SSDEX", 0.09, true]` -- because the plans
+ * that file these names overwhelmingly hold the collective trust edition. But
+ * the third element is hardcoded, so a filing that STATES `Class K` gets the
+ * Class K symbol back wearing an asterisk, and an asterisk is a whole category
+ * of claim: the page tells the reader "a comparable registered fund, not the
+ * one held" about the fund itself.
+ *
+ * Paychex Retirement Llc (661,036 ppl) files `State Street Target Retirement
+ * 2045 Fund Class K` on $170,115,724 and we publish `~SSDEX` -- and the SEC
+ * registers SSDEX as exactly `Class K` of exactly that series. Nine rows of
+ * that one menu, $1.17B.
+ *
+ * THE CONTROL IS INSIDE THAT MENU AND THE DISCRIMINATOR WAS OUR OWN TABLE:
+ * eleven of its rows state `Class K` on a filer-typed `Mutual Fund` (read out
+ * of the filing itself, which also confirms every value to the dollar), and
+ * TWO published their Class K symbol as FACT -- `… Aggregate Bond Index Fund
+ * Class K` -> SSFEX, `… Global All Cap Equity ex-U.S. … Class K` -> SSGLX --
+ * because no arm here carries them and they fall through to sec-tickers.js,
+ * which ships assertions only. One house, one class word, two verdicts.
+ *
+ * MEASURED, 469 published+served rows / 122 acks / 122 plans / 869,224 ppl /
+ * $2,707,517,686, and it moves NO FEE CELL: `info.er` and `fundERRow` agree on
+ * all 469, so the `star ? info.er : fundERRow(f)` branch switch is a no-op
+ * here. That is not luck -- see the one-column note below.
+ *
+ * IT IS A PROMOTION, WHICH IS THE UNSAFE DIRECTION, so the witness is the
+ * strongest available and all three conditions are required:
+ *   (1) the resolved symbol is one the SEC REGISTERS AS CLASS K. The set is
+ *       closed and attested in `scripts/fund-er-test.mjs` against
+ *       `sec-funds.json` -- the browser must never download the 29,406-row
+ *       index, so the attestation lives in the test and reddens CI if the
+ *       registry ever stops agreeing.
+ *   (2) the FILED name states that class, tested on the name as given and
+ *       NEVER through `hit()`. `hit()` ORs the expanded variants, which is
+ *       right for a VETO (any spelling may reveal a problem) and wrong for a
+ *       promotion: a variant that invented `Class K` would manufacture the
+ *       evidence. A bare trailing `K` is deliberately refused -- this record's
+ *       own abbreviation trap, where `A`/`IN`/`AS`/`IS` are share classes.
+ *   (3) the name is not State Street's own COLLECTIVE TRUST naming, asked
+ *       through `hit()` because it IS a veto. `State Street S&P 500 Index
+ *       Non-Lending Series Fund Class K` is a CIT, and the `Class K` it states
+ *       is the TRUST'S OWN UNIT CLASS -- a trust names its unit classes the
+ *       way a fund names share classes, so a stated class word is not evidence
+ *       of a REGISTERED share class until the vehicle is settled. 3 rows /
+ *       17,643 ppl / $264,712,802, Nutrien at 11.94% of its own menu, and
+ *       every other instrument read clean on them: `pooledVehicleRow` has no
+ *       token to catch, the type cell is BLANK so the type half cannot fire
+ *       either, the registry really does register SSSYX as Class K and the
+ *       filing really does say Class K. Only reading all 57 distinct names of
+ *       the class found it.
+ *
+ * ONE COLUMN BY CONSTRUCTION, not by choice: the houseless spellings
+ * (`Target Retirement 2045 Fund Class K`, `Equity 500 Index Fund - Class K`)
+ * return NULL from this function -- their asterisked symbol comes from the
+ * stored `stk` -- so the 194 further rows / 45,781 ppl whose fee WOULD move
+ * are outside any change here. They stay as they are, with the owner-gated
+ * fee families. */
+const CLASS_K_REGISTERED = new Set([
+  "SSBOX", "SSBSX", "SSBYX", "SSCKX", "SSCQX", "SSDEX",
+  "SSDLX", "SSDQX", "SSDYX", "SSFKX", "SSGNX", "SSFOX", "SSSYX",
+]);
+const STATES_CLASS_K = /\bclass\s+k\b/i;
+/* State Street's own collective-trust naming, and the direction of this
+ * pattern is the SAFE one: it only ever refuses a promotion. `Series Fund`,
+ * `Series N`, `NL` and `Ser A` are all CIT series naming -- the existing
+ * comparable arm for `SSGA S&P 500 Index NL Series N` is marked
+ * always-comparable precisely because that spelling "names no trust anywhere",
+ * so a copy of it that also said `Class K` must not be read as the registered
+ * fund's share class. MEASURED over all 579 rows the promotion moves: this
+ * token set refuses 0 of them, and not one of them contains `NL` or `Series`
+ * as a token at all, so the width is free. */
+const SS_TRUST_NAME = /non[-\s]?lending|\bnl\b|\bseries\s+(?:fund|[a-z])\b|\bser\s+[a-z]\b/i;
+function classStatedAndRegistered(name, tk, hit) {
+  if (!CLASS_K_REGISTERED.has(String(tk || "").toUpperCase())) return false;
+  if (!STATES_CLASS_K.test(String(name || ""))) return false;
+  if (hit(SS_TRUST_NAME)) return false;
+  return true;
+}
+
 function pooledVehicleRow(name, type) {
   /* `tiaa access` IS A VEHICLE NAME, NOT A PRODUCT NAME (2026-10-09). The
    * TIAA Access platform is a set of sub-accounts inside TIAA's variable
@@ -1792,6 +1874,8 @@ function fundTickerInfo(name, type) {
      * asterisk. That is a false claim about what the plan holds. */
     for (const [re, pair] of FUND_COMPARABLE) {
       if (!hit(re)) continue;
+      if (pair[2] && classStatedAndRegistered(name, pair[0], hit))
+        return { tk: pair[0], comparable: false, er: pair[1] };
       return pair[2] ? { tk: pair[0], comparable: true, er: pair[1] } : { tk: pair[0], comparable: false };
     }
     return null;

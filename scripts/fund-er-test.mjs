@@ -303,6 +303,48 @@ const MUST = [
    * would pass against the version that withdraws it. */
   ["Vanguard Target Retirement 2030 Fund", "VTHRX"],
   ["Fidelity Flex Government Money Market Fund", "SPAXX"],
+
+  /* A STATED CLASS THE REGISTRY REGISTERS STOPS BEING PUBLISHED AS A HEDGE
+   * (2026-10-12). The expectation is the BARE symbol: these arms are marked
+   * always-comparable, and a `*` here would pass against the version that
+   * publishes a correct identification as an approximation. 469 published
+   * rows / 869,224 participants; the fee does not move, because `info.er` and
+   * `fundERRow` agree on every one of them.
+   *
+   * The `Class K` spelling is the whole witness, so each spelling the store
+   * actually carries is pinned rather than assumed. */
+  ["State Street Target Retirement 2045 Fund Class K", "SSDEX"],
+  ["State Street Target Retirement 2035 Fund Class K", "SSCKX"],
+  ["State Street Target Retirement 2020 - Class K", "SSBOX"],
+  ["State Street Target Retirement Fund 2060 Class K", "SSDYX"],
+  ["SsgA Target Retirement 2030 Class K", "SSBYX"],
+  ["SSgA Target Retirement 2055 Fund Class K", "SSDQX"],
+  ["State Street Equity 500 Index Fund Class K", "SSSYX"],
+  ["State Street Equity 500 Index Class K", "SSSYX"],
+  ["SSGA Equity 500 Index Fund Class K", "SSSYX"],
+  ["State Street Target Retirement Income Fund Class K", "SSFOX"],
+
+  /* THE CLASS STATEMENT IS REQUIRED: without it these must keep the asterisk,
+   * which is the arm's own cost measured as a benefit. */
+  ["State Street Target Retirement 2045 Fund", "SSDEX*"],
+  ["State Street Equity 500 Index Fund", "SSSYX*"],
+  /* A DIFFERENT class the symbol is NOT: the asterisk is doing real work. */
+  ["State Street Target Retirement 2045 Fund Class A", "SSDEX*"],
+  ["State Street Target Retirement 2045 Fund Class I", "SSDEX*"],
+  /* A BARE TRAILING `K` is refused -- this record's own abbreviation trap,
+   * where `A`, `IN`, `AS` and `IS` are all share classes in this corpus. */
+  ["State Street Target Retirement 2045 Fund K", "SSDEX*"],
+  /* THE VEHICLE OUTRANKS THE CLASS WORD. `State Street S&P 500 Index
+   * Non-Lending Series Fund Class K` is a COLLECTIVE TRUST and the `Class K`
+   * it states is the TRUST'S OWN UNIT CLASS -- 3 rows / 17,643 readers /
+   * $264,712,802, Nutrien at 11.94% of its menu, and every other instrument
+   * read clean on them (no trust token for `pooledVehicleRow`, a BLANK type
+   * cell, and the registry really does register SSSYX as Class K). */
+  ["State Street S&P 500 Index Non-Lending Series Fund Class K", "SSSYX*"],
+  ["State Street S&P 500 Index Non Lending Series Fund Class K", "SSSYX*"],
+  ["SSGA S&P 500 Index NL Series N Class K", "SSSYX*"],
+  /* and the filed TYPE still decides first, as it did before */
+  ["State Street Target Retirement 2045 Trust Class K", "SSDEX*"],
 ];
 
 /* MUST NOT RESOLVE. A blank is the honest answer for all of these. */
@@ -532,5 +574,75 @@ for (const [n, want] of ER_MUST_EQUAL) {
   const got = ctx.__e(n);
   if (got !== want) { console.log(`FAIL er want ${want}% got ${got}% ${JSON.stringify(n)}`); fail++; }
 }
+/* ---- the Class K promotion: its registry witness, and its conditions ------
+ *
+ * The arm publishes a symbol as FACT, so the thing it rests on is that the SEC
+ * registers that symbol as exactly the class the filing states. The browser
+ * must never download the 29,406-row index, so the set is closed in
+ * fund-er.js and ATTESTED here: if the registry ever stops agreeing, CI goes
+ * red by name rather than the page going quietly wrong.
+ *
+ * Skipped rather than failed when the index is absent, because this file also
+ * runs against old refs via `--src`, where the asset may predate it. */
+const SEC_INDEX = path.join(root, "sec-funds.json");
+if (fs.existsSync(SEC_INDEX)) {
+  const reg = JSON.parse(fs.readFileSync(SEC_INDEX, "utf8")).funds;
+  if (!Array.isArray(reg) || reg.length < 20000) { console.log(`FAIL sec-funds.json shape: ${reg && reg.length} rows`); fail++; }
+  else {
+    const byTk = new Map();
+    for (const r of reg) { const t = String(r[1] || "").toUpperCase(); if (t && !byTk.has(t)) byTk.set(t, String(r[3] || "")); }
+    const CLASS_K = ["SSBOX", "SSBSX", "SSBYX", "SSCKX", "SSCQX", "SSDEX",
+      "SSDLX", "SSDQX", "SSDYX", "SSFKX", "SSGNX", "SSFOX", "SSSYX"];
+    let attested = 0;
+    for (const t of CLASS_K) {
+      const cls = byTk.get(t);
+      if (!cls) { console.log(`FAIL registry does not list ${t} at all`); fail++; continue; }
+      if (!/^class\s+k$/i.test(cls.trim())) { console.log(`FAIL registry lists ${t} as ${JSON.stringify(cls)}, not Class K`); fail++; continue; }
+      attested++;
+    }
+    /* and the CONVERSE: a symbol the registry does NOT class as K must not be
+     * in the set, or the promotion would assert a class nothing registers. */
+    for (const t of ["VFIAX", "DODGX", "SSFEX", "SSGLX"]) {
+      if (CLASS_K.includes(t)) { console.log(`FAIL ${t} is in the Class K set and should not be`); fail++; }
+    }
+    console.log(`fund-er Class K registry attestation: ${attested}/${CLASS_K.length} symbols registered as Class K`);
+  }
+}
+
+/* SINGLE-PROTECTION MUTATIONS. Each neuters exactly ONE condition of
+ * `classStatedAndRegistered` in a COPY of the source and asserts that a
+ * specific real case changes verdict — so a condition that stops blocking
+ * anything cannot pass unnoticed. The suite exits 1 if a mutation PASSES,
+ * because a mutation that changes nothing is a condition that protects
+ * nothing. Anchored on the line each one is meant to mutate, never on a bare
+ * token: several of these words also appear in neighbouring patterns and
+ * `String.replace` takes the FIRST occurrence. */
+const MUTATIONS = [
+  ["registry set",
+    (t) => t.replace(/const CLASS_K_REGISTERED = new Set\(\[[\s\S]*?\]\);/,
+      "const CLASS_K_REGISTERED = new Set([]);"),
+    "State Street Target Retirement 2045 Fund Class K", "SSDEX"],
+  ["class statement",
+    (t) => t.replace("const STATES_CLASS_K = /\\bclass\\s+k\\b/i;",
+      "const STATES_CLASS_K = /(?:)/;"),
+    "State Street Target Retirement 2045 Fund Class A", "SSDEX*"],
+  ["collective-trust veto",
+    (t) => t.replace(/const SS_TRUST_NAME = \/[^\n]*\/i;/,
+      "const SS_TRUST_NAME = /$^/;"),
+    "State Street S&P 500 Index Non-Lending Series Fund Class K", "SSSYX*"],
+];
+for (const [label, mutate, name, want] of MUTATIONS) {
+  const mutated = mutate(src);
+  if (mutated === src) { console.log(`FAIL mutation "${label}" did not change the source — it is malformed`); fail++; continue; }
+  const mctx = { console: { log() {}, warn() {}, error() {} } };
+  vm.createContext(mctx);
+  try { vm.runInContext(mutated + "\nglobalThis.__t = fundTickerInfo;", mctx); }
+  catch (e) { console.log(`FAIL mutation "${label}" would not load: ${e.message}`); fail++; continue; }
+  const r = mctx.__t(name, "");
+  const got = r ? r.tk + (r.comparable ? "*" : "") : "";
+  if (got === want) { console.log(`FAIL mutation "${label}" still answers ${want} for ${JSON.stringify(name)} — the condition protects nothing`); fail++; }
+}
+console.log(`fund-er Class K mutations: ${MUTATIONS.length} conditions, each with a case where it is the only protection`);
+
 console.log(`fund-er fixtures: ${MUST.length} must-resolve, ${MUST_NOT.length} must-not-resolve, ${ER_MUST_BLANK.length} must-blank-fee, ${ER_MUST_KEEP.length} must-keep-fee, ${ER_MUST_EQUAL.length} must-equal-fee, ${fail} failures`);
 process.exit(fail ? 1 : 0);
