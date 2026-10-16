@@ -1099,3 +1099,35 @@ names — *a shape histogram groups by what the name looks like, and a blank's
 cause lives in the ROW.* Only then is the omitted-series-word relaxation worth
 pricing, and it is worth at most 2,868 rows rather than 15,235.
 `docs/accuracy-log.md` 2026-10-16 (16:4xZ).
+
+### 2026-10-16 17:0xZ — every blank of the biggest house's residue has a NAMED cause
+
+Carried the real rows out of the store and asked the generator's own stages in
+the generator's own order. Nothing rests as unknown: **the ARM abstains 9,215
+rows / 3,644,235 ppl · a POOLED vehicle, correctly blank 5,050 / 981,718 · the
+COMPARABLE precedence 932 / 130,418 · a render gate 38 / 9,246.**
+***THE ORDER IS THE MEASUREMENT AND MY FIRST RUN HAD IT WRONG TWICE*** — the
+table's key map ahead of the vehicle question read 1,404 rows as a mystery (every
+example typed `Pooled separate account`, the render-time gate working, the key
+written by a non-pooled SIBLING — the recorded "a key cannot carry the vehicle"
+class, now numbered), and the arm ahead of `resolveHolding` read 265 as
+UNEXPLAINED where `secAsk` asks the registry FIRST. Re-ordered, **both residual
+buckets go to ZERO.**
+***THE 16:4xZ "two shapes resolve already" IS REFUTED AND SO ARE ALL THREE
+QUEUED CAUSES: all 39 abstaining spellings of those two shapes are a 2010 / 2015
+/ 2020 / 2025 vintage***, i.e. the Income rename already on the record, while
+2030-2060 resolve. **A SHAPE GENERALISES A TOKEN, SO PROBING ONE VALUE OF IT
+ANSWERS FOR THAT VALUE ALONE** — the probe used 2050. The relation-blocked
+population stays at 2,868 rows.
+**SHIPPED FROM IT (pending the regeneration's key diff): the precedence.** An
+arm that names the STATED class now outranks a hedged registry answer —
+**7,332 rows / 784 plans / 963,321 ppl / $23.5B, every one BLANK today**,
+Fidelity's Freedom `K` ladder being 7,021 of it (`Fidelity Freedom 2030 K Fund`
+hedges FFFEX, the INVESTOR class, where the arm asserts FSNQX, Class K). A
+PRECEDENCE and not a widening: a comparable is never shipped, so a blank can
+only become a symbol and never one symbol another. `classStated` refuses the one
+row of 7,333 whose class the filing does not state.
+**NEXT:** read the regen's key diff, run `audit-data.mjs` against the new table
+and SUPERSEDE the standing 41.02 registration — three ships now sit in one table
+and no merge has reflected any of them (the trail still reads 40.23).
+`docs/accuracy-log.md` 2026-10-16 (17:0xZ).
