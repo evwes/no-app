@@ -3285,6 +3285,34 @@ for (const [s, why] of [
   ["Traditional Benefit-Responsive Annuity", "14 rows / $48,515,641 — `annuity` names a vehicle; two protections, labelled"],
   ["Stable Value", "54 rows / 171,652 ppl — carries no form of `respons`"],
   ["Vanguard 500 Index Fund", "a real fund"],
+  /* THE WELDED FORM, AND BOTH THINGS ONE MIGHT DO WITH IT ARE REFUSED —
+   * 2026-10-16. The caption in front of a REAL product name is 408
+   * published+served rows / 405 plans / 730,427 ppl / $2,298,860,472, and the
+   * whole-string requirement above is what keeps this arm off them. It is
+   * CORRECT rather than merely conservative:
+   *
+   *   QUALIFYING it would publish "the filing names no specific fund" over a
+   *     row that names one — all 228 distinct remainders were read and every
+   *     one is a genuine stable-value product (`Principal Fixed Income
+   *     Guaranteed Option` x20, `Key Guaranteed Portfolio Fund` x18, `Voya
+   *     Fixed Account` x13, `Lincoln Stable Value Account` x10).
+   *   STRIPPING the caption is refuted too, and that is the less obvious half.
+   *     Measured as a differential through `renderRow` over all 408: `tk` 0,
+   *     row membership 0 — and `er` moves on 77 rows, EVERY ONE `null ->
+   *     0.35`, while `shownType` moves on 103, EVERY ONE `Investment contract`
+   *     -> `Mutual fund`. The caption is the WITNESS `isInvestmentContractRow`
+   *     reads (TRUE on 101 as filed, 0 after the strip), which earns the
+   *     correct vehicle label and sits in the gate that withholds the fee
+   *     resolver. `app.js:4230` already records that population.
+   *
+   * So the caption is LOAD-BEARING: removing text that is TRUE would publish
+   * two claims that are FALSE, for no gain in any priced column. A legibility
+   * strip must be priced against every cell that reads the name.
+   * `docs/accuracy-log.md` 2026-10-16 (05:1xZ). */
+  ["Fully benefit-responsive investment contract Lincoln Stable Value Account",
+    "the WELDED form, 408 rows / 730,427 ppl — the remainder names a REAL product, so qualifying it publishes a false claim; see the block above, and note that STRIPPING the caption is refuted as well"],
+  ["Non-benefit responsive contract Principal Fixed Income Guaranteed Option",
+    "the welded form in the other caption spelling — the same 20-row remainder, pinned so neither spelling can be reached by a widening"],
 ]) if (isWithdrawalTermsCaption(s)) {
   throw new Error(`lib-disclose: isWithdrawalTermsCaption now reaches ${JSON.stringify(s)} (${why}) — it must not`);
 }

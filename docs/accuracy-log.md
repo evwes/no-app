@@ -7,6 +7,116 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-16 (05:1xZ) — THE CAPTION-WELD STRIP IS REFUTED BY ITS OWN DIFFERENTIAL AND MUST NEVER SHIP: THE CAPTION IS LOAD-BEARING, AND REMOVING TRUE TEXT WOULD PUBLISH TWO FALSE CLAIMS ON 180 ROWS
+
+**My own queue entry of two hours earlier prescribed this strip from its member
+list alone — 408 published+served rows / 405 plans / 730,427 ppl /
+$2,298,860,472, remedy "a STRIP, never a label", because all 228 distinct
+remainders name genuine stable-value products. The reading was right and the
+inference does not follow.** Priced as a differential through the tracked
+`renderRow` harness over all 408 candidate rows, with the name the page shows
+TODAY against the name after the caption run is removed:
+
+| | |
+|---|---|
+| `tk` | **0** — no ticker gained, lost or swapped |
+| row membership (`ID_ONLY`) | **0** |
+| `er` | **77 rows move, EVERY ONE `null -> 0.35`** |
+| `shownType` | **103 rows move, EVERY ONE `Investment contract` -> `Mutual fund`** |
+
+***So the strip buys NOTHING in the priced columns and pays for it by adding the
+owner-gated FABRICATED stable-value fee to 77 rows and replacing a CORRECT
+vehicle label with a FALSE one on 103.*** Mueller Industries publishes
+`Principal Fixed Income Guaranteed Option` on $17,735,238 and would gain both;
+Tkc Holdings $14,560,330; Lowe Enterprises — the row that motivated the whole
+item — would gain the 0.35 its caption currently withholds.
+
+**ONE PREDICATE ACCOUNTS FOR BOTH COLUMNS AND IT READS THE CAPTION ITSELF:**
+`isInvestmentContractRow` is asked of the FILED NAME, and over the 408 it is
+**TRUE on 101 as filed and 0 after the strip** (101 is a floor measured with a
+stubbed `namesAFund`; the renderRow differential's 103 is authoritative). TRUE
+earns the row `Investment contract` at `app.js:4517` AND sits in the gate
+`!gicRow && !subtotalRow && !loanRow && !annuityRow && !contractRow` that
+withholds the fee resolver, so one flag decides both cells. **`app.js:4230`'s
+own comment already names this exact population** — *"267 rows / 264 plans /
+388,683 participants say `investment contract` or `insurance contract` in the
+filed name and are typed `Mutual fund` … 89 of them also publish a fabricated
+0.35%"* — so the shipped code records the caption as the WITNESS, and my queue
+entry proposed deleting the witness.
+
+***THE RULE, AND IT IS THE INVERSE OF ONE ALREADY HERE: A LEGIBILITY STRIP MUST
+BE PRICED AGAINST EVERY CELL THAT READS THE NAME, BECAUSE A TRUE CAPTION CAN BE
+LOAD-BEARING — REMOVING TEXT THAT IS CORRECT CAN PUBLISH A CLAIM THAT IS
+FALSE.*** This record already carries *a legibility fix must be priced against
+the guards that READ names*, which was earned on the PARSER's region selection;
+this is the DISPLAY's own suppressors, and the direction is new — there the
+worry was a guard misreading a repaired name, here the caption IS the evidence a
+guard depends on. **That the remainder is a real fund name is an argument about
+the remainder and says nothing about whether the prefix is removable.**
+
+**AND IT RETROACTIVELY STRENGTHENS THE 2026-10-12 09:4xZ SHIP'S DESIGN.** That
+arm requires the WHOLE string to be caption words, which was argued as
+conservatism; it is CORRECT, because a caption plus a product name is a row
+where the caption is doing work. Its 311 already-qualified rows are that arm
+working, and the previous cycle's **LABEL 0** control stands: no caption-only
+spelling escapes it.
+
+**THREE FURTHER REFUTATIONS, each of a condition my own queue entry named as
+needed, and each worth more than the item:**
+
+1. **THE PRESCRIBED BARE-HOUSE REFUSAL REACHES 2 OF 14, BECAUSE `LEADING_HOUSE`
+   IS A FUND-HOUSE LIST AND THIS CLASS'S BARE NAMES ARE INSURERS.**
+   `leadingHouse`/`beyondHouse` catches `Voya` and `Transamerica` and misses
+   `Empower` ×10, `Lincoln` ×5, `VALIC` ×4, `MassMutual` ×4, `Brighthouse`,
+   `OneAmerica`, `Great-West`, `VRIAC`. *A house witness built for fund houses
+   cannot see an insurer*, and the stable-value population is all insurers.
+2. **TOKEN COUNT CANNOT SEPARATE A FIRM FROM A PRODUCT HERE, so the
+   bare-whitespace arm's four-token floor is no model:** `Empower Annuity
+   Insurance Company of America` ×18 is **six tokens of pure firm name**, while
+   `Voya Fixed Account` ×13 and `TIAA Traditional Annuity` ×6 are real products
+   at three. The bare-whitespace arm's own 2026-09-29 comment predicted this —
+   *"a corporate suffix cannot tell `Standard Insurance Company` from `Fidelity
+   Growth Company`, which is a real fund"* — and refused its three-token level
+   for it. The same blocker, met from a different arm.
+3. **THE `wrapRepair` ATTESTATION WITNESS IS SELF-LICENSING IN THIS STORE.**
+   `Empower Annuity Insurance Company of America` is attested **216×** as some
+   plan's whole filed name — **identical to `Lincoln Stable Value Account`'s
+   216** — with `MassMutual` 149, `VALIC` 99, `New York Life` 38, `fund` 30 and
+   `Empower` 12, so a floor of three would ship a remainder of `fund`.
+   ***An attestation witness cannot refuse a bare firm name in a store that
+   already publishes 5,752 bare-HOUSE rows: the defect attests itself.*** It is
+   the recorded *a floor of three lets damaged rows license the damage* with the
+   licensing population named and counted. What attestation DOES refuse is the
+   truncations (`Lincoln National Life Insurance Lincoln Stab`, `Massachusetts
+   Mutual Life Insurance CompanyFI`, attested 0) — and it refuses real products
+   with them (`CMFG Stable Value Account`, `APEX Guaranteed Fixed Interest
+   Account`, 0 each).
+
+**THE PIN WAS NEVER AT RISK, AND FOR A DIFFERENT REASON THAN I PREDICTED.** The
+queue entry said the strip must "leave `TIAA Traditional Benefit Responsive` ×7
+alone". It is not the SUBJECT of this class at all — it is what SURVIVES in
+seven of its remainders, the caption being leading by construction — so the
+pinned string was on the other side of the operation from where I had placed it.
+*A pin can be safe for a reason that makes the prediction about it wrong.*
+
+**SO THE ITEM CLOSES RATHER THAN WAITS, AND THE 408 ROWS ARE HONEST AS
+PUBLISHED:** the caption is true, the remainder names a real product, and
+together they earn a correct vehicle label and withhold a fabricated fee. The
+`er` and `shownType` columns say the page is already doing the right thing with
+this shape. Method note: the measurement was narrow by a property of the change
+(408 rows) and cost seconds, where the queue entry's own prescription would have
+cost a twin, a stamp, a tether and a page regeneration before anything measured
+it. **Price the change before building the arm.**
+
+*Two instrument notes. The remainder screen was SLICED out of `cleanFiledName`
+with seven controls rather than retyped. And the `ID_ONLY` literal was sliced
+too, after reporting "not available" from `hooks` — the recorded trap where a
+harness silently sets it to `/^$/` and counts rows no reader sees; **my first
+pin on it FAILED and was right to**, because I expected a bare `00206R102` to
+match and the shipped literal requires the `CUSIP:` label. The pin said my
+expectation was wrong, not that the slice was broken, which is the whole reason
+to write one.*
+
 ## 2026-10-16 (03:5xZ) — THE 02:07 DRAW: MY OWN 2026-10-12 CAPTION SHIP'S RESIDUE IS A STRIP AND NOT A LABEL — 408 published+served rows / 405 plans / 730,427 ppl / $2,298,860,472, AND THE SHIP'S OWN VOCABULARY IS MEASURED COMPLETE
 
 **Seeded participant-weighted draw (`--seed 16102026`), two plans read against

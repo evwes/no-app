@@ -733,6 +733,30 @@ Before 7:00 AM Eastern, docs/morning-brief.md current and committed — decision
 
 If there is genuinely nothing to do, say so briefly and stop. Do not invent work. No model identifier in commits, PR bodies, or code comments.
 
+### REFUTED 2026-10-16 05:1xZ — the caption-weld STRIP (408 rows / 730,427 ppl / $2.3B). DO NOT REBUILD IT.
+
+**The prescription below was mine, written from the member list alone, and the
+differential killed it: the caption is LOAD-BEARING.** Priced through
+`renderRow` over all 408 candidate rows, strip vs as-filed: `tk` **0**, row
+membership **0** — and `er` moves on **77 rows, every one `null -> 0.35`** (the
+owner-gated FABRICATED stable-value fee) while `shownType` moves on **103, every
+one `Investment contract` -> `Mutual fund`**. `isInvestmentContractRow` reads
+the FILED NAME (TRUE on 101 as filed, 0 after), so the caption is the witness
+that earns the correct vehicle label and sits in the gate withholding the fee
+resolver; `app.js:4230` already records that population. **So the 408 rows are
+HONEST as published and the item CLOSES.** Both the welded form and its other
+caption spelling are now must-KEEP pins in `lib-disclose`, so a future widening
+throws by name. Three conditions the entry named were refuted too: the
+bare-HOUSE refusal reaches 2 of 14 (`LEADING_HOUSE` is a FUND-house list and
+these are INSURERS), token count cannot separate firm from product (`Empower
+Annuity Insurance Company of America` x18 is six tokens of pure firm name), and
+the attestation witness is SELF-LICENSING (that string is attested 216x as a
+whole filed name, identical to `Lincoln Stable Value Account`, because the
+bare-HOUSE class attests it; `fund` 30x). `docs/accuracy-log.md` 2026-10-16
+(05:1xZ).
+
+**ORIGINAL ENTRY, kept because it is what was predicted:**
+
 ### 2026-10-16 02:07 draw — the caption-weld STRIP (408 rows / 730,427 ppl / $2.3B)
 
 **SIZED, NOT SHIPPED.** The 2026-10-12 09:4xZ withdrawal-terms ship qualifies a
