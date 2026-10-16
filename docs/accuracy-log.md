@@ -60703,3 +60703,56 @@ between three mechanisms that each have a different and cheaper remedy, and the
 widening I would have reached for first is now known to be worth a quarter of
 what the split suggested. *Diagnosing before building is what kept a 4.65M-reader
 figure from being quoted as the prize for one relaxation.*
+
+## 2026-10-16 17:0xZ — every one of the 15,235 has a NAMED cause, and my own three hypotheses were all wrong
+
+Carried the real rows out of the store, as the 16:4xZ entry said to, and asked
+the generator's own stages in the generator's own order — the render flags, the
+sliced `pooledRow`, the committed table's key map, `resolveHolding`, then the
+arm. Nothing is left resting as unknown:
+
+| rows | plans | ppl | first stage that refuses |
+|---|---|---|---|
+| **9,215** | 3,464 | **3,644,235** | the ARM abstains on the real row |
+| **5,050** | 1,403 | **981,718** | a POOLED vehicle — correctly blank |
+| **932** | 163 | **130,418** | COMPARABLE precedence: the registry answers first, hedged |
+| **38** | 11 | 9,246 | a render gate (`gicRow` on all six examples) |
+
+**THE ORDER IS THE MEASUREMENT, AND MY FIRST RUN HAD IT WRONG TWICE.** It put
+the table's key map ahead of the vehicle question and reported **1,404 rows as a
+mystery** ("KEY EXISTS yet no symbol published") — every example typed `Pooled
+separate account`, i.e. the shipped render-time gate doing its job, with the key
+written by a non-pooled SIBLING row filing the same two cells. That is the
+recorded "the key cannot carry the vehicle" class, now with a number: **1,404 of
+the 5,050 pooled rows carry a key a sibling wrote.** And it put the ARM ahead of
+`resolveHolding`, where `secAsk` asks `resolveHolding` FIRST and reaches the arm
+only on `!out` — so 265 rows sat in an "UNEXPLAINED" bucket that is simply the
+arm's POSITION. ***Re-ordered, both residual buckets go to ZERO.***
+
+***THE 16:4xZ CLAIM THAT TWO SHAPES "RESOLVE ALREADY" IS REFUTED, AND SO ARE ALL
+THREE OF THE CAUSES I QUEUED FOR THEM.*** Their rows are still in the abstention
+bucket at exactly 665 and 513. Printing the real spellings beside my probe's
+reconstruction says why in one line: `Am Fds 2030 Trgt Dte Rtm R6 Fd` -> RFETX,
+`AMERFUNDS 2040 TARG DATERET R6` -> RFGTX, **and all 39 abstaining spellings of
+those two shapes are a 2010 / 2015 / 2020 / 2025 vintage** (`Am Fds 2025 Trgt Dte
+Rtm R6 Fd` ×176, `AMERFUNDS 2025 TARG DATERET R6` ×168, `Am Fds 2020 …` ×163).
+That is the **Income rename this record already carries as a cause** — the
+registry holds those vintages only as `… Target Date Retirement **Income**
+Fund` — and not the pooled gate, not the precedence, not a house spelling.
+
+***SO THE LESSON IS NARROWER AND SHARPER THAN "CARRY THE ROWS OUT OF THE
+STORE": A SHAPE GENERALISES A TOKEN, AND PROBING ONE VALUE OF THAT TOKEN ANSWERS
+FOR THAT VALUE ALONE.*** My probe substituted `<vintage>` = 2050, which resolves;
+the rows that are blank are the four vintages where the series is named
+differently. A histogram that collapses a token is the right instrument for
+finding a class and the wrong one for testing it, and the tell was available
+without any new run — the shape's own 2,350 rows against its 665 blanks.
+
+**What it buys:** the relation-blocked population stays at **2,868 rows** (the
+five omitted-series-word shapes), 1,178 rows move to an already-recorded cause
+needing a SOURCED rename rather than a relaxation, and 5,050 rows / 981,718
+readers are confirmed as nobody's bug. The abstention bucket's own shape
+histogram — the honest price for the relaxation, since the earlier one mixed all
+four causes — reads `<vintage> t date r6` ×718 (not the 1,008 published, the rest
+being pooled or hedged), `<vintage> target date r2e` ×228, `wamu r6` ×118,
+`washington mutual r4` ×76, `europacific gr r3` ×63.
