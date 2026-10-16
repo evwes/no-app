@@ -1131,3 +1131,39 @@ row of 7,333 whose class the filing does not state.
 and SUPERSEDE the standing 41.02 registration — three ships now sit in one table
 and no merge has reflected any of them (the trail still reads 40.23).
 `docs/accuracy-log.md` 2026-10-16 (17:0xZ).
+
+### 2026-10-16 18:5xZ — SHIPPED and MIRRORED: the precedence, 963,321 readers
+
+**7,332 published+served rows / 784 plans / 963,321 ppl / $23.5B gain an
+ASSERTED symbol, every one BLANK today** — Fidelity's Freedom `K` ladder is
+7,021 of it (hedged FFFEX, the INVESTOR class; asserted FSNQX, Class K), Capital
+Group 311. A PRECEDENCE, not a widening: `secAsk` asks `resolveHolding` first
+and reached the arms only on `!out`, and a comparable is never shipped, so a
+blank can only become a symbol. Table **15,747 -> 16,963 keys, ADDED 1,216 /
+REMOVED 0 / CHANGED 0.** `classStated` refuses the one row of 7,333 whose class
+the filing does not state. Mirrored `48ec8aa8 -> f5fdb563`, mirror-gate 0 plans
+/ 0 participants.
+**THE STANDING 41.02 REGISTRATION DELIVERED AND HELD DEAD ON ITS POINT ESTIMATE
+— #680 appended `tkExact` **41.02**, 34 other keys unchanged.** My first
+measurement of the new ship said "40.23 -> 41.32, no merge has reflected any of
+them" and was wrong: #680 ran on MAIN, which already carried the first two
+ships' table, while I was dispatching regenerations on dev. Re-measured against
+#680's own line: **41.02 -> 41.32, exactly one of 35 keys.** #681 dispatched on
+dev to settle it.
+**FOUR DISPATCHES OF THE REGEN WORKFLOW, TWO OF THEM MY OWN DEFECTS, AND BOTH
+WORTH THE TIME.** Run 2 was stopped by the absence pin that asserted
+`Fidelity Freedom 2050 K Fund` resolves nothing — *an absence pin on a generated
+asset is not merely a regression guard, it is what forces the measurement to
+exist* — and run 3 regenerated for 23 minutes and could not push, for want of
+`permissions: contents: write`. **The 16:1xZ verification run could not have
+caught that: its key diff was 0/0/0, so `git diff --quiet` short-circuited and
+the push path never ran.** *A workflow verified only on a no-op has not had its
+writing step tested.*
+**AND THE JOB LOG IS READABLE AFTER ALL** — `mcp__github__get_job_logs` with
+`return_content: true`, where `gh api …/logs` refuses the blob redirect. The
+16:1xZ limitation was a property of one client, not of the container.
+**NEXT:** #681's verdict against the 41.32 registration; then the
+omitted-series-word relaxation (2,868 rows, cross-fund exposure, carry the real
+rows out of the store), or the 1,178 Income-rename rows, which need a SOURCED
+rename and not a relaxation.
+`docs/accuracy-log.md` 2026-10-16 (18:3xZ).
