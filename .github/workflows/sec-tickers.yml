@@ -31,6 +31,18 @@ on:
         required: false
         default: "claude/wampo-401k-live-nx1t4o"
 
+# WITHOUT THIS THE JOB DOES EVERY EXPENSIVE THING AND CANNOT WRITE: run 3
+# regenerated the table, re-derived the stamp, passed both gates, committed
+# locally, rebased cleanly and then took `remote: Permission to evwes/no-app.git
+# denied to github-actions[bot]` four times. `build-data.yml` has carried this
+# block since it was written; this file was copied without it, and the
+# verification run that was supposed to prove the workflow works never caught it
+# because that run's key diff was 0/0/0, so `git diff --quiet` short-circuited to
+# "nothing to commit" and the push path was never executed. A workflow verified
+# only on a no-op has not had its writing step tested at all.
+permissions:
+  contents: write
+
 concurrency:
   # one regeneration at a time per ref: two would race over the same asset and
   # the loser's commit would be a table built by code the other had replaced
