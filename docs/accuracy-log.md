@@ -60898,3 +60898,42 @@ own defects**, both recorded above: run 2 was stopped by the absence pin it
 should have been stopped by, and run 3 regenerated for 23 minutes and could not
 push for want of `permissions: contents: write`. Run 4 committed `6ede6837`.
 *The gate that cost the most time is the one that did its job.*
+
+## 2026-10-16 19:1xZ — the draw: a benefit-responsive CAPTION welded in front of a real name, 951,311 readers
+
+The participant-weighted draw (seed 16102026) took Salesforce (57,193 ppl, 28
+funds, ratio 0.995 — a clean menu: every collective trust correctly carrying
+`noPublicPrice` and no fabricated fee anywhere) and Lowe Enterprises (7,078 ppl,
+ratio 0.979), whose row 10 publishes **`Fully benefit-responsive investment
+contract Lincoln Stable Value Account`** at 28.6% of its own menu.
+
+**SIZED AT 449 published+served rows / 445 plans / 951,311 ppl / $2,861,890,302,
+with 0 publishing a TICKER, 2 a fee and 33 already qualified.** The caption is
+anchored at the START and required to be followed by more text, which is exactly
+what separates this from the class that shipped at 09:4xZ today: that one
+labelled a row whose whole name IS the caption, and refused the bare
+`Fully Benefit` as "a name cut off mid-phrase … a truncated name wants
+reconstruction, not suppression". **Here the caption is a PREFIX and the fund's
+own name follows it, so the remedy is a STRIP and a nameless label would be
+FALSE.** Must-see pin by ack, and it throws rather than printing a population.
+
+***AND IT IS THREE CLASSES, WHICH IS WHY NOTHING SHIPPED — the split is by what
+SURVIVES the strip, read off all 303 distinct names:***
+
+| rows | names | $ | what the remainder is |
+|---|---|---|---|
+| **305** | 217 | **$1,670,787,220** | a real VEHICLE — `Lincoln Stable Value Account`, `Voya Stable Value Fund`, `VALIC`, `SAGIC Diversified Bond II`, `Group Stable Asset Fund`. A strip is right. |
+| **85** | 60 | $510,582,470 | an ENTITY — `Pacific Mutual Life Insurance Company`, `American General Life Insurance`, `New York Life Insurance Company`. The recorded trustee-weld family: a strip leaves a FIRM, not a product. |
+| **59** | 26 | $680,520,612 | the BASIS caption — `at contract value` ×30. A strip leaves a caption, and the honest answer is the nameless label 33 of them already get. |
+
+**SO THE COMPOSITION IS THE MEASUREMENT THIS ITEM NEEDS, not a wider pattern:**
+for the third bucket a strip must leave a string the shipped predicates still
+reach (`isGenericTypeName` already qualifies `At contract value`, and today's
+`isContractBasisCaption` reaches the bare spellings), or the change turns a
+nameless row into one that reads as a name — the inverse of the harm the strip
+fixes. `FULLY BENEFIT-RESPONSIVE INVESTMENT CONTRACT, AT CONTRACT VALUE T. Rowe
+Price Associates` (45,556 ppl) carries all three at once and is the case any arm
+must be tested against.
+**Not shipped: 0 rows publish a ticker and 2 a fee, so the harm is the NAME
+alone**, and a three-way split with a composition question is a measured ship of
+its own rather than the tail of a cycle. Queued with its conditions named.
