@@ -7,6 +7,155 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-16 (06:5xZ) — SHIPPED: THE CONTRACT DESIGNATION COMPRESSED INTO AN ACRONYM — 223 published+served rows / 216 plans / 683,649 ppl / $2,959,846,571 STOP PUBLISHING A FABRICATED EXPENSE RATIO, AND THE FEE IS THE ONLY CELL THAT MOVES
+
+**`annuityFeeIsGuaranteeOnly`'s gate is `CONTRACT_WORD` — the filing's own word
+`contract` — and it cannot see the word when the filer writes it as an
+initialism. A GIC is a Guaranteed Investment CONTRACT and a SAGIC is a Separate
+Account GIC**, so `SAGIC Diversified Bond II` states the contract exactly as
+`Fully benefit-responsive investment contract SAGIC Diversified Bond II` does,
+and only the second was being asked. One disjunct, `GIC_ACRONYM =
+/\b(?:sa?)?gic\b/i`, added beside it.
+
+Measured as a DIFFERENTIAL through BOTH copies of `renderRow` — origin/main's
+app.js, fund-er.js and sec-tickers.js against the working tree's — over all
+**1,721,920** published+served rows:
+
+| | |
+|---|---|
+| **FEE WITHDRAWN** | **223 rows / 216 plans / 683,649 ppl / $2,959,846,571** |
+| fee GAINED · fee CHANGED | **0 · 0** |
+| `tk` · `star` · `shownType` · `name` | **0 · 0 · 0 · 0** |
+| rows at >=10% of their own menu | **103** |
+| withdrawals publishing a TICKER | **0** |
+| non-candidate control | **20,737 sampled, 0 differing** |
+
+`PARSER_VERSION` stays 203 and no store is written. Largest by readers:
+Coadvantage Corporation **81,703 ppl**, Local One I.A.T.S.E. **13.26% of its
+menu / $154,331,440**, Werner Enterprises **18.25%**, Trinet Hr Iv 41,688 ppl.
+
+**THE WITNESS IS INTERNAL AND NEEDS NO REGISTRY — ONE PRODUCT FAMILY, FILED 304
+WAYS, ANSWERED TWO WAYS BY A CELL THE FILER MAY LEAVE EMPTY.** Of the SAGIC
+rows, the **118 whose filer TYPED the vehicle** (`Stable value / GIC` 63,
+`Pooled separate account` 17, `Collective trust` 14) already published **no
+fee**, while the **186 whose type cell was BLANK (165 of them)** published
+**0.35**. The registry corroborates by silence: **0 SAGIC series among 429
+MassMutual registrant rows** in `sec-funds.json`. *Eighth instance of a blank
+type cell defeating a type-reading suppressor* — after Accenture stable value,
+the Fidelity Freedom ladder, the CREF accounts, TIAA Access, the flexPATH
+platform and the 17:4xZ vintage ladder.
+
+**IT IS NOT A BITE OUT OF THE OWNER-GATED STABLE-VALUE ITEM, BY THAT ITEM'S OWN
+STATED BOUNDARY.** The 2026-10-01 entry four lines above the gate draws the line
+at the filing's own word: rows saying only `stable value` are the policy call,
+and rows that "additionally carry the filing's OWN word `contract`" are "the
+condition the project already decided on". **An acronym whose last letter IS
+that word is inside the decided condition**, which is the same reading that
+shipped `cct`, `corp`, `instr` and `sec` as caption abbreviations. The sharpest
+case is pinned: `Stable Value (GIC) Fund` carries the gated item's own
+vocabulary AND the acronym, and ships on the acronym.
+
+**AND THE SECOND CONDITION IS STILL THE SAFETY, WHICH IS WHY THIS IS A GATE
+WIDENING AND NOT A VOCABULARY.** The arm only decides which rows get ASKED: a
+row keeps its fee unless the remainder stops pricing once the guarantee words
+come out. Measured — **542 candidate rows, 223 move and 319 keep their fee** —
+so the residue test refuses three rows in five, exactly as it refused the 86
+caption-wearing real funds the 2026-10-02 widening reached. **The structural
+consequence is the whole safety claim: a withdrawn fee was priced ONLY by the
+guarantee or GIC token, so no fund-specific fee can be withdrawn** — which is
+why `fee CHANGED` and `fee GAINED` are 0 rather than small.
+
+**ALL 101 DISTINCT WITHDRAWN NAMES WERE READ AND NOT ONE IS A REGISTERED FUND
+LOSING ITS OWN FEE.** `SAGIC Diversified Bond II` x41, `… Bond I` x20, `SAGIC
+Core Bond I` x6, `10-YEAR GIC ACCOUNT`, `GIC UNITED OF OMAHA INS CO`,
+`Transamerica MDA-01141TR GIC`, `RGA Ins. Co 00037 GIC`, `Met Managed Gic for
+39934 Inst`, `GIC, 1.41% interest`, `TIAA Traditional GIC Fund (Fully
+benefit-responsive)`.
+
+***AND READING THEM FOUND THE ONE THING NO COUNT COULD: `\b` IS THE ONLY THING
+BETWEEN `\bgic\b` AND EVERY FUND WHOSE NAME SAYS `STRATEGIC`.*** Two rows are
+`V anguard A trate gic Sm all-Cap Equity Fund` and `Lazard Inte rnational
+Strate gic Equity Fund` — OCR put a SPACE inside `strategic`, which MANUFACTURES
+the token. Spelled correctly there is no boundary and the gate is shut, and that
+is now a pinned must-KEEP. **It is not a harm and it is not an argument for the
+arm either: the 0.35 those two publish TODAY is itself an accident of the same
+broken spacing matching a GIC pattern**, so neither number is the fund's and
+what those rows actually need is the NAME repaired. *The recorded hazard was a
+caption escaping on a space (`U. S. Government`); this is its inverse — a space
+CREATING a token — and it is the same defect wearing the other direction.*
+
+**THE TETHER NEEDED ITS OWN PROBES FOR THE SEVENTH CYCLE RUNNING, and the
+reason is exact rather than habitual: not one of the 21 existing must-SUPPRESS
+probes reaches the new arm, because every one of them SPELLS the word
+`contract`** — so the twin check would have agreed whether or not `GIC_ACRONYM`
+existed. Six new probes, each reachable by the new disjunct alone, plus the two
+must-KEEP single-protection cases above. *A probe set that cannot reach an arm
+is how a guard passes while doing nothing*, caught here at v189-v192 and twice
+since.
+
+**AND THE FIXTURE TABLE'S OWN SPLIT IS NOW ASSERTED, which is a defect fixed in
+passing.** `guarFeeNames` is split POSITIONALLY — `slice(0, 21)` must suppress,
+`slice(21)` must keep — so an entry appended in the wrong place silently
+changes what it CLAIMS rather than failing, and a must-KEEP case landing before
+the boundary would be required to suppress. The boundary is now a named
+constant with the array's total length asserted (**27 / 45**), so a mis-edited
+table fails by name. ***`parser-gate.mjs` cost two months of false passes to
+exactly this shape: a fixture table that dispatches positionally tests the
+DISPATCHER too.***
+
+***AND THE ASSERTION CAUGHT MY OWN MIS-COUNT ON ITS FIRST RUN — the guard
+written to catch a mis-edited table caught the edit that added it.*** I wrote
+the total as **46** and the array holds **45**, because I counted string
+literals in the array's source WITHOUT STRIPPING COMMENTS and the existing
+comments quote strings of their own. *A count keyed on a character shape
+measures the character shape*, met inside the instrument written to check a
+table. Recounted with comments stripped: 45 entries, index 27 the first
+must-KEEP (`Fully benefit responsive investment contract Dodge & Cox Income
+Fund`), so the boundary was right and only the total was wrong — which is the
+less dangerous of the two and exactly why both are asserted.
+
+**TWO CONTROLS FIRED AND BOTH WERE RIGHT TO.** The differential's
+"the two renderers must disagree on the motivating row" threw on its first run,
+because **`renderRow` runs app.js's TWIN and I had not regenerated it** — *a
+before that is silently the after reads as a clean no-difference*, and the
+recorded order (edit, regenerate the twin, regenerate the table, THEN stamp) is
+what the throw enforced. And the narrowing was DISCHARGED rather than asserted:
+the edit is a single `||` in one gate, so a row whose cleaned name lacks the
+token cannot reach the new arm, and 20,737 sampled non-candidates differ on 0.
+
+`sec-tickers.js` was regenerated because the fingerprinted slice moved —
+**ADDED 0 / REMOVED 0 / CHANGED 0 keys, with exactly ONE line differing (the stamp)** — which is the expected result and the reason the gate
+is keyed on code rather than on keys: the fee gate cannot move a TICKER key, but
+*a moved fingerprint does not prove a key would move*, and only the regen
+settles it. `index.html` restamped.
+
+**ONE SURFACE BY CONSTRUCTION:** `build-seo-pages.mjs` has **0** references to
+`fundER`, `lookupTicker`, `fundTickerInfo`, `annuityFeeIsGuaranteeOnly` or
+`noPublicPrice`, and its only `expense ratio` strings are prose saying admin
+fees are separate — the crawlable pages publish no per-fund fee at all. So the
+regenerate-and-diff control is INAPPLICABLE here rather than skipped.
+
+**THE COVERAGE LINE IS PRE-REGISTERED AS BYTE-IDENTICAL ON ALL 35 KEYS, DATE
+INCLUDED, AND THE REGISTRATION IS DERIVED FROM THE IMPORT GRAPH rather than
+from a measurement in the metric's own population — the stronger form, because
+it refutes itself the moment a new import appears.** `audit-data.mjs:17` imports
+exactly ONE function from `lib-disclose.mjs`, `cleanFiledName`, and that
+function's **1,071-line body references NONE of `GIC_ACRONYM`,
+`annuityFeeIsGuaranteeOnly`, `CONTRACT_WORD` or `GUARANTEE_PRICED_WORDS`**
+(brace-matched out of the source and grepped, 0/0/0/0), so the new arm is
+unreachable from anything that writes a coverage key. No coverage key reads a
+per-fund fee in any case — `feeCodesPct` is Schedule C service-code coverage,
+and `tkExact`/`tkComparable` load `fund-er.js` and `sec-tickers.js` to ask the
+TICKER resolver. `PARSER_VERSION` stays 203 and no store is written. A `dl`
+rise means the EFAST2 bucket grew; anything else moving is the thing to
+investigate.
+
+**STILL OPEN AND NAMED:** the 319 candidate rows that keep their fee are the
+residue test working, not a gap; the 5 rows whose RAW name says `contract` and
+whose CLEANED name does not are still unreachable by any NAME condition (the
+gate reads the cleaned name) and remain the owner-gated item's; and the **two
+OCR-damaged `strate gic` rows want a NAME repair**, which is a different class.
+
 ## 2026-10-16 (05:1xZ) — THE CAPTION-WELD STRIP IS REFUTED BY ITS OWN DIFFERENTIAL AND MUST NEVER SHIP: THE CAPTION IS LOAD-BEARING, AND REMOVING TRUE TEXT WOULD PUBLISH TWO FALSE CLAIMS ON 180 ROWS
 
 **My own queue entry of two hours earlier prescribed this strip from its member

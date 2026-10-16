@@ -783,3 +783,26 @@ shares` ×13, `Institutional Class shares` ×9), rotations of a real fund name
 (`Class R6 Fidelity Mid Cap Index Fund`, `Institutional Class Invesco Developing
 Markets Fund Class R6`), and **real names that must be spared** (`Class B Common
 Stock` ×5 — employer stock's own class). Split before any arm.
+
+### SHIPPED 2026-10-16 06:5xZ — the contract designation as an ACRONYM (223 rows / 683,649 ppl / $2.96B)
+
+`annuityFeeIsGuaranteeOnly`'s gate was the literal word `contract`, and a GIC
+is a Guaranteed Investment **Contract** while a SAGIC is a Separate Account GIC
+— so `SAGIC Diversified Bond II` states the designation and was not being
+asked. One disjunct (`GIC_ACRONYM`). **FEE WITHDRAWN 223 rows / 216 plans /
+683,649 ppl / $2,959,846,571; gained 0, changed 0; `tk`/`star`/`shownType`/
+`name` all 0; 103 rows at >=10% of their own menu; 0 withdrawals publish a
+ticker; control 20,737 non-candidates differing on 0.** Internal witness: the
+same product filed 304 ways, the 118 rows whose filer TYPED the vehicle already
+published no fee and the 186 blank-typed published 0.35 — the eighth blank-type
+instance. In scope by the owner-gated item's own stated boundary (rows carrying
+the filing's own word `contract` are "the condition the project already decided
+on"). `docs/accuracy-log.md` 2026-10-16 (06:5xZ).
+
+**Named residue, none of it a gap in this arm:** the 319 candidate rows that
+keep their fee are the residue test working; the 5 rows whose RAW name says
+`contract` and whose CLEANED name does not stay unreachable by any NAME
+condition; and **two OCR-damaged rows (`V anguard A trate gic Sm all-Cap Equity
+Fund`, `Lazard Inte rnational Strate gic Equity Fund`) want a NAME repair** —
+a space inside `strategic` MANUFACTURES the token, and the 0.35 they publish
+today is an accident of the same damage.
