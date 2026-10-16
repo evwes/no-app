@@ -60596,3 +60596,51 @@ appears in neither `build-data.yml`'s six-path push filter nor `site-test.yml`'s
 re-derived AFTER the regeneration, because taking it before is exactly how
 `site-test #217` went red on the stamping gate and SKIPPED the Playwright
 install, the smoke test and the map test behind it.
+
+### 2026-10-16 16:2xZ — THE CAPITAL GROUP RESIDUE MEASURED THROUGH THE PAGE: 18,045,367 readers, and 79% of it is the OWNER'S question rather than the arm's
+
+**Why this measurement and not another.** Two hours earlier I had queued an item
+off a one-arm probe and had to withdraw it, so the residue of the house this
+project has shipped four arms for was re-measured the only honest way: through
+`renderRow`, over every published+served row whose cleaned name OPENS with a
+Capital Group house run, asking what a reader actually sees.
+
+**134,789 such rows reach readers. 74,341 (55.2%) publish a symbol and 60,448
+publish NONE — 14,540 plans / 18,045,367 participants / $142,698,909,156.**
+
+***AND THE SPLIT IS THE RESULT, because it tells you whose problem it is.***
+Keyed on whether the filed name STATES a Capital Group class designation at all:
+
+| | rows | plans | participants | $ |
+|---|---|---|---|---|
+| states a class — **this arm's coverage** | **15,235** | 4,898 | **4,652,034** | $25.2B |
+| states NONE — **the owner-gated COMPARABLE decision** | **45,213** | 10,344 | **14,341,395** | $117.5B |
+
+**So 79% of the readers behind the biggest house's blank cells are not waiting on
+a parser or a resolver: they are waiting on one product decision** — whether the
+page publishes an asterisked *"comparable registered fund, not the one held"*
+where the filing names a fund and no share class. The shape histogram says it
+plainly: `<vintage> target date retirement fund` ×6,649, `<vintage> target date`
+×2,555, `new world fund` ×1,252, `europacific growth fund` ×1,175, `american
+balanced fund` ×912, `new perspective fund` ×812, `growth fund of america` ×423.
+Every one is the fund named correctly with the class left out, and this table
+ships assertions only. *A residue can be large and still be nobody's bug.*
+
+**The genuinely open half is 4.65M readers and its shapes are nameable:**
+`<vintage> t date r6` ×1,008, `<vintage> trgt dte rtm r6 fd` ×665, `<vintage>
+targ dateret r6` ×513, `<vintage> target date r6` ×511, `<vintage> tar ret r6`
+×502, `trgtdt <vintage> r6` ×419, `<vintage> trgt date retire` ×428. Several of
+these state the class AND contract the product, which is what the shipped arm is
+for — so each needs a DIAGNOSED CAUSE before anything is written, and the two
+causes already on this record are a filer OMITTING a series word
+(`retirement`, which the ordered relation cannot excuse) and the 2010-2025
+vintages the registry carries only as `… Target Date Retirement INCOME Fund`.
+*Per the operating protocol an item does not rest as unknown; the next cycle
+attributes these shapes to a cause each, rather than widening the relation and
+measuring afterwards.*
+
+**NOT SHIPPED, deliberately.** The structural relaxation these shapes point at —
+letting trailing series words go unconsumed — is the one this record already
+names as carrying cross-fund exposure, and the 12:3xZ entry on the dropped
+`Index` token is what that exposure looks like when it goes wrong. A 4.65M-reader
+prize does not change which evidence a widening needs.

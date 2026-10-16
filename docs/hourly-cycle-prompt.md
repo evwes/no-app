@@ -1052,3 +1052,28 @@ turn is active, so one ship costs 15+ polling turns; runners here are free and
 unlimited (measured `billable.UBUNTU.total_ms = 0`). That is the single biggest
 constraint on this loop's throughput.
 `docs/accuracy-log.md` 2026-10-16 (15:5xZ).
+
+### 2026-10-16 16:2xZ — the Capital Group residue, re-measured THROUGH THE PAGE and SPLIT
+
+**134,789 house rows reach readers; 74,341 (55.2%) publish a symbol, 60,448
+publish NONE — 14,540 plans / 18,045,367 ppl / $142.7B.** Split by whether the
+filed name states a class at all:
+- **states a class — THIS ARM'S COVERAGE: 15,235 rows / 4,898 plans /
+  4,652,034 ppl / $25.2B.** Shapes: `<vintage> t date r6` ×1,008, `<vintage>
+  trgt dte rtm r6 fd` ×665, `<vintage> targ dateret r6` ×513, `<vintage> target
+  date r6` ×511, `<vintage> tar ret r6` ×502, `trgtdt <vintage> r6` ×419.
+- **states NONE — the OWNER-GATED comparable decision: 45,213 rows / 10,344
+  plans / 14,341,395 ppl / $117.5B.** `<vintage> target date retirement fund`
+  ×6,649, `new world fund` ×1,252, `europacific growth fund` ×1,175 — the fund
+  named correctly with the class left out, where the honest answer is an
+  asterisk and this table ships assertions only.
+**So 79% of the readers behind the biggest house's blanks are waiting on one
+product decision, not on code.** *A residue can be large and still be nobody's
+bug.*
+**NEXT, and the protocol requires it in this order:** attribute each open shape
+to a CAUSE (the two already recorded are a filer omitting a series word, and the
+2010-2025 Income rename) BEFORE touching the relation. The widening these shapes
+point at — trailing series words unconsumed — is the one carrying the recorded
+cross-fund exposure, and a 4.65M-reader prize does not change the evidence it
+needs.
+`docs/accuracy-log.md` 2026-10-16 (16:2xZ).
