@@ -957,3 +957,28 @@ never a second copy), add a relation fallback for the class where equality
 fails, require a UNIQUE class match, assert the new family. Reach **15,763 rows
 / 2,161 plans / 2,802,386 ppl / $45.2B**. Needs a 20-minute regen + key diff +
 tether. `docs/accuracy-log.md` 2026-10-16 (11:4xZ).
+
+### 2026-10-16 14:0xZ — SHIPPED: the Fidelity class contraction, 2,184,395 participants
+
+**13,183 published+served rows / 2,935 keys / 1,436 acks / 1,447 plans /
+2,184,395 ppl / $40,035,844,309 gain an ASSERTED symbol** — the largest coverage
+ship on this record by participants. `FID FDM IDX 2050 IPR` published nothing
+while `Fidelity Freedom Index 2050 Premier` resolved two rows away.
+`lib-af-abbrev.mjs` is now parameterised by a FAMILY (registry marker, house
+phrase, skippable series words, class-by-relation) with `buildAfIndex` kept as a
+thin wrapper; Capital Group preserved at **0 differences over 644,064 distinct
+strings**. Ticker lost 0 / swapped 0, asterisk 0, FEE 0, name 0, shownType 0,
+control 20,726 rows differing on 0; table ADDED 2,935 / REMOVED 0 / CHANGED 0,
+all attributed, zero drift. `site-test` #223 success on `2a5b30a1`.
+**PRE-REGISTERED: `tkExact` 40.23 -> 40.96, nothing else on the 35-key line** —
+measured by running `audit-data` itself against the new table and diffing its
+computed line key by key.
+**STILL OPEN from it:** 6,510 of the arm's 6,572 `K`-class rows reach a
+COMPARABLE from the base matcher, dropped at the call site before this arm runs.
+Promoting a comparable is a different claim from filling a blank (the Admiral
+arm's 383-cell boundary) and is asserted as an ABSENCE in the tether.
+**NEXT, by participants and ungated:** the `American Fund` SINGULAR house, 603
+unresolved rows / 325,394 ppl, blocked by two things at once (the singular house
+and a reordered vintage); then the opaque-issuer-code class (166 rows / 597,335
+ppl, screen contaminated — re-key it before sizing).
+`docs/accuracy-log.md` 2026-10-16 (14:0xZ).

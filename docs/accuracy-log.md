@@ -60263,3 +60263,128 @@ rather than an investigation: a two-valued band plus a named falsifier turns
 keys are the half of the claim that a single moving figure cannot establish.
 Recorded beside the figure so the next reader of `tkExact` does not price the
 metric fix as coverage.
+
+### 2026-10-16 14:0xZ — A FIDELITY CLASS WORD THE FILER CONTRACTED: 13,183 rows / 2,184,395 participants gain the symbol of the class the filing states
+
+**What was wrong.** `FID FDM IDX 2050 IPR` published **no ticker at all** while
+`Fidelity Freedom Index 2050 Premier` resolved FRLPX two rows away in another
+plan's menu. The Freedom ladder is filed in four spellings and the class in
+seven, and the shipped abbreviation arm — `lib-af-abbrev.mjs`, built for Capital
+Group — could read the SERIES half of every one of them and not the CLASS.
+
+**The change.** `lib-af-abbrev.mjs` is parameterised by a FAMILY: the registry
+marker that derives it, the house phrase the filing must open with, the series
+words a filer may omit, and whether the class may be matched BY THE RELATION as
+well as by normalised equality. `buildAfIndex` and `assertAfFamily` stay as thin
+wrappers, so there is exactly ONE copy of each shipped predicate — the rule this
+record has paid for four times. Capital Group behaviour is preserved **by
+measurement and not by construction alone**: asked over all **644,064 distinct
+strings in the store** against HEAD's own copy of the module, **0 differences**
+on 7,784 answers.
+
+**Delivered: 13,183 published+served rows / 2,935 keys / 1,436 acks / 1,447
+plans / 2,184,395 ppl / $40,035,844,309**, measured as a DIFFERENTIAL through
+BOTH copies of `renderRow` with one renderer per table — ticker lost 0 /
+swapped 0, **asterisk moved 0**, FEE 0, name 0, shownType 0, and a 20,726-row
+non-candidate control differing on **0**. Table 12,408 -> **15,343 keys, ADDED
+2,935 / REMOVED 0 / CHANGED 0**, every added key attributed to this arm, so
+**zero drift**. Largest by readers: Mayo Clinic (114,636 ppl) on five rows to
+$284M; Plan Professionals (65,882) on `… Prm Fund`; Comcast (128,897) on the
+Managed Retirement K6 ladder. Seeded uniform draw **26 of 26 correct** with each
+filed TYPE printed, and all 16 (route, class) pairs read.
+
+**WHAT IS FIDELITY'S IS THE CLASS, NOT THE RELATION — and that is the reusable
+half.** Capital Group's designations are CODES that survive normalisation
+(`R6` -> `Class R-6`); Fidelity's are WORDS filers contract, and
+`classKey("Institutional Premium Class")` is `institutionalpremium`, which a
+filed `IPR` can never equal. Under the relation the tokens resolve and **STAY
+DISTINCT rather than needing a guard**: `IPR` reaches Institutional Premium and
+NOT Premier, because the `p` of `premier` is a mandatory first letter the `i`
+cannot match, and neither reaches `Premier II Class` because the `ii` is left
+unconsumed. The conflation that would have published the wrong class as fact on
+~6,000 rows is **absent by construction**, measured over all 70 registered
+Freedom series.
+
+**TWO CONDITIONS THE RELATION NEEDS, each with a LIVE single-protection case.**
+(a) **A STATED designation refuses the relation.** A bare `K` is `Class K`,
+`absorbs("k", ["k6"])` is true, and the 14 `Fidelity Advisor Freedom` series
+register `Class K6` and NO `Class K` — so the relation alone would read a filed
+`K` as K6 and publish a different class's ticker. The rule is not a blocklist:
+if the run EQUALS a class key anywhere in the family the filer stated that
+class, and a series not registering it must ABSTAIN rather than be offered the
+nearest one. (b) ***A TRUNCATION IS A PREFIX AND AN ABBREVIATION NEED NOT BE.***
+`IN` resolves Investor **correctly by the relation's own definition** and is
+equally a field-width cut of INSTITUTIONAL PREMIUM, so a run that is also a
+prefix of a DIFFERENT class the same series registers abstains. It refuses `IN`
+(74 rows) and `PREMIE` (572) and costs nothing on `IPR`, `IP`, `INSTP`, `INV` or
+`PRM`.
+
+***I WROTE "no length floor is needed" INTO THE SHIPPED COMMENT AND IT WAS
+FALSE.*** The prefix rule felt like a strict improvement on the two-character
+floor I had shipped an hour earlier — it refuses `PREMIE` at six characters,
+which the floor cannot see, and admits `IP`, which the floor wrongly refused —
+so I wrote that no floor was needed beside it. Measured: with the floor removed
+**34 single-character runs reach an answer** over the whole live family, `P` ->
+Premier in the 28 Freedom series registering no Premier II and `E` -> ETF Class.
+**The two conditions catch different things** — the floor refuses a run too thin
+to be anyone's abbreviation, the prefix rule a run thick enough and still
+ambiguous — and both stay. *A condition that supersedes another on the cases you
+have in mind may not supersede it on the cases the data has.*
+
+**THE ATTESTATION EXEMPTION IS NOT TAKEN, AND THAT IS A MEASUREMENT RATHER THAN
+A JUDGMENT.** The structural argument that exempts the Capital Group arm from
+`registrantAttested` — the guard asks whether the registrant's vocabulary
+appears in the FILED spelling, and this arm's whole subject is a filed spelling
+that abbreviates it — applies word for word. So the exemption was SHIPPED FIRST
+with the generator asking the guard anyway and tallying the refusals it would
+have made: **0 rows / 0 keys of 13,183**. Fidelity's registrant names carry
+`fidelity` and `attestedAnySpelling` accepts even the contracted `FID`, so the
+exemption licensed nothing; it is removed, the guard runs, and the two
+generations are **proven equivalent at ADDED 0 / REMOVED 0 / CHANGED 0** rather
+than argued. ***Ship a licence with its own cost meter and the next cycle can
+delete it on evidence instead of inheriting it on reasoning.***
+
+**The house phrase is ONE word, which is weaker than `american funds`, so it was
+checked by READING — the `AMF` method and not the `tiaa` one.** All **21**
+leading runs the phrase accepts anywhere in the store were enumerated; the
+eleven SHORT ones (`f`, `ft`, `fit`, `fl`, `fd`, `fe`, `fei`, `fi`, `flt`,
+`fdl`, `fdlty`, where **`FT` is Franklin Templeton's own abbreviation**) hold
+**316 distinct names on which the arm answers ZERO**. The PRODUCT match refuses
+them, which is a structural refusal rather than a blocklist.
+
+**The per-series class uniqueness condition is INERT on today's registry and is
+kept, labelled.** Over the whole live family **0** tails derived from class words
+match two classes of one series, so no real single-protection case exists; it is
+retained because the inertness is a property of `sec-funds.json`, which
+refreshes from the SEC, and `af-abbrev-test.mjs` carries a CONSTRUCTED series
+(`Premier Class` beside `Premium Class`, both reachable by `prm`) so the
+condition is tested on the nearest reachable shape rather than claiming a live
+one. Same treatment as the sliced `pooledVehicleRow` call.
+
+**And the regeneration is now 30 minutes of CPU, not 20** — the second
+207-series DP loop per unresolved spelling is a real cost, and the figure this
+record carried was measured before it existed.
+
+**RESIDUE, named and measured: 6,510 of the arm's 6,572 `K`-class rows reach a
+COMPARABLE from the base matcher**, which the call site drops before this arm is
+reached, so the arm's own tally reads `equal:k` 62 where my population screen
+read 6,572. Promoting a comparable to an assertion is a different claim from
+filling a blank — the boundary the Admiral arm's own 383 comparable cells
+already sit behind — and it is ASSERTED AS AN ABSENCE in `sec-tickers-test.mjs`
+so it cannot be mistaken for a gap here. ***A reach measured on the arm alone is
+not a reach measured through the chain the arm sits in.***
+
+**Tethered.** `af-abbrev-test.mjs`: 17 must-fire, 30 must-not-fire, **12
+mutations each failing by name**, 7 invariants (including that the two families
+are DISJOINT, that `buildAfIndex` agrees with the generalised builder, and that
+Institutional Premium and Premier do not resolve to the same symbol).
+`sec-tickers-test.mjs` pins the four contractions against the COMMITTED table
+and asserts they resolve to four DIFFERENT symbols. `PARSER_VERSION` stays 203;
+one surface by construction. `site-test` #223 **success** on `2a5b30a1`.
+
+**Prevention.** Two claims of mine were refuted by my own instruments before
+they could ship — the floor, and the exemption — and both were refuted because
+the measurement was built to PRINT the cost of a condition rather than to
+confirm it. The habit to keep is the second one: when a change takes a licence
+(skipping a guard, relaxing a floor), make the program tally what the licence is
+carrying, and read the tally before believing the argument for it.

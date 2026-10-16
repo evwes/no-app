@@ -955,6 +955,29 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
+**PRE-REGISTERED 2026-10-16 14:0xZ for the next merge after the FIDELITY CLASS
+CONTRACTION ship, which is `2a5b30a1` — `tkExact` **40.23 -> 40.96**, and
+NOTHING ELSE MOVES.** The arm is build-side and writes no store, but it added
+**2,935 keys** to `sec-tickers.js` and `tkExact` reads that table, so this is
+the one coverage key it can touch.
+**MEASURED BY RUNNING THE METRIC ITSELF, which is stronger than deriving it in
+the metric's population:** `audit-data.mjs` was run over the committed store
+with the new table and its computed line diffed key by key against the trail's
+last line — **exactly ONE of the 35 keys moves.** `tkComparable` **3.38**
+unchanged, which is the structural control: a key is written only where the page
+resolved NOTHING, so no row can cross the comparable/asserted line.
+`tkSampled` 87,106, `tkShare` 25.12, confident 60,182, match 43,312, vesting
+53,023, vestQuote 5,373, entries 65,495, lineups 59,833, rk 63,916, HIGH 4, WARN
+556, overshoot 370, overshootTrust 12, aggRow 114, `dl` 93 and **`pv` 203** all
+unchanged; a `dl` rise means the EFAST2 bucket grew. Anything else moving is the
+thing to investigate — and a `tkExact` outside 40.95-40.97 means the store moved
+under the table, which it does hourly, rather than that the arm reached further.
+
+
+**AND THE BLOCK BELOW IS SUPERSEDED BY THAT REGISTRATION** — its closing "SO
+THERE IS NOTHING PRE-REGISTERED AND PENDING" is true only until the next ship,
+and leaving it up makes this file assert both.
+
 **DELIVERED AND VERIFIED BY #650 (`success`, 13:34-13:4xZ on `a7ec3a88`, data
 commit `a3e41f11`) — THE CONTRACT-BASIS REGISTRATION HELD IN THE STRONGEST FORM
 AVAILABLE: the line is BYTE-IDENTICAL to its predecessor on all 35 keys WITH
