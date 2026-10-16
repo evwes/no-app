@@ -910,3 +910,26 @@ the series words), and the vintage-uniqueness safety argument is FALSE — 3
 series carry `Retirement` with no vintage. The real change is a structural
 relaxation letting TRAILING series words go unconsumed, which carries the
 recorded cross-fund exposure. `docs/accuracy-log.md` 2026-10-16 (09:4xZ).
+
+### 2026-10-16 10:4xZ — NEXT BUILD, briefed: the Fidelity Freedom class-token contraction
+
+**ASSERTABLE population: 15,763 published+served rows / 2,161 plans /
+2,802,386 ppl / $45,220,661,920** — Freedom ladder rows that STATE a class, are
+not pooled-typed, and publish no symbol (15,268 of them publish a FEE, so this
+is coverage, not a false claim).
+**The gap is a CLASS TOKEN and nothing else**, proved by the 10:07 draw: Wand
+Newco 3 publishes `Fidelity Freedom Index 2050 **Premier**` -> FRLPX correctly,
+while `FID FDM IDX 2050 IPR` resolves nothing. Destinations verified in
+`sec-funds.json` (FFOPX Institutional Premium, FRLPX Premier, FNSBX Class K,
+FZTKX K6).
+**Tokens:** IPR 5,774 · K 4,988 · PRM 549 · K6 489 · PREMIE 275 · INV 250 ·
+INSTP 185. **They are NOT interchangeable:** IPR/INSTP = Institutional Premium
+(FFOPX), PRM/PREMIE = Premier (FRLPX) — conflating them publishes the wrong
+class as fact on ~6,000 rows.
+**Three hazards, all visible in the data:** `Freedom BLEND` is a third ladder and
+a collective trust (the whole pooled bucket, correctly blank); `Fidelity ADVISOR
+Freedom` is a separate series sharing a bare `K6`, so that token must abstain;
+and the registry's class column holds a SERIES NAME on one row.
+**Also corrected:** last hour's "FID family 36,684 rows / 49.4%" is the
+CONTRACTED spellings only — `/^FID\b/` excludes `FIDELITY`, and the house is
+202,459 rows. `docs/accuracy-log.md` 2026-10-16 (10:4xZ).

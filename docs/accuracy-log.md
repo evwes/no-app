@@ -7,6 +7,75 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-16 (10:4xZ) — THE BIGGEST COVERAGE ITEM ON THE BOARD, DECOMPOSED AND MADE DECISION-READY: THE FIDELITY FREEDOM LADDERS SPLIT FOUR WAYS, AND THE ASSERTABLE HALF IS 15,763 rows / 2,161 plans / 2,802,386 ppl / $45,220,661,920 — WITH THE DESTINATIONS VERIFIED AND THE GAP NARROWED TO A CLASS TOKEN
+
+***FIRST, A CORRECTION TO MY OWN FIGURE FROM ONE HOUR AGO: the "FID family:
+36,684 rows, 49.4% resolving" is the CONTRACTED spellings only, not the house.***
+My screen was `/^FID\b/i`, and `FID` followed by `E` is no word boundary, so
+**`FIDELITY …` was excluded entirely** — the house is **202,459** rows. The
+tell was arithmetic: a supposed SUBSET of that family measured 43,386. *A regex
+boundary silently defined the population*, which is the recorded
+character-shape failure in its quietest form — nothing was wrong except the
+label, and the label was the claim.
+
+**THE FREEDOM LADDERS (both spellings), rows publishing NO ticker today, split
+by whether a CLASS IS STATED — because a row stating none can only ever earn a
+COMPARABLE, which is the owner's call, while a row stating one is assertable:**
+
+| | rows | plans | ppl | $ | publish a FEE |
+|---|---|---|---|---|---|
+| **CLASS STATED, not pooled — ASSERTABLE** | **15,763** | **2,161** | **2,802,386** | **$45,220,661,920** | 15,268 |
+| class stated but POOLED-typed | 1,014 | 102 | 565,168 | $20,578,757,522 | 13 |
+| NO class stated — the gated comparable half | 23,782 | 2,763 | 3,495,102 | $78,967,817,840 | 23,507 |
+| no class AND pooled | 2,827 | 258 | 1,945,389 | $78,905,612,531 | 1 |
+
+**89% of these rows already publish a FEE, so this is COVERAGE and not a false
+claim** — the symbol is missing beside a fee the pattern table supplies.
+
+**THE DESTINATIONS ARE REGISTERED AND UNAMBIGUOUS, read out of
+`sec-funds.json`:** `Fidelity Freedom Index 2050 Fund` registers FIPFX
+(Investor), **FFOPX (Institutional Premium)**, FRLPX (Premier), FAVQX (Premier
+II); `Fidelity Freedom 2050 Fund` registers FFFHX, **FNSBX (Class K)**, FZTKX
+(K6), FFPFX (Premier).
+
+***AND THE 10:07 DRAW LANDED ON THIS FAMILY'S WORKING CASE, WHICH NARROWS THE
+GAP TO ONE THING.*** Wand Newco 3 (42,374 ppl) publishes `Fidelity Freedom Index
+2050 **Premier**` -> **FRLPX at 0.12**, correctly, and five sibling vintages
+likewise (FNIPX, FQIPX, FPIPX, FMKPX, FTYPX). **So the series resolves, the
+vehicle resolves and the class resolves — when the class is SPELLED OUT. The
+same ladder contracted (`FID FDM IDX 2050 IPR`) resolves nothing.** *The gap is
+a CLASS-TOKEN contraction and nothing else*, which is a far narrower claim than
+"the contraction class" and is the strongest form of evidence available: one
+house, one series, one class concept, two spellings, two outcomes.
+
+**THE CLASS TOKENS, counted:** `IPR` 5,774 · `K` 4,988 · `PRM` 549 · `K6` 489 ·
+`PREMIE` 275 · `INV` 250 · `INSTP` 185. ***And they are NOT interchangeable —
+this is the hazard to pin:*** `IPR`/`INSTP` abbreviate **Institutional
+Premium** (FFOPX) while `PRM`/`PREMIE` abbreviate **Premier** (FRLPX), two
+registered classes with different tickers and different costs. An arm that
+treats them as one would publish the wrong class as fact on 6,000 rows — the
+owner-gated wrong-share-class defect arriving by a new route.
+
+**THREE HAZARDS FOR THE BUILD, each already visible in the data rather than
+imagined:**
+1. **`Fidelity Freedom BLEND` is a THIRD ladder and a COLLECTIVE TRUST.** It is
+   the whole of the pooled buckets (`FID FRDM BLND 2030 Q`, `Fidelity Freedom
+   Blend 2055`), it publishes no symbol and no fee today, and that is correct —
+   the existing vehicle gate catches it, so the arm must not reach past it.
+2. **`Fidelity ADVISOR Freedom 2050 Fund` is a separate registrant series** with
+   its own K6/A/C/M/I/Z classes. A strict relation refuses it for want of a
+   token for `Advisor`, which is the strictness doing the work — but a bare
+   `K6` is registered on BOTH, so that token is ambiguous and must abstain.
+3. **The registry's class column holds a SERIES NAME for one row** (`FFFHX |
+   "Fidelity Freedom 2050 Fund"`), the non-uniform-column trap this record
+   already carries. An arm reading `className` as a class must handle it.
+
+**Nothing built this cycle, deliberately: a Fidelity-family arm is the
+313-line `lib-af-abbrev.mjs` shape plus family detection, a 20-minute
+`sec-tickers.js` regeneration and a tether, and a half-built arm is worth less
+than a brief with verified destinations.** What the next cycle inherits is the
+population, the destinations, the exact blocker and the three hazards.
+
 ## 2026-10-16 (09:4xZ) — THE CONTRACTION FAMILIES, MEASURED THROUGH THE PAGE RATHER THAN GUESSED: SIX FAMILIES, 57,586 published+served rows, AND A ONE-TOKEN FIX REFUTED BY TWO OF MY OWN ASSERTIONS BEFORE A POPULATION WAS MEASURED
 
 **The register says the contraction class "needs the registry, not a wider
