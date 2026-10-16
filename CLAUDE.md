@@ -959,8 +959,28 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
-**SUPERSEDED BY THE REGISTRATION BELOW — a second ship landed in the same
-table one hour later, so 40.96 is a number that can no longer occur.**
+**SUPERSEDED TWICE OVER — 40.96 and 41.02 are both numbers that can no longer
+occur, because a THIRD ship landed in the same table. Read the 18:3xZ
+registration below it.**
+
+**PRE-REGISTERED 2026-10-16 18:3xZ for the next merge after the FIDELITY CLASS
+CONTRACTION, the VINTAGE-POSITION LIFT **and** the COMPARABLE-PRECEDENCE
+override — `tkExact` **40.23 -> 41.32**, and NOTHING ELSE MOVES.** All three are
+build-side and write no store, but between them they took `sec-tickers.js` from
+12,408 to **16,963 keys** (ADDED 1,216 / REMOVED 0 / CHANGED 0 on the last
+regeneration alone, every diff purely additive), and `tkExact` reads that table,
+so it is the one coverage key any of them can touch.
+**MEASURED BY RUNNING THE METRIC ITSELF over the committed store with the new
+table, with its computed line diffed KEY BY KEY against the trail's last line:
+exactly ONE of the 35 keys moves.** `tkComparable` **3.38** unchanged, which is
+the structural control — the generator ships assertions only and writes a key
+only where the page resolved NOTHING, so no row can cross the
+comparable/asserted line. `tkSampled` 87,106, `tkShare` 25.12, confident 60,182,
+match 43,312, vesting 53,023, vestQuote 5,373, entries 65,495, lineups 59,833,
+rk 63,916, **HIGH 4**, WARN **556**, overshoot 370, overshootTrust 12, aggRow
+114, `dl` 93 and **`pv` 203** all unchanged; a `dl` rise means the EFAST2 bucket
+grew. A `tkExact` outside 41.31-41.33 means the store moved under the table,
+which it does hourly, rather than that an arm reached further.
 
 **PRE-REGISTERED 2026-10-16 15:0xZ for the next merge after the FIDELITY CLASS
 CONTRACTION **and** the VINTAGE-POSITION ship — `tkExact` **40.23 -> 41.02**, and
