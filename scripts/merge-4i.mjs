@@ -1778,6 +1778,33 @@ function stripIssuerLead(iss) {
     }
   } catch { /* plans-all absent locally — see the note above */ }
   let weld = 0, caps = 0, rot = 0, ciph = 0, bang = 0, iweld = 0, vrep = 0, srep = 0, wrap = 0, noun = 0, cus = 0;
+  /* EVERY NAME REPAIR INVALIDATES A BUILD-TIME TICKER KEY, AND NOTHING SAID SO
+   * — 2026-10-16. `sec-tickers.js` is keyed on `(issuer, nameRaw)`, the name AS
+   * STORED, so any arm in this chain that rewrites a name makes that row's key
+   * unreachable until the table is regenerated, and the row's published symbol
+   * goes blank in the meantime. `sec-tickers-stamp-test` cannot see it: that
+   * gate fingerprints the DISPLAY slice (app.js's prologue and fund-er.js) and
+   * this file is not in it, by design, because hashing a file that changes
+   * every other day would demand a 20-minute regeneration for a comment.
+   *
+   * So the remedy is not a wider fingerprint but a NUMBER: each arm reports how
+   * many of its repairs landed on a row the table had an answer for. The newest
+   * arm declines those outright, so it reports 0 BY CONSTRUCTION and the tally
+   * is the control on that too. *What worked on the hardest defect on this
+   * record was not a better theory but making the program SAY what happened.*
+   *
+   * MEASURED, AND WITH A POSITIVE CONTROL, because a check that prints 0 on a
+   * quiet store has not been tested:
+   *   - on the live store every arm reports **NONE**, so the six older arms are
+   *     not currently costing a key. That is a fact about today's store and not
+   *     a property of those arms — their counters are prospective.
+   *   - neutering refusal (3) in a copy makes this arm repair the keyed rows it
+   *     normally declines, and the tally then reads **`cus 7`** with the `!!`
+   *     note. So the counter fires, names the right arm, and the 7 are exactly
+   *     what that refusal protects.
+   *   - and the arm CONVERGES: three merges in a row over one store repair 16,
+   *     then 0, then 0. */
+  const keyLoss = { vrep: 0, srep: 0, weld: 0, caps: 0, rot: 0, wrap: 0, noun: 0, cus: 0, ciph: 0, bang: 0 };
   const weldAcks = new Set(), capsAcks = new Set(), rotAcks = new Set(), ciphAcks = new Set(), bangAcks = new Set();
   const wrapAcks = new Set(), nounAcks = new Set(), cusAcks = new Set();
   const iweldAcks = new Set(), vrepAcks = new Set(), srepAcks = new Set();
@@ -1806,13 +1833,16 @@ function stripIssuerLead(iss) {
          * `continue`s. The two are independent — `weldRepair(f.name)` reads only
          * `f.name` and this reads only `f.iss` — and the maps are snapshots taken
          * before the loop, so neither can see the other's edits. */
+        /* asked BEFORE any arm rewrites the name, which is the only moment the
+         * question is answerable: the key is composed from the STORED name. */
+        const hadKey = !!(secKeyed && secKeyed(f));
         const irep = weldRepair(f.iss, ISS_EV);
         if (irep) { f.iss = irep; iweld++; iweldAcks.add(ack); }
         /* the row's own value welded into its name — asked here, outside the
          * chain, because its evidence is `f.value` and not the name maps, and
          * because the strip can only make the remaining name more repairable */
         const vr = valueRepair(f);
-        if (vr) { f.name = vr; vrep++; vrepAcks.add(ack); }
+        if (vr) { f.name = vr; if (hadKey) keyLoss.vrep++; vrep++; vrepAcks.add(ack); }
         /* the welded SHARE COUNT, asked beside its sibling and outside the
          * chain for the same reason: its evidence is `f.value`, and stripping
          * the count can only make the remaining name more repairable. Asked
@@ -1820,20 +1850,20 @@ function stripIssuerLead(iss) {
          * figure first; the two regexes are disjoint, since this one requires a
          * unit word after the number and that one requires end-of-string. */
         const sr = shareRepair(f);
-        if (sr) { f.name = sr; srep++; srepAcks.add(ack); }
+        if (sr) { f.name = sr; if (hadKey) keyLoss.srep++; srep++; srepAcks.add(ack); }
         const rep = weldRepair(f.name);
-        if (rep) { f.name = rep; weld++; weldAcks.add(ack); continue; }
+        if (rep) { f.name = rep; if (hadKey) keyLoss.weld++; weld++; weldAcks.add(ack); continue; }
         /* disjoint from the arm above by construction — an all-caps token has
          * no case transition for SEAM to find — so the order cannot matter, and
          * `continue` says so rather than relying on it */
         const crep = capsRepair(f.name);
-        if (crep) { f.name = crep; caps++; capsAcks.add(ack); continue; }
+        if (crep) { f.name = crep; if (hadKey) keyLoss.caps++; caps++; capsAcks.add(ack); continue; }
         /* the rotation is a whole-name REORDER where the two above are
          * per-token repairs, so it is asked last and only of a name neither
          * touched; the attestation maps are built from the stored names, so a
          * name repaired this run is attested in its damaged form either way */
         const rrep = rotRepair(f.name);
-        if (rrep) { f.name = rrep; rot++; rotAcks.add(ack); continue; }
+        if (rrep) { f.name = rrep; if (hadKey) keyLoss.rot++; rot++; rotAcks.add(ack); continue; }
         /* the self-wrapping duplication, asked after the rotation because both
          * are whole-name operations and this one is the narrower claim: the
          * rotation MOVES a designation the registry names, where this one
@@ -1841,7 +1871,7 @@ function stripIssuerLead(iss) {
          * from all three arms above rather than assumed — of the 93 rows this
          * repairs, 0 are claimed by any of them. */
         const wrep = wrapRepair(f.name);
-        if (wrep) { f.name = wrep; wrap++; wrapAcks.add(ack); continue; }
+        if (wrep) { f.name = wrep; if (hadKey) keyLoss.wrap++; wrap++; wrapAcks.add(ack); continue; }
         /* the leading unit noun, asked after every arm above because it is the
          * only one that removes LEADING FURNITURE rather than repairing the
          * name's own characters: the arms above all need the damaged form
@@ -1850,7 +1880,7 @@ function stripIssuerLead(iss) {
          * exactly where they were. Measured disjoint rather than assumed — of
          * the rows this repairs, 0 are claimed by any arm above it. */
         const nrep = nounRepair(f.name);
-        if (nrep) { f.name = nrep; noun++; nounAcks.add(ack); continue; }
+        if (nrep) { f.name = nrep; if (hadKey) keyLoss.noun++; noun++; nounAcks.add(ack); continue; }
         /* the leading SECURITY IDENTIFIER, asked after every arm above for the
          * reason the unit noun is: it removes LEADING FURNITURE rather than
          * repairing the name's own characters, and a nine-character
@@ -1859,14 +1889,14 @@ function stripIssuerLead(iss) {
          * disjoint rather than assumed — of the rows this repairs, 0 are
          * claimed by any arm above it. */
         const curep = cusipRepair(f, cusSibs, cusSponsors);
-        if (curep) { f.name = curep; cus++; cusAcks.add(ack); continue; }
+        if (curep) { f.name = curep; if (hadKey) keyLoss.cus++; cus++; cusAcks.add(ack); continue; }
         /* asked LAST and only of a name no arm above touched. The three above
          * all require the damaged form to be attested or unattested as ASCII
          * words; a ciphered run contains a control character, which `whole`
          * and `tok` key on as a word boundary, so none of them can have fired
          * on one. The `continue` states that rather than relying on it. */
         const xrep = cipherRepair(f.name);
-        if (xrep) { f.name = xrep; ciph++; ciphAcks.add(ack); continue; }
+        if (xrep) { f.name = xrep; if (hadKey) keyLoss.ciph++; ciph++; ciphAcks.add(ack); continue; }
         /* asked LAST and only of a name no arm above touched. Measured as
          * disjoint rather than assumed: of the 393 rows this arm repairs, 0
          * are claimed by any arm above it, because `!` is a non-letter and the
@@ -1875,7 +1905,7 @@ function stripIssuerLead(iss) {
          * class designation this population does not carry. The `continue`
          * chain states the order rather than relying on it. */
         const brep = bangRepair(f.name);
-        if (brep) { f.name = brep; bang++; bangAcks.add(ack); }
+        if (brep) { f.name = brep; if (hadKey) keyLoss.bang++; bang++; bangAcks.add(ack); }
       }
     }
   if (vrep) console.log(`welded-value repair: ${vrep} rows across ${vrepAcks.size} plans`);
@@ -1888,6 +1918,18 @@ function stripIssuerLead(iss) {
   if (noun) console.log(`leading-unit-noun repair: ${noun} rows across ${nounAcks.size} plans`);
   if (cus) console.log(`leading-security-identifier repair: ${cus} rows across ${cusAcks.size} plans`
     + ` (sponsor map ${sponsorsOf.size} acks)`);
+  /* THE KEY-LOSS REPORT. Printed whenever any arm fired, including when every
+   * figure is 0, because a line that only appears on bad news is a line nobody
+   * learns to read — and the 0 for `cus` is a CLAIM (refusal (3) declines a row
+   * the table is keyed on) whose control is this very print. A non-zero figure
+   * means that many published symbols go blank until `sec-tickers.js` is
+   * regenerated; it is not data loss and it is not nothing. */
+  if (secKeyed && (vrep + srep + weld + caps + rot + wrap + noun + cus + ciph + bang)) {
+    const parts = Object.entries(keyLoss).filter(([, v]) => v).map(([k, v]) => `${k} ${v}`);
+    console.log(`  name repairs landing on a row sec-tickers.js was keyed on: ${parts.length ? parts.join(" · ") : "NONE"}`
+      + ` — those rows publish no symbol until the table is regenerated`
+      + `${keyLoss.cus ? "  !! the identifier arm declines these BY CONSTRUCTION, so a non-zero `cus` is a defect" : ""}`);
+  }
   if (ciph) console.log(`cipher-run repair: ${ciph} rows across ${ciphAcks.size} plans`);
   if (bang) console.log(`ocr-bang repair: ${bang} rows across ${bangAcks.size} plans`);
 }
