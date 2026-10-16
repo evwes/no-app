@@ -7,6 +7,53 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-16 (06:0xZ) — #674 VERDICT: THE ACRONYM SHIP'S REGISTRATION HELD IN THE STRONGEST FORM AVAILABLE, AND THE 05:07 DRAW CONFIRMS TWO RECORDED ITEMS LIVE RATHER THAN FINDING A NEW CLASS
+
+**DELIVERED AND VERIFIED BY #674 (`success`, on `ce77782e`, data commit
+`8342083b`, mirrored to main) — the coverage line is BYTE-IDENTICAL to its
+predecessor on all 35 keys WITH THE DATE INCLUDED**, compared programmatically
+against the line attributed by the COMMIT that introduced it, with guards
+asserting that commit appended exactly one line and rewrote none. `pv` 203 at
+99.9%, HIGH at the baseline 4, WARN 556, overshoot 370, `dl` 93.
+***FOURTH CONSECUTIVE REGISTRATION DERIVED FROM THE IMPORT GRAPH AND FOURTH TO
+HOLD EXACTLY***, and the premise was RE-CHECKED rather than carried: this one
+brace-matched `cleanFiledName`'s 1,071-line body out of the source and asserted
+0 references to each of the four symbols the change touches. **So there is
+nothing pre-registered and pending.**
+
+**THE 05:07 PARTICIPANT-WEIGHTED DRAW (`--seed 1610050708`) DREW TWO PLANS AND
+NEITHER IS A NEW CLASS — both are recorded open items, confirmed live with
+their numbers sharpened.** That is worth recording rather than skipping: *a draw
+that keeps landing on the register's own classes is evidence the register is
+roughly complete on the large ones.*
+
+**Morgan Stanley Domestic Holdings (80,789 ppl, $21.6B, ratio 0.975) is the
+whole-table generic item's own named instance, and the correction is the
+participant count: the register says 81,090 and the store says 80,789.** Its
+menu is TEN rows and every one is an asset class with no fund named anywhere:
+`Collective Trust Funds` **62.1% / $13,434,874,093** (already qualified —
+`namelessRow` AND `noPublicPrice`, so the reader IS told it names no fund),
+`Corporate equities` **28.4% / $6,134,568,486** typed `Separate account`,
+`Government and agency securities` 5.3%, `Repurchase agreements` 2.6%,
+`Corporate debt instruments`, `Derivative instruments`, `Other sovereign
+government obligations`, `Cash and cash equivalents`. **The page qualifies the
+3 BLANK-typed rows and leaves the 7 TYPED ones, which is the 2026-10-04 split
+working exactly as decided** (*1,171 typed rows "ARE typed and must be left
+alone" — a category labelled as one*). So the largest unqualified row in the
+universe's worst category table is `Corporate equities` at $6.13B, and it is
+unqualified BY DECISION rather than by oversight. Owner-gated, unchanged.
+
+**Digital Insurance (5,131 ppl) is the CONTRACTION class reaching the Fidelity
+Freedom Index Institutional Premium family:** eight `FID FDM IDX <vintage> IPR`
+rows publish **0.1 with NO ticker** ($42.5M, $32.5M, $30.0M, $29.1M, $27.6M,
+$22.1M, $19.4M …), and `VANG INFO TEC IDX AD` likewise. `IPR` is Institutional
+Premium and `FID FDM IDX` is Fidelity Freedom Index, so this is the 2026-10-11
+03:4xZ item (1,076 rows / 1,962,602 ppl) reached through the contracted
+spelling the record already says needs the REGISTRY rather than a wider screen.
+The control is one row above: `FID 500 INDEX` resolves **FXAIX at 0.015** and
+`JPM LG CAP GROWTH R6` resolves **JLGMX at 0.44**, so the resolver reads this
+filer's abbreviations on some rows and not others.
+
 ## 2026-10-16 (05:3xZ) — THE ACRONYM CLASS IS CLOSED BY MEASUREMENT (NO SIBLING DESIGNATION EXISTS), AND THE FEE GATE'S WHOLE REMAINING RESIDUE IS THE OWNER-GATED STABLE-VALUE ITEM — RE-DERIVED AT 6,567 rows / 6,367 plans / 10,083,769 ppl / $36,129,478,831, OF WHICH **4** PUBLISH A TICKER
 
 **This record's most-repeated rule is that a fix for one phrasing of a class is

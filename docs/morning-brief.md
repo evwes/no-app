@@ -56,6 +56,23 @@ what all 73 filed spellings state. The symbol is right on all 466 rows / 539,168
 ppl / $729,754,910. One query, and it exonerates the code rather than convicting
 it. (The participant figure corrects 576,600 -> 539,168, plan-deduplicated.)
 
+## Verdict
+
+**#674 `success`: the acronym ship's coverage line is BYTE-IDENTICAL on all 35
+keys with the date included** — fourth consecutive registration derived from the
+import graph and fourth to hold exactly. `pv` 203 at 99.9%, HIGH at the baseline
+4, `dl` 93.
+
+**And the acronym class is CLOSED by measurement.** Asked whether other
+abbreviated contract designations hide behind the same gate, over all 1,721,920
+rows with the candidate set a superset by construction: the gate's whole
+remaining residue is **6,567 rows / 6,367 plans / 10,083,769 ppl /
+$36,129,478,831**, every one a stable-value or guaranteed-option product with no
+designation in any form. So there is no sibling acronym, and the owner's
+fabricated-fee decision now has its size under the definition that matches the
+one gate which would implement it — **with 4 of 6,567 rows publishing a ticker,
+so a withdrawal costs essentially no identification.**
+
 ## Mirrored to the live site
 
 Both the refutation and the acronym ship, via `scripts/mirror.sh`, gate-clean.
