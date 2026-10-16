@@ -60756,3 +60756,46 @@ histogram — the honest price for the relaxation, since the earlier one mixed a
 four causes — reads `<vintage> t date r6` ×718 (not the 1,008 published, the rest
 being pooled or hedged), `<vintage> target date r2e` ×228, `wamu r6` ×118,
 `washington mutual r4` ×76, `europacific gr r3` ×63.
+
+## 2026-10-16 17:4xZ — the job log IS readable, and the absence pin stopped a promotion until it was measured
+
+Two corrections, one of them to an entry written ninety minutes earlier.
+
+**THE LIMITATION I RECORDED AT 16:1xZ IS FALSE: `mcp__github__get_job_logs`
+WITH `return_content: true` RETURNS THE LOG TEXT.** That entry says "this
+container's `gh` refuses the blob redirect GitHub serves job logs from, so the
+key-diff step's printed text was not read", and it is true of `gh api
+…/logs` and false of the GitHub MCP server, which was available the whole time.
+So the regeneration workflow's key diff — the safety claim for every generated
+table — is readable from this session after all, and run 2's reads:
+
+```
+keys 15747 -> 16963
+ADDED 1216 / REMOVED 0 / CHANGED 0
+```
+
+*A capability failure attributed to the container was a capability failure of
+ONE tool on it*, which is this record's own "DIAGNOSE a refusal before
+reporting it" rule met on a tool I had not thought to try. The habit that
+generalises: when one client cannot fetch something, ask whether another
+client in the same session can, before writing the environment down as unable.
+
+**AND THE ABSENCE PIN DID ITS JOB IN THE STRONGEST FORM AVAILABLE — IT FAILED.**
+`sec-tickers-test.mjs` asserted `Fidelity Freedom 2050 K Fund` resolves NOTHING,
+with a comment naming the boundary ("6,510 of the arm's 6,572 `K`-class rows are
+in this residue") and the judgment that promoting one is "a different claim from
+filling a blank". The precedence override makes that key exist. Run 2 of the
+regeneration therefore regenerated the table, re-derived the stamp, passed the
+stamp gate, **failed on that one assertion, and committed NOTHING** — 1 of 48
+checks, the other 47 green, `FNSBX` reported by name as what it got.
+
+**The pin was right to refuse and wrong about the claim, and both halves are
+worth keeping.** Right to refuse, because that is what an absence pin is for: a
+promotion reached the asset and a human had to say so before it shipped. Wrong
+about the claim, because a comparable is never shipped from this generator, so
+all 7,332 of those rows publish nothing today and the override fills a blank
+rather than replacing a symbol — which is a measurement the pin's author (me,
+four hours earlier) had not taken. ***So an absence pin is not merely a guard
+against regression; on a generated asset it is the thing that forces the
+measurement to exist.*** The entry it now carries is a PRESENCE pin on the same
+key, and it is the only test of the precedence.
