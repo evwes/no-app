@@ -1004,9 +1004,21 @@ nothing else on the 35-key line — both ships are in the same table, so 40.96 c
 no longer occur.
 **DO NOT CARRY my own sizing of 267 rows / 34,935 ppl** — it asked the Capital
 Group family alone and under-predicted by 2.3x.
-**NEXT:** the EuroPacific/EUPAC half of the same family (`American Fund
-EuroPacific Growth R6` abstains because the registered series is `EUPAC Fund`
-and `europacific growth` cannot abbreviate `eupac` — fund-er has the push, this
-arm does not); then the opaque-issuer-code class (166 rows / 597,335 ppl, screen
-contaminated, re-key before sizing).
+***THE "NEXT" THIS ENTRY ORIGINALLY NAMED IS A NON-GAP, CORRECTED TEN MINUTES
+LATER BY ASKING THE PAGE INSTEAD OF ONE ARM.*** I queued the EuroPacific/EUPAC
+half because `afAbbrevAsk` abstains on `American Fund EuroPacific Growth R6` —
+and `renderRow` resolves **RERGX on all six spellings**, singular house
+included, through `fund-er.js`'s own October EUPAC push. *There are two
+resolvers, and an abstention from one is not a gap on the page*: the trap this
+record names in capitals, met inside my own queue entry one hour after shipping
+an arm whose whole subject is that distinction, and in the opposite direction to
+this morning's 10:4xZ instance. **Before queuing an item from a probe, render
+the row.**
+**What that probe DID find is an existing class with a sharper witness:** the one
+resolved symbol publishes FOUR fees by spelling — `er` **null / 0.46 / 0.4 /
+null** — a fourth named witness for the owner-gated one-ticker-two-fees item and
+the first where one of the two answers is a BLANK rather than a different number.
+**NEXT, re-derived:** the opaque-issuer-code class (166 rows / 597,335 ppl,
+screen contaminated — re-key before sizing), then the `American Fund` singular
+residue measured through the PAGE rather than through one arm.
 `docs/accuracy-log.md` 2026-10-16 (15:0xZ).
