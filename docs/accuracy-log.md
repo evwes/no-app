@@ -118,6 +118,24 @@ no-difference that meant nothing — audit-data had printed `line computed and N
 written`, so both sides still carried the committed line. A comparison of two
 unchanged files looks exactly like a comparison that found nothing.*
 
+**DELIVERED AND VERIFIED BY #676 (`success`, push on `15a7cc3c`, data commit
+`65195083`, mirrored to main as `0cd1b854`) — THE MEASURED REGISTRATION HELD:
+the coverage line is IDENTICAL on all 35 keys**, one line appended and none
+rewritten, `pv` 203 at 99.9%, HIGH at the baseline 4, WARN 556, overshoot 370,
+`dl` 93.
+
+**AND THE STORE WAS READ RATHER THAN THE LOG, which is what `mirror.sh`'s own
+warning asks for.** It fires on a merge-side mirror saying *"PARSER_VERSION
+cannot tell you whether the mirrored store already reflects this change ... do
+not read the line below as covering this file"* — correctly, and here the store
+DOES reflect it, because #676 ran the new merge. What settles that is a
+specimen check in the committed store: the two motivating remainders are present
+on 6 rows, 210 rows still lead with an identifier shape (the refusals plus the
+non-confident entries the arm never visits), and **`00206R102 AT&T INC` has KEPT
+its identifier** — refusal (2) working in production on the row it was written
+for. *A version field cannot witness a merge-side change; a repaired specimen
+can.*
+
 ## 2026-10-16 (06:4xZ) — THE LEADING-CUSIP ITEM IS NOT ONE CLASS, CANNOT LIVE IN `cleanFiledName`, AND IS NOT INDEPENDENT OF THE OWNER-GATED EMPLOYER-STOCK ITEM. NOTHING SHIPPED, AND MY OWN SCREEN WAS REFUTED BY ITS FIRST OUTPUT
 
 ***THE SCREEN I WROTE READ 12,765 ROWS AND WOULD HAVE DELETED THE HOUSE FROM

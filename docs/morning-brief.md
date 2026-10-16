@@ -85,6 +85,34 @@ fabricated stable-value ERs (7.4M), CREF and TIAA Access fee/type halves,
 American Funds with no share class (10.5M), one-ticker-two-fees, the whole-table
 generic test, and the SEC comparable half (49.1M).
 
+## Shipped later in the morning
+
+**A security identifier welded in front of the holding's name** —
+`06739T663 Equity Index Fund F` at $6.23B, AT&T's trust and 18 other plans.
+`cusipRepair` in `merge-4i.mjs`: **651 stored rows / 225 published+served / 19
+plans / 509,902 participants / $62,908,343,338, and the NAME is the only
+published cell that moves** (ticker, fee, asterisk, shown type and row
+membership all 0). #676 verdicted: coverage line identical on all 35 keys.
+
+Three refusals, each a measured population, and two of them are why the arm
+could not live in the display cleaner: a remainder that **collides with a
+sibling row** (82 rows — four `US TREASURY NOTE` rows in one menu, where the
+identifier IS the identity), the **sponsor's own stock** (2 rows), and a row
+**`sec-tickers.js` is already keyed on** (4 published symbols, found by the
+differential rather than reasoned out).
+
+**A new gap in a shipped guard came with it**, and it applies to all six repair
+arms above this one, not just the new one: `sec-tickers-stamp-test`
+fingerprints the display slice and `merge-4i.mjs` is not in it, so a merge-side
+name repair invalidates ticker-table keys with nothing going red. Queued with
+two candidate remedies.
+
+My own first screen was refuted by its first output: `^[0-9A-Z]{9}\s` also
+matches `BLACKROCK`, `ALLSPRING` and `NEUBERGER`, read 12,765 rows instead of
+263, and would have deleted the house from 3,894 of them. All four of my
+controls passed it — the one written for that exact hazard was `VANGUARD 500
+INDEX`, and `VANGUARD` is eight letters.
+
 ## What continues today
 
 The hourly cycle. Next non-gated items: the AT&T leading-CUSIP legibility class
