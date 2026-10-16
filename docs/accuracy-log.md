@@ -60556,3 +60556,43 @@ cells, 9 must-keep each naming a real entity or another class) and by
 still describes the furniture arm, the function still answers both, and the code
 arm is asserted present — because a disjunction checked against one of its arms
 would pass against the other arm being deleted.
+
+### 2026-10-16 16:1xZ — THE REGENERATION MOVES TO A RUNNER, because it was the loop's throughput ceiling and the runners are free
+
+**What was wrong, and it was a process defect rather than a data one.**
+`scripts/gen-sec-tickers.mjs` is **30 minutes of CPU** — re-measured today, where
+this record still said 20, the second 207-series DP loop per unresolved spelling
+being the difference — and the container this loop runs in grants a background
+process CPU **only while a turn is active**. So a single regeneration cost
+**15+ polling turns**, and today it cost that three times. CLAUDE.md's own
+scarcity list names assistant session usage as the genuinely scarce resource and
+Actions minutes as measured at **zero** (`billable.UBUNTU.total_ms = 0`, because
+the repository is public). *The expensive half of a name or resolver ship was
+being paid for in the scarce currency when a free one was available.*
+
+**`.github/workflows/sec-tickers.yml`**: checkout, regenerate, **diff the key
+map**, re-derive the stamp, run `sec-tickers-stamp-test` and
+`sec-tickers-test`, commit only if anything moved, rebase-and-retry rather than
+force.
+
+**`workflow_dispatch` ONLY, and that is the deliberate half.** A push trigger on
+the fingerprint inputs would fire on every frontend commit and race the
+session's own pushes over the same branch. It is not needed: the session already
+knows when a regeneration is owed, because `sec-tickers-stamp-test` goes red BY
+NAME the moment the committed table stops matching the committed code. *The gate
+says when; dispatch says go.*
+
+**REMOVED and CHANGED keys are printed in FULL rather than counted**, because
+those are the two that can take a published symbol away or replace it, and a
+regeneration is additive in the normal case. The ADDED list is capped at 40 with
+a remainder count. The line prints whether or not anything moved — *a line that
+only appears on bad news is a line nobody learns to read.*
+
+**It cannot cancel a pipeline run**, checked rather than assumed: a different
+workflow and a different concurrency group, and `grep` confirms this filename
+appears in neither `build-data.yml`'s six-path push filter nor `site-test.yml`'s.
+
+**The order of the steps is this record's own scar tissue.** The stamp is
+re-derived AFTER the regeneration, because taking it before is exactly how
+`site-test #217` went red on the stamping gate and SKIPPED the Playwright
+install, the smoke test and the map test behind it.

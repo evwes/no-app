@@ -1,0 +1,124 @@
+name: Regenerate the SEC ticker table
+
+# WHY THIS EXISTS: THE REGENERATION WAS THE LOOP'S THROUGHPUT CEILING.
+#
+# `scripts/gen-sec-tickers.mjs` is 30 minutes of CPU, and the assistant session
+# that drives this project runs in a container that grants a background process
+# CPU only while a turn is active -- so one regeneration cost 15+ polling turns
+# of session usage, which CLAUDE.md names as the genuinely scarce resource here.
+# Actions runners are not scarce: measured `billable.UBUNTU.total_ms = 0`,
+# because the repository is public. So the expensive half of a name or resolver
+# ship belongs on a runner.
+#
+# IT IS `workflow_dispatch` ONLY, DELIBERATELY. A push trigger on the
+# fingerprint inputs would fire on every frontend commit and race the session's
+# own pushes over the same branch; the session already knows when a
+# regeneration is owed, because `sec-tickers-stamp-test.mjs` goes RED by name
+# the moment the committed table stops matching the committed code. Dispatch is
+# therefore the honest trigger: the gate says when, a human or the session says
+# go.
+#
+# WHAT IT DOES NOT DO: it never touches a data store, never bumps
+# PARSER_VERSION, and cannot cancel a `build-data` run -- different workflow,
+# different concurrency group, and none of this repository's six
+# pipeline-cancelling paths is written here.
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "branch to regenerate on"
+        required: false
+        default: "claude/wampo-401k-live-nx1t4o"
+
+concurrency:
+  # one regeneration at a time per ref: two would race over the same asset and
+  # the loser's commit would be a table built by code the other had replaced
+  group: sec-tickers-${{ github.event.inputs.branch || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # THE BEFORE STATE, so the diff below is a measurement and not a claim.
+      - name: Record the table the repository shipped
+        run: cp sec-tickers.js /tmp/sec-tickers.before.js
+
+      - name: Regenerate
+        run: node scripts/gen-sec-tickers.mjs
+
+      # THE KEY DIFF IS THE WHOLE SAFETY CLAIM FOR A GENERATED TABLE, and it is
+      # printed whether or not anything moved -- a line that only appears on bad
+      # news is a line nobody learns to read.
+      - name: Diff the key map
+        run: |
+          cat > /tmp/keydiff.mjs <<'EOF'
+          import { readFileSync } from "node:fs";
+          import vm from "node:vm";
+          const load = (p) => { const c = { __o: {} };
+            vm.runInNewContext(`${readFileSync(p, "utf8")}\n__o.t = SEC_TICKERS;`, c); return c.__o.t; };
+          const a = load("/tmp/sec-tickers.before.js"), b = load("sec-tickers.js");
+          const ka = new Set(Object.keys(a)), kb = new Set(Object.keys(b));
+          const added = [...kb].filter((k) => !ka.has(k));
+          const removed = [...ka].filter((k) => !kb.has(k));
+          const changed = [...kb].filter((k) => ka.has(k) && a[k] !== b[k]);
+          console.log(`keys ${ka.size} -> ${kb.size}`);
+          console.log(`ADDED ${added.length} / REMOVED ${removed.length} / CHANGED ${changed.length}`);
+          /* REMOVED and CHANGED are the two that can take a published symbol
+           * AWAY or replace it, so they are printed in FULL rather than
+           * counted. A regeneration is additive in the normal case and this is
+           * how an abnormal one announces itself. */
+          for (const k of removed) console.log(`  REMOVED ${JSON.stringify(k)} = ${a[k]}`);
+          for (const k of changed) console.log(`  CHANGED ${JSON.stringify(k)} ${a[k]} -> ${b[k]}`);
+          for (const k of added.slice(0, 40)) console.log(`  added   ${JSON.stringify(k)} = ${b[k]}`);
+          if (added.length > 40) console.log(`  ... and ${added.length - 40} more added keys`);
+          EOF
+          node /tmp/keydiff.mjs
+
+      # The stamp is part of the asset, so it must be re-derived AFTER the
+      # regeneration -- taking it before is how site-test #217 went red on its
+      # own stamping gate and skipped every later step.
+      - name: Re-derive the cache-buster
+        run: |
+          node scripts/stamp-assets.mjs
+          node scripts/stamp-assets.mjs --check
+
+      - name: The gate this job exists to satisfy
+        run: node scripts/sec-tickers-stamp-test.mjs
+
+      - name: The table's own tether
+        run: node scripts/sec-tickers-test.mjs
+
+      - name: Commit, if anything moved
+        run: |
+          git config user.name "wampo-data-bot"
+          git config user.email "noreply@anthropic.com"
+          if git diff --quiet -- sec-tickers.js index.html; then
+            echo "nothing to commit: the table and its stamp are already what this code produces"
+            exit 0
+          fi
+          git add sec-tickers.js index.html
+          git commit -m "Regenerate sec-tickers.js against the committed code [skip ci]
+
+          Produced by .github/workflows/sec-tickers.yml. The key diff and the
+          stamp gate are in that run's log; a regeneration that REMOVED or
+          CHANGED a key prints every one of them there."
+          # rebase rather than force: the session and the data bot both push
+          # this branch, and a regeneration must never discard a data commit
+          for i in 1 2 3 4; do
+            git fetch origin "${GITHUB_REF_NAME}" && git rebase "origin/${GITHUB_REF_NAME}" || git rebase --abort
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then exit 0; fi
+            sleep $((i * 5))
+          done
+          echo "could not push after four attempts" >&2
+          exit 1
