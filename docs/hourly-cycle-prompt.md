@@ -892,3 +892,21 @@ where the registry says **VTSMX**, while `Growth Index Investor Shares` publishe
 no ticker at all where **VITAX** is registered. One menu, one house, the class
 stated every time, three outcomes — so the discriminator is which arm
 `fund-er.js` carries for that series, not the class word. Owner-gated.
+
+### 2026-10-16 09:4xZ — the contraction families MEASURED, and one wrong fix refuted
+
+Measured through the page, six families / 57,586 published+served rows: the
+shipped abbreviation arms reach **two thirds** of their own families
+(`AMERFUNDS` 64.7%, `AMF` 72.6%, `VANG`-contracted 69.8%, Vanguard contracted
+product 52.7%, `FID` 49.4%) and the worst by rate is **`American Fund`
+SINGULAR at 24.2% — 603 unresolved rows / 325,394 ppl**, whose two blockers are
+the singular house AND a reordered vintage.
+**NOT a gap:** the 458-row `AMERFUNDS 2010/2015/2020/2025` miss is a PINNED
+abstention and the ship's reason is right — the registry carries those four as
+`… Target Date Retirement **INCOME** Fund`, and the filing omits `Income`.
+**REFUTED, do not rebuild:** adding `retirement` to `NOISE_WORDS` does NOT
+resolve `AMF 2050 TARGET DATE R2E` (that list applies to the FILED tokens, not
+the series words), and the vintage-uniqueness safety argument is FALSE — 3
+series carry `Retirement` with no vintage. The real change is a structural
+relaxation letting TRAILING series words go unconsumed, which carries the
+recorded cross-fund exposure. `docs/accuracy-log.md` 2026-10-16 (09:4xZ).

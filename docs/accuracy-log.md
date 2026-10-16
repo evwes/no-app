@@ -7,6 +7,88 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-16 (09:4xZ) — THE CONTRACTION FAMILIES, MEASURED THROUGH THE PAGE RATHER THAN GUESSED: SIX FAMILIES, 57,586 published+served rows, AND A ONE-TOKEN FIX REFUTED BY TWO OF MY OWN ASSERTIONS BEFORE A POPULATION WAS MEASURED
+
+**The register says the contraction class "needs the registry, not a wider
+screen", and it has never been measured family by family.** Asked through
+`renderRow` with each row carried OUT of the store, so `sec-tickers.js`'s
+`(issuer, nameRaw)` key is reachable — a synthetic probe cannot see that arm and
+would under-state every figure here:
+
+| family | rows | plans | ppl | publishes a TICKER |
+|---|---|---|---|---|
+| `AMERFUNDS …` (the Capital Group ship's own target) | 3,205 | 644 | 383,492 | **64.7%** |
+| `AMF …` | 1,359 | 744 | 391,604 | **72.6%** |
+| **`American Fund` SINGULAR** | 796 | 304 | **325,394** | **24.2%** |
+| `VANG` / `Vngrd` / `Vgd` | 9,434 | 2,063 | 5,377,030 | 69.8% |
+| `Vanguard` + contracted product | 6,108 | 4,652 | 4,647,256 | 52.7% |
+| `FID …` | 36,684 | 4,113 | 5,811,438 | 49.4% |
+
+**So the shipped abbreviation arms reach two thirds of their own families and the
+contraction gap is real but much narrower than "the contraction class" suggests.
+The worst family by rate is the SINGULAR house at 24.2%** — `American Fund
+Target Date 2050 R6` and kin, 603 unresolved rows / 325,394 readers, which is
+the 06:07 draw's finding now sized.
+
+**AND THE 458-ROW `AMERFUNDS 2010/2015/2020/2025` MISS IS NOT A GAP — IT IS A
+PINNED ABSTENTION AND THE SHIP'S RECORDED REASON IS EXACTLY RIGHT.** I doubted
+it: the registry registers all 13 vintages, which looked like the abstention was
+unearned. Reading the series NAMES settles it — **2010 through 2025 are
+registered as `American Funds <vintage> Target Date Retirement INCOME Fund` and
+2030 onward as `… Target Date Retirement Fund`** — so a filing writing `TARG
+DATERET` with no `Income` cannot consume that word, and
+`af-abbrev-test.mjs:119` pins exactly that string as must-NOT-fire with the
+reason attached. *A pin is newer evidence than my doubt about it*, and the
+project had already considered this exact string. The positive half is pinned
+too (`AMF 2025 TD RET INC R6` -> RFDTX, where the filing DOES say Income).
+
+***THE ONE-TOKEN FIX I THEN PROPOSED WAS REFUTED BY TWO ASSERTIONS I HAD WRITTEN
+INTO THE SIZING SCRIPT, BEFORE IT MEASURED ANYTHING.*** `AMF 2050 TARGET DATE
+R2E` abstains while `AMF 2050 TARGET DATE **RET** R2E` resolves **RBHEX**, so
+the blocker is the unconsumed `Retirement`, and adding `retirement` to
+`NOISE_WORDS` looked like one token:
+
+1. **THE SAFETY ARGUMENT IS FALSE AS I STATED IT.** I claimed an unconsumed
+   `Retirement` cannot cross funds because every series carrying it is
+   discriminated by a VINTAGE NUMBER. The assertion printed **3 series carrying
+   `Retirement` with NO vintage** — `American Funds Retirement Income Portfolio
+   - Conservative / Enhanced / Moderate`. *An argument from the registry is
+   still an argument until the registry is asked.*
+2. **AND THE TOKEN IS NOT THE BLOCKER AT ALL.** With `retirement` added, the
+   motivating row STILL does not resolve — the must-see assertion threw and the
+   run stopped. `NOISE_WORDS` is applied to the FILED tokens, not to the SERIES
+   words, so it cannot excuse a series word the filing omits.
+
+**So the real change is a structural relaxation of the relation — letting
+TRAILING series words go unconsumed — not a vocabulary addition, and it carries
+the exposure the 12:3xZ entry already names** (*re-inserting a structural word
+the filer dropped is the loosening of "superset" that stops the matcher crossing
+funds*). Nothing shipped, and the cheap wrong fix is now named so the next cycle
+does not spend itself on it. **Cost of finding this out: two assertions and no
+regeneration.** *Price the change before building the arm, and put the safety
+argument in the script as an assertion rather than in the commit message as a
+sentence.*
+
+*One instrument note, and it is the recorded trap: my first probe passed
+`afAbbrevAsk(name, "", idx)` where the signature is `afAbbrevAsk(idx,
+filedName)`, and it returned `null` for EVERY spelling including two the shipped
+test pins as resolving. **A uniform null reports on the query** — the fix was a
+positive control asserting that a pinned resolution resolves, which is what a
+clean zero should always have to survive.*
+
+**AND THE 09:07 DRAW IS THE MACHINERY WORKING ON THE LARGEST PAGE IT HAS SHOWN
+THIS SESSION, which is worth recording because a draw that only ever finds
+defects is not reading the page.** The Teamsters-UPS 401(k) National Savings
+Plan — **478,185 participants**, $19,207,859,263, ratio 0.995 — publishes 23
+BlackRock collective trusts, every one typed `Collective trust` with
+`noPublicPrice` set: `Equity Index Fund F` at **39.9% / $7,654,627,039** carries
+the asterisked comparable `~WFSPX` and **no fee**, `Mid Capitalization Equity
+Index Fund F` carries `~IJH` with the disclosed ceiling fee the 01:4xZ entry
+settled as correct, and `Russell 2000 Index Fund F`, `U.S. Debt Index Fund F`
+and the `LifePath Index` ladder publish neither symbol nor fee rather than a
+fabricated one. *The vehicle gate, the comparable asterisk and the fee
+suppression all hold on a $19B menu.*
+
 ## 2026-10-16 (08:4xZ) — SHIPPED: THE MERGE NOW SAYS HOW MANY TICKER KEYS ITS OWN NAME REPAIRS INVALIDATED, AND THE 08:07 DRAW GIVES THE WRONG-SHARE-CLASS ITEM ITS SHARPEST WITNESS YET — THREE ROWS, ONE MENU, THREE DIFFERENT ANSWERS TO THE SAME STATED CLASS
 
 **The gap recorded one hour earlier is closed with a NUMBER rather than a wider
