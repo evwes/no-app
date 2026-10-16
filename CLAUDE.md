@@ -966,6 +966,21 @@ VINTAGE-POSITION ship, which were mirrored to main before it ran. *40.96 is the
 number that can no longer occur; 41.02 is the number that happened.* Read the
 registration below for what is still pending.
 
+**DELIVERED AND VERIFIED BY #681 (`success`, on `f5fdb563`, data commit
+`840e6455`) — THE REGISTRATION HELD DEAD ON ITS POINT ESTIMATE: `tkExact` 41.02
+-> **41.32**, and of the line's 35 keys EXACTLY ONE MOVED**, compared
+programmatically against the line attributed by the COMMIT that introduced it,
+with a guard asserting that commit appended exactly one line and rewrote none.
+`tkComparable` 3.38, tkSampled 87,106, tkShare 25.12, confident 60,182, match
+43,312, vesting 53,023, vestQuote 5,373, entries 65,495, lineups 59,833, rk
+63,916, HIGH 4, WARN 556, overshoot 370, overshootTrust 12, aggRow 114, `dl` 93
+and `pv` 203 all unchanged. **SO THERE IS NOTHING PRE-REGISTERED AND PENDING.**
+*Two registrations in one day, both derived by RUNNING `audit-data.mjs` over the
+committed store with the new asset and diffing its computed line key by key, and
+both landing on the nose — 41.02 on #680 and 41.32 on #681.*
+
+**ORIGINAL REGISTRATION, kept because it is what was predicted:**
+
 **PRE-REGISTERED 2026-10-16 18:4xZ for the next merge after the
 COMPARABLE-PRECEDENCE override — `tkExact` **41.02 -> 41.32**, band
 **41.31-41.33**, and NOTHING ELSE MOVES.** It is build-side and writes no store,
