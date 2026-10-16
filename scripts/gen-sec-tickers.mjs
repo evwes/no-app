@@ -614,6 +614,8 @@ const AF_FAMILY_N = assertAfFamily(AF_INDEX);
     ["AMERFUNDS AMER BALANCED - R6", "RLBGX"],     // first-letter rule: NOT Global Balanced
     ["Amer Funds Bond Fnd Amer R6", "RBFGX"],      // internal-elision contraction
     ["AMERFDS 2035 TARG DATE RET-R4", "RDFTX"],    // R-4 is a different class and ticker
+    ["American Funds Trgt Date Ret 2055 R6", "RFKTX"],  // the VINTAGE lifted out of position
+    ["American Fund Trgt Date Ret 2055 R6", "RFKTX"],   // ... and the SINGULAR house, which blocks nothing
     /* must NOT fire */
     ["MyCompass Amer Fds 2035 Fd R", null],        // a WRAPPER lead, correct as filed
     ["MyCompass Amer Fds 2055 Fd R6", null],
@@ -623,6 +625,9 @@ const AF_FAMILY_N = assertAfFamily(AF_INDEX);
     ["AMERFUNDS GROWTH R6", null],                // too generic to pin to one series
     ["AMERFUNDS 2030 R6", null],
     ["AMERFUNDS 2025 TARG DATERET R6", null],      // registered as `… Retirement INCOME Fund`
+    ["American Funds Trgt Date Ret 2025 R6", null],     // the same rename, through the lift
+    ["American Funds Trgt Date Ret 2055 2035 R6", null],// two vintages
+    ["American Funds Trgt Date Ret 2099 R6", null],     // a vintage the registry does not carry
   ];
   for (const [n, want] of must) {
     const got = afAbbrevAsk(AF_INDEX, n);

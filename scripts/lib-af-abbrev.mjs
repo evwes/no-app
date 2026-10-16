@@ -198,6 +198,44 @@ export function abbreviates(T, S, maxWords = 3, skip = SKIP) {
 }
 const NO_SKIP = new Set();
 
+/* ---------- the VINTAGE may sit anywhere; nothing else may move ----------
+ * 2026-10-16. `abbreviates` consumes series words IN ORDER, which is what stops
+ * it treating a name as a bag of letters — and a target-date filer routinely
+ * writes the year at the END where the registry puts it in the MIDDLE:
+ * `American Funds Trgt Date Ret 2050 R6` against
+ * `American Funds 2050 Target Date Retirement Fund`. So one token, and only
+ * one, is allowed out of position: a four-digit year, which must appear EXACTLY
+ * ONCE on each side and be THE SAME YEAR. The remainder must still abbreviate
+ * in order, so this is not a permutation — it is the vintage lifted out of both
+ * sides before the ordered match.
+ *
+ * THE RECORDED FRAMING OF THIS CLASS WAS HALF WRONG AND THE PROBE SAID SO
+ * BEFORE A LINE WAS WRITTEN. It was filed as "blocked by the SINGULAR house
+ * AND a reordered vintage": `houseRun` reads 2 for `American Fund` and for
+ * `American Funds` alike, and the two spellings resolve IDENTICALLY, so the
+ * singular house blocks nothing. The vintage's position blocks both.
+ *
+ * Why a year is the one token that may float, and nothing else: it is the most
+ * discriminating token in the whole name — requiring it to be identical on both
+ * sides keeps the match pinned to one vintage of one ladder — and a four-digit
+ * year carries no letters, so it can never be the thing an abbreviation is
+ * standing in for. Every hazard was probed and abstains: two vintages in one
+ * name, no vintage, a vintage the registry does not carry, a foreign house with
+ * a year welded on, and the 2010-2025 vintages the registry carries only as
+ * `… Target Date Retirement INCOME Fund`, which still refuse because `income`
+ * is left unconsumed. */
+const VINTAGE = /^(?:19|20|21)\d{2}$/;
+const lift = (toks) => {
+  const v = toks.filter((t) => VINTAGE.test(t));
+  return v.length === 1 ? { v: v[0], rest: toks.filter((t) => !VINTAGE.test(t)) } : null;
+};
+function abbreviatesVintageLifted(T, S, skip) {
+  const a = lift(T), b = lift(S);
+  if (!a || !b || a.v !== b.v) return false;
+  return abbreviates(a.rest, b.rest, 3, skip);
+}
+export const __liftedMatch = abbreviatesVintageLifted;
+
 /* ---------- the leading house run ----------
  * Returns how many leading filed tokens abbreviate `american funds` or
  * `capital group`, or 0.
@@ -382,7 +420,8 @@ export function afAbbrevAsk(idx, filedName) {
     const stated = idx.famClassKeys ? idx.famClassKeys.has(ck) : true;
     const hits = [];
     for (const s of idx.series.values()) {
-      if (!abbreviates(head, s.toks, 3, fam.skip)) continue;
+      if (!abbreviates(head, s.toks, 3, fam.skip)
+        && !abbreviatesVintageLifted(head, s.toks, fam.skip)) continue;
       if (s.classes.has(ck)) { hits.push({ ticker: s.classes.get(ck), series: s.name, reg: s.reg, ck, how: "equal" }); continue; }
       if (!fam.classRelation || stated || ck.length < 2) continue;
       const cm = s.classList.filter((c) => abbreviates(tail, c.toks, 3, CLASS_SKIP));

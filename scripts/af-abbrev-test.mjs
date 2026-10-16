@@ -99,6 +99,8 @@ const MUST_FIRE = [
   ["AF BOND FD AMER R6", "RBFGX", "a two-letter house run, read and verified in the store"],
   ["AMF 2025 TD RET INC R6", "RFDTX", "the renamed vintage, where the filing DOES say Income"],
   ["American Funds Amcap R6 Fund", "RAFGX", "a vehicle word in front of and behind nothing"],
+  ["American Funds Trgt Date Ret 2055 R6", "RFKTX", "the VINTAGE lifted: the filer puts the year where the registry does not"],
+  ["American Fund Trgt Date Ret 2055 R6", "RFKTX", "the same with the SINGULAR house, which blocks nothing"],
 ];
 for (const [n, want, why] of MUST_FIRE) {
   const got = ask(M, IDX, n);
@@ -117,6 +119,11 @@ const MUST_NOT = [
   ["AMERFUNDS GROWTH R6", "a product too generic to pin to one series"],
   ["AMERFUNDS 2055 TARG DATERET Z9", "a class the series does not register"],
   ["AMERFUNDS 2025 TARG DATERET R6", "a vintage the registry carries only under a RENAMED series"],
+  ["American Funds Trgt Date Ret 2025 R6", "the same rename, reached through the vintage lift: `income` is still unconsumed"],
+  ["American Funds Trgt Date Ret 2055 2035 R6", "TWO vintages: the lift takes exactly one or none"],
+  ["American Funds Trgt Date Ret R6", "no vintage at all, so the lift cannot apply and the ordered match fails"],
+  ["American Funds Trgt Date Ret 2099 R6", "a vintage the registry does not carry"],
+  ["American Funds MFS Value 2055 R6", "a foreign house with a year welded on"],
   ["American Funds Corp Bond R6 Fund", "`Corp` abbreviates Corporate AND Core Plus — ambiguous"],
   ["American Funds AMCAP Fund", "no share class stated: the honest answer is a comparable"],
   ["American Funds New Class R6 Fund", "a three-letter product run"],
@@ -152,6 +159,18 @@ const MUTATIONS = [
     from: "    if (head.join(\"\").length < 4) continue;",
     to: "    if (head.join(\"\").length < 1) continue;",
     expect: [["American Funds New Class R6 Fund", "RNWGX"]] },
+  { name: "the VINTAGE LIFT requires the SAME year on both sides",
+    from: "  if (!a || !b || a.v !== b.v) return false;",
+    to: "  if (!a || !b) return false;",
+    /* without the equality the lift matches any vintage of the ladder, so one
+     * filed year reaches thirteen series and the arm goes AMBIGUOUS rather than
+     * wrong — which is why the mutant answers nothing where the shipped arm
+     * answers RFKTX, and is exactly as load-bearing either way */
+    expect: [["American Funds Trgt Date Ret 2055 R6", null]] },
+  { name: "the vintage lift runs only AFTER the ordered match fails",
+    from: "      if (!abbreviates(head, s.toks, 3, fam.skip)\n        && !abbreviatesVintageLifted(head, s.toks, fam.skip)) continue;",
+    to: "      if (!abbreviates(head, s.toks, 3, fam.skip)) continue;",
+    expect: [["American Funds Trgt Date Ret 2055 R6", null]] },
   { name: "the registry-derived family restriction",
     from: "    if (!family.has(reg)) continue;",
     to: "    if (false) continue;",

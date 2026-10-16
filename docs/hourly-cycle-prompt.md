@@ -982,3 +982,31 @@ unresolved rows / 325,394 ppl, blocked by two things at once (the singular house
 and a reordered vintage); then the opaque-issuer-code class (166 rows / 597,335
 ppl, screen contaminated — re-key it before sizing).
 `docs/accuracy-log.md` 2026-10-16 (14:0xZ).
+
+### 2026-10-16 15:0xZ — SHIPPED: the vintage may sit anywhere, 621 rows / 89,935 ppl
+
+**621 published+served rows / 404 keys / 90 plans / 89,935 ppl / $1,278,441,686
+gain an ASSERTED symbol** — 593 to the Capital Group family, 28 to Fidelity's.
+`American Funds Trgt Date Ret 2050 R6` published nothing where `… 2050 Target
+Date Retirement R6` resolved RFITX, because the registry puts the year in the
+MIDDLE and `abbreviates` consumes series words in order. One token may now sit
+out of position — a four-digit year, identical on both sides, remainder still
+ordered.
+***THE QUEUE ENTRY'S "blocked by the SINGULAR house AND a reordered vintage" IS
+HALF REFUTED:*** `houseRun` reads 2 for `American Fund` and `American Funds`
+alike and both resolve identically, so the singular house blocks nothing — the
+vintage blocks the plural spelling just as hard.
+Ticker lost 0 / swapped 0, asterisk 0, FEE 0, name 0, shownType 0; control
+20,895 rows differing on 0; table ADDED 404 / REMOVED 0 / CHANGED 0, all
+attributed, zero drift.
+**PRE-REGISTERED, SUPERSEDING the 14:0xZ figure: `tkExact` 40.23 -> 41.02** and
+nothing else on the 35-key line — both ships are in the same table, so 40.96 can
+no longer occur.
+**DO NOT CARRY my own sizing of 267 rows / 34,935 ppl** — it asked the Capital
+Group family alone and under-predicted by 2.3x.
+**NEXT:** the EuroPacific/EUPAC half of the same family (`American Fund
+EuroPacific Growth R6` abstains because the registered series is `EUPAC Fund`
+and `europacific growth` cannot abbreviate `eupac` — fund-er has the push, this
+arm does not); then the opaque-issuer-code class (166 rows / 597,335 ppl, screen
+contaminated, re-key before sizing).
+`docs/accuracy-log.md` 2026-10-16 (15:0xZ).

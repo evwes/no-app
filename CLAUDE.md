@@ -955,11 +955,14 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
-**PRE-REGISTERED 2026-10-16 14:0xZ for the next merge after the FIDELITY CLASS
-CONTRACTION ship, which is `2a5b30a1` — `tkExact` **40.23 -> 40.96**, and
+**SUPERSEDED BY THE REGISTRATION BELOW — a second ship landed in the same
+table one hour later, so 40.96 is a number that can no longer occur.**
+
+**PRE-REGISTERED 2026-10-16 15:0xZ for the next merge after the FIDELITY CLASS
+CONTRACTION **and** the VINTAGE-POSITION ship — `tkExact` **40.23 -> 41.02**, and
 NOTHING ELSE MOVES.** The arm is build-side and writes no store, but it added
-**2,935 keys** to `sec-tickers.js` and `tkExact` reads that table, so this is
-the one coverage key it can touch.
+**3,339 keys** to `sec-tickers.js` between them (12,408 -> 15,747) and `tkExact`
+reads that table, so this is the one coverage key either can touch.
 **MEASURED BY RUNNING THE METRIC ITSELF, which is stronger than deriving it in
 the metric's population:** `audit-data.mjs` was run over the committed store
 with the new table and its computed line diffed key by key against the trail's

@@ -60388,3 +60388,71 @@ the measurement was built to PRINT the cost of a condition rather than to
 confirm it. The habit to keep is the second one: when a change takes a licence
 (skipping a guard, relaxing a floor), make the program tally what the licence is
 carrying, and read the tally before believing the argument for it.
+
+### 2026-10-16 15:0xZ — THE VINTAGE MAY SIT ANYWHERE: 621 rows / 89,935 participants, and the recorded framing of this class was HALF WRONG
+
+**What was wrong.** `American Funds Trgt Date Ret 2050 R6` published no symbol
+while `American Funds 2050 Target Date Retirement R6` resolved RFITX. The
+registry series is `American Funds **2050** Target Date Retirement Fund` — the
+year in the MIDDLE — and `abbreviates` consumes series words IN ORDER, which is
+the condition that stops it treating a name as a bag of letters.
+
+***THE QUEUE ENTRY SAID "blocked by the SINGULAR house AND a reordered vintage"
+AND THE FIRST HALF IS REFUTED BY A SIX-LINE PROBE, BEFORE ANY CODE.***
+`houseRun` reads **2** for `American Fund` and for `American Funds` alike —
+`fund` absorbs `funds` and both house words are covered — and the two spellings
+resolve IDENTICALLY (RFITX, RGAGX). **The vintage's position blocks the PLURAL
+spelling just as hard**, so the class was never about the singular house at all.
+*Vary one thing at a time before believing a two-part diagnosis: a conjunction
+recorded as the cause may have one inert half.*
+
+**The change: one token, and only one, may sit out of position** — a four-digit
+year, which must appear EXACTLY ONCE on each side and be THE SAME YEAR, with
+the remainder still abbreviating in order. It is not a permutation; it is the
+vintage lifted out of both sides before the ordered match, and it runs only
+AFTER the ordered match fails.
+
+**Why a year is the one token that may float, stated so the next widening has a
+line to argue against:** it is the most discriminating token in the name, so
+requiring it identical on both sides keeps the match pinned to one vintage of
+one ladder; and a four-digit year carries no letters, so it can never be the
+thing an abbreviation is standing in for.
+
+**Delivered: 621 published+served rows / 404 keys / 90 acks / 90 plans / 89,935
+ppl / $1,278,441,686** — 593 rows to the Capital Group family (18,802 ->
+19,395) and 28 to the Fidelity one (13,183 -> 13,211). Measured as a
+DIFFERENTIAL through BOTH copies of `renderRow` with one renderer per table:
+**ticker lost 0 / swapped 0, asterisk moved 0, FEE 0, name 0, shownType 0**, and
+a 20,895-row non-candidate control differing on **0**. Table 15,343 -> **15,747
+keys, ADDED 404 / REMOVED 0 / CHANGED 0**, all 404 attributed (376 Capital
+Group, 28 Fidelity), **zero drift**. Every destination is class-correct: `A` ->
+AAETX/AALTX, `R2` -> RBKTX, `R6` -> RFETX.
+
+**Every hazard was probed and abstains, each now a fixture:** two vintages in
+one name, no vintage at all, a vintage the registry does not carry, a foreign
+house with a year welded on, and — the one that matters most — the **2010-2025
+vintages the registry carries only as `… Target Date Retirement INCOME Fund`,
+which still refuse because `income` is left unconsumed**. That refusal is what
+this record already pins as a must-NOT-fire with its reason attached, and the
+lift does not reach past it.
+
+**Two mutations, both load-bearing and one of them in an unobvious direction.**
+Dropping the same-year requirement makes the mutant answer NOTHING rather than
+something wrong: one filed year then reaches thirteen series of the ladder and
+the arm goes AMBIGUOUS. *A condition can be load-bearing for the uniqueness
+test rather than against a wrong answer, and a mutation that reads "the mutant
+abstains" is still a mutation that fired.*
+
+**DO NOT CARRY MY OWN SIZING OF 267 rows / 34,935 ppl.** It asked the Capital
+Group family alone and excluded rows the ordered arm already answered, so it
+under-predicted the delivery by 2.3x on rows and 2.6x on readers. The
+authoritative figures are the generator's own per-arm tally and the render
+differential above.
+
+**AND THE REGISTRATION COMMITTED ONE HOUR EARLIER IS SUPERSEDED.** `tkExact`
+was registered at **40.96** for the Fidelity ship alone; with this one in the
+same table it is **41.02**, measured the same way — `audit-data.mjs` run over
+the committed store with the new table, its computed line diffed key by key
+against the trail, **exactly one of the 35 keys moving**. *A pre-registration is
+void the moment a second ship lands in the same artifact, and leaving the older
+figure up would make the file predict a number that cannot occur.*
