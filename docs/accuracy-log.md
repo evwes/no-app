@@ -7,6 +7,89 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-16 (02:5xZ) — WHAT TEN DAYS OF DISPLAY WORK ACTUALLY CHANGED FOR READERS: 16,934 plans / 27,709,189 participants, deduplicated, measured as one number rather than summed
+
+**The owner asked what the work had accomplished. Every display ship in that
+window reported its own rows/plans/participants, and those figures MUST NOT be
+added up** — a plan reached by several ships is counted once per ship, and this
+record already carries an 8x error from summing a plan's participants once per
+ROW. So the question was answered with ONE measurement instead: over the CURRENT
+store, how does the page at `2cecab51` (2026-10-02 06:07Z) answer differently
+from the page today? Two renderers, the only difference being `app.js`, every
+published+served row, each plan counted ONCE.
+
+**Walked 1,721,920 published+served rows through BOTH pages. Row membership is
+1,721,920 on both sides, so no row was gained or dropped.**
+
+| rows whose published answer changed | **47,129** |
+|---|---|
+| cells: name 6,129 · tk 39,191 · er 517 · star 39,191 · shownType 1,898 | |
+
+| deduplicated reach (THESE THREE OVERLAP — never sum them) | plans | participants |
+|---|---|---|
+| any change at all | **16,934** | **27,709,189** |
+| a TICKER or FEE claim | 15,032 | 17,396,116 |
+| a qualification LABEL | 1,594 | 8,928,699 |
+
+| by kind of claim | rows |
+|---|---|
+| ticker GAINED | **39,191** |
+| ticker WITHDRAWN / SWAPPED | **0 / 0** |
+| asserted <-> comparable (on a ticker that did not change) | 0 / 0 |
+| fee gained / withdrawn / changed | 58 / **408** / 51 |
+| name repaired | 6,129 |
+| qualification label gained / LOST | **1,895 / 0** |
+
+**THE SHAPE IS THE FINDING AND IT IS MORE INFORMATIVE THAN THE HEADLINE.** The
+window's work was overwhelmingly ADDITIVE IDENTIFICATION: 39,191 rows gained a
+symbol and **not one row lost or swapped one**, which is what the recorded
+"additive by construction" safety argument predicts and is now measured over the
+whole store rather than per ship. The fee column barely moves (517 cells of
+1.72M rows) and moves mostly in the honest direction — **408 withdrawn against
+58 gained** — because the window's fee work was suppression of fabricated
+estimates, never re-pricing. And **1,895 rows gained a qualification label with
+0 lost**, so nothing stopped being labelled.
+
+**TWO HONEST LIMITS ON THE FIGURES, both of which the instrument's own print
+forces rather than hides:**
+1. **`star` moved on exactly the 39,191 rows that gained a ticker and on no
+   others**, so it is not 39,191 new asterisks — it is the flag acquiring a
+   value where there had been no answer at all. **This run does NOT split the
+   39,191 gains into asserted and comparable**, and that split matters because
+   *an asterisk is a whole category of claim*; the asserted/comparable counters
+   above read 0 because they are keyed on a ticker that is present on BOTH sides,
+   which is the population that can be re-labelled. The per-ship entries carry
+   that split; this measurement does not.
+2. **The three reach figures OVERLAP and the smaller two do not partition the
+   larger** — a plan appears in every bucket it has a qualifying row in.
+
+**THE DATA IS HELD FIXED ON PURPOSE**, so the answer is attributable to the
+CODE: the parse's own delta is the coverage trail's job, and that trail says the
+store moved not one coverage key across the three pause days. *So the durable
+layer kept the data alive and improved nothing, and this 27.7M-reader figure is
+the agent layer's delta over the same span* — which is the real answer to what
+the work accomplished.
+
+**AND THE INSTRUMENT HAD TO BE MADE RESTART-PROOF BEFORE IT COULD ANSWER AT
+ALL, which is worth recording as a cost of this container rather than of the
+measurement.** The walk is ~33 minutes of CPU, and a background process here
+gets CPU only while a turn is active, so it is held open by foreground windows;
+**three consecutive attempts were killed by a container restart at 12, 22 and
+~20 minutes in, each losing everything.** `scripts/display-delta.mjs` now takes
+`--state <path>` and banks per-shard state after every shard, so a restart costs
+ONE shard. **The resume is guarded by a stamp of the baseline ref plus the
+store's own `generated`, and it REFUSES by name rather than continuing** —
+because the pipeline commits data hourly and resuming across a moved store would
+mix two populations, which is the error this record warns about most often. The
+refusal was controlled before the real run (a state file stamped `WRONG|STORE`
+exits 2 with both stamps printed). *And the store's `generated` read identically
+before and after the 33-minute walk, which is the control that this run saw one
+store.*
+
+***A measurement that cannot survive its own environment is not a cheaper
+measurement, it is no measurement*** — three attempts bought nothing, and the
+checkpoint that made the fourth succeed cost ten minutes to write.
+
 ## 2026-10-12 (13:4xZ) — THE 12:07 DRAW: AT&T's OWN PAGE LEADS ELEVEN OF TWELVE ROWS WITH AN INTERNAL ACCOUNTING CODE, AND ITS OWN STOCK CARRIES A CUSIP INSTEAD OF A TICKER
 
 Seeded participant-weighted draw (`--seed 12101207`, 2 menus, `--rows 40`).

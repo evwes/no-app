@@ -33,7 +33,7 @@
  * a clean no-difference reads as "nothing was accomplished"), and the baseline
  * ref must actually resolve.
  */
-import { readFileSync, readdirSync, writeFileSync, mkdtempSync } from "node:fs";
+import { readFileSync, readdirSync, writeFileSync, mkdtempSync, existsSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -104,7 +104,45 @@ let walked = 0, rowsMoved = 0, rowsA = 0, rowsB = 0;
  * "does the page tell the reader this row names no fund", not which arm said so */
 const QUALIFIED = /no specific fund|not a menu choice|not a holding|asset type as filed/i;
 
+/* CHECKPOINTING, and it is not a convenience. This walk is ~25 minutes of CPU,
+ * and in this container a background process gets CPU only while a turn is
+ * active, so it is held open by foreground windows — three consecutive attempts
+ * were killed by a container restart between 10 and 22 minutes in, each losing
+ * everything. State is written after every shard, so a restart costs one shard.
+ *
+ * RESUMING ACROSS A MOVED STORE WOULD MIX TWO POPULATIONS, which is exactly the
+ * error this project's record warns about, so the stamp is the store's own
+ * `generated` plus the baseline ref: if either moved, the state is REFUSED by
+ * name rather than silently continued. The pipeline commits data hourly, so
+ * that is a live hazard and not a hypothetical one. */
+const STATE = (() => { const i = process.argv.indexOf("--state"); return i > 0 ? process.argv[i + 1] : null; })();
+const STAMP = `${REF}|${JSON.parse(readFileSync(`${ROOT}/lineups-index.json`, "utf8")).generated || ""}`;
+const done = new Set();
+if (STATE && existsSync(STATE)) {
+  const s = JSON.parse(readFileSync(STATE, "utf8"));
+  if (s.stamp !== STAMP) {
+    console.error(`REFUSING TO RESUME: the state was written against ${JSON.stringify(s.stamp)} and the store/ref now reads ${JSON.stringify(STAMP)}.`);
+    console.error("Resuming would mix two populations. Delete the state file to start clean.");
+    process.exit(2);
+  }
+  for (const k of s.done) done.add(k);
+  Object.assign(moved, s.moved); Object.assign(kind, s.kind);
+  for (const [k, v] of s.anyPlans) anyPlans.set(k, v);
+  for (const [k, v] of s.claimPlans) claimPlans.set(k, v);
+  for (const [k, v] of s.labelPlans) labelPlans.set(k, v);
+  ({ walked, rowsMoved, rowsA, rowsB } = s);
+  console.log(`resumed: ${done.size} of 64 shards already walked, ${walked.toLocaleString()} rows`);
+}
+const saveState = () => {
+  if (!STATE) return;
+  writeFileSync(STATE, JSON.stringify({
+    stamp: STAMP, done: [...done], moved, kind, walked, rowsMoved, rowsA, rowsB,
+    anyPlans: [...anyPlans], claimPlans: [...claimPlans], labelPlans: [...labelPlans],
+  }));
+};
+
 for (const sh of readdirSync(`${ROOT}/data/lineups`).sort()) {
+  if (done.has(sh)) continue;
   const shard = JSON.parse(readFileSync(`${ROOT}/data/lineups/${sh}`, "utf8"));
   for (const [ack, e] of Object.entries(shard)) {
     const mem = members.get(ack);
@@ -149,6 +187,9 @@ for (const sh of readdirSync(`${ROOT}/data/lineups`).sort()) {
       if (la && !lb) { kind.labelLost++; add(labelPlans); }
     }
   }
+  done.add(sh);
+  saveState();
+  if (STATE) console.log(`  shard ${sh}: ${done.size}/64 done, ${walked.toLocaleString()} rows, ${rowsMoved.toLocaleString()} moved`);
 }
 const sum = (m) => [...m.values()].reduce((a, b) => a + b, 0);
 console.log(`\nwalked ${walked.toLocaleString()} published+served rows through BOTH pages`);

@@ -1,148 +1,88 @@
-# wampo brief — 2026-10-12, 14:0xZ
+# wampo brief — 2026-10-16, 03:0xZ
 
 Overwritten nightly. Decision-shaped: what shipped and what it changed in
 numbers, what was found wrong, what is held, what is waiting on the owner.
 
-## Shipped today: three caption classes stopped being published as funds
+## The pause ended at its own written expiry, and nothing had to notice
 
-Schedule H has a vocabulary of its own — asset-class captions, accounting
-bases, measurement notes — and a filer who puts one of those in the column
-where a fund name belongs leaves a row that reads, on our page, as an
-investment option a participant could have chosen. Three of those classes
-closed today, each one `shown type` only: no name, ticker, fee or asterisk
-moved on any of them, and no row appeared or disappeared.
+You paused the project on 2026-10-12 until the Thursday restart. The expiry was
+written into three places — the project memory, the state file, and a one-shot
+job that fired **at** 23:00Z carrying the resume checklist — so the restart did
+not depend on anyone remembering. Both markers are now deleted rather than
+obeyed past their date, and the three Routines are live again (hourly cycle,
+daily sweep, weekly Monday), each with its next fire confirmed.
 
-| | rows | participants |
+**Reconcile was clean: 21 scheduled data commits landed on main across the three
+days and the two branches had already converged**, because the pipeline's merge
+job fast-forwards the dev branch when it is a strict ancestor. No adoption chore,
+no structural diff owed.
+
+## And the three quiet days are themselves a finding
+
+Re-deriving the state block from the store — a step the checklist treats as a
+chore — turned up the more interesting number: **of the 26 coverage lines dated
+2026-10-12 or later, exactly one pair moved, and that one predates the pause.
+Twenty-four consecutive scheduled merges appended a byte-identical line.**
+
+So three days of the durable layer moved **not one** coverage key. That is the
+honest shape of a quiet ingest window, and it is also the argument for where the
+improvement comes from: the pipeline kept the data alive and improved nothing,
+because improvement is judgement work.
+
+## Your own question, answered as one number instead of a column to add up
+
+You asked what the work had accomplished. Every ship reports its own
+rows/plans/participants and **those must not be summed** — a plan reached by
+several ships would be counted several times. So the question was answered by
+re-rendering the whole store through both versions of the page: the page as it
+stood on 2026-10-02 against the page today, same data, each plan counted once.
+
+**1,721,920 rows rendered through both. 47,129 changed their published answer.**
+
+| deduplicated reach (these overlap — don't sum them) | plans | people |
 |---|---|---|
-| the withdrawal-terms split (`Non Benefit-Responsive Investment Contracts`) | 171 | **480,837** |
-| Schedule H line 1a's own `Cash, non-interest bearing` | 22 | 15,855 |
-| a contract's accounting basis (`At contract value`, bare `contracts`) | 15 | 155,492 |
+| any change at all | **16,934** | **27,709,189** |
+| a ticker or fee claim | 15,032 | 17,396,116 |
+| a qualification label | 1,594 | 8,928,699 |
 
-Northeastern University had been publishing an accounting category at **11.70%
-of its menu / $355,740,693**; Keltec publishes one at **30.60%** of its whole
-menu. None published a ticker or a fee, so in every case the harm was the claim
-alone — and 33 of the 208 rows are at 10% or more of their own plan's menu.
+**The shape says more than the headline.** 39,191 rows gained a fund symbol and
+**not one lost or swapped one** — the work was additive identification, which is
+what the safety argument behind each ship predicted and is now measured across
+the whole store rather than ship by ship. The fee column barely moves (517 cells
+in 1.7M rows) and moves in the honest direction: **408 fabricated estimates
+withdrawn against 58 gained.** And 1,895 rows gained a "names no specific fund"
+label with **none lost**.
 
-## What was found wrong in my own work, and it is the same mistake twice
+Two limits I'd rather state than leave implied: this run does not split the
+39,191 symbol gains into *asserted* and *approximate* — that distinction is a
+whole category of claim and the per-ship records carry it; and the three reach
+figures overlap, so the smaller two are not slices of the larger.
 
-**The third ship was sized at 2.6x what it delivered, and the reason is worth
-the owner's attention because it is about how this project measures.** I asked
-every display predicate in the file I was editing whether it already covered
-the class, got "no" from all of them, and concluded 39 rows were unqualified.
-Rendered through the actual page code, the number is 15. The four names that
-account for the whole gap are the four *largest* by dollars — including the one
-I had written down as the motivating example, 24 rows and $167,946,996, and a
-single $486,386,519 row — and they were already labelled correctly, by a
-vocabulary that lives in the **parser**, reached through a callback composed at
-the display's call sites. *The arm that beat mine was never in the file I was
-reading.* An hour later my own page-measurement script made the same error in
-miniature.
+## What it cost to get that number, and what I fixed so it never costs it again
 
-Both are now written down as rules: the cheap instrument is to render the row
-through both versions of the page, and to do it *before* the predicate screen
-rather than after it.
+The walk is ~33 minutes of CPU. This container gives a background process CPU
+only while a turn is active, and **three consecutive attempts were killed by a
+container restart at 12, 22 and ~20 minutes in, each losing everything.** Rather
+than retry a fourth time, I made the instrument bank its progress after every
+shard, so a restart now costs one shard instead of the run.
 
-**And CI caught a third thing that every local check passed.** The ship needed
-the generated SEC ticker table rebuilt — a twenty-minute job — and I re-derived
-the page's cache-buster *before* that rebuild rather than after it. The rebuild
-rewrites one line inside the table, so the stamp was stale by construction and
-`site-test` went red on it. **The cost was not the one failed check: the four
-steps after it were skipped**, so the smoke test, the map test and the stamp
-gate itself never ran and everything past that point was unverified rather than
-passing. All four have since been run and are green, and the ordering is now a
-written rule. Nothing reached a reader incorrectly — the rebuilt table's key map
-is byte-identical, so a browser serving a cached copy gets the same answers —
-but the sequence was wrong and the gate was right.
+The resume is deliberately **refused** when the store has moved under it — the
+pipeline commits data hourly, and continuing across that would silently mix two
+populations, which is the most-repeated error in this project's record. I
+controlled the refusal before trusting it, and confirmed the store's own
+timestamp read identically before and after the successful 33-minute walk.
 
-**And the obvious version of the third fix was built, measured, and refused by
-reading its own output.** Adding the word `contract` to the existing caption
-vocabulary survives every count — and two of the fifteen names it newly touches
-are names *we* truncated, not names that say nothing: King Ranch's row is the
-second half of `New York Life Insurance Company Investment - contract value`,
-proved by the row next to it carrying the first half at the identical dollar
-figure, and Brown University's `Contract — shares` lost its product name to a
-column artifact. Those two carry 48% of the money in the class. That vocabulary
-matches whole strings, so each word added multiplies with every word already
-there — this is the third time that has produced a false positive and the first
-time it produced a name we had cut rather than a real firm's name. The shipped
-rule is a separate test that cannot combine with it.
+## Waiting on you
 
-## Verified: two registrations, both held exactly
-
-- **#647** delivered the withdrawal-terms ship with the coverage line
-  **byte-identical on all 35 keys**, date included.
-- **#648** did the same for the cash caption. That registration is the one
-  worth noting: it was derived **by construction rather than by measurement** —
-  the file the change lives in has exactly two consumers in the pipeline, each
-  importing one function, and neither function can see the vocabulary that
-  changed. Two greps, and a prediction that refutes itself the moment someone
-  adds an import.
-
-## The pipeline, and a divergence that was proved harmless
-
-A scheduled run on main and a dispatched run on the dev branch finished five
-minutes apart, leaving each branch with a data commit the other lacked. Per the
-project's own rule that timing is never the evidence here, the stores were
-diffed structurally: **every file identical once the generation timestamp is
-stripped, 112,652 plan rows with none unique to either side, 69,046 parse
-records with no differences, and both runs appended the identical line to the
-coverage trail.** The same data twice, so the branches were converged without
-losing anything.
-
-## Waiting on the owner
-
-Unchanged, and all of them large:
-
-- The **Hartford summary-table mis-pairing** — a parser defect putting $5.34B
-  on the wrong names while every check reads clean, because a mis-pairing
-  conserves the sum. Needs a parser bump and a full re-parse.
-- Wrong-share-class symbol-and-fee (11.1M readers, with a one-directional 9.1M
-  slice), our own store contradicting our own page (8.2M), the fee pre-emption
-  (13.3M), fabricated stable-value expense ratios (7.4M), and the SEC
-  comparable half (49.1M).
-
-## What was held, and why
-
-- **~$4.4B of the contract residue**: `Guaranteed Investment Contracts`,
-  `Annuity Contracts`, `Insurance Contract` and four smaller families. Each is
-  one word away from today's rule and each is a *real product class* rather
-  than an accounting basis — a plan genuinely holds a guaranteed investment
-  contract — so suppressing them is a different question, and every one is now
-  measured rather than guessed at.
-- The 186 caption rows whose issuer cell names something real. They want the
-  filed asset type, not a "names no specific fund" label.
-
-## The 12:07 draw: AT&T's own page
-
-The random draw landed on At&T Inc. — 192,505 participants, $42.7 billion —
-and found two things on the committed page, which needs no interpretation from
-me:
-
-```
-Teaf50020002 · Bgi Equity Index Fund F        $8,803,529,822
-Teaf10100002 · 00206r102 At&T Inc             $3,859,276,939
-```
-
-**Eleven of the twelve rows the page shows lead with AT&T's own internal fund
-code**, because that code sits in the cell we print as the provider. And the
-plan's own employer stock — 9% of the menu — is published with its CUSIP in
-front of the company name and **no ticker**, although our own plan record holds
-the symbol. Sized at 166 rows / 597,335 participants for the first shape and
-264 rows / 515,346 for the second.
-
-Two honest qualifications, both recorded: stripping the CUSIP is measured at
-**zero** yield in every priced column, so that one is legibility rather than
-identification; and the missing ticker is **not** caused by either shape — I
-varied each independently on the real plan record and all four readings came
-back the same — so the cause is still unknown and is written down as a question
-rather than an answer.
-
-The second drawn plan, Vesuvius USA, is the machinery working: nearly every row
-resolves, four category rows are correctly labelled as naming no fund, and its
-three gaps are each a class already queued.
+Unchanged, and all large. The biggest are the wrong-share-class symbol and fee
+(11.1M readers, with a one-directional 9.1M slice measured at zero
+counterexamples), our own store contradicting our own page (8.2M), the fee
+pre-emption (13.3M), fabricated stable-value expense ratios (7.4M), and the
+Hartford parser mis-pairing that puts $5.34B on the wrong names while every
+check reads clean.
 
 ## What continues
 
-- The hourly cycle is healthy; the self-bound Routine fired on schedule.
-- The audit issue sits at its baseline 4 HIGHs.
-- Main and the dev branch are converged.
+- The hourly cycle is live again and will take the next queue item.
+- Main and the dev branch are converged; the audit issue sits at its baseline 4.
+- Nothing is pre-registered and pending.
