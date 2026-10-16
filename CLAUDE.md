@@ -56,6 +56,10 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   2026-09-06 — a no-op hour exits without committing), and `0 6 * * 1` weekly.
   Plus a push trigger on scripts/** (touch `scripts/.kick` to force a run).
   workflow_dispatch works from main.
+- **`sec-tickers.yml`** — dispatch-only workflow that regenerates
+  `sec-tickers.js` on a runner (30 min of CPU), diffs the key map, re-stamps and
+  commits only if a key moved. Dispatch it when `sec-tickers-stamp-test` goes
+  red; never run the generator in-session.
 - **Scripts**: `scripts/build-data.mjs` (dataset ingest), `scripts/lib-4i.mjs`
   (parser + feature extractor, exports PARSER_VERSION), `scripts/fetch-4i.mjs`
   (PDF fetch/parse loop), `scripts/merge-4i.mjs` (delta merge + index),
@@ -6426,6 +6430,19 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 These outlived the versions that produced them. The accuracy log has the case.
 
+- **THE `sec-tickers.js` REGENERATION IS A WORKFLOW DISPATCH, NOT A FOREGROUND
+  THIRTY MINUTES (2026-10-16).** `.github/workflows/sec-tickers.yml`, dispatch
+  only: it regenerates, DIFFS THE KEY MAP (printing every REMOVED and CHANGED
+  key in full), re-derives the stamp, runs `sec-tickers-stamp-test` and
+  `sec-tickers-test`, and commits only if anything moved, rebasing rather than
+  forcing. **Dispatch it the moment `sec-tickers-stamp-test` goes red and carry
+  on with the cycle** — that gate is the trigger, which is why the workflow has
+  no push trigger of its own (one would fire on every frontend commit and race
+  the session's pushes). The regeneration is **30 minutes of CPU, not 20**, and
+  this container grants a background process CPU only while a turn is active, so
+  running it in-session cost 15+ polling turns of the one resource this file
+  names as genuinely scarce. Runners are free here and measured so.
+  `docs/accuracy-log.md` 2026-10-16 (16:1xZ).
 - **RE-DERIVE THE CACHE-BUSTER *AFTER* THE `sec-tickers.js` REGEN, NEVER BEFORE
   IT (2026-10-12).** `sec-tickers.js` is a STAMPED asset and the regen rewrites
   its `SEC_TICKERS_CODE` line, so a stamp taken before the regen is stale **by
