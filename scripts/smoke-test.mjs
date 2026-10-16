@@ -1899,6 +1899,18 @@ try {
     { name: "Unallocated Insurance Contracts", type: "Stable value / GIC" },
     { name: "Investment contract - Lincoln Stable Value Account", type: "Collective trust" },
     { name: "Fully Benefit-Responsive Investment Contract VALIC", type: "" },
+    /* the BLANK type cell, pinned a second time from the live store because the
+     * relaxation is tempting and its price is now measured: dropping the
+     * `^mutual fund` gate reaches 823 published+served rows, 683 of them /
+     * 1,213,651 ppl gaining this label, and it moves the TYPE CELL ALONE — the
+     * fee gate is asked `(f.name, fundER)` and already covers every one of
+     * them, so 0 publish a fee or a ticker. `Fully Benefit-Responsive
+     * Investment Contract` is the largest member at 67 rows. Filling an empty
+     * cell from a claim the NAME COLUMN already prints is the owner's call to
+     * make, against app.js's recorded position that a blank is honest; until
+     * then this must stay a refusal, and it reddens CI if it stops being one.
+     * The full reading is in gen-generic-twin.mjs beside the same pin. */
+    { name: "Fully Benefit-Responsive Investment Contract", type: "" },
     { name: "Fidelity 500 Index Fund", type: "Mutual fund" },
     { name: "at contract value Fidelity 500 Index", type: "Mutual fund" },
     { name: "Contract Vanguard Value Index Fund Adm", type: "Mutual fund" },

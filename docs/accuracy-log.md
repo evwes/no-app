@@ -61007,3 +61007,105 @@ needs the caption CONSUMED into the label it already produces rather than
 deleted, which is a change to what the row prints and not to what the name says.
 Nothing shipped; both files reverted; the queue entry's prescription is replaced
 by this one.
+
+## 2026-10-16 20:4xZ — THE CONSUME FORM IS REFUSED BY A PIN THAT ALREADY CONSIDERED IT, AND ONE GREP WOULD HAVE COME BEFORE THE MEASUREMENT
+
+The 19:3xZ entry refuted deleting the benefit-responsive caption and prescribed
+CONSUMING it instead — removing it from the name and stating it in the type
+column, as one unit, so no claim is lost. This cycle worked that prescription.
+It is refused, and the refusal is better evidence than the prescription was.
+
+**WHAT THE CENSUS SAYS, over all 4,616 caption-bearing published+served rows
+rendered through the live page.** The dominant bucket is **3,332 rows / 1,601
+plans / 2,701,649 ppl / $33,035,676,493 with a BLANK type cell and no fee** —
+the caption in the name is the only thing telling those readers the holding is
+a contract. Then `Stable value / GIC` 371 / 649,319 ppl, `Pooled separate
+account` 253 / 531,849, `Mutual fund` 156 / 160,370, our own `Investment
+contract` 118 / 167,968, `Collective trust` 69 / 141,344, `Annuity contract`
+58 / 49,934, and **51 rows / 68,854 ppl / $496,997,970 with a BLANK type cell
+publishing the owner-gated fabricated 0.35**.
+
+**THE NAME-STRIP HALF SPLITS THREE WAYS and only a third of it is consumable.**
+Of the rows the leading-caption strip reaches: **CONSUME 69 rows / 69 plans /
+118,473 ppl / $511,180,092** (blank type, the remainder a real stable-value
+product — `Transamerica Stable Value Core Option`, `Lincoln Stable Value
+Account`, `Key Guaranteed Portfolio Fund`, `John Hancock Stable Value R11`,
+`MassMutual Diversified SAGIC II Fund`), **HOLD 36 rows / 73,301 ppl** where
+the remainder is the carrier alone (the previous cycle's validated refusal),
+**LEAVE ALONE 28 rows / 28,711 ppl** where the filer states `Mutual fund` and
+the shipped contract rule declines through its own escape hatch. *The
+already-labelled bucket is DISJOINT from the reached one* — 0 of the 118 rows
+we type `Investment contract` are reached, because they are filed with a dash
+separator and the bare-whitespace arm requires whitespace — so "pure
+legibility where a label is already printed" is an empty population.
+
+**AND THE CENSUS HANDED BACK SOMETHING BETTER THAN THE PRESCRIPTION: the TYPE
+RULE IS NARROWER THAN ITS OWN FEE GATE, and nobody had checked that
+direction.** `annuityFeeIsGuaranteeOnly` is asked `(f.name, fundER)` and reads
+**no type at all**, while `isInvestmentContractRow` opens `if
+(!/^mutual fund/i.test(type)) return false;`. So for every row whose filer left
+the type cell EMPTY, one half of one shipped rule fires and the other declines.
+The note above the fee gate is titled *"THE FEE GATE MUST NEVER AGAIN BE
+NARROWER THAN THE TYPE RULE"*; the inverse was never written down.
+
+Sized through the shipped predicate with that one gate relaxed and nothing else
+varied, over every published+served row with a blank type cell carrying a
+contract designation — **823 rows**, of which:
+
+| | rows | plans | ppl | $ |
+|---|---|---|---|---|
+| would GAIN the `Investment contract` label | **683** | 637 | **1,213,651** | 7,371,212,924 |
+| keep `Filing names no specific fund` | 139 | 139 | 400,843 | 1,350,529,131 |
+| KEPT by the remainder test (names a fund) | 1 | 1 | 369 | 342,870 |
+
+The 139 need no condition: `namelessRow` is asked FIRST, deliberately, so
+`UNALLOCATED INSURANCE CONTRACTS` keeps the stronger true statement rather than
+printing the same phrase twice. **And the FEE is not the prize — it is already
+withheld. 0 of the 823 publish a fee today and 0 publish a ticker**, which is
+the consequence of the asymmetry rather than a hope, so the change would move
+**the TYPE CELL ALONE**. The 51 blank-type rows at 0.35 are NOT in this class:
+their names carry `benefit-responsive` without either contract phrase, so they
+stay with the owner-gated stable-value family rather than being swept in by a
+wider vocabulary.
+
+***AND THEN THE PIN. `gen-generic-twin.mjs`'s must-KEEP list already carries
+`{ name: "Fully Benefit-Responsive Investment Contract VALIC", type: "" }` — the
+BLANK type cell, explicitly, as its own fixture.*** Somebody had this exact
+relaxation in front of them, with a name that states the category in full, and
+pinned against it under *"the type is already honest or more specific than this
+one"*. app.js's own chain says why in the same words: for a row whose filing
+states no type *"the cell reads what it reads: nothing. A blank is honest."* So
+filling an empty cell from a claim the NAME COLUMN already prints is a display
+POLICY reversal over 1.2M readers, not a defect fix — **the owner's call, and
+the pin wins.** Nothing shipped; `lib-disclose.mjs` reverted.
+
+***THE RULE, AND IT IS ONE THIS RECORD ALREADY STATES IN THE RIGHT ORDER:
+before acting on a queued prescription, GREP THE FIXTURES FOR THE CONDITION IT
+TOUCHES.*** The 2026-10-04 entry that earned it says a pin is newer evidence
+than the entry contradicting it, and it cost one reverted ship then. Here the
+grep came AFTER three whole-store measurements — the measurements were worth
+having and would have been worth having *second*. For a predicate, the thing to
+read is its must-NOT-fire list, which took one `sed`.
+
+**WHAT SHIPPED IS THE PRICE OF THE REFUSAL, in both fixture lists.** The pin is
+duplicated from the live store (`Fully Benefit-Responsive Investment Contract`,
+the class's largest member at 67 rows) and both copies now carry the figures
+above, so the next cycle reads the measurement instead of re-deriving it. It
+went into **`smoke-test.mjs` as well as the generator** deliberately: the
+generator is NOT run in CI, so a pin living only there is exercised only when
+someone regenerates, while smoke-test's copy reddens by name if a later cycle
+relaxes the gate. Both lists keep their `slice(0, 7)` / `slice(7)` split, so the
+additions land in the must-KEEP half by position. Smoke test green; `app.js`
+unchanged, so no restamp and no regeneration are owed.
+
+**NAMED RESIDUE, found by running the generator and worth one line: `app.js`'s
+generated twin of `OPAQUE_ID_CELL` carries a SHORTER COMMENT than its
+canonical** — a ship expanded the comment in `lib-disclose.mjs` without
+re-running `gen-generic-twin.mjs`. Behaviour is byte-identical (all 43 changed
+lines are comments; the regex and the function body are untouched), so the drift
+publishes nothing and cannot move a key. It is deliberately NOT adopted this
+cycle: the re-slice lands inside the fingerprinted region, so it moves
+`SEC_TICKERS_CODE` and the `app.js` stamp — a 30-minute `sec-tickers.yml`
+regeneration spent on a comment. *The rule is to run the generator after
+touching a GENERATED BLOCK, and a change to the generator's own fixture list is
+not one.* The next ship that moves that region adopts it for free.

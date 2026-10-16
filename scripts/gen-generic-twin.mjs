@@ -784,10 +784,33 @@ const investmentContractRows = [
   { name: "investment contract Dodge & Cox Income Fund Class X", type: "Mutual fund" },
   { name: "Investment Contract American Funds Europacific GR R6", type: "Mutual fund" },
   { name: "Responsive Investment Contract American Funds The Bond Fund of America", type: "Mutual fund" },
-  /* must KEEP — the type is already honest or more specific than this one */
+  /* must KEEP — the filer's type is MORE SPECIFIC than this label. A
+   * benefit-responsive contract held inside a stable-value collective trust is
+   * a real structure and the filer's word for it is not ours to replace. */
   { name: "Unallocated Insurance Contracts", type: "Stable value / GIC" },
   { name: "Investment contract - Lincoln Stable Value Account", type: "Collective trust" },
+  /* must KEEP — the type cell is BLANK, and a blank is honest. SIZED 2026-10-16
+   * rather than left as one example, because the relaxation is tempting and the
+   * reason it is refused is a judgment rather than a defect:
+   *   - relaxing the gate to `if (type && !/^mutual fund/i.test(type))` reaches
+   *     823 published+served rows, of which 683 / 637 plans / 1,213,651 ppl /
+   *     $7,371,212,924 would gain the label (139 keep `Filing names no specific
+   *     fund`, which the arm ORDER already decides; 1 is held by the remainder
+   *     test). `Fully Benefit-Responsive Investment Contract` alone is 67 rows.
+   *   - and the FEE is NOT the prize: `annuityFeeIsGuaranteeOnly` is asked
+   *     `(f.name, fundER)` and reads NO type, so it already covers every one of
+   *     these rows. 0 of the 823 publish a fee today and 0 publish a ticker, so
+   *     the change would move the TYPE CELL ALONE.
+   * So the two halves of one shipped rule do disagree about their reach — the
+   * fee gate's own note is titled "THE FEE GATE MUST NEVER AGAIN BE NARROWER
+   * THAN THE TYPE RULE" and the inverse was never checked — but what the TYPE
+   * half would gain is a cell filled from a claim the NAME COLUMN already
+   * prints, against app.js's recorded position that for a row whose filing
+   * states no type "the cell reads what it reads: nothing." That is the owner's
+   * call to reverse, not a cycle's, which is why these pins stay must-KEEP and
+   * carry their own price. */
   { name: "Fully Benefit-Responsive Investment Contract VALIC", type: "" },
+  { name: "Fully Benefit-Responsive Investment Contract", type: "" },
   /* must KEEP — typed `Mutual fund`, and the name says no contract at all.
    * `contract value` is a MEASUREMENT BASIS and must never reach this arm. */
   { name: "Fidelity 500 Index Fund", type: "Mutual fund" },

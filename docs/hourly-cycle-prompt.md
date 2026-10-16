@@ -1227,3 +1227,43 @@ deleting. That is a change to what the row prints.
 relaxation, at most 2,868 rows with the recorded cross-fund exposure; (3) the
 1,178 Income-rename rows, which need a SOURCED rename via `fund-facts`.
 `docs/accuracy-log.md` 2026-10-16 (19:3xZ).
+
+**20:07 — THE CONSUME FORM IS WORKED AND REFUSED BY A PIN THAT ALREADY
+CONSIDERED IT. Item (1) above is CLOSED; nothing shipped but the price of the
+refusal.** The census of all 4,616 caption-bearing published+served rows is in
+the log; the strip's reachable population splits CONSUME 69 rows / 118,473 ppl
+/ HOLD 36 / 73,301 / LEAVE ALONE 28 / 28,711, and the bucket we already label
+`Investment contract` (118 rows) is DISJOINT from the reached one, so "pure
+legibility where a label is already printed" is an empty population.
+**WHAT THE CENSUS HANDED BACK IS BETTER THAN THE PRESCRIPTION: the TYPE RULE IS
+NARROWER THAN ITS OWN FEE GATE.** `annuityFeeIsGuaranteeOnly` is asked
+`(f.name, fundER)` and reads NO type, while `isInvestmentContractRow` opens
+`if (!/^mutual fund/i.test(type)) return false;` — so on a BLANK type cell one
+half of one shipped rule fires and the other declines. Relaxing that one gate
+reaches 823 rows: **683 / 637 plans / 1,213,651 ppl / $7,371,212,924 gain the
+label**, 139 keep `Filing names no specific fund` (the arm ORDER already decides
+that), 1 is held by the remainder test — and it moves the **TYPE CELL ALONE**,
+because the fee gate already covers them (0 of 823 publish a fee, 0 a ticker).
+***REFUSED BECAUSE `gen-generic-twin.mjs` ALREADY PINS
+`{ name: "Fully Benefit-Responsive Investment Contract VALIC", type: "" }` AS
+MUST-KEEP*** — the blank cell, explicitly, under "the type is already honest",
+which is app.js's own recorded position. Filling an empty cell from a claim the
+NAME COLUMN already prints is a display-policy reversal over 1.2M readers:
+**the owner's call, and the pin wins.** The rule, already on this record in the
+right order: *before acting on a queued prescription, grep the fixtures for the
+CONDITION it touches* — here the grep came after three whole-store
+measurements, and for a predicate the thing to read is its must-NOT-fire list.
+SHIPPED: the pin duplicated from the live store (67 rows) with the figures
+beside it, in **`smoke-test.mjs` as well as the generator**, because the
+generator is not run in CI and a pin living only there is exercised only when
+someone regenerates. app.js unchanged → no restamp, no regeneration owed.
+**NAMED RESIDUE:** `app.js`'s generated twin of `OPAQUE_ID_CELL` carries a
+shorter COMMENT than its canonical (43 lines, all comments, behaviour
+byte-identical). Deliberately not adopted — the re-slice lands inside the
+fingerprinted region, so it would move `SEC_TICKERS_CODE` and the stamp and cost
+a 30-minute regeneration spent on a comment. The next ship there adopts it free.
+**NEXT:** (1) the owner decision above, one line, measurement ready; (2) the
+omitted-series-word relaxation, at most 2,868 rows with the recorded cross-fund
+exposure, whose next measurement must carry the real rows out of the store;
+(3) the 1,178 Income-rename rows, which need a SOURCED rename via `fund-facts`.
+`docs/accuracy-log.md` 2026-10-16 (20:4xZ).
