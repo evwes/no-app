@@ -97,14 +97,31 @@ const FID_PINS = [
   ["\u0000FID FREEDOM INDEX 2050 PREM II", "FAVQX", "Premier II, two tokens"],
   ["\u0000Fidelity Freedom Indx 2055 Inv", "FDEWX", "Investor"],
 ];
-/* AND THE RESIDUE, ASSERTED AS AN ABSENCE so it cannot be mistaken for a gap in
- * the arm. `Fidelity Freedom 2050 K Fund` is NOT in the table and must not be:
- * the base matcher answers it as a COMPARABLE, the call site drops a comparable
- * before the Fidelity arm is reached, and promoting a comparable to an assertion
- * is a different claim from filling a blank — the same boundary the Admiral
- * arm's own 383 comparable cells sit behind. Measured: 6,510 of the arm's 6,572
- * `K`-class rows are in this residue. */
-const FID_RESIDUE = "\u0000Fidelity Freedom 2050 K Fund";
+/* THAT RESIDUE IS NO LONGER A RESIDUE, AND THIS PIN IS WHY THE CHANGE WAS
+ * MEASURED BEFORE IT SHIPPED (2026-10-16).
+ *
+ * It used to assert an ABSENCE: `Fidelity Freedom 2050 K Fund` was NOT in the
+ * table, because the base matcher answers it as a COMPARABLE and `secAsk`
+ * dropped a comparable before the Fidelity arm was reached. Its own comment
+ * named the size — "6,510 of the arm's 6,572 `K`-class rows are in this
+ * residue" — and called promoting one "a different claim from filling a blank".
+ *
+ * IT WAS RIGHT TO REFUSE AND WRONG ABOUT THE CLAIM, and both halves are worth
+ * keeping. Right to refuse: when the precedence override shipped, THIS
+ * ASSERTION IS WHAT FAILED THE REGENERATION WORKFLOW, so no table was
+ * committed until the promotion had been measured and written down — the whole
+ * point of pinning an absence. Wrong about the claim: a comparable is never
+ * shipped from this generator, so every one of those rows publishes NOTHING
+ * today, and preferring the assertion fills a blank rather than replacing a
+ * symbol. Measured over the whole population with the generator's gates
+ * applied: 7,332 rows / 784 plans / 963,321 ppl, all blank, and the registry
+ * registers FNSBX as exactly the `Class K` the filing states where the hedged
+ * FFFHX is the INVESTOR class.
+ *
+ * So it is now a PRESENCE pin, and it is the only test of that precedence:
+ * `classStated` in the generator refuses an arm answer whose class the filing
+ * does not state, and if the override were lost this key would vanish. */
+const FID_PROMOTED = ["\u0000Fidelity Freedom 2050 K Fund", "FNSBX"];
 {
   const got = [];
   for (const [key, tk, why] of FID_PINS) {
@@ -113,8 +130,11 @@ const FID_RESIDUE = "\u0000Fidelity Freedom 2050 K Fund";
     ok(!!hit && hit.tk === tk, `the Fidelity contraction arm still ships (${why}): ${JSON.stringify(key.slice(1))} -> ${tk} (got ${hit ? hit.tk : "null"})`);
     ok(!!hit && hit.comparable === false, `...ASSERTED, never behind an asterisk (${why})`);
   }
-  const res = lookupTicker(rowFromKey(FID_RESIDUE));
-  ok(!res, `the comparable residue is still a residue: ${JSON.stringify(FID_RESIDUE.slice(1))} resolves nothing, because the base matcher's comparable is dropped before this arm runs (got ${res ? res.tk : "null"})`);
+  const res = lookupTicker(rowFromKey(FID_PROMOTED[0]));
+  ok(!!res && res.tk === FID_PROMOTED[1],
+    `an arm naming the STATED class outranks a hedged registry answer: ${JSON.stringify(FID_PROMOTED[0].slice(1))} -> ${FID_PROMOTED[1]} (got ${res ? res.tk : "null"})`);
+  ok(!!res && res.comparable === false,
+    "...ASSERTED, because the registry registers that symbol as the Class K the filing states — the hedge was the INVESTOR class");
   ok(new Set(got.filter(Boolean)).size === got.filter(Boolean).length,
     `the four class contractions resolve to DIFFERENT symbols — a conflation would publish the wrong class as fact (got ${JSON.stringify(got)})`);
 }
