@@ -7,6 +7,78 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-16 (08:4xZ) — SHIPPED: THE MERGE NOW SAYS HOW MANY TICKER KEYS ITS OWN NAME REPAIRS INVALIDATED, AND THE 08:07 DRAW GIVES THE WRONG-SHARE-CLASS ITEM ITS SHARPEST WITNESS YET — THREE ROWS, ONE MENU, THREE DIFFERENT ANSWERS TO THE SAME STATED CLASS
+
+**The gap recorded one hour earlier is closed with a NUMBER rather than a wider
+fingerprint.** `sec-tickers.js` is keyed on `(issuer, nameRaw)` — the name AS
+STORED — so any of the ten arms in `merge-4i`'s repair chain that rewrites a
+name makes that row's key unreachable until the table is regenerated, and the
+row's published symbol goes blank meanwhile. `sec-tickers-stamp-test` cannot see
+it: that gate fingerprints the DISPLAY slice and this file is deliberately
+outside it, because hashing a file that changes every other day would demand a
+20-minute regeneration for a comment. **Widening the fingerprint was the obvious
+remedy and is the wrong one; the cheap one is to make the program say what
+happened.**
+
+Each arm now reports how many of its repairs landed on a row the table had an
+answer for, and the identifier arm declines those outright, so **it reports 0 BY
+CONSTRUCTION and the tally is the control on that claim too.**
+
+**MEASURED, WITH A POSITIVE CONTROL, because a check that prints 0 on a quiet
+store has not been tested:**
+
+| | |
+|---|---|
+| live store, all ten arms | **NONE** — the six older arms are not currently costing a key |
+| refusal (3) neutered in a copy | **`cus 7`**, with the `!!` note — the counter fires and names the right arm |
+| convergence | three merges over one store repair **16, then 0, then 0** |
+
+The live NONE is *a fact about today's store and not a property of those arms* —
+their counters are prospective, which is said out loud in the code. The 7 are
+exactly what refusal (3) protects, so the control uses real data rather than a
+crafted row. And the line prints whenever any arm fired, **including when every
+figure is 0, because a line that only appears on bad news is a line nobody
+learns to read.** `PARSER_VERSION` stays 203; this is instrumentation and no
+published cell moves.
+
+*The 16 are rows that arrived with the scheduled data commits around #676 rather
+than non-idempotence — which is what the third run settles, and which is worth
+running rather than arguing: `nounRepair`'s own tether asserts idempotence on
+five fixtures and that is not the same as asserting it on the store.*
+
+**AND THE 08:07 DRAW FOUND THE SHARPEST SINGLE-MENU WITNESS YET FOR THE
+OWNER-GATED WRONG-SHARE-CLASS ITEM. Lifestance Health (12,474 ppl, ratio 0.988)
+states `Investor Shares` on two adjacent rows and gets two different kinds of
+answer, with every verdict read out of `sec-funds.json` rather than recalled:**
+
+| filed | registry says | the page publishes | |
+|---|---|---|---|
+| `Total Stock Market Index Investor Shares` | **VTSMX** Investor Shares | **VTSAX** at 0.1 on $17,752,001 | **WRONG class, ASSERTED** — VTSAX is ADMIRAL |
+| `Growth Index Investor Shares` | **VIGRX** Investor Shares | **VIGRX** at 0.1 on $14,178,617 | correct |
+| `Information Tech Index Adm Shares` | **VITAX** Admiral Shares | **no ticker**, 0.1 on $7,660,122 | a coverage gap the registry can close |
+
+***One menu, one house, the class word stated every time, and three outcomes:
+the right class, a different class as FACT, and nothing.*** The recorded framing
+of this item is that the page publishes a different class where the filing
+states one; this adds that the SAME stated class resolves correctly one row
+later, so the discriminator is not the class word and not the house but which
+arm `fund-er.js` happens to carry for that series. The third row is the
+CONTRACTION class (`Information Tech` for Information Technology, `Adm Shares`
+for Admiral Shares) and the registry has the answer.
+
+**The FEE is wrong on all three in the same way and belongs to the recorded
+families:** 0.1 is published on VTSAX (whose real cost is nearer 0.04) and on
+VIGRX (nearer 0.17), so the one number is a category estimate standing in for
+two very different funds — the one-ticker-two-fees item, with the per-class
+figures `data/fund-facts.json` does not hold. Still the owner's call.
+
+**DELIVERED AND VERIFIED BY #677 (`success`, push on `a93cc06a`, data commit
+`2a58a0af`, mirrored to main) — the coverage line is IDENTICAL on all 35 keys**,
+one line appended and none rewritten, `pv` 203 at 99.9%, HIGH at the baseline 4,
+WARN 556, overshoot 370, `dl` 93. Which is the whole safety claim for
+instrumentation: a line that reports on the program must not change what the
+program does.
+
 ## 2026-10-16 (08:0xZ) — SHIPPED: A SECURITY IDENTIFIER WELDED IN FRONT OF THE HOLDING'S NAME — 651 stored rows / 225 published+served / 19 plans / 509,902 ppl / $62,908,343,338, AND THE NAME IS THE ONLY PUBLISHED CELL THAT MOVES
 
 **AT&T's trust publishes `00206r102 At&T Inc` and eleven more rows leading with

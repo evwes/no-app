@@ -872,3 +872,23 @@ in it, so a merge-side NAME repair invalidates table keys with nothing going red
 — *our own repair is the drift*. Worth its own cycle: either add the repair arms
 to the fingerprint, or have the merge report how many keys its repairs
 invalidated. `docs/accuracy-log.md` 2026-10-16 (08:0xZ).
+
+### SHIPPED 2026-10-16 08:4xZ — the merge reports its own ticker-key invalidations
+
+The queued gap, closed with a number rather than a wider fingerprint. Each of
+`merge-4i`'s ten repair arms now reports how many repairs landed on a row
+`sec-tickers.js` was keyed on; the identifier arm declines those, so it reports
+0 by construction. Live store: **NONE** on every arm (a fact about today's store,
+not a property of the arms). Positive control: neutering refusal (3) makes the
+tally read **`cus 7`**. Convergence: three merges repair 16, then 0, then 0.
+`docs/accuracy-log.md` 2026-10-16 (08:4xZ).
+
+### and the 08:07 draw — the wrong-share-class item's sharpest witness
+
+Lifestance Health (12,474 ppl) states `Investor Shares` on two adjacent rows:
+`Total Stock Market Index Investor Shares` publishes **VTSAX** (Admiral) as FACT
+where the registry says **VTSMX**, while `Growth Index Investor Shares` publishes
+**VIGRX** correctly. A third row, `Information Tech Index Adm Shares`, publishes
+no ticker at all where **VITAX** is registered. One menu, one house, the class
+stated every time, three outcomes — so the discriminator is which arm
+`fund-er.js` carries for that series, not the class word. Owner-gated.
