@@ -6443,6 +6443,17 @@ These outlived the versions that produced them. The accuracy log has the case.
   running it in-session cost 15+ polling turns of the one resource this file
   names as genuinely scarce. Runners are free here and measured so.
   `docs/accuracy-log.md` 2026-10-16 (16:1xZ).
+- **A JOB LOG IS READABLE — THROUGH THE GITHUB MCP SERVER, NOT THROUGH `gh`
+  (2026-10-16).** `gh api repos/…/actions/jobs/<id>/logs` refuses the blob
+  redirect GitHub serves logs from, and that was written down here as a property
+  of the container; it is a property of ONE client.
+  `mcp__github__get_job_logs` with `return_content: true` (and `tail_lines`)
+  returns the text, which is the only way to read a workflow's own printed
+  evidence — the `sec-tickers.yml` key diff above being the case that matters.
+  *When one client cannot fetch something, ask whether another client in the
+  same session can before recording the environment as unable.* Large logs
+  exceed the tool's output limit and are saved to a file; grep that file rather
+  than re-fetching.
 - **RE-DERIVE THE CACHE-BUSTER *AFTER* THE `sec-tickers.js` REGEN, NEVER BEFORE
   IT (2026-10-12).** `sec-tickers.js` is a STAMPED asset and the regen rewrites
   its `SEC_TICKERS_CODE` line, so a stamp taken before the regen is stale **by
