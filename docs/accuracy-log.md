@@ -7,6 +7,84 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-16 (05:3xZ) — THE ACRONYM CLASS IS CLOSED BY MEASUREMENT (NO SIBLING DESIGNATION EXISTS), AND THE FEE GATE'S WHOLE REMAINING RESIDUE IS THE OWNER-GATED STABLE-VALUE ITEM — RE-DERIVED AT 6,567 rows / 6,367 plans / 10,083,769 ppl / $36,129,478,831, OF WHICH **4** PUBLISH A TICKER
+
+**This record's most-repeated rule is that a fix for one phrasing of a class is
+not a fix for the class, so the hour after shipping ONE acronym (GIC/SAGIC) the
+question is whether others are hiding behind the same gate.** Asked as one
+measurement rather than guessed as a vocabulary, and the answer is no.
+
+**THE QUESTION HAS AN EXACT FORM, BECAUSE THE GATE HAS TWO CONDITIONS.**
+`annuityFeeIsGuaranteeOnly` admits a row when (1) its name carries the filing's
+own word `contract` — or that word as the acronym — and (2) the remainder stops
+pricing once the guarantee words come out. (2) is the safety and is already
+validated, so the residue is exactly: **rows the page PRICES, where (2) holds
+and (1) does not.**
+
+**THE CANDIDATE SET IS A SUPERSET BY CONSTRUCTION, which is what made it
+affordable at 1,721,920 rows:** (2) can only hold if the name contains one of
+`GUARANTEE_PRICED_WORDS`' own tokens, because otherwise the strip is a no-op and
+the remainder prices exactly as the whole name did — so a priced row could never
+satisfy it. 22,535 candidates, 6,619 of them priced, token set SLICED from the
+shipped constant with four probes.
+
+| | |
+|---|---|
+| residue | **6,567 rows / 1,850 distinct names / 6,367 plans / 10,083,769 ppl / $36,129,478,831** |
+| publishing a TICKER | **4** |
+| asterisked | **0** |
+| at >=10% of their own menu | **1,147** |
+| filed TYPE | **(blank) 5,716** · `Mutual fund` 742 · `Separate account` 53 · `Cash / short-term` 53 |
+| fee values present | **0.35 x6,472** · 0.3 x54 · 0.4 x41 |
+
+**READING THE TOP 40 BY ROWS AND THE TOP 12 BY DOLLARS SETTLES THE ACRONYM
+QUESTION: every one is a stable-value or guaranteed-option product with NO
+contract designation in ANY form** — `Key Guaranteed Portfolio Fund` x348, `TIAA
+Stable Value` x323, `AUL STABLE VALUE ACCOUNT` x296, `Guaranteed Income Fund`
+x256 / **$2,871,795,825**, `Principal Guaranteed Option` x170, `Putnam Stable
+Value Fund` x114 / $1,066,522,807. **Not one carries a second abbreviated
+designation**, so there is no `GAC`, `GA` or other initialism left to admit and
+the 06:5xZ ship is COMPLETE for its class. *That is worth more than another
+arm: it converts "we fixed one phrasing" from an open worry into a closed
+measurement.*
+
+***AND THE DECISION-RELEVANT FACT IS THE TICKER COLUMN: 4 OF 6,567 ROWS PUBLISH
+A SYMBOL.*** So withdrawing these fees would cost essentially no identification
+— the whole effect is the withdrawal of one fabricated number from **10.08M
+readers** — which is exactly the one-directional property the owner's decision
+turns on, and it was not previously stated for this item. **87% are
+BLANK-TYPED** (5,716 of 6,567), which is the same blank-type-cell shape this
+record has now met nine times, and **three fabricated constants are in play
+rather than one** (0.35, 0.3, 0.4).
+
+**DO NOT CARRY THE RECORDED 4,669 rows / 7,389,704 ppl FORWARD AS THIS FIGURE,
+AND DO NOT READ THIS ONE AS A GROWTH:** they are different definitions of the
+same family. The recorded figure is a NAME screen; this one applies the gate's
+own residue test, the SERVING condition and the page's own `er`, so it is the
+population a single gate change could actually reach — which is the figure a
+decision needs. *A re-size is a NEW MEASUREMENT, not a delta against a
+remembered one.*
+
+**Largest by readers, all live:** Trinet Hr Iii **249,207 ppl**
+($264,870,974 at 3.07%), Darden 201,534, Lockheed Martin 180,780, Teamsters
+National 167,196, American Airlines 133,714 ($607,900,770 at 2.46%), **Tyson
+Foods 131,960 at 14.63% / $515,038,000**, Accenture $358,548,781, Sodexo
+112,218 at 6.26%. **Accenture's `PIMCO STABLE VALUE FUND` at that exact figure
+is the instance this record already names, so its appearance is a positive
+control that the screen reaches the recorded class** rather than some neighbour
+of it.
+
+*One honest note on the instrument: its `gate ADMITS today` counter reads 0 and
+is DECORATIVE by construction, not a finding — a row the gate admits has its fee
+withheld, so `er == null` and it is filtered out one line earlier. Named rather
+than reported as a result.*
+
+**STILL THE OWNER'S CALL, and the recommendation is unchanged:** *a fee is
+SOURCED, never derived*, `data/fund-facts.json` holds no stable-value figures,
+and the honest move is to WITHDRAW rather than re-price. What is new is that the
+decision now has its size under the definition that matches the one gate which
+would implement it, and the knowledge that it costs 4 tickers.
+
 ## 2026-10-16 (06:5xZ) — SHIPPED: THE CONTRACT DESIGNATION COMPRESSED INTO AN ACRONYM — 223 published+served rows / 216 plans / 683,649 ppl / $2,959,846,571 STOP PUBLISHING A FABRICATED EXPENSE RATIO, AND THE FEE IS THE ONLY CELL THAT MOVES
 
 **`annuityFeeIsGuaranteeOnly`'s gate is `CONTRACT_WORD` — the filing's own word

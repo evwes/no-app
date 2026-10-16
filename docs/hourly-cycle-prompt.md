@@ -806,3 +806,21 @@ condition; and **two OCR-damaged rows (`V anguard A trate gic Sm all-Cap Equity
 Fund`, `Lazard Inte rnational Strate gic Equity Fund`) want a NAME repair** —
 a space inside `strategic` MANUFACTURES the token, and the 0.35 they publish
 today is an accident of the same damage.
+
+### 2026-10-16 05:3xZ — the fabricated stable-value fee, RE-SIZED for the decision (OWNER-GATED)
+
+**The acronym class is CLOSED: no sibling designation exists.** Measured as the
+fee gate's whole residue — rows the page prices, priced ONLY by a guarantee
+word, and not admitted by `annuityFeeIsGuaranteeOnly` — over all 1,721,920
+published+served rows, candidate set a superset by construction:
+**6,567 rows / 1,850 distinct names / 6,367 plans / 10,083,769 ppl /
+$36,129,478,831**, of which **4 publish a ticker**, 0 are asterisked, 1,147 are
+at >=10% of their own menu, 5,716 are BLANK-TYPED, and the fee is 0.35 on
+6,472 / 0.3 on 54 / 0.4 on 41. All 40 commonest names and the 12 largest by
+dollars were read: every one is a stable-value or guaranteed-option product
+carrying NO contract designation in any form, so there is no further acronym to
+admit.
+**The decision-relevant fact is the ticker column: a withdrawal costs 4
+identifications and nothing else.** Do NOT carry the recorded 4,669 rows /
+7,389,704 ppl as this figure — different definition, not growth.
+`docs/accuracy-log.md` 2026-10-16 (05:3xZ).
