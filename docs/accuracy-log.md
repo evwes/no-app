@@ -60456,3 +60456,34 @@ the committed store with the new table, its computed line diffed key by key
 against the trail, **exactly one of the 35 keys moving**. *A pre-registration is
 void the moment a second ship lands in the same artifact, and leaving the older
 figure up would make the file predict a number that cannot occur.*
+
+### 2026-10-16 15:2xZ — I QUEUED A NON-GAP FROM A ONE-ARM PROBE, ONE HOUR AFTER SHIPPING AN ARM WHOSE SUBJECT IS THAT DISTINCTION
+
+**What was wrong.** The vintage-lift entry closed by naming the EuroPacific half
+of the same family as the next item: `American Fund EuroPacific Growth R6`
+abstains because the registered series is `EUPAC Fund` and `europacific growth`
+cannot abbreviate `eupac`. True of `afAbbrevAsk`, and **false of the page** —
+`renderRow` resolves **RERGX on all six spellings**, singular house included,
+through `fund-er.js`'s EUPAC push shipped 2026-10-10. Six calls settled it.
+
+***This record already carries the rule in capitals — "there are two resolvers,
+and a hypothesis refuted through one is untested through the other" — and the
+10:4xZ entry of THIS MORNING records me making the same mistake in the opposite
+direction, reporting a probe's NO MATCH for a row the page demonstrably
+publishes.*** So it has now happened twice in one day, and the second time was
+inside a queue entry written to brief the next cycle. **A one-arm abstention is
+not a gap: before queuing an item from a probe, render the row.**
+
+**What the probe did find is an existing class with a sharper witness.** The one
+resolved symbol publishes FOUR fees by spelling — `er` **null / 0.46 / 0.4 /
+null** across `American Fund EuroPacific Growth R6`, `American Funds EuroPacific
+Growth R6`, `American Funds EUPAC Fund R6` and `American Fund EUPAC R6` — a
+fourth named witness for the owner-gated one-ticker-two-fees item and the first
+where one of the two answers is a BLANK rather than a different number. The
+symbol is right on all four; only the cost disagrees.
+
+**Prevention.** The cycle record's "NEXT" line is corrected in place rather than
+appended to, because a queue entry is read as a brief and a wrong one costs the
+next cycle its hour. And the general form is worth more than this instance: the
+page is a CHAIN, so any claim of the form "X does not resolve" must name the
+resolver it was asked of, or be asked of `renderRow`.
