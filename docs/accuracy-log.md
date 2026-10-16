@@ -60937,3 +60937,73 @@ must be tested against.
 **Not shipped: 0 rows publish a ticker and 2 a fee, so the harm is the NAME
 alone**, and a three-way split with a composition question is a measured ship of
 its own rather than the tail of a cycle. Queued with its conditions named.
+
+## 2026-10-16 19:3xZ — REFUTED, DO NOT BUILD IT: the benefit-responsive caption is the page's only witness that the row is a CONTRACT
+
+The 19:1xZ draw sized a benefit-responsive caption welded in front of a real
+product name at 449 rows / 951,311 ppl, split it three ways by what survives the
+strip, and prescribed a STRIP with the composition against the shipped caption
+predicates as the measurement to take. **The composition came back clean and the
+strip is refuted anyway, by two columns the sizing never asked about.**
+
+**THE COMPOSITION QUESTION IS ANSWERED AND THE ANSWER IS GOOD.** The right arm
+was never a new one: `cleanFiledName` already carries a BARE-WHITESPACE caption
+family (`bwTYPE` + a four-token floor + `bwOpensWithAName` + `bwNoise`), so the
+change is one disjunct in its vocabulary. Sliced twice — pristine and widened —
+and asked for all **416,519 distinct stored names**: it reaches 122 distinct /
+185 stored rows, and
+- **the BASIS bucket is EMPTY.** `at contract value` — 59 rows of the shape and
+  its largest member by dollars — is refused by `bwOpensWithAName`, whose
+  furniture list already carries `at`. The screen that would have had to be
+  written was already there.
+- the four-token floor refuses the bare `VALIC` and every one-token remainder.
+- the ENTITY bucket needed one condition and it works: a remainder ending on a
+  corporate run with no PRODUCT NOUN after the legal name is the carrier alone.
+  SHIP 104 distinct / 149 rows, HOLD 18 / 36, **all 122 READ and the 18 held are
+  bare legal names 18 of 18** (`Empower Annuity Insurance Company of America`
+  ×16). Scoped to the disjunct deliberately, since the shipped comment's
+  counter-example (`Fidelity Growth Company`, a real fund) cannot sit behind a
+  benefit-responsive caption but can sit behind `Mutual funds`.
+
+***AND THEN THE DIFFERENTIAL KILLED IT. Measured through BOTH copies of
+`renderRow`, one per app.js, over every published+served row — 149 rows / 149
+plans / 278,260 ppl / $1,085,639,431 move, and the moving cells are not only the
+name:***
+
+| | rows | |
+|---|---|---|
+| `name` | 149 | the intended change |
+| **`er` GAINED** | **55** | **every one `—` -> 0.35**, $199,219,334 |
+| **`shownType`** | **25** | **every one `Investment contract` -> `Mutual fund`** |
+| ticker / asterisk / row membership | 0 | |
+
+(control: 17,705 sampled non-candidates differing on **0**; the twin agrees with
+`lib-disclose` on all 4,616 candidate rows; the narrowing is a superset by
+construction, the arm being unable to fire without a `benefit`/`responsive` run.)
+
+***SO THE CAPTION IS NOT FURNITURE — IT IS THE EVIDENCE.*** The page reads the
+filing's own `benefit-responsive investment contract` out of the NAME and
+publishes **`Investment contract`**, which is true; strip it and the page falls
+back to the filer's TYPE CELL and publishes **`Mutual fund`**, which is false. The
+same caption is what keeps `fund-er.js`'s stable-value pattern off the row: strip
+it and 55 rows newly publish the owner-gated fabricated **0.35** on $199M.
+*A legibility fix was about to delete a correct vehicle claim and manufacture a
+fee claim, and the name column alone showed neither.*
+
+**THE REUSABLE RULE: A CAPTION THAT LOOKS LIKE FURNITURE CAN BE THE PAGE'S ONLY
+WITNESS FOR A CLAIM IT MAKES ABOUT THE ROW — PRICE EVERY STRIP THROUGH THE TYPE
+AND FEE COLUMNS BEFORE CALLING IT LEGIBILITY.** This record already says *the
+page is the artifact* and *a name change can move row membership*; this is the
+third column and the first time a strip was found to be net harmful while
+changing no ticker and dropping no row. It is also the inverse of the recorded
+`gicRow` family: there a BLANK type cell defeats a suppressor, and here the NAME
+is what saves it.
+
+**What survives, and it is a DISPLAY question rather than a name one:** the
+reader is shown `Fully benefit-responsive investment contract Lincoln Stable
+Value Account` where `Investment contract · Lincoln Stable Value Account` is
+already available — the vehicle in the type column, the product in the name. That
+needs the caption CONSUMED into the label it already produces rather than
+deleted, which is a change to what the row prints and not to what the name says.
+Nothing shipped; both files reverted; the queue entry's prescription is replaced
+by this one.
