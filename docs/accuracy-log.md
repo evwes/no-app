@@ -60836,3 +60836,57 @@ thing.
 
 Fixed with the block plus a comment carrying this reason, so the next person to
 copy this workflow copies the permission with it.
+
+## 2026-10-16 18:3xZ — SHIPPED: an arm naming the STATED class outranks a hedged registry answer, 963,321 readers
+
+**7,332 published+served rows / 784 plans / 963,321 ppl / $23.5B gain an
+ASSERTED symbol, every one of them BLANK on the page today.** `secAsk` asks
+`resolveHolding` FIRST and reaches the two abbreviation arms only on `!out`, so
+a row the registry answers as a COMPARABLE never arrived at the arm at all —
+and a comparable is never shipped from this generator, so those rows publish
+nothing. Split by family:
+
+| | rows | plans | ppl | $ |
+|---|---|---|---|---|
+| **FIDELITY** (the Freedom `K` ladder) | **7,021** | 696 | **916,313** | $23,364,205,419 |
+| **CAPITAL GROUP** | **311** | 88 | **47,008** | $154,824,314 |
+| **REFUSED** by `classStated` | **1** | 1 | 315 | $129,799 |
+
+`Fidelity Freedom 2030 K Fund` hedged **FFFEX**, which the registry registers as
+the **INVESTOR** class, where the arm asserts **FSNQX**, registered as **Class
+K** — the class the filing states. `American Funds Trgt Date Ret 2040 R2` hedged
+**AAGTX** (Class A) against the arm's **RBKTX** (Class R-2).
+
+**SO IT IS A PRECEDENCE AND NOT A WIDENING, which is the whole safety claim:
+nothing new resolves, and preferring the assertion can only turn a blank into a
+symbol and never one symbol into another.** The table diff says the same thing
+independently — **keys 15,747 -> 16,963, ADDED 1,216 / REMOVED 0 / CHANGED 0** —
+and the arms' own tallies attribute it: Fidelity 13,183 -> **20,232 rows** and
+2,184,395 -> **2,935,512 ppl**, Capital Group 19,706 rows / 6,378,070 ppl, 1,290
+distinct spellings overridden. `PARSER_VERSION` stays 203.
+
+**THE LICENSING CONDITION IS ASSERTED OVER THE WHOLE POPULATION AND IT REFUSES
+EXACTLY ONE ROW, WHICH IS THE REASON TO HAVE IT.** The symbol must be registered
+as a class whose designation appears in the filed name; 7,332 of 7,333 hold, and
+`Fidelity Freedom Index Retirement Inc` does not — it reaches FIKFX by reading
+`Inc` as an abbreviation of `Investor Class` where the filing almost certainly
+means INCOME. Same symbol as the hedge, so nothing is lost by refusing, and an
+assertion whose class the filing never states is the owner-gated
+wrong-share-class defect arriving by a new route. **A first pass of that same
+test read 46 refusals and every one was a hyphen** (`R-6` tokenises to `r` +
+`6`) — a defect in the CHECK and not in the rows, so `classStated` joins adjacent
+token pairs and its controls are SLICED from the shipped source and run against
+the real index rather than transcribed.
+
+**PRE-REGISTERED, SUPERSEDING 41.02 — `tkExact` 40.23 -> 41.32 and nothing else
+on the 35-key line**, measured by RUNNING `audit-data.mjs` over the committed
+store with the new table and diffing its computed line key by key: exactly ONE
+key moves, HIGH back at the baseline 4, WARN 556. Three ships now sit in this one
+table (the Fidelity class contraction, the vintage-position lift and this), and
+no merge has reflected any of them.
+
+**It took FOUR dispatches of the regeneration workflow and two of them were my
+own defects**, both recorded above: run 2 was stopped by the absence pin it
+should have been stopped by, and run 3 regenerated for 23 minutes and could not
+push for want of `permissions: contents: write`. Run 4 committed `6ede6837`.
+*The gate that cost the most time is the one that did its job.*
