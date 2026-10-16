@@ -60597,6 +60597,25 @@ re-derived AFTER the regeneration, because taking it before is exactly how
 `site-test #217` went red on the stamping gate and SKIPPED the Playwright
 install, the smoke test and the map test behind it.
 
+**VERIFIED BY RUNNING IT, because a workflow that has never run is untested
+machinery.** Dispatched against the dev branch where the expected answer was
+"nothing moved": **all 13 steps success, 15:36:50 -> 15:58:35 = 21m45s**,
+including the two gates it exists to satisfy (`sec-tickers-stamp-test` and
+`sec-tickers-test`), and **no bot commit appeared on the branch** — so the
+`nothing to commit` branch was taken and the job's one side effect correctly did
+not happen. *The negative outcome is the right first test of a job whose normal
+day is a no-op: a commit step that only ever runs when something moved is a
+branch nobody has exercised.*
+**What this verification does NOT cover, named rather than glossed:** this
+container's `gh` refuses the blob redirect GitHub serves job logs from, so the
+key-diff step's printed text was not read — only that the step exited 0 and that
+the two gates downstream of it passed. The diff's own correctness was measured
+in-session an hour earlier (ADDED 0 / REMOVED 0 / CHANGED 0 on the identical
+pair), and the first run that moves a key is where the printed form gets read.
+**And the honest comparison: 21m45s of runner time against 30+ minutes of
+starved CPU in-session — but the figure that matters is ZERO session turns
+instead of fifteen.**
+
 ### 2026-10-16 16:2xZ — THE CAPITAL GROUP RESIDUE MEASURED THROUGH THE PAGE: 18,045,367 readers, and 79% of it is the OWNER'S question rather than the arm's
 
 **Why this measurement and not another.** Two hours earlier I had queued an item
