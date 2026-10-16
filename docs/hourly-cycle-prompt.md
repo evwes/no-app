@@ -1267,3 +1267,39 @@ omitted-series-word relaxation, at most 2,868 rows with the recorded cross-fund
 exposure, whose next measurement must carry the real rows out of the store;
 (3) the 1,178 Income-rename rows, which need a SOURCED rename via `fund-facts`.
 `docs/accuracy-log.md` 2026-10-16 (20:4xZ).
+
+**20:07 DRAW (seed `20162010`, Grand Industrial 987 ppl / Materion 3,196 ppl).**
+Three recorded classes named live: `Victory Sycamore Established Value Fund`
+spelled in FULL publishing **0.55 with no ticker** (the bare-brand `FUND_ER`
+entry, ticker/fee asymmetry on a name needing no repair); `Fidelity Spartan 500
+Index*` at 0.03 with no ticker (the retired SPARTAN brand); and TWO unrelated
+plans publishing `Fidelity Government` — the truncated `… Money Market Fund`,
+whose must-KEEP pin protects it from suppression and leaves it unrepaired.
+**NEW SHAPE SIZED AND REFUSED ON ITS OWN SIZE: a TRAILING party-in-interest
+asterisk inside the fund name.** Materion publishes 20 of its 31 rows ending in
+`*`, and the page prints its OWN `*` for a COMPARABLE with a footnote explaining
+only that one — so two asterisks, two meanings, one explained. Whole population
+through the real renderer with a must-see pin by ack: **26 rows / 7 menus /
+271,295 ppl, 20 of them Materion alone**, every other menu contributing ONE row.
+One filer's convention, not a class. *A striking share of ONE menu is not a
+population; the per-menu column is what says so.* (And the first version of that
+walk rendered all 1.72M rows for 20 minutes of CPU before being narrowed to a
+superset-by-construction pre-filter on the cleaned name — two minutes.)
+**IT HANDED BACK A SECOND CLASS, AND THE SCREEN FOR IT MEASURED THE CHARACTER:**
+15 rows / 7 menus, splitting into GENUINE MOJIBAKE (4 rows / 918 ppl — C0
+control characters published as a holding with type `—`, the OCR-trigger class
+reaching the page; named, too small for a new predicate, honest fix is upstream)
+and ***a TABLE-OF-CONTENTS DOT LEADER welded onto a real fund's name, which
+costs TICKERS*** — Holley Performance (1,892 ppl) publishes `American Mutual
+Fund……………`, `Bond Fund of America……………` and three siblings, $5.16M, all with no
+ticker, where both named funds resolve once the leader is gone.
+**NEXT:** (1) strip the trailing dot-leader run — the rare name strip with an
+unambiguous licence (no fund name ends in `…` or three periods), but it must be
+sized on the RUN and not on a non-ASCII SHARE (the glyph is one character, so
+the 7 rows found here are a floor), and priced through TYPE, FEE **and ROW
+MEMBERSHIP** (`Mutual Funds……………..` strips to a bare caption and `cleanFiledName`
+runs upstream of the `ID_ONLY` drop); (2) the owner decision on the blank-type
+contract label, 683 rows / 1,213,651 ppl, measurement ready; (3) the
+omitted-series-word relaxation, at most 2,868 rows; (4) the 1,178 Income-rename
+rows, needing a SOURCED rename via `fund-facts`.
+`docs/accuracy-log.md` 2026-10-16 (21:1xZ).

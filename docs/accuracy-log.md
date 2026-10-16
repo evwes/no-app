@@ -61109,3 +61109,88 @@ cycle: the re-slice lands inside the fingerprinted region, so it moves
 regeneration spent on a comment. *The rule is to run the generator after
 touching a GENERATED BLOCK, and a change to the generator's own fixture list is
 not one.* The next ship that moves that region adopts it for free.
+
+## 2026-10-16 21:1xZ — THE 20:07 DRAW: THREE RECORDED CLASSES NAMED LIVE, ONE NEW CLASS REFUSED ON ITS OWN SIZE, AND A DOT LEADER THAT COSTS REAL TICKERS
+
+Seed `20162010`, 2 menus drawn participant-weighted from the 60,070 published
+pool: Grand Industrial (987 ppl, 20 funds, ratio 0.994) and Materion
+Corporation (3,196 ppl, 31 funds, ratio 0.984).
+
+**THREE RECORDED CLASSES WITH A NAMED LIVE MEMBER.** Grand Industrial publishes
+`Victory Sycamore Established Value Fund` — the house and product spelled in
+FULL — at **0.55 with NO ticker**, which is the ticker/fee asymmetry on a row
+whose name needs no repair at all, and whose fee comes from one of the eleven
+bare-brand `FUND_ER` entries the 2026-10-11 23:5xZ entry measured. Materion
+publishes `Fidelity Spartan 500 Index*` at **0.03 with no ticker** — the retired
+SPARTAN brand, 835 rows / 2,541,569 ppl on this record, where *a rename is a
+FACT that must be SOURCED*. And both plans publish `Fidelity Government` typed
+`Cash / short-term` with nothing else: the TRUNCATED name `Fidelity Government
+Money Market Fund`, which `lib-disclose` already pins as a must-KEEP where *the
+house token is the only protection* — so two unrelated plans publish a name we
+cut, and the pin that protects it from suppression is also what leaves it
+unrepaired.
+
+**THE NEW SHAPE, SIZED AND REFUSED ON ITS OWN SIZE: a TRAILING party-in-interest
+asterisk published inside the fund name.** Materion publishes **twenty of its
+thirty-one rows** ending in `*` (`Dodge & Cox International Stock Fund*`,
+`Fidelity U.S. Bond Index Fund*`). CLAUDE.md records the LEADING `*` as the
+party-in-interest marker the parser handles; the trailing one reaches the reader.
+***It is not cosmetic, and that is why it was sized: `renderRow` prints its OWN
+`*` for a COMPARABLE, and `app.js`'s fund-note paragraph explains that mark as
+"a comparable registered fund, not the one held" — so on Materion's page both
+asterisks appear, in two columns, meaning two different things, with the
+footnote explaining one of them.*** Measured through the real renderer with a
+must-see pin BY ACK: **26 published+served rows across 7 menus / 271,295 ppl**,
+of which **20 are Materion alone** and 5 of those publish a ticker, so the
+footnote misexplains five rows on one page. Every other menu contributes ONE
+row. **So it is one filer's convention and not a population** — no arm, and the
+figure is recorded so nobody sizes it twice. *A striking share of ONE menu is
+not a class; the per-menu column is what says so.*
+
+**AND THE SIZING COST 20 MINUTES OF CPU BEFORE IT WAS NARROWED, which is worth
+the line.** The first version called `renderRow` on all 1.72M published rows.
+The narrowing is free and a superset by construction: `shownName` is the CLEANED
+name for every row but a wrapped loan description, where it is REPLACED, so a
+cleaned name not ending in `*` cannot render one. *A pre-filter that the render
+chain makes sound is the difference between two minutes and forty.*
+
+**THE REFUSAL HANDED BACK A SECOND CLASS AND THE SCREEN FOR IT MEASURED THE
+CHARACTER RATHER THAN THE DEFECT — twice over, in opposite directions.** Two of
+the asterisk rows were MOJIBAKE, so the obvious next screen was "a published
+name carrying a C0 control character or a high share of non-ASCII". Both halves
+came back at **15 rows / 7 menus**, and they are not one class:
+
+- **GENUINE MOJIBAKE, 4 rows / 3 plans / 918 ppl / $278,190** — Tnn Guam, Bmi
+  Holdings and UPMC Chautauqua publish names like `O\u001b7\u0016R8R` and
+  `A\xff \u001d\u0014\xff"2%...` with a type cell of `—` and no qualification at
+  all. This is the broken-font-encoding text CLAUDE.md records as an OCR TRIGGER
+  reaching the page instead of the OCR path. A name carrying a C0 control
+  character is not a name BY CONSTRUCTION, so a qualification needs no
+  vocabulary and no registry — but 4 rows / 918 readers does not pay for a new
+  predicate, and the honest fix is upstream in the OCR trigger rather than a
+  display label. Named, not shipped.
+- ***AND THE NON-ASCII HALF IS NOT MOJIBAKE AT ALL — IT IS A TABLE-OF-CONTENTS
+  DOT LEADER WELDED ONTO A REAL FUND'S NAME, AND IT COSTS TICKERS.*** Holley
+  Performance Products (1,892 ppl) publishes `American Mutual Fund……………`,
+  `Bond Fund of America……………`, `Small Cap Value Fund……………`,
+  `Total Return Bond Fund……………` and `Gold and Precious Metal Fund……………` —
+  five rows / $5,164,539 — and Brunswick Hospital `Mutual Funds……………..`,
+  Holley `RREEF Real Estate Securities Fund……`. Every one publishes NO ticker,
+  and `American Mutual Fund` and `Bond Fund of America` are Capital Group
+  registered funds the resolver reaches once the leader is gone. *So the screen
+  keyed on a CHARACTER CLASS found a class whose defect is a SEPARATOR run, and
+  the two share nothing but their code points.*
+
+**QUEUED WITH ITS PRESCRIPTION: strip a trailing dot-leader run.** The witness
+needs nothing external — no fund name ends in a run of `…` or three or more
+periods — which makes it the rare name strip with an unambiguous licence. Three
+things it must carry, two of them from today's own findings: the class must be
+sized on the RUN rather than on a non-ASCII SHARE (the `…` glyph is one
+character, so a short run is invisible to the screen that found it, and the real
+population is certainly larger than these 7 rows); it must be priced through the
+**TYPE and FEE** columns and not only the ticker, because *a strip can be net
+harmful while moving none of the three cells this record already says to check*;
+and it must be priced through **ROW MEMBERSHIP**, since `cleanFiledName` runs
+upstream of `app.js`'s `ID_ONLY` drop and `Mutual Funds……………..` strips to a bare
+caption. The prize is one-directional and is a TICKER on a real fund, which is
+the opposite of the 19:3xZ strip's profile.
