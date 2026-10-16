@@ -60644,3 +60644,43 @@ letting trailing series words go unconsumed — is the one this record already
 names as carrying cross-fund exposure, and the 12:3xZ entry on the dropped
 `Index` token is what that exposure looks like when it goes wrong. A 4.65M-reader
 prize does not change which evidence a widening needs.
+
+### 2026-10-16 16:4xZ — THE OPEN SHAPES GET THEIR CAUSE, AND TWO OF THEM RESOLVE ALREADY — so my own 15,235 over-counts
+
+**The protocol's requirement, not an optional step:** an item may not rest as
+"the arm abstains". Each of the seven open shapes from the 16:2xZ histogram was
+put through the SHIPPED arm with one thing varied at a time, reporting the FIRST
+condition that refuses rather than a guess at which one, with a pinned positive
+control so a uniform "no" would read as a broken harness.
+
+**FIVE SHAPES, ONE CAUSE, AND IT IS THE ONE ALREADY ON THIS RECORD.**
+`<vintage> t date r6` ×1,008, `<vintage> target date r6` ×511, `<vintage> tar
+ret r6` ×502, `trgtdt <vintage> r6` ×419 and `<vintage> trgt date retire` ×428
+all fail the same way: **the product run cannot abbreviate the series name IN
+ORDER, because the filer omits a series word** — `retirement`, or `target`, or
+`date`. Not a class problem, not a house problem, not a vintage-position problem
+now that the lift ships. One cause, 2,868 rows, and it is precisely the
+structural relaxation this record names as carrying cross-fund exposure.
+
+***AND TWO SHAPES RESOLVE RIGHT NOW, WHICH MEANS MY OWN SPLIT OVER-COUNTS THE
+OPEN HALF.*** `<vintage> trgt dte rtm r6 fd` ×665 and `<vintage> targ dateret
+r6` ×513 both answer **RFKTX** through the shipped arm on a synthetic spelling.
+So those 1,178 residue rows are not blocked by the relation at all, and the
+15,235 I published an hour ago includes rows whose blank has a DIFFERENT cause.
+The candidates, in the order they should be checked: the per-row POOLED gate
+(Capital Group runs a target-date COLLECTIVE TRUST ladder this record already
+calls correctly blank), the COMPARABLE precedence at the generator's call site
+(the recorded boundary that eats 6,510 of the Fidelity arm's own `K` rows), or
+simply a house spelling my synthetic probe did not reproduce.
+***A shape histogram groups by what the name LOOKS like, and a blank's cause
+lives in the ROW*** — so the next measurement must carry the real rows out of
+the store rather than reconstruct their names, which is the same lesson the
+`sec-tickers.js` key taught at 07:3xZ (a synthetic row cannot see an arm keyed on
+the row's own fields).
+
+**What this buys before any code is written:** the genuinely relation-blocked
+population is at most 2,868 rows of the 15,235, the remaining ~12,400 split
+between three mechanisms that each have a different and cheaper remedy, and the
+widening I would have reached for first is now known to be worth a quarter of
+what the split suggested. *Diagnosing before building is what kept a 4.65M-reader
+figure from being quoted as the prize for one relaxation.*

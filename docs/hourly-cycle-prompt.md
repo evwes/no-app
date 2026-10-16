@@ -1077,3 +1077,25 @@ point at — trailing series words unconsumed — is the one carrying the record
 cross-fund exposure, and a 4.65M-reader prize does not change the evidence it
 needs.
 `docs/accuracy-log.md` 2026-10-16 (16:2xZ).
+
+### 2026-10-16 16:4xZ — the open shapes are DIAGNOSED, and my own 15,235 over-counts
+
+Each of the seven open shapes through the shipped arm, one thing varied at a
+time, first-refusing-condition reported:
+- **FIVE shapes, ONE cause, 2,868 rows:** `<vintage> t date r6` ×1,008,
+  `<vintage> target date r6` ×511, `<vintage> tar ret r6` ×502, `trgtdt
+  <vintage> r6` ×419, `<vintage> trgt date retire` ×428 — **the filer OMITS a
+  series word** (`retirement`/`target`/`date`), so the ordered relation cannot
+  match. That is the recorded structural relaxation with cross-fund exposure.
+- ***TWO shapes RESOLVE already*** (`<vintage> trgt dte rtm r6 fd` ×665,
+  `<vintage> targ dateret r6` ×513 -> RFKTX), so their 1,178 residue rows have a
+  DIFFERENT cause and my 15,235 over-counts. Check in this order: the per-row
+  POOLED gate (Capital Group's target-date CIT ladder, correctly blank), the
+  COMPARABLE precedence at the generator's call site (the boundary that eats
+  6,510 of the Fidelity arm's `K` rows), or a house spelling my synthetic probe
+  did not reproduce.
+**NEXT:** carry the real rows out of the store rather than reconstructing their
+names — *a shape histogram groups by what the name looks like, and a blank's
+cause lives in the ROW.* Only then is the omitted-series-word relaxation worth
+pricing, and it is worth at most 2,868 rows rather than 15,235.
+`docs/accuracy-log.md` 2026-10-16 (16:4xZ).
