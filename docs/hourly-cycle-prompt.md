@@ -824,3 +824,35 @@ admit.
 identifications and nothing else.** Do NOT carry the recorded 4,669 rows /
 7,389,704 ppl as this figure — different definition, not growth.
 `docs/accuracy-log.md` 2026-10-16 (05:3xZ).
+
+### 2026-10-16 06:4xZ — the leading-CUSIP class: RE-SCOPED, and it belongs at MERGE stage
+
+**NOT the independent legibility item the register describes.** Corrected screen
+(a CUSIP's 9th character is a CHECK DIGIT; `^[0-9A-Z]{9}\s` also matches
+`BLACKROCK`/`ALLSPRING`/`NEUBERGER` and would delete the HOUSE from 3,894 rows)
+reproduces the recorded class at **263 rows / 23 plans / 515,346 ppl / $48.0B**,
+and both recorded risks measure ZERO: tk/er/star/shownType 0 and `ID_ONLY` row
+membership 0.
+**Two reasons it still must not ship, neither in the register:** (1) **82 rows /
+292,418 ppl / $8.4B COLLIDE with a sibling row once stripped** — four
+`US TREASURY NOTE` rows distinguished only by their CUSIPs — so for those the
+identifier IS the identity and stripping MERGES distinct holdings; (2) it flips
+`employerStockSymbolOk` on **exactly 1 row, AT&T's own stock (203,226 ppl /
+$3.86B)**, which is the owner-gated employer-stock relaxation reached from
+another file.
+**THE STAGE IS THE FINDING: it cannot live in `cleanFiledName`**, because the
+collision test needs the row's SIBLINGS and the stock refusal needs the plan's
+sponsor and ticker, and the cleaner receives a STRING. It belongs in `merge-4i`
+beside `wrapRepair`/`nounRepair`. Next cycle: merge-side arm, refuse a colliding
+remainder and the sponsor's own stock, differential merge run. ~180 rows /
+~509,900 readers. `docs/accuracy-log.md` 2026-10-16 (06:4xZ).
+
+### and a new mechanism from the 06:07 draw — the SINGULAR house plus a REORDERED vintage
+
+The Broad Institute (4,155 ppl) publishes ten `American Fund Target Date
+<vintage> R6` rows with no ticker and no fee (60% of its menu). Probed one token
+at a time: as filed resolves nothing; `American Funds` (plural) gives the FEE
+0.32 and still no symbol; plural AND `2050 Target Date` (registry order) gives
+RFITX and 0.32. So TWO independent tokens block it. A synthetic probe cannot
+reach `sec-tickers.js` (keyed on `(issuer, nameRaw)`), so the draw's real rows
+are the authority. UNSIZED store-wide — size it before any arm.

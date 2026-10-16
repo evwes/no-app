@@ -7,6 +7,100 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-16 (06:4xZ) — THE LEADING-CUSIP ITEM IS NOT ONE CLASS, CANNOT LIVE IN `cleanFiledName`, AND IS NOT INDEPENDENT OF THE OWNER-GATED EMPLOYER-STOCK ITEM. NOTHING SHIPPED, AND MY OWN SCREEN WAS REFUTED BY ITS FIRST OUTPUT
+
+***THE SCREEN I WROTE READ 12,765 ROWS AND WOULD HAVE DELETED THE HOUSE FROM
+3,894 OF THEM.*** A CUSIP is nine alphanumeric characters, so `^[0-9A-Z]{9}\s`
+also matches **`BLACKROCK`, `ALLSPRING`, `NEUBERGER`, `WELLTOWER`, `CHAMPIONX`,
+`FIRSTCASH`, `MACQUARIE`** — nine-letter words. The differential's own first
+twelve lines were `NEUBERGER BERMAN GENESIS` losing its 0.65, `ALLSPRING SPE
+SMALL CAP VAL R6` losing its 0.45, `BLACKROCK HIGH YIELD K` losing its 0.5. *A
+count keyed on a character shape measures the character shape*, met in my own
+instrument on the very class whose register entry already carries that sentence.
+
+***AND ALL FOUR OF MY CONTROLS PASSED, INCLUDING THE ONE WRITTEN FOR EXACTLY
+THIS HAZARD — IT MISSED BY ONE CHARACTER.*** Control D was `VANGUARD 500 INDEX`
+and `VANGUARD` is EIGHT letters. *A hand-built control tests the cases its
+author already imagined*, and here the imagination was one letter short. The
+corrected controls are drawn FROM the houses the broken run actually hit: nine
+must-NOT-fire cases, every one a real name.
+
+**THE STRUCTURE IS THE DISCRIMINATOR, NOT THE LENGTH:** a CUSIP's ninth
+character is a CHECK DIGIT, always numeric. Requiring a trailing digit plus two
+digits overall refuses every nine-letter word, and the corrected screen
+**reproduces the register's recorded class to one row — 263 published+served
+rows / 23 plans / 515,346 ppl / $48,004,164,444 against the recorded 264 /
+515,346** — which is the control that it IS the recorded class.
+
+**THE REGISTER'S TWO RECORDED RISKS BOTH MEASURE AT ZERO:** `tk` 0, `er` 0,
+`star` 0, `shownType` 0 (the recorded "zero priced yield", now whole-population
+rather than seven rows), and **`ID_ONLY` row membership moves on 0**, which is
+the risk the entry said needed a full differential. So the strip is safe TODAY
+on every row.
+
+***AND IT STILL MUST NOT SHIP, FOR TWO REASONS NEITHER OF WHICH IS IN THE
+REGISTER.***
+
+**(1) THE CLASS SPLITS, AND "LEGIBILITY" IS THE WRONG FRAMING FOR A THIRD OF
+IT.** For a FUND row the identifier is noise; for an individual SECURITY it is
+the ONLY thing distinguishing one holding from the next. Asked with no
+vocabulary at all — does the stripped remainder COLLIDE with another row of its
+own menu? —
+
+| | rows | plans | ppl | $ |
+|---|---|---|---|---|
+| **COLLIDES once stripped** | **82** | 16 | **292,418** | **$8,389,180,498** |
+| remains unique | 181 | 19 | 509,902 | $39,614,983,946 |
+
+IBEW Local Union 325 files **four** `US TREASURY NOTE` rows distinguished only
+by `91282CDY4` / `91282CNC1` / `912828YS3` / `9128286T2`; Alcoa files four
+`BLACKROCK INSTL TR CO N A INVT FDS EMPLOYEE BENEFIT` rows; Kennametal five
+`Asset Minor Code 42`. ***Stripping the identifier there does not make the row
+more legible — it MERGES distinct holdings and manufactures the
+double-render shape this record has an open item about.*** Alcoa appears in
+BOTH buckets, so this is a per-ROW split and not a per-plan one.
+
+**(2) IT IS THE OWNER-GATED EMPLOYER-STOCK RELAXATION REACHED FROM ANOTHER
+FILE, FOR EXACTLY ONE ROW.** The 2026-10-16 03:3xZ diagnosis found the CUSIP is
+load-bearing on gate 2 and concluded the identifier relaxation "must ship WITH
+the parser arm, never before it". Measured here: `employerStockSymbolOk` flips
+false -> true on **1 of 263 rows**, and it is **AT&T's own `00206R102 AT&T INC`,
+203,226 ppl / $3,859,276,939** — the largest row in the class. A strip in
+`cleanFiledName` removes the token before the predicate sees it, which is the
+SAME effect as relaxing the predicate. ***So a legibility change in one file is
+a behaviour change in a gated item in another, and the register lists the two as
+independent.***
+
+***THE DECISIVE FINDING IS THE STAGE: THIS CANNOT LIVE IN `cleanFiledName` AT
+ALL.*** Both conditions it needs are outside that function's inputs — the
+collision test needs the row's SIBLINGS and the employer-stock refusal needs the
+plan's sponsor name and ticker, and the cleaner receives a STRING. Every shipped
+repair in it judges a name alone; the repairs that consult siblings
+(`wrapRepair`, `nounRepair`) live in `merge-4i` where the whole entry is in
+hand. **That is where this belongs**, and it is the fifth instance of *a
+prescription being wrong about WHERE rather than WHAT* — the register says
+nothing about stage for this item.
+
+**So the next cycle's brief is exact:** a merge-side arm, refusing a remainder
+that collides with a sibling row and refusing the sponsor's own stock, measured
+by a differential merge run. ~180 rows / ~509,900 readers of pure legibility,
+and not one priced cell moves.
+
+**AND THE 06:07 DRAW NAMED A NEW MECHANISM, DIAGNOSED BY VARYING ONE TOKEN AT A
+TIME.** The Broad Institute (4,155 ppl, OCR'd) publishes **ten `American Fund
+Target Date <vintage> R6` rows with NO ticker and NO fee** — $52.2M, $48.4M,
+$46.5M, $40.9M, $35.2M, $26.6M, $21.3M, $10.4M, $9.1M, 60% of its menu between
+them — while `Fidelity 500 Index Fund` resolves FXAIX at 0.015 one row above.
+**TWO independent tokens block it and the fee needs only the first:** the house
+is SINGULAR (`American Fund`), and the vintage is REORDERED (`Target Date 2050`
+where the registry has `2050 Target Date`). Probed through the shipped
+resolver — as filed resolves nothing; house pluralised gives **the fee (0.32)
+and still no symbol**; pluralised AND reordered gives **RFITX and 0.32**.
+*Honest limit, and it is the recorded one:* `sec-tickers.js` is keyed on
+`(issuer, nameRaw)` from the store, so a SYNTHETIC probe cannot reach the SEC
+arm and under-states it — what settles production is the DRAW itself, where the
+real rows publish nothing. Unsized store-wide.
+
 ## 2026-10-16 (06:0xZ) — #674 VERDICT: THE ACRONYM SHIP'S REGISTRATION HELD IN THE STRONGEST FORM AVAILABLE, AND THE 05:07 DRAW CONFIRMS TWO RECORDED ITEMS LIVE RATHER THAN FINDING A NEW CLASS
 
 **DELIVERED AND VERIFIED BY #674 (`success`, on `ce77782e`, data commit
