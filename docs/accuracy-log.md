@@ -7,6 +7,90 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-16 (11:4xZ) — THE FIDELITY FREEDOM ARM IS NOW FULLY SPECIFIED WITH EVERY PREMISE VERIFIED RATHER THAN ASSUMED: THE RELATION GENERALISES, THE BLOCKER IS CLASS MATCHING BY EQUALITY, AND A REGISTRY-DERIVED FAMILY MARKER EXISTS
+
+**Nothing built, and the reason is that four premises had to be checked first —
+three of them turned out differently than I expected, and one of my own probes
+was void.**
+
+**(1) THE RELATION GENERALISES.** `abbreviates(T, S)` in `lib-af-abbrev.mjs` is
+generic; only `buildAfIndex` is family-scoped. Asked directly, the SERIES half
+**ACCEPTS all four Fidelity spellings** against the registered series names:
+`FID FDM IDX 2050`, `FID FREEDOM 2050`, `FID FRDM IDX 2050` and the spelled-out
+form all match `Fidelity Freedom [Index] 2050 Fund`. So no new relation is
+needed and the build is a REUSE.
+
+***(2) THE BLOCKER IS THE CLASS, AND IT IS MATCHED BY NORMALISED EQUALITY
+RATHER THAN BY THE RELATION.*** `classKey("Institutional Premium Class")` is
+`institutionalpremium` and the filed token is `IPR`. **Capital Group's classes
+are CODES (`R6` -> `r6`) which survive normalisation; Fidelity's are WORDS which
+filers contract** — which is the whole reason one house's ladder resolves and
+the other's does not. Under the relation instead of equality the tokens resolve
+**and stay distinct**: `IPR` -> **FFOPX** (Institutional Premium), `PRM` ->
+**FRLPX** (Premier), `PREMIER` -> FRLPX, **and `IPR` does NOT reach Premier** —
+the conflation hazard this record flagged an hour earlier is absent under the
+relation rather than needing a guard. `Premier II Class` is refused by both
+because `ii` is not skippable.
+
+**(3) A REGISTRY-DERIVED FAMILY MARKER EXISTS, which is what the arm's safety
+claim requires.** The AF arm's claim is that a wrong answer can only be the
+wrong fund OF THAT HOUSE, and it rests on `Class R-2E`/`R-5E`/`529-A` being
+Capital Group's alone. The Fidelity analogue:
+
+| candidate marker | registrants | not Fidelity-named |
+|---|---|---|
+| `Class K6` | 4 | **0** |
+| `Institutional Premium Class` | 1 | **0** |
+| `Premier II Class` | 1 | **0** |
+| `Premier Class` | 4 | 3 (Allspring, TIAA-CREF, State Street) |
+| `Class K` | 37 | 23 |
+
+`Class K6` builds a family of **4 registrants / 207 series-class rows** — Salem
+Street, Income Fund /MA/, Aberdeen Street and Hereford Street Trusts — and **all
+three Freedom ladders sit inside it**. `Premier Class` and `Class K` are NOT
+markers and would drag three other houses in.
+
+***(4) AND `Fidelity Freedom BLEND` IS REGISTERED TOO, WITH NINE CLASS ROWS —
+WHICH CORRECTS WHAT I WROTE AN HOUR AGO.*** I recorded Blend as "a collective
+trust, correctly blank". It is BOTH: a registered mutual-fund ladder AND a CIT
+version, and the store's Blend rows are typed `Collective trust` /
+`Pooled separate account`. So the blank is right **because of the TYPE CELL and
+the per-row pooled gate, not because the product is unregistered** — and that
+matters, because an arm reaching Blend would assert a real mutual fund's symbol
+on a trust. *The right answer for the right reason is not the same as the right
+answer.*
+
+**SO THE BUILD IS SPECIFIED:** generalise `buildAfIndex` to take a family
+marker set (keeping `buildAfIndex` as a thin wrapper, because *a second copy of
+a shipped predicate has produced a wrong answer four times on this record*), add
+a relation FALLBACK for the class where equality fails, require the class match
+to be UNIQUE within the series, assert the new family the way `assertAfFamily`
+does, and leave the per-row pooled gate to do the Blend work. Reach: **15,763
+published+served rows / 2,161 plans / 2,802,386 ppl / $45.2B**, all of them rows
+that publish a FEE and no symbol today.
+
+**It is not built this cycle because the ship needs a 20-minute
+`sec-tickers.js` regeneration plus a key diff plus tether updates, and this
+morning's own lesson is that a rushed measurement is no measurement.** What the
+next cycle inherits is a specification in which nothing is assumed.
+
+*One instrument note, and it is the recorded conflation: my FIRST probe reported
+NO MATCH for all five spellings INCLUDING the draw's working case — the one that
+demonstrably publishes FRLPX on the live page. That proved the probe wrong, not
+the relation: the page resolves that row through `fund-er.js`'s pattern table,
+which is a different path entirely. **"The page resolves it" is not evidence
+about any particular resolver**, and the fix was to ask the two halves
+separately instead of reporting one verdict for both.*
+
+**AND THE 11:07 DRAW, briefly: Platform Science (455 ppl) publishes a menu of
+ETFs with no symbols at all** — `Vanguard Total Stock Market ETF` (0.04 fee, no
+ticker, where **VTI** is registered as that fund's ETF Shares), `SPDR Portfolio
+S&P 500 ETF`, `iShares Core Total US Bond Market ETF`. Low weight, and it ties
+two recorded items together: the filing omits `Index` from the Vanguard series
+name (the 12:3xZ dropped-series-word mechanism) and the `etf` class marker is
+the 15:2xZ REFUTED arm, which was refused for crossing to an active fund. So the
+ETF coverage half is live and its obvious fix is already measured harmful.
+
 ## 2026-10-16 (10:4xZ) — THE BIGGEST COVERAGE ITEM ON THE BOARD, DECOMPOSED AND MADE DECISION-READY: THE FIDELITY FREEDOM LADDERS SPLIT FOUR WAYS, AND THE ASSERTABLE HALF IS 15,763 rows / 2,161 plans / 2,802,386 ppl / $45,220,661,920 — WITH THE DESTINATIONS VERIFIED AND THE GAP NARROWED TO A CLASS TOKEN
 
 ***FIRST, A CORRECTION TO MY OWN FIGURE FROM ONE HOUR AGO: the "FID family:

@@ -933,3 +933,27 @@ and the registry's class column holds a SERIES NAME on one row.
 **Also corrected:** last hour's "FID family 36,684 rows / 49.4%" is the
 CONTRACTED spellings only — `/^FID\b/` excludes `FIDELITY`, and the house is
 202,459 rows. `docs/accuracy-log.md` 2026-10-16 (10:4xZ).
+
+### 2026-10-16 11:4xZ — the Fidelity Freedom arm: SPECIFIED, every premise verified
+
+**The relation GENERALISES** — `abbreviates` accepts all four Fidelity series
+spellings (`FID FDM IDX 2050`, `FID FREEDOM 2050`, `FID FRDM IDX 2050`, spelled
+out) against the registered series names, so no new relation is needed.
+**The blocker is the CLASS, matched by normalised EQUALITY not by the relation:**
+`classKey("Institutional Premium Class")` = `institutionalpremium` vs a filed
+`IPR`. Capital Group's classes are CODES that survive normalisation; Fidelity's
+are WORDS filers contract. Under the relation the tokens resolve and STAY
+DISTINCT (IPR -> FFOPX, PRM -> FRLPX, and IPR does NOT reach Premier), so the
+conflation hazard is absent by construction rather than needing a guard.
+**Family marker verified: `Class K6` — 4 registrants, 0 not Fidelity-named,
+207 series-class rows, and all three Freedom ladders inside it.** (`Premier
+Class` and `Class K` are NOT markers: 3 and 23 foreign registrants.)
+**CORRECTION to the 10:4xZ entry: `Fidelity Freedom BLEND` IS registered, with
+nine class rows.** Its blank is right because of the TYPE CELL and the per-row
+pooled gate, not because the product is unregistered — so an arm reaching it
+would assert a real fund's symbol on a trust.
+**BUILD:** generalise `buildAfIndex` to take a family marker set (wrapper kept,
+never a second copy), add a relation fallback for the class where equality
+fails, require a UNIQUE class match, assert the new family. Reach **15,763 rows
+/ 2,161 plans / 2,802,386 ppl / $45.2B**. Needs a 20-minute regen + key diff +
+tether. `docs/accuracy-log.md` 2026-10-16 (11:4xZ).
