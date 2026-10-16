@@ -856,3 +856,19 @@ at a time: as filed resolves nothing; `American Funds` (plural) gives the FEE
 RFITX and 0.32. So TWO independent tokens block it. A synthetic probe cannot
 reach `sec-tickers.js` (keyed on `(issuer, nameRaw)`), so the draw's real rows
 are the authority. UNSIZED store-wide — size it before any arm.
+
+### SHIPPED 2026-10-16 08:0xZ — the leading security identifier (225 reader-facing rows / 509,902 ppl)
+
+`cusipRepair` in `merge-4i.mjs`, the seventh arm in that chain. 651 stored rows
+/ 225 published+served / 19 plans / 509,902 ppl / $62,908,343,338, **name the
+only published cell that moves** (tk/er/star/shownType 0, row membership 0),
+`confident` 60,182 unchanged, CONFIDENCE DIFF +0/-0. Three refusals, each a
+measured population: a remainder colliding with a sibling row (82 rows / 292,418
+ppl — four `US TREASURY NOTE` rows in one menu), the sponsor's own stock (2 rows),
+and a row `sec-tickers.js` is keyed on (4 published symbols).
+**NEW GAP IN A SHIPPED GUARD, applying to all six arms above it:**
+`sec-tickers-stamp-test` fingerprints the apppath slice and `merge-4i.mjs` is not
+in it, so a merge-side NAME repair invalidates table keys with nothing going red
+— *our own repair is the drift*. Worth its own cycle: either add the repair arms
+to the fingerprint, or have the merge report how many keys its repairs
+invalidated. `docs/accuracy-log.md` 2026-10-16 (08:0xZ).

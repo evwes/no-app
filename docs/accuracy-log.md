@@ -7,6 +7,117 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-16 (08:0xZ) — SHIPPED: A SECURITY IDENTIFIER WELDED IN FRONT OF THE HOLDING'S NAME — 651 stored rows / 225 published+served / 19 plans / 509,902 ppl / $62,908,343,338, AND THE NAME IS THE ONLY PUBLISHED CELL THAT MOVES
+
+**AT&T's trust publishes `00206r102 At&T Inc` and eleven more rows leading with
+a nine-character identifier** — `06739T663 Equity Index Fund F` at
+$6,233,138,627, `999E98387 BGI MSCI ACWI EX-US INDEX SUPERFUND F`. The
+custodian's export carries the CUSIP in its own column and the parse reads the
+row as one string. Shipped as `cusipRepair` in `merge-4i.mjs`, the seventh arm
+in that chain; `PARSER_VERSION` stays 203.
+
+Measured as a **DIFFERENTIAL MERGE RUN** — two merges from one committed
+baseline varying ONLY the call site, because a standalone merge is not its own
+baseline:
+
+| | |
+|---|---|
+| stored rows repaired | **651** across 38 acks (the merge's own counter and the store diff agree to the row, which is also the DISJOINTNESS control against the six arms above it) |
+| published + served | **225 rows / 19 plans / 509,902 ppl / $62,908,343,338** |
+| published cells that move | **name 178** · `tk` 0 · `er` 0 · `star` 0 · `shownType` 0 |
+| row membership · names emptied | **0 · 0** |
+| `confident` · CONFIDENCE DIFF | 60,182 unchanged · **+0 / −0** |
+
+**THE STAGE IS THE WHOLE DESIGN, and it is why this is NOT in `cleanFiledName`
+where every other leading-furniture strip lives.** That function receives a
+STRING; two of the three refusals need context only the merge loop has.
+
+**(1) THE IDENTIFIER IS THE IDENTITY WHERE THE REMAINDER COLLIDES WITH A
+SIBLING.** IBEW Local Union 325 files **four** `US TREASURY NOTE` rows
+distinguished only by `91282CDY4` / `91282CNC1` / `912828YS3` / `9128286T2`;
+Alcoa four identical BlackRock trust rows; one plan **five** `600 MERCER ACTIVE
+LONG CORP FIXED INCOME` lots; twelve `UNITED STATES OF AMERICA BOND ZERO CPN 1`.
+**82 rows / 292,418 ppl / $8,389,180,498.** Stripping there merges two holdings
+rather than making one legible — it would manufacture the double-render shape
+this record has an open item about. The test needs the row's SIBLINGS and must
+compare POST-strip names, since two rows collide only once BOTH have lost their
+identifiers.
+
+**(2) NEVER THE SPONSOR'S OWN STOCK.** Removing the identifier is the
+owner-gated employer-stock relaxation reached from another file: it flips
+`employerStockSymbolOk` on **exactly 2 rows store-wide**, `AT&T INC` (203,226
+ppl / $3,859,276,939) and `CONOCOPHILLIPS`. Needs the PLAN's sponsor, so the map
+is built from plans-all and reaches 112,867 acks.
+
+***(3) NEVER REPAIR A NAME A BUILD-TIME TABLE IS ALREADY KEYED ON — and this
+condition was found by the differential rather than reasoned out.***
+`sec-tickers.js` is keyed on `(issuer, nameRaw)`, **the name AS STORED, damage
+included**, so without this the arm LOSES four correct symbols: **RICGX** on
+`461308819 AMER FND INV CO OF AM-R6` and **RNPGX** on `648018810 AMER FNDS NEW
+PERSPECT-R6`, on Alcoa and Howmet, $274,667,352 between them. *A legibility
+change that blanks an identification is not a legibility change.*
+
+***AND THE STALENESS GATE CANNOT SEE THAT, BY CONSTRUCTION — WHICH IS A GAP IN
+A SHIPPED GUARD AND APPLIES TO ALL SIX ARMS ABOVE THIS ONE.***
+`sec-tickers-stamp-test` fingerprints the apppath slice (app.js's prologue and
+fund-er.js) and `merge-4i.mjs` is not in it, so **a merge-side NAME repair
+invalidates table keys with nothing going red.** The gate's own record notes
+that store drift is invisible to it; this is the sharper form — *our own repair
+is the drift.* What makes it visible here is only that this is the first arm
+whose population overlaps the table's keys. The refusal is SELF-CLEARING: once
+the table is regenerated against a store this arm has repaired, its keys carry
+the stripped spelling.
+
+***MY OWN FIRST SCREEN WAS REFUTED BY ITS FIRST OUTPUT.*** It was
+`^[0-9A-Z]{9}\s`, and a CUSIP is nine alphanumeric characters — **so is
+`BLACKROCK`, `ALLSPRING`, `NEUBERGER`, `WELLTOWER`, `CHAMPIONX`, `FIRSTCASH`,
+`MACQUARIE`**. It read **12,765 rows** and would have deleted the HOUSE from
+**3,894**, taking the fee with it. **ALL FOUR of my controls passed it, and the
+one written for exactly that hazard was `VANGUARD 500 INDEX` — `VANGUARD` is
+EIGHT letters.** *A hand-built control tests the cases its author imagined, and
+here the imagination was one character short.* The test is now a CUSIP's own
+structure: a check digit in the ninth position, and digits inside the run.
+
+***AND A SECOND DEFECT IN MY OWN ARM, caught by hunting for a single-protection
+case: the digit-count condition did not do what its own comment said.*** It was
+`(?=(?:[^0-9]*\d){2})` anchored at `^`, which scans the WHOLE STRING — so the
+"two digits" were satisfied by a fund's own VINTAGE (`AMERFUNDS 2040 TARG
+DATERET R6`, 245 rows) and never by the identifier, while the comment beside it
+read *"the body carries digits too"*. **Nothing executes a comment.** The run is
+now captured and tested in JS; re-measured, the population is **651 either
+way**, so the condition was decorative on live data and the fix makes the code
+mean what it says without moving a verdict. *The tell was a mutation reporting
+itself DECORATIVE — the suite exists to say that, and it did.*
+
+**TWO FURTHER HONEST NOTES.** The arm gains **12 STORED symbols and 0 reach a
+reader**: 11 sit on acks that are not served, and the 12th already resolves
+PIMIX through another arm. And **my 06:4xZ "zero priced yield" was measured with
+`stk` HELD FIXED, which is not what production does** — merge resolves `stk`
+from the name AFTER the repair and `lookupTicker` reads `f.stk` FIRST — so that
+measurement was wrong in principle and is superseded by this one, which renders
+both sides' WHOLE rows. *The recorded rule is to hold fixed every input the
+change does not move; the trap is an input the change moves ONE STEP LATER in
+the same program.*
+
+**TETHERED** by `scripts/cusip-repair-test.mjs`, in `site-test` as a step AND in
+its `paths` filter: 5 must-fire, **13 must-not-fire (every nine-letter house the
+broken version hit)**, 5 single-protection mutations, 5 idempotence checks and 4
+sponsor-key invariants, exiting 1 **if a mutation PASSES**. CI-safe by
+construction — the arm is sliced and handed FROZEN inputs, so a DOL refresh or a
+table regeneration cannot redden it. Two mutations use CONSTRUCTED probes and
+say so: the live store holds no run refused by exactly one shape condition, so a
+real string cannot be a single-protection case there.
+
+**PRE-REGISTERED FOR #676 (push, `15a7cc3c`): THE COVERAGE LINE MUST BE
+IDENTICAL ON ALL 35 KEYS — and this registration is a MEASUREMENT, not an import
+graph argument, because this arm DOES write the store.** `audit-data` was run
+against BOTH differential stores with `WAMPO_RECORD=1` so each appended its own
+line (473 -> 474 on both), and the two lines are identical on every key. *The
+first attempt at this compared the two trails' last lines and read a clean
+no-difference that meant nothing — audit-data had printed `line computed and NOT
+written`, so both sides still carried the committed line. A comparison of two
+unchanged files looks exactly like a comparison that found nothing.*
+
 ## 2026-10-16 (06:4xZ) — THE LEADING-CUSIP ITEM IS NOT ONE CLASS, CANNOT LIVE IN `cleanFiledName`, AND IS NOT INDEPENDENT OF THE OWNER-GATED EMPLOYER-STOCK ITEM. NOTHING SHIPPED, AND MY OWN SCREEN WAS REFUTED BY ITS FIRST OUTPUT
 
 ***THE SCREEN I WROTE READ 12,765 ROWS AND WOULD HAVE DELETED THE HOUSE FROM
