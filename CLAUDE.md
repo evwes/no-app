@@ -959,19 +959,22 @@ EFAST2 bucket grew, not that our code broke.
 
 ### Pre-registered for the next run that merges
 
-**SUPERSEDED TWICE OVER — 40.96 and 41.02 are both numbers that can no longer
-occur, because a THIRD ship landed in the same table. Read the 18:3xZ
-registration below it.**
+**DELIVERED AND VERIFIED BY #680 (`success`, on main) — THE 41.02 REGISTRATION
+HELD DEAD ON ITS POINT ESTIMATE: `tkExact` 40.23 -> **41.02**, with the other 34
+keys unchanged.** That covers the FIDELITY CLASS CONTRACTION and the
+VINTAGE-POSITION ship, which were mirrored to main before it ran. *40.96 is the
+number that can no longer occur; 41.02 is the number that happened.* Read the
+registration below for what is still pending.
 
-**PRE-REGISTERED 2026-10-16 18:3xZ for the next merge after the FIDELITY CLASS
-CONTRACTION, the VINTAGE-POSITION LIFT **and** the COMPARABLE-PRECEDENCE
-override — `tkExact` **40.23 -> 41.32**, and NOTHING ELSE MOVES.** All three are
-build-side and write no store, but between them they took `sec-tickers.js` from
-12,408 to **16,963 keys** (ADDED 1,216 / REMOVED 0 / CHANGED 0 on the last
-regeneration alone, every diff purely additive), and `tkExact` reads that table,
-so it is the one coverage key any of them can touch.
-**MEASURED BY RUNNING THE METRIC ITSELF over the committed store with the new
-table, with its computed line diffed KEY BY KEY against the trail's last line:
+**PRE-REGISTERED 2026-10-16 18:4xZ for the next merge after the
+COMPARABLE-PRECEDENCE override — `tkExact` **41.02 -> 41.32**, band
+**41.31-41.33**, and NOTHING ELSE MOVES.** It is build-side and writes no store,
+but it took `sec-tickers.js` from 15,747 to **16,963 keys** (ADDED 1,216 /
+REMOVED 0 / CHANGED 0 — purely additive, so no reader loses a symbol and none
+gets a different one), and `tkExact` reads that table, so it is the one coverage
+key the change can touch.
+**MEASURED BY RUNNING THE METRIC ITSELF over #680's own store with the new
+table, with its computed line diffed KEY BY KEY against the line #680 appended:
 exactly ONE of the 35 keys moves.** `tkComparable` **3.38** unchanged, which is
 the structural control — the generator ships assertions only and writes a key
 only where the page resolved NOTHING, so no row can cross the

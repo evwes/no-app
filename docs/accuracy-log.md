@@ -60878,12 +60878,20 @@ test read 46 refusals and every one was a hyphen** (`R-6` tokenises to `r` +
 token pairs and its controls are SLICED from the shipped source and run against
 the real index rather than transcribed.
 
-**PRE-REGISTERED, SUPERSEDING 41.02 — `tkExact` 40.23 -> 41.32 and nothing else
-on the 35-key line**, measured by RUNNING `audit-data.mjs` over the committed
-store with the new table and diffing its computed line key by key: exactly ONE
-key moves, HIGH back at the baseline 4, WARN 556. Three ships now sit in this one
-table (the Fidelity class contraction, the vintage-position lift and this), and
-no merge has reflected any of them.
+**PRE-REGISTERED — `tkExact` 41.02 -> 41.32 and nothing else on the 35-key
+line**, measured by RUNNING `audit-data.mjs` over the committed store with the
+new table and diffing its computed line key by key: exactly ONE key moves, HIGH
+back at the baseline 4, WARN 556.
+***AND THE BASELINE CORRECTS MY OWN SENTENCE, WHICH FIRST READ "40.23 -> 41.32 …
+no merge has reflected any of them".*** #680 ran on main at 18:0xZ while I was
+dispatching regenerations on the dev branch, and main already carried the first
+two ships' table — so it DID reflect them, appending **41.02**, which is dead on
+the point estimate those ships were registered at. My first measurement diffed
+the new table's audit against the DEV branch's older line and so attributed all
+three ships to one move. *Adopting main's data commit before measuring is what
+turned a 40.23 baseline into the right one* — the recorded rule that a verdict
+must be read off the line the PRODUCING run appended, met from the other side:
+here the producing run was on the ref I had not yet rebased onto.
 
 **It took FOUR dispatches of the regeneration workflow and two of them were my
 own defects**, both recorded above: run 2 was stopped by the absence pin it
