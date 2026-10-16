@@ -2126,6 +2126,54 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
    * siblings so it travels INSIDE the generator's slice, which runs from
    * GUARANTEE_PRICED_WORDS to the end of the function. */
   const CONTRACT_WORD = /\bcontracts?\b/i;
+  /* THE SAME DESIGNATION, COMPRESSED INTO AN ACRONYM — 2026-10-16.
+   *
+   * `CONTRACT_WORD` is the filing's own word and the gate below is right to use
+   * it. It cannot see the word when the filer writes the designation as an
+   * initialism: **a GIC is a Guaranteed Investment Contract and a SAGIC is a
+   * Separate Account GIC**, so `SAGIC Diversified Bond II` states the contract
+   * exactly as `Fully benefit-responsive investment contract SAGIC Diversified
+   * Bond II` does — and `fund-er.js:515`'s own comment already says what the
+   * acronym expands to while `fund-er.js:519` prices it at 0.35 anyway.
+   *
+   * 186 published+served rows / 184 plans / 464,862 participants /
+   * $2,123,185,242 publish that fabricated 0.35, **0 of them publish a ticker**,
+   * and 95 are at or above 10% of their own menu — Local One I.A.T.S.E. 13.26% /
+   * $154,331,440 / 22,420 ppl, Werner Enterprises 18.25%, Coadvantage
+   * Corporation 81,703 ppl. An insurance separate account has no published
+   * expense ratio; its cost sits inside the contract's crediting rate.
+   *
+   * THE CONTROL IS INTERNAL AND NEEDS NO REGISTRY: the SAME product family is
+   * filed 304 ways, and the 118 rows whose filer TYPED the vehicle
+   * (`Stable value / GIC` 63, `Pooled separate account` 17, `Collective trust`
+   * 14) already publish NO fee, while the 186 whose type cell the filer left
+   * BLANK (165 of them) publish 0.35. One product, two answers, and the only
+   * thing that varies is a cell the filer may leave empty — the eighth instance
+   * of a blank type cell defeating a type-reading suppressor. The registry
+   * corroborates by silence: **0 SAGIC series among 429 MassMutual registrant
+   * rows** in `sec-funds.json`.
+   *
+   * IT IS NOT A BITE OUT OF THE OWNER-GATED STABLE-VALUE ITEM, by that item's
+   * own stated boundary. The 2026-10-01 entry four lines up draws the line at
+   * the filing's own word: rows that say only `stable value` are the policy
+   * call, and rows that "additionally carry the filing's OWN word `contract`"
+   * are "the condition the project already decided on". An acronym whose last
+   * letter IS that word is inside the decided condition, not outside it — the
+   * same reading that shipped `cct`, `corp`, `instr` and `sec` as caption
+   * abbreviations.
+   *
+   * AND THE SECOND CONDITION IS STILL THE SAFETY, unchanged: this only decides
+   * which rows get ASKED. A row reaching the gate keeps its fee unless the
+   * remainder stops pricing once the guarantee words come out, so a real fund
+   * wearing the acronym is refused by the residue test exactly as the 86 rows
+   * the 2026-10-02 widening reached were. Measured, not argued — see the
+   * differential in `docs/accuracy-log.md` 2026-10-16 (06:0xZ).
+   *
+   * The spelling is `GUARANTEE_PRICED_WORDS`' own `\b(?:sa?)?gic\b`, which is
+   * deliberate rather than convenient: the strip and the gate must agree about
+   * which abbreviations are the designation, and this record already cost three
+   * days to a 24-row gap where the two disagreed about exactly this token. */
+  const GIC_ACRONYM = /\b(?:sa?)?gic\b/i;
   function annuityFeeIsGuaranteeOnly(cleanedName, priceOf) {
     const s = String(cleanedName || "");
     /* THE GATE READS ALL THREE CONTRACT WORDINGS AS OF 2026-10-01 (14:2xZ), AND
@@ -2225,7 +2273,7 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
      * so no widening of a NAME condition can reach them; they are rows whose
      * name says only `guaranteed`, i.e. the owner-gated stable-value item, and
      * they are deliberately left there. */
-    if (!CONTRACT_WORD.test(s)) return false;
+    if (!CONTRACT_WORD.test(s) && !GIC_ACRONYM.test(s)) return false;
     const rest = s.replace(GUARANTEE_PRICED_WORDS, " ").replace(/\s+/g, " ").trim();
     return priceOf(rest) == null;
   }

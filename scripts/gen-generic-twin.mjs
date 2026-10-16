@@ -694,6 +694,21 @@ const guarFeeNames = [
    * population: the PREDICATE flags it and app.js's call site KEEPS it via
    * `!tk`, as it already does for `isBankDepositRow` — so a `SUPPRESS` here is
    * the predicate's answer and not what the page does. */
+  /* must SUPPRESS — 2026-10-16, the gate now reads the designation as an
+   * ACRONYM, and NOT ONE of the probes above reaches that arm: every one of
+   * them spells the word `contract`, so the twin would have agreed whether or
+   * not `GIC_ACRONYM` existed. A probe set that cannot reach an arm is how a
+   * guard passes while doing nothing, and that has been caught here at v189,
+   * v190, v191, v192 and twice since. Each of these six says NO form of the
+   * word and is reachable by the new disjunct alone. The first is the
+   * motivating row (Coadvantage Corporation, 81,703 ppl, and 41 plans file
+   * that exact string); the fifth is the sharpest boundary, because its name
+   * ALSO says `stable value` — the owner-gated item's own vocabulary — and it
+   * ships here only because `GIC` spells out a guaranteed investment
+   * CONTRACT, which is the condition this project already decided on. */
+  "SAGIC Diversified Bond II", "SAGIC Core Bond I", "10-YEAR GIC ACCOUNT",
+  "GIC UNITED OF OMAHA INS CO", "Stable Value (GIC) Fund",
+  "TIAA Traditional GIC Fund (Fully benefit-responsive)",
   "TIAA Stable Value Contract - Fully Benefit-Responsive",
   "Guaranteed Income Contract", "Guaranteed Interest Balance Contract",
   "Key Guaranteed Portfolio Fund, at contract value",
@@ -727,6 +742,26 @@ const guarFeeNames = [
    * says only `guaranteed` is the owner-gated stable-value item, and widening
    * a NAME condition must never reach it. */
   "Guaranteed Income Fund - Empower Annuity Insurance Company",
+  /* must KEEP — 2026-10-16, the two single-protection cases for the acronym
+   * arm, and the FIRST was found by reading the differential's own output
+   * rather than imagined.
+   *
+   * `\b` IS THE ONLY THING BETWEEN `\bgic\b` AND EVERY FUND WHOSE NAME SAYS
+   * `STRATEGIC`. Spelled correctly there is no boundary and the gate is shut,
+   * which is what this probe pins. The live store holds two rows where OCR put
+   * a SPACE inside the word — `V anguard A trate gic Sm all-Cap Equity Fund`,
+   * `Lazard Inte rnational Strate gic Equity Fund` — and the arm DOES reach
+   * those. It is not a harm and it is not an argument for the arm either: the
+   * 0.35 they publish today was itself an accident of the same broken spacing
+   * matching a GIC pattern, so neither number is the fund's, and what those
+   * rows actually need is the NAME repaired. Named rather than rounded away.
+   *
+   * The second is the residue test doing the work on the new arm specifically:
+   * strip the acronym and a registered fund is still there to price, so the
+   * fee stays. Without that condition this gate would be a name vocabulary,
+   * which is the shape this record has measured harmful. */
+  "Vanguard Strategic Small-Cap Equity Fund",
+  "SAGIC Fidelity 500 Index Fund",
 ];
 /* the investment-contract arm, BOTH CELLS and both directions, and it needed
  * its OWN probes for the sixth cycle running: not one row above reaches it,
@@ -928,10 +963,24 @@ for (const r of annuityRows) if (ctx.__a(r, r.name) !== isAnnuityContractRow(r, 
 for (const n of guarFeeNames) if (ctx.__q(n) !== annuityFeeIsGuaranteeOnly(n, ctx.fundER)) {
   bad++; console.log(`  GUARANTEE-FEE DRIFT ${JSON.stringify(n)} twin=${ctx.__q(n)} lib=${annuityFeeIsGuaranteeOnly(n, ctx.fundER)}`);
 }
-for (const n of guarFeeNames.slice(0, 21)) if (!annuityFeeIsGuaranteeOnly(n, ctx.fundER)) {
+/* THE SPLIT IS POSITIONAL, SO IT IS ASSERTED — 2026-10-16. The must-SUPPRESS
+ * half is a PREFIX of this array, which means an entry appended in the wrong
+ * place silently changes what it claims rather than failing: a must-KEEP case
+ * inserted before the boundary would be required to suppress, and the table
+ * would still pass if the rule happened to suppress it. The boundary moved
+ * 21 -> 27 when the acronym arm's six probes went in, and a wrong total is a
+ * mis-edited table, so say the number out loud.
+ * (`parser-gate.mjs` cost two months of false passes to exactly this shape:
+ * a fixture table that dispatches positionally tests the DISPATCHER too.) */
+const GUAR_SUPPRESS = 27;
+if (guarFeeNames.length !== 45) {
+  bad++; console.log(`  GUARANTEE-FEE TABLE: ${guarFeeNames.length} probes, expected 45 — an entry was added without`
+    + ` moving GUAR_SUPPRESS (${GUAR_SUPPRESS}), so the must-SUPPRESS/must-KEEP boundary may now be wrong`);
+}
+for (const n of guarFeeNames.slice(0, GUAR_SUPPRESS)) if (!annuityFeeIsGuaranteeOnly(n, ctx.fundER)) {
   bad++; console.log(`  GUARANTEE-FEE rule no longer suppresses a fabricated annuity fee: ${JSON.stringify(n)}`);
 }
-for (const n of guarFeeNames.slice(21)) if (annuityFeeIsGuaranteeOnly(n, ctx.fundER)) {
+for (const n of guarFeeNames.slice(GUAR_SUPPRESS)) if (annuityFeeIsGuaranteeOnly(n, ctx.fundER)) {
   bad++; console.log(`  GUARANTEE-FEE rule would withdraw a fee a fund's own name supports: ${JSON.stringify(n)}`);
 }
 for (const n of loans) if (ctx.__l(n) !== isLoanDescriptionRow(n)) {
