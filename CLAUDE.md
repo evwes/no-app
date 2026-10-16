@@ -477,55 +477,21 @@ that changing visibility also unpublishes GitHub Pages.
 
 ## Work cadence (owner directive 2026-09-01)
 
-> **PAUSED 2026-10-12 ~13:5xZ UNTIL 2026-10-15T23:00:00Z (Thursday 7:00 PM ET).**
-> Owner: *"pause this project again until the thursday restart."* Both "again"
-> and "the thursday restart" point at the same weekly reset the 2026-10-05
-> pause used, so the expiry MATCHES that precedent rather than being guessed.
-> **The expiry is the instruction: delete this block at it, do not obey it
-> past it.** The live copy of the state, with the Routine ids, is the `PAUSED`
-> key in `docs/cadence-state.json`.
->
-> **What is paused:** agent work. The three Wampo Routines are DISABLED so the
-> pause is real rather than advisory — `trig_017vdX5dSSYh5v68Cwe6EUBu` (hourly
-> cycle, the one that matters), `trig_01X6KxJQfanGsm3tcHkCtwt3` (daily sweep)
-> and `trig_01P9LK37jGLKc5FSAMerRZ7C` (weekly status).
-> **What is NOT:** the Actions pipeline, deliberately, exactly as through the
-> last pause — it is the durable data layer and stopping it would stop
-> ingesting filings.
-> **Not this project and left alone:** `trig_014Rfs763HEEenzB6HYn1yJ9`
-> "Daily fintech watch".
->
-> **RESUME CHECKLIST — written for a session with NO memory of this one:**
-> 1. `git fetch origin main claude/wampo-401k-live-nx1t4o` and check BOTH
->    `--not` directions. Expect ~15-20 scheduled data commits on main; the
->    merge job fast-forwards the dev branch when it is a strict ancestor, so
->    the refs may already be converged. If they diverged, the stores are
->    probably the same data twice — **run the structural diff, never judge it
->    by timing** (the recorded rule, and the procedure is in the 2026-10-12
->    13:3xZ registration block).
-> 2. Re-enable the three Routines above with `update_trigger` (`enabled: true`)
->    and confirm `next_run_at` on each.
-> 3. Delete the `PAUSED` key from `docs/cadence-state.json` and this block.
-> 4. **Re-derive the Current-state block from the store** — it will be stale
->    by three days. `docs/coverage-history.jsonl`, `lineups-status.json`,
->    `lib-4i`'s `PARSER_VERSION`.
-> 5. **The one unfinished measurement**, and it is the owner's own question:
->    `node scripts/display-delta.mjs <a ref from 2026-10-02>` answers "what did
->    the display work actually change for readers, deduplicated". It was
->    launched 2026-10-12 and killed by the pause at 21 minutes of CPU. It
->    takes ~20-25 min in the FOREGROUND (a background process gets CPU only
->    while a turn is active). The commit that added it explains why summing the
->    individual ships' participant figures is the wrong answer.
-> 6. Nothing is pre-registered and pending: #650 delivered the last
->    registration byte-identical.
-
 **Work, report, continue. NEVER delay finished work for a clock.**
 
-*(The one deliberate exception on this record: the owner paused all work
-2026-10-05 → 2026-10-08 7:00 PM ET. The pause carried its own expiry and
-was deleted at it rather than obeyed — which is the whole point of writing
-an expiry into a state key. The Actions pipeline ran throughout, as it
-should, and the 10 data commits it left on main were adopted on resume.)*
+*(TWO deliberate exceptions on this record, and BOTH ended at their own
+written expiry rather than by being noticed: 2026-10-05 → 2026-10-08 7:00 PM ET,
+and 2026-10-12 → 2026-10-15 7:00 PM ET. Each pause carried its expiry in a state
+key AND in a one-shot Routine that fired at it — which is the whole point of
+writing an expiry down rather than remembering one. The Actions pipeline ran
+throughout both, as it should; the first left 10 data commits on main and the
+second 21, and in both cases the merge job's fast-forward step had already
+converged the dev branch, so there was no adoption chore and no structural diff
+to run. **What the second pause measured, which the first did not: 24
+consecutive scheduled merges appended a BYTE-IDENTICAL coverage line.** Three
+days of the durable layer moved not one coverage key, which is the honest
+shape of a quiet ingest window and the reason the agent layer is where the
+improvement comes from.)*
 
 This supersedes an earlier framing that batched parser work into the overnight
 window. That framing was justified partly by conserving Actions minutes, and
@@ -946,9 +912,11 @@ extra entries are self-clearing `reparse-loss` findings raised from
 `losses-triage.txt`, a run ARTIFACT that exists only in CI. *A metric that
 differs between CI and local is a question about the inputs, not the store.*
 
-**THE IDENTICAL-LINE RUN, RE-DERIVED 2026-10-10 19:1xZ AND NEVER INCREMENTED:
-19 on all keys, 19 on shared keys, DATE EXCLUDED**, over 431 trail lines
-(longest in the trail 35 / 38; pairs identical 55.8% / 56.7%). The recorded
+**THE IDENTICAL-LINE RUN, RE-DERIVED 2026-10-16 01:3xZ AND NEVER INCREMENTED:
+25 on all keys, 25 on shared keys, DATE EXCLUDED**, over 470 trail lines
+(longest in the trail 35 / 38; pairs identical 57.8% / 58.6%; date-INCLUDED the
+trailing run is 7 and the longest 14 / 15). The recorded figure was 19 on
+2026-10-10, so this is a re-derivation and not a bump. The recorded
 figure was **3** on 2026-10-04, so this is a re-derivation and not a bump —
 *a count carried forward by increment is not a measurement.* Nineteen
 consecutive merges with a byte-identical line is the EXPECTED state, not a
