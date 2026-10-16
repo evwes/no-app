@@ -732,3 +732,30 @@ Accuracy protocol: SIZE before fixing, RE-SIZE after (v101 was projected at 65%,
 Before 7:00 AM Eastern, docs/morning-brief.md current and committed — decision-shaped, HELD-and-why first.
 
 If there is genuinely nothing to do, say so briefly and stop. Do not invent work. No model identifier in commits, PR bodies, or code comments.
+
+### 2026-10-16 02:07 draw — the caption-weld STRIP (408 rows / 730,427 ppl / $2.3B)
+
+**SIZED, NOT SHIPPED.** The 2026-10-12 09:4xZ withdrawal-terms ship qualifies a
+caption-ONLY row; **408 published+served rows / 405 plans / 730,427 ppl /
+$2,298,860,472 weld that caption in FRONT of a real product name** and so are
+outside it by construction. Remedy is a **STRIP**, never a label — the remainder
+names a genuine stable-value product on all 228 distinct spellings read
+(`Principal Fixed Income Guaranteed Option` ×20, `Key Guaranteed Portfolio
+Fund` ×18, `Voya Fixed Account` ×13, `Lincoln Stable Value Account` ×10).
+**Two conditions it needs, both from its own member list:** refuse a remainder
+that is a bare HOUSE (`Empower` ×10, `Lincoln` ×5 — the recorded bare-house
+class), and leave `TIAA Traditional Benefit Responsive` ×7 alone (an existing
+must-KEEP pin). **Control already measured: LABEL 0** — no caption-only spelling
+escapes the shipped predicate, so its vocabulary is complete and this residue is
+entirely the welded shape. `docs/accuracy-log.md` 2026-10-16 (03:3xZ).
+
+### and the leading class designation — SPLIT FIRST, do not ship a number
+
+761 published+served rows / 376 plans / 1,146,444 ppl / $8,946,670,771 survive
+`cleanFiledName`'s own leading-class strip with a class designation still in
+front, **0 qualified by anything shipped** — but it is THREE populations with
+three remedies: bare designations naming nothing (`Class I shares` ×19, `Class T
+shares` ×13, `Institutional Class shares` ×9), rotations of a real fund name
+(`Class R6 Fidelity Mid Cap Index Fund`, `Institutional Class Invesco Developing
+Markets Fund Class R6`), and **real names that must be spared** (`Class B Common
+Stock` ×5 — employer stock's own class). Split before any arm.

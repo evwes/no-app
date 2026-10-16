@@ -7,6 +7,91 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-16 (03:5xZ) — THE 02:07 DRAW: MY OWN 2026-10-12 CAPTION SHIP'S RESIDUE IS A STRIP AND NOT A LABEL — 408 published+served rows / 405 plans / 730,427 ppl / $2,298,860,472, AND THE SHIP'S OWN VOCABULARY IS MEASURED COMPLETE
+
+**Seeded participant-weighted draw (`--seed 16102026`), two plans read against
+their stored rows: Salesforce (57,193 ppl, $11.2B, ratio 0.995) and Lowe
+Enterprises (7,078 ppl, ratio 0.979).** Lowe publishes **`Fully
+benefit-responsive investment contract Lincoln Stable Value Account`** at 3.8%
+of its menu — the withdrawal-terms caption welded in FRONT of a real product
+name, which the 2026-10-12 09:4xZ ship deliberately does not reach because
+`isWithdrawalTermsCaption` requires the WHOLE string to be caption words.
+
+**SIZED WITH THE SERVING CONDITION AND THE SHIPPED CLEANER APPLIED, participants
+PLAN-DEDUPLICATED, and split BY REMEDY because one label cannot serve all of
+them:**
+
+| | rows | plans | ppl | $ |
+|---|---|---|---|---|
+| **ALREADY qualified** by the shipped arms | 311 | 299 | 548,348 | $2,145,860,691 |
+| **STRIP** — caption welded before a REAL product | **408** | **405** | **730,427** | **$2,298,860,472** |
+| LABEL — caption-only in a spelling the ship misses | **0** | 0 | 0 | 0 |
+| BASIS — remainder is itself an accounting basis | 1 | 1 | 239 | $12,138,502 |
+
+***THE `LABEL 0` IS WORTH AS MUCH AS THE 408 AND IS THE REASON TO RUN THE SPLIT
+THIS WAY: over every published+served row reaching the shape, there is NOT ONE
+caption-only spelling the shipped predicate fails to qualify.*** This record's
+most-repeated vocabulary failure is *one of two spellings is worse than
+neither*, and that ship's `WD_WORD` set is now measured COMPLETE for the
+caption-only population rather than merely untested. The 39 `at contract value`
+remainders inside ALREADY are the 13:0xZ contract-basis arm working, which is a
+second shipped arm confirmed live on data it was registered against.
+
+**THE STRIP'S 228 DISTINCT REMAINDERS ARE GENUINE STABLE-VALUE PRODUCTS, read
+not assumed:** `Principal Fixed Income Guaranteed Option` ×20, `Empower Annuity
+Insurance Company of America` ×18, `Key Guaranteed Portfolio Fund` ×18, `Voya
+Fixed Account` ×13, `Lincoln Stable Value Account` ×10, `New York Life
+Guaranteed Interest Account` ×7, `TIAA Traditional Annuity` ×6, `Standard Stable
+Asset Fund` ×5. So *"the filing names no specific fund"* would be FALSE on every
+one of them, and the recorded position for that bucket holds: **a truncated or
+prefixed name wants reconstruction, never suppression.**
+
+**TWO CONDITIONS THE STRIP WILL NEED, both visible in its own member list before
+any arm is written — which is the whole value of printing members:**
+1. **A remainder that is a bare HOUSE must be refused** — `Empower` ×10 and
+   `Lincoln` ×5 are the caption plus a truncated firm, so a strip would publish
+   a bare house name, which is this record's own 5,752-row bare-HOUSE class.
+2. **`TIAA Traditional Benefit Responsive` ×7 is already a must-KEEP PIN** in
+   `lib-disclose` — a REAL holding whose name states the product with the split
+   as a qualifier — so the strip must leave it alone, and the pin will say so by
+   name if it does not.
+
+**AND SHAPE A FROM THE SAME DRAW IS THREE POPULATIONS, SO ITS HEADLINE MUST NOT
+BE PUBLISHED AS ONE CLASS.** A leading class designation on the CLEANED name
+reads 761 published+served rows / 376 plans / **1,146,444 ppl / $8,946,670,771**
+with **0 qualified by any shipped predicate** — and its own member list splits it
+immediately: **bare designations naming nothing** (`Class I shares` ×19, `Class T
+shares` ×13, `Institutional Class shares` ×9, `Class R6` ×5, `Class I1` ×4,
+`Class X shares` ×3, `Class K` ×3), **ROTATIONS where the class ran to the front
+of a real fund** (`Class R6 Fidelity Mid Cap Index Fund` ×3, `Class R-6 500 Index
+Fund` ×3, `Institutional Class Fidelity U.S. Bond Index Fund` ×3, and the draw's
+own `Institutional Class Invesco Developing Markets Fund Class R6`), and **REAL
+NAMES that must be spared** — `Class B Common Stock` ×5 is employer stock's own
+share class. Three remedies: a label, a repair, and nothing. *A count keyed on a
+leading word measures the leading word*, so this is recorded as a split and not
+as a number.
+**Note what the shipped cleaner already does here:** `cleanFiledName` carries a
+leading-class-designation strip, so part of the stored shape reaches no reader —
+these 761 are what SURVIVES it, measured on the cleaned name, and the survivors
+are the spellings it misses (`Institutional Class …`, a bare `Class …`). Hence
+Salesforce also publishes `Class Fidelity Long-Term Treasury Bond Index Fund`,
+which resolves **FNBGX** correctly and is legibility alone.
+
+**Both screens carry a must-see PIN by the SERVED ack that THROWS on a miss**,
+and both fired. Read-only throughout: a `wam` agent held the working tree, so
+every store read went through the tracked loaders rather than the path.
+
+**The machinery working, recorded because a draw that only finds defects is not
+reading the page:** Salesforce's `Fidelity 500 Index Fund` typed `Collective
+trust` correctly publishes NO symbol on $2,155,884,000 (the 06:5xZ pooled-vehicle
+gate, live on the largest row of an 11-billion-dollar menu), its
+`Self-Directed Brokerage Account` is labelled `Brokerage window`, and Lowe's
+Lincoln row carries `guaranteeOnlyFee` so it publishes no fabricated expense
+ratio. Residue named, not swept in: Salesforce's `Spartan International Index
+Fund Class F` and `Spartan Small Cap Index Fund Class F` are the recorded
+retired-brand class, and `TD9 Loomis Sayles Core Plus Fixed Income Class D` is
+Capital Group's trust-class marker welded onto another manager's product.
+
 ## 2026-10-16 (03:3xZ) — THE AT&T EMPLOYER-STOCK BLANK, DIAGNOSED FROM THE FILING: THREE GATES IN SERIES, AND THE REGISTER'S "NOT CAUSED BY EITHER OF THEM" IS HALF WRONG — THE CUSIP IS LOAD-BEARING ON THE SECOND
 
 **What was open.** `CLAUDE.md`'s 12:07-draw entry recorded that At&T Inc. publishes
