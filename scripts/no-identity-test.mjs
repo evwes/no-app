@@ -368,8 +368,20 @@ for (const [n, why] of ISS_KEEP) ok(isNonIssuerCell(n) === false, `isNonIssuerCe
   const noAnchor = new RegExp(FURN + "(?:\\s+(?:of|in)\\s+" + FURN + ")*\\s+(?:of|in)[\\s.,;:]*$", "i");
   const noPrep = new RegExp("^" + FURN + "(?:\\s+(?:of|in)\\s+" + FURN + ")*[\\s.,;:]*$", "i");
   const noRepeat = new RegExp("^" + FURN + "\\s+(?:of|in)[\\s.,;:]*$", "i");
+  /* THE TRANSCRIPTION IS OF ONE ARM, AND SAYING SO IS THE POINT. As of
+   * 2026-10-16 `isNonIssuerCell` is a DISJUNCTION -- the furniture run
+   * transcribed here OR `isOpaqueIdCell`, the sponsor's own fund code -- so a
+   * drift assertion that compared the function to this regex would now fail for
+   * a correct reason, and one that compares only the regex to itself would pass
+   * against a deleted arm. Both halves are therefore asserted separately: the
+   * transcription still describes the FURNITURE arm, and the function still
+   * answers both. */
   ok(anchored.test("Shares of") && !anchored.test("Alerus Financial, N.A."),
-    "the control's transcription has drifted from the shipped isNonIssuerCell");
+    "the control's transcription has drifted from the shipped FURNITURE arm");
+  ok(isNonIssuerCell("Shares of") === anchored.test("Shares of"),
+    "the function and the furniture transcription disagree on a furniture case");
+  ok(isNonIssuerCell("TEAF50020002") === true && anchored.test("TEAF50020002") === false,
+    "the CODE arm is missing from isNonIssuerCell, or the furniture regex has absorbed it");
   ok(noAnchor.test("Investments in shares of") === true, "control setup wrong");
   ok(noPrep.test("Shares") === true,
     "CONTROL IS DECORATIVE: dropping the trailing-preposition requirement does not even reach `Shares`");

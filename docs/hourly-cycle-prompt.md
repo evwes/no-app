@@ -1022,3 +1022,33 @@ the first where one of the two answers is a BLANK rather than a different number
 screen contaminated — re-key before sizing), then the `American Fund` singular
 residue measured through the PAGE rather than through one arm.
 `docs/accuracy-log.md` 2026-10-16 (15:0xZ).
+
+### 2026-10-16 16:0xZ — SHIPPED: the sponsor's own fund code as the issuer, 521,345 ppl
+
+**117 published+served rows / 96 distinct cells / 10 acks / 18 plans / 521,345
+ppl / $46,046,694,713 stop leading with an opaque code**, and 7 crawlable pages
+/ 68 rows read as a per-page SET DIFFERENCE with the row count identical both
+sides. AT&T's 192,505-participant trust published `TEAF50020002 · Bgi Equity
+Index Fund F`; also Howmet `ALCF…`, Alcoa `RN2F…`, Boehringer `BOEF…`, General
+Mills `GMTF…`, ITW's synthetic-GIC contract number, Capital One `MDA01269TR-00`.
+A second DISJUNCT inside `isNonIssuerCell` (not a widening of its furniture run)
+so it reaches both surfaces and the smoke test's twin cross-check through the one
+function the call sites already ask.
+***THE RECORDED SCREEN WAS CONTAMINATED AND THE RE-KEY IS THE VALUE:*** "no
+three-letter word" could not tell `TEAF50020002` from `RET2030 I`, a target-date
+CLASS designation, and read 166 rows / 597,335 ppl. Re-keyed structurally — ONE
+token, >=8 chars, >=4 digits, >=1 letter — and **all 96 cells READ with ZERO
+decoys**, which is the only honest test of a shape screen.
+**My own must-NOT-fire control fired and the CONTROL was wrong:** a bare CUSIP in
+the ISSUER cell names nothing a reader can use either, so it is a must-FIRE. An
+ALL-DIGIT cell is deliberately left alone (a security identifier, another arm).
+**The staleness gate fired on the way out, correctly, costing a 30-minute
+regeneration — which came back ADDED 0 / REMOVED 0 / CHANGED 0.** `PARSER_VERSION`
+stays 203; no coverage key can move, so nothing is pre-registered beyond the
+41.02 already standing.
+**NEXT:** move the `sec-tickers.js` regeneration into the Actions pipeline. It is
+30 minutes of CPU and this container grants a background process CPU only while a
+turn is active, so one ship costs 15+ polling turns; runners here are free and
+unlimited (measured `billable.UBUNTU.total_ms = 0`). That is the single biggest
+constraint on this loop's throughput.
+`docs/accuracy-log.md` 2026-10-16 (15:5xZ).

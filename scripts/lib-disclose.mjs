@@ -2864,8 +2864,72 @@ for (const [s, why] of [
 const NON_ISSUER_FURNITURE = "(?:shares?|units?|interests?|holdings?|investments?|amounts?|balances?|participations?|value)";
 const NON_ISSUER_CELL = new RegExp("^" + NON_ISSUER_FURNITURE
   + "(?:\\s+(?:of|in)\\s+" + NON_ISSUER_FURNITURE + ")*\\s+(?:of|in)[\\s.,;:]*$", "i");
+/* AND THE SECOND SHAPE THAT NAMES NOTHING: THE SPONSOR'S OWN INTERNAL FUND
+ * CODE, 2026-10-16.
+ *
+ * Both surfaces print `issuer · name`, so AT&T's 192,505-participant trust
+ * publishes `TEAF50020002 · Bgi Equity Index Fund F` — eleven of its twelve
+ * shown rows lead with a code from the custodian's export. Howmet files
+ * `ALCF19407002`, Alcoa `RN2F19407002`, Boehringer `BOEF13110002`, General
+ * Mills `GMTF02190002`, ITW the synthetic-GIC contract `C999502JD0`.
+ *
+ * A SEPARATE PREDICATE COMPOSED IN, not a widening of the furniture run above,
+ * because the two have nothing in common: that one is a preposition-joined run
+ * of holding words, this one is a shape. Composing it INSIDE `isNonIssuerCell`
+ * is what makes it reach both surfaces and the smoke test's cross-check without
+ * a second call site — `app.js:4578` and `build-seo-pages.mjs:300` each ask that
+ * one function.
+ *
+ * THE CONDITIONS ARE STRUCTURAL, AND THE RECORDED SCREEN THEY REPLACE WAS NOT.
+ * That one tested "no three-letter word" and so could not tell `TEAF50020002`
+ * from `RET2030 I`, which is a target-date CLASS designation — *a count keyed on
+ * a character shape measures the character shape*. These four are: ONE token (a
+ * designation is several: `RET2030 I`, `SSGA S+P 500 INDEX SER A`), at least
+ * EIGHT characters (`401K` is not a code), at least FOUR digits (`Vanguard` and
+ * `BlackRock` carry none), and at least one LETTER.
+ *
+ * THE LETTER REQUIREMENT HAS A NAMED COST AND IT IS DELIBERATE: a purely
+ * numeric cell is left alone, because an all-digit run in that column is a
+ * SECURITY identifier rather than a platform's fund code, and that class has
+ * its own merge-side arm working on the NAME.
+ *
+ * READ, NOT SAMPLED: all 96 distinct cells the screen reaches were enumerated
+ * and read, with ZERO decoys — 117 published+served rows across 18 plans and
+ * 521,345 participants. Ticker, fee, asterisk, name and type cannot move, for
+ * the same reason the furniture arm's cannot: `lookupTicker` reads `f.iss` at
+ * its own call site and this predicate is applied only where the issuer SPAN is
+ * composed. docs/accuracy-log.md 2026-10-16. */
+const OPAQUE_ID_CELL = /^(?=(?:\D*\d){4})(?=.*[A-Za-z])[\w.\-/#]{8,}$/;
+export function isOpaqueIdCell(iss) {
+  const t = String(iss == null ? "" : iss).trim();
+  return !/\s/.test(t) && OPAQUE_ID_CELL.test(t);
+}
 export function isNonIssuerCell(iss) {
-  return NON_ISSUER_CELL.test(String(iss == null ? "" : iss).trim());
+  const t = String(iss == null ? "" : iss).trim();
+  return NON_ISSUER_CELL.test(t) || isOpaqueIdCell(t);
+}
+/* the code arm, asserted at import in both directions on REAL cells */
+for (const [s, why] of [
+  ["TEAF50020002", "AT&T's own fund code, on a 192,505-participant trust"],
+  ["ALCF19407002", "Howmet, 9 rows"], ["RN2F19407002", "Alcoa, 8 rows"],
+  ["BOEF13110002", "Boehringer, 3 rows"], ["GMTF02190002", "General Mills"],
+  ["AEG766000", "General Dynamics — nine characters, six digits"],
+  ["C999502JD0", "ITW's synthetic-GIC contract number"],
+  ["MDA01269TR-00", "Capital One — a hyphen is not whitespace"],
+]) if (!isOpaqueIdCell(s)) {
+  throw new Error(`lib-disclose: isOpaqueIdCell no longer reaches ${JSON.stringify(s)} (${why}) — the arm is inert, fix it rather than shipping a quiet guard`);
+}
+for (const [s, why] of [
+  ["RET2030 I", "a target-date CLASS designation — the contamination the recorded screen could not see; SEVERAL tokens"],
+  ["SSGA S+P 500 INDEX SER A", "=SSSYX on $606,941,903 — a real product with a series letter"],
+  ["401K", "too short to be a code"],
+  ["Vanguard", "no digits"], ["BlackRock", "likewise"],
+  ["Wilmington Trust, N.A.", "a real trustee — several tokens AND no digits"],
+  ["024071813", "an all-digit SECURITY identifier: a different class with its own arm"],
+  ["VFIAX", "a ticker — too short, no digits"],
+  ["JPMorgan Chase Bank, N.A.", "a real bank"],
+]) if (isOpaqueIdCell(s)) {
+  throw new Error(`lib-disclose: isOpaqueIdCell would suppress ${JSON.stringify(s)} (${why}) — it names something or belongs to another class, fix the predicate rather than the control`);
 }
 /* Asserted at import, both directions. The must-KEEP list is weighted toward
  * the `N.A.` family on purpose: those 264 strings are the live population this

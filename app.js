@@ -1812,8 +1812,20 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
   const NON_ISSUER_FURNITURE = "(?:shares?|units?|interests?|holdings?|investments?|amounts?|balances?|participations?|value)";
   const NON_ISSUER_CELL = new RegExp("^" + NON_ISSUER_FURNITURE
     + "(?:\\s+(?:of|in)\\s+" + NON_ISSUER_FURNITURE + ")*\\s+(?:of|in)[\\s.,;:]*$", "i");
+  /* the second shape that names nothing: the sponsor's own internal fund code,
+   * `TEAF50020002 · Bgi Equity Index Fund F`. ONE token, >=8 characters, >=4
+   * digits, >=1 letter — a designation like `RET2030 I` is several tokens and a
+   * house carries no digits. An ALL-DIGIT cell is deliberately left alone: that
+   * is a security identifier, a different class with its own merge-side arm.
+   * Canonical copy and its import-time controls in lib-disclose.mjs. */
+  const OPAQUE_ID_CELL = /^(?=(?:\D*\d){4})(?=.*[A-Za-z])[\w.\-/#]{8,}$/;
+  function isOpaqueIdCell(iss) {
+    const t = String(iss == null ? "" : iss).trim();
+    return !/\s/.test(t) && OPAQUE_ID_CELL.test(t);
+  }
   function isNonIssuerCell(iss) {
-    return NON_ISSUER_CELL.test(String(iss == null ? "" : iss).trim());
+    const t = String(iss == null ? "" : iss).trim();
+    return NON_ISSUER_CELL.test(t) || isOpaqueIdCell(t);
   }
 
   const CAPTION_WORD = "(?:interest|interests|bearing|cash|equivalent|equivalents|u\\.?\\s*s\\.?a?|united|states"
