@@ -60799,3 +60799,40 @@ four hours earlier) had not taken. ***So an absence pin is not merely a guard
 against regression; on a generated asset it is the thing that forces the
 measurement to exist.*** The entry it now carries is a PRESENCE pin on the same
 key, and it is the only test of the precedence.
+
+## 2026-10-16 18:1xZ — the regeneration workflow could not write, and the run that verified it could not have found out
+
+Run 3 of `sec-tickers.yml` did every expensive thing correctly — regenerated the
+table (23 minutes), re-derived the stamp, **passed the stamp gate AND the
+table's own tether**, committed locally, rebased cleanly onto two commits that
+had landed meanwhile — and then took
+
+```
+remote: Permission to evwes/no-app.git denied to github-actions[bot]
+fatal: ... The requested URL returned error: 403
+```
+
+on all four push attempts. The file was written without a `permissions:
+contents: write` block, which `build-data.yml` has carried since it was written.
+
+***THE PART WORTH THE ENTRY IS WHY THE VERIFICATION MISSED IT.*** At 16:1xZ I
+dispatched run 1 specifically to prove the workflow works and recorded "all 13
+steps success, 21m45s … and NO bot commit appeared on the branch", reading the
+absent commit as the correct no-op it genuinely was: that run regenerated against
+unchanged code, so its key diff was **ADDED 0 / REMOVED 0 / CHANGED 0**, `git
+diff --quiet -- sec-tickers.js index.html` was TRUE, and the step exited at its
+own `nothing to commit` branch. **The push path was never executed.** So the
+verification covered twelve steps and the thirteenth only up to its first `if`.
+
+***A WORKFLOW VERIFIED ONLY ON A NO-OP HAS NOT HAD ITS WRITING STEP TESTED*** —
+this record's own *"a check that prints 0 on a quiet store has not been tested"*,
+met on a workflow instead of an audit, and the second time in one day that a
+clean-looking zero turned out to be a path not taken. The entry at 16:1xZ named
+one limitation of that verification (the job log appeared unreadable, which was
+itself false) and not this one. *When a job's last step is conditional, a
+verification run must be made to satisfy the condition* — dispatching it after a
+change that moves a key would have cost the same 22 minutes and tested the whole
+thing.
+
+Fixed with the block plus a comment carrying this reason, so the next person to
+copy this workflow copies the permission with it.
