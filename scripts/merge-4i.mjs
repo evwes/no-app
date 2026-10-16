@@ -2,6 +2,7 @@
 /* Merge matrix parse deltas (results-*.json) into the lineup stores:
  * lineups-status.json, data/lineups/ shards, lineups-index.json. */
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "node:fs";
+import vm from "node:vm";
 import { indexFlags, JUNK_NAME_RE, AGG_DISCLOSURE, GENERIC_TYPE_NAME } from "./lib-4i.mjs";
 import { isGenericTypeName } from "./lib-4i.mjs";
 import { hasNoFundIdentity } from "./lib-disclose.mjs";
@@ -1185,6 +1186,136 @@ function stripIssuerLead(iss) {
     if ((whole.get(nk(rest)) || 0) < NOUN_FLOOR) return null;
     return rest;
   };
+  /* A SECURITY IDENTIFIER WELDED IN FRONT OF THE HOLDING'S NAME — 2026-10-16.
+   *
+   * AT&T's trust (192,505 participants) publishes `00206r102 At&T Inc` and
+   * eleven more rows leading with a nine-character identifier:
+   * `06739T663 Equity Index Fund F` at $6,233,138,627, `999E98387 BGI MSCI
+   * ACWI EX-US INDEX SUPERFUND F`, the `EEG0nnnnn DELTA AIR LINES LIFEPATH`
+   * ladder. The custodian's export carries the CUSIP in its own column and the
+   * parse reads the row as one string.
+   *
+   * ***IT IS LEGIBILITY AND NOTHING ELSE, MEASURED BEFORE THE ARM WAS WRITTEN:
+   * over all 263 published+served rows of the class, rendering each twice
+   * through `renderRow` with the identifier and without it moves `tk` 0, `er`
+   * 0, `star` 0 and `shownType` 0.*** The resolvers reach nothing either way —
+   * `Equity Index Fund F` is a collective trust with no ticker to find — so
+   * this buys half a million readers a name they can read and buys the priced
+   * columns nothing. `ID_ONLY` row membership moves on 0, which is the risk a
+   * name change always has to clear here.
+   *
+   * THE STRUCTURE IS THE DISCRIMINATOR AND THE LENGTH IS NOT. My first screen
+   * was `^[0-9A-Z]{9}\s` — a CUSIP is nine alphanumeric characters, and so is
+   * **`BLACKROCK`, `ALLSPRING`, `NEUBERGER`, `WELLTOWER`, `CHAMPIONX`,
+   * `FIRSTCASH`, `MACQUARIE`**. It read 12,765 rows and would have deleted the
+   * HOUSE from 3,894 of them, taking the fee with it (`NEUBERGER BERMAN
+   * GENESIS` loses 0.65, `BLACKROCK HIGH YIELD K` loses 0.5). *A count keyed on
+   * a character shape measures the character shape.* ALL FOUR of my controls
+   * passed it, including the one written for exactly that hazard — it was
+   * `VANGUARD 500 INDEX`, and `VANGUARD` is EIGHT letters. So the test is a
+   * CUSIP's own structure: the ninth character is a CHECK DIGIT, always
+   * numeric, and the body carries digits too. The fixtures are drawn FROM the
+   * houses the broken version hit.
+   *
+   * TWO REFUSALS, AND EACH IS THE REASON THIS ARM CANNOT LIVE IN
+   * `cleanFiledName`, where every other leading-furniture strip lives. That
+   * function receives a STRING; both conditions need context only this loop
+   * has.
+   *
+   *   (1) THE IDENTIFIER IS THE IDENTITY WHERE THE REMAINDER COLLIDES WITH A
+   *       SIBLING ROW. IBEW Local Union 325 files FOUR `US TREASURY NOTE` rows
+   *       distinguished only by `91282CDY4` / `91282CNC1` / `912828YS3` /
+   *       `9128286T2`; Alcoa four identical `BLACKROCK INSTL TR CO N A INVT FDS
+   *       EMPLOYEE BENEFIT` rows; one plan FIVE `600 MERCER ACTIVE LONG CORP
+   *       FIXED INCOME` lots; and twelve `UNITED STATES OF AMERICA BOND ZERO
+   *       CPN 1` rows. **82 rows / 292,418 participants / $8,389,180,498.**
+   *       Stripping there does not make a row legible, it MERGES two holdings
+   *       and manufactures the double-render shape this project has an open
+   *       item about. The test needs the row's SIBLINGS, so it is computed per
+   *       entry below — and note it must count the POST-strip names, because
+   *       two rows collide only once both have lost their identifiers.
+   *
+   *   (2) NEVER THE SPONSOR'S OWN STOCK. `employerStockSymbolOk` accepts a
+   *       pure digit run as filler and `00206r102` carries an `R`, so the
+   *       identifier is what currently makes that predicate refuse AT&T's row
+   *       — and removing it here is the same relaxation the employer-stock item
+   *       is owner-gated for, reached from another file. Measured: the strip
+   *       flips that predicate on EXACTLY 2 rows store-wide, `AT&T INC`
+   *       (203,226 ppl / $3,859,276,939) and `CONOCOPHILLIPS`. The test needs
+   *       the PLAN's sponsor name, so the map below is built from plans-all.
+   *       A blank at `app.js:4267`'s own insistence is honest; a symbol reads
+   *       as knowledge.
+   *
+   * Asked LAST of a name no arm above touched, and measured disjoint rather
+   * than assumed. */
+  /* ***THE RUN IS CAPTURED AND TESTED IN JS RATHER THAN CRAMMED INTO ONE
+   * REGEX, because my first attempt asserted a condition it did not enforce.***
+   * It read `(?=(?:[^0-9]*\d){2})` anchored at `^`, which scans the WHOLE
+   * STRING — so the "two digits" were satisfied by a fund's own VINTAGE
+   * (`AMERFUNDS 2040 TARG DATERET R6`, 245 rows) and not by the identifier at
+   * all, while the comment beside it said "the body carries digits too". The
+   * check-digit test happened to refuse those rows, so nothing visible went
+   * wrong and the condition was decorative. *Nothing executes a comment.*
+   * Tested on the captured run, both conditions mean what they say. */
+  const LEAD_RUN = /^([0-9A-Z]{9})\s+(?=\S)/;
+  const isSecurityId = (id) => /\d$/.test(id)              /* the CHECK DIGIT */
+    && (id.match(/\d/g) || []).length >= 2;                /* digits in the RUN */
+  /* one helper, used by the arm AND by the sibling map, so the two cannot
+   * disagree about what an identifier is — the sibling map must strip exactly
+   * what the arm strips or a collision is invisible */
+  const stripLeadId = (name) => {
+    const s = String(name || "").trim();
+    const m = s.match(LEAD_RUN);
+    if (!m || !isSecurityId(m[1])) return null;
+    return s.slice(m[0].length).trim();
+  };
+  /* the sponsor's name reduced to what a holding row would spell: letters and
+   * digits only, with the corporate style dropped from the END so `At&T Inc.`
+   * and a row's `AT&T INC` land on one key. Not a vocabulary test — the tokens
+   * are only removed where they TRAIL, so a fund named `Co`-something keeps
+   * them. */
+  const sponsorKey = (s) => String(s || "").toUpperCase().replace(/[^A-Z0-9]+/g, "")
+    .replace(/(?:INCORPORATED|CORPORATION|HOLDINGS|HOLDING|COMPANY|GROUP|INC|CORP|LLC|LLP|LTD|PLC|NV|SA|AG|CO)+$/, "");
+  const cusipRepair = (f, sibs, sponsors) => {
+    const s = String(f.name || "").trim();
+    const rest = stripLeadId(s);
+    if (rest === null) return null;
+    /* a name must SURVIVE: a row whose whole name is the identifier is the
+     * `hasNoFundIdentity` class and is already qualified honestly */
+    if (!rest || rest === s || !/[A-Za-z]{3}/.test(rest)) return null;
+    if ((sibs.get(rest.toLowerCase()) || 0) > 1) return null;       /* (1) */
+    const k = sponsorKey(rest);
+    if (k && k.length >= 3 && sponsors.has(k)) return null;          /* (2) */
+    /* (3) NEVER REPAIR A NAME A BUILD-TIME TABLE IS ALREADY KEYED ON, and this
+     * condition was found by the differential rather than reasoned out.
+     *
+     * `sec-tickers.js` is keyed on `(issuer, nameRaw)` — the name AS STORED,
+     * damage included — so removing the identifier makes the key unreachable
+     * and the row's published ticker goes BLANK until the table is next
+     * regenerated. Measured: without this, the arm LOSES four correct symbols,
+     * `461308819 AMER FND INV CO OF AM-R6` -> RICGX and `648018810 AMER FNDS
+     * NEW PERSPECT-R6` -> RNPGX, on Alcoa and Howmet, $274,667,352 between
+     * them. *A legibility change that blanks an identification is not a
+     * legibility change.*
+     *
+     * ***AND THE STALENESS GATE CANNOT SEE THIS, BY CONSTRUCTION.***
+     * `sec-tickers-stamp-test` fingerprints the apppath slice — app.js's
+     * prologue and fund-er.js — and `merge-4i.mjs` is not in it, so a
+     * merge-side NAME repair invalidates keys with nothing going red. That is
+     * true of all six repair arms above this one, not only of this one; what
+     * makes it visible here is that this arm is the first whose population
+     * overlaps the table's keys. The gate's own record already notes that store
+     * drift is invisible to it; this is the sharper form — our OWN repair is
+     * the drift.
+     *
+     * So the arm declines where the table has an answer, which costs exactly
+     * those 4 rows and needs no 20-minute regeneration to be safe. Once the
+     * table is regenerated against a store this arm has already repaired, its
+     * keys carry the STRIPPED spelling and the refusal stops blocking them —
+     * so this is self-clearing rather than permanent. */
+    if (secKeyed && secKeyed(f)) return null;                        /* (3) */
+    return rest;
+  };
   /* A BROKEN FONT SHIFTED A RUN OF THE NAME BY +29 — 2026-10-01 (15:4xZ).
    *
    * The PDF's cmap is offset, so every character of a run arrives 29 code
@@ -1599,13 +1730,73 @@ function stripIssuerLead(iss) {
     if (isGenericTypeName(head) || hasNoFundIdentity(head)) return null;   // and it must name a fund
     return head;
   };
-  let weld = 0, caps = 0, rot = 0, ciph = 0, bang = 0, iweld = 0, vrep = 0, srep = 0, wrap = 0, noun = 0;
+  /* ack -> the sponsor keys of every plan this entry is served to, for the
+   * employer-stock refusal above. Built the way the `cctVals` map two hundred
+   * lines up is built, and an ack reached through `mtiaAck` collects its MEMBER
+   * plans' sponsors — a trust's menu is served to the members, so the row that
+   * must not be stripped is the member's own stock, not the trust's.
+   * plans-all is absent in some local invocations; the refusal then has an
+   * EMPTY set and the arm would strip the two stock rows, so the differential
+   * and the tether both assert the map is populated rather than trusting it. */
+  /* the build-time ticker table's own KEY SET, for refusal (3) above. Read as
+   * SOURCE and evaluated rather than parsed by regex, because the keys carry
+   * `\u0000` separators and JS escapes; the key is composed exactly as
+   * `app.js:3159` composes it, so this cannot drift from what the page asks.
+   * Absent asset -> `secKeyed` stays null and the refusal stands down, which
+   * is the honest behaviour for a local invocation with no asset: the arm then
+   * repairs those 4 rows and the table is regenerated anyway. */
+  let secKeyed = null;
+  try {
+    const src = readFileSync("sec-tickers.js", "utf8");
+    const ctx = {};
+    vm.createContext(ctx);
+    vm.runInContext(src + "\nglobalThis.__k = SEC_TICKERS;", ctx);
+    const tbl = ctx.__k;
+    if (tbl && typeof tbl === "object") {
+      const keys = new Set(Object.keys(tbl));
+      /* the key composition is asserted against the asset's own PIN rather
+       * than assumed — a silently wrong key shape would make this refusal
+       * answer false for every row and read as a clean no-difference */
+      if (!keys.size) throw new Error("sec-tickers.js parsed to an EMPTY table");
+      secKeyed = (f) => keys.has(String(f.iss || "") + "\u0000" + String(f.name || ""));
+      console.log(`  (name repairs will decline a row sec-tickers.js is keyed on: ${keys.size} keys)`);
+    }
+  } catch (err) { console.warn(`  sec-tickers.js key set unavailable (${err.message}) — refusal (3) stands down`); }
+  const sponsorsOf = new Map();
+  try {
+    const pa = JSON.parse(readFileSync("plans-all.json", "utf8"));
+    const ai = pa.fields.indexOf("ack"), mi = pa.fields.indexOf("mtiaAck"),
+      ni = pa.fields.indexOf("sponsorName");
+    if (ai !== -1 && ni !== -1) for (const r of pa.plans) {
+      const k = sponsorKey(r[ni]);
+      if (!k || k.length < 3) continue;
+      for (const a of [r[ai], mi === -1 ? null : r[mi]]) {
+        if (!a) continue;
+        if (!sponsorsOf.has(a)) sponsorsOf.set(a, new Set());
+        sponsorsOf.get(a).add(k);
+      }
+    }
+  } catch { /* plans-all absent locally — see the note above */ }
+  let weld = 0, caps = 0, rot = 0, ciph = 0, bang = 0, iweld = 0, vrep = 0, srep = 0, wrap = 0, noun = 0, cus = 0;
   const weldAcks = new Set(), capsAcks = new Set(), rotAcks = new Set(), ciphAcks = new Set(), bangAcks = new Set();
-  const wrapAcks = new Set(), nounAcks = new Set();
+  const wrapAcks = new Set(), nounAcks = new Set(), cusAcks = new Set();
   const iweldAcks = new Set(), vrepAcks = new Set(), srepAcks = new Set();
   for (let i = 0; i < SHARDS; i++)
     for (const [ack, e] of Object.entries(buckets[i])) {
       if (!e || !e.confident || !Array.isArray(e.funds)) continue;
+      /* the POST-strip name of every row of this entry, so `cusipRepair` can
+       * see a collision. Taken BEFORE the row loop edits anything, for the same
+       * reason the attestation maps are snapshots: a row repaired this run must
+       * not change the evidence a later row is judged on. And it must be the
+       * POST-strip form — two rows collide only once BOTH have lost their
+       * identifiers. */
+      const cusSibs = new Map();
+      for (const g of e.funds) {
+        const gn = String(g.name || "").trim();
+        const k = (stripLeadId(gn) ?? gn).toLowerCase();
+        cusSibs.set(k, (cusSibs.get(k) || 0) + 1);
+      }
+      const cusSponsors = sponsorsOf.get(ack) || new Set();
       for (const f of e.funds) {
         /* THE ISSUER COLUMN, asked FIRST and OUTSIDE the chain below — 2026-10-02
          * (12:3xZ). The chain is five arms on the NAME joined by `continue`, and
@@ -1660,6 +1851,15 @@ function stripIssuerLead(iss) {
          * the rows this repairs, 0 are claimed by any arm above it. */
         const nrep = nounRepair(f.name);
         if (nrep) { f.name = nrep; noun++; nounAcks.add(ack); continue; }
+        /* the leading SECURITY IDENTIFIER, asked after every arm above for the
+         * reason the unit noun is: it removes LEADING FURNITURE rather than
+         * repairing the name's own characters, and a nine-character
+         * alphanumeric run is plain ASCII that leaves their seams, caps runs,
+         * duplications and ciphered bytes exactly where they were. Measured
+         * disjoint rather than assumed — of the rows this repairs, 0 are
+         * claimed by any arm above it. */
+        const curep = cusipRepair(f, cusSibs, cusSponsors);
+        if (curep) { f.name = curep; cus++; cusAcks.add(ack); continue; }
         /* asked LAST and only of a name no arm above touched. The three above
          * all require the damaged form to be attested or unattested as ASCII
          * words; a ciphered run contains a control character, which `whole`
@@ -1686,6 +1886,8 @@ function stripIssuerLead(iss) {
   if (rot) console.log(`class-rotation repair: ${rot} rows across ${rotAcks.size} plans`);
   if (wrap) console.log(`self-wrapping-duplication repair: ${wrap} rows across ${wrapAcks.size} plans`);
   if (noun) console.log(`leading-unit-noun repair: ${noun} rows across ${nounAcks.size} plans`);
+  if (cus) console.log(`leading-security-identifier repair: ${cus} rows across ${cusAcks.size} plans`
+    + ` (sponsor map ${sponsorsOf.size} acks)`);
   if (ciph) console.log(`cipher-run repair: ${ciph} rows across ${ciphAcks.size} plans`);
   if (bang) console.log(`ocr-bang repair: ${bang} rows across ${bangAcks.size} plans`);
 }

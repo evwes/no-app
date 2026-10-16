@@ -59,6 +59,7 @@ on:
             # shape this record names for `gen-sec-tickers.mjs` -- a check that
             # exists and is wired into no workflow.
             "scripts/merge-4i.mjs", "scripts/noun-repair-test.mjs",
+            "scripts/cusip-repair-test.mjs",
             "plans-list.json", "plans-index.json", "map-points.json"]
   workflow_dispatch:
 
@@ -198,6 +199,16 @@ jobs:
       # status has flipped three times on drift alone.
       - name: Leading-unit-noun repair — the witness and the floors still hold
         run: node scripts/noun-repair-test.mjs
+      # The leading SECURITY IDENTIFIER arm, whose three refusals are each a
+      # measured population: a remainder colliding with a sibling row (the
+      # identifier IS the identity -- four US TREASURY NOTE rows in one menu),
+      # the sponsor's OWN stock (stripping it arms the owner-gated
+      # employer-stock claim), and a row `sec-tickers.js` is already keyed on
+      # (the measured cost of dropping that one is four published symbols).
+      # Sliced and handed FROZEN inputs, so a store movement or a table
+      # regeneration cannot redden it.
+      - name: Leading-security-identifier repair — the three refusals still bite
+        run: node scripts/cusip-repair-test.mjs
       # The Capital Group abbreviation arm resolves a contracted holding name
       # against the SEC registry rather than against a guessed expansion --
       # 16,844 published+served rows / 5,770,486 participants whose house AND
