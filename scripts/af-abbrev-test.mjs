@@ -157,8 +157,8 @@ const MUTATIONS = [
     to: "    if (false) continue;",
     expect: [["American Funds MFS Value R6", "MEIKX"]] },
   { name: "the stated class must be one the series registers",
-    from: "      if (!s.classes.has(ck)) continue;\n      if (!abbreviates(head, s.toks)) continue;\n      hits.push({ ticker: s.classes.get(ck), series: s.name, reg: s.reg, ck });",
-    to: "      if (!abbreviates(head, s.toks)) continue;\n      hits.push({ ticker: s.classes.get(ck) || [...s.classes.values()][0], series: s.name, reg: s.reg, ck });",
+    from: "      if (s.classes.has(ck)) { hits.push({ ticker: s.classes.get(ck), series: s.name, reg: s.reg, ck, how: \"equal\" }); continue; }",
+    to: "      { hits.push({ ticker: s.classes.get(ck) || [...s.classes.values()][0], series: s.name, reg: s.reg, ck, how: \"equal\" }); continue; }",
     expect: [["AMERFUNDS 2055 TARG DATERET Z9", "RFKTX"]] },
 ];
 for (const mut of MUTATIONS) {
@@ -217,5 +217,198 @@ for (const mut of MUTATIONS) {
     bad(`INVARIANT (4): ${JSON.stringify(n)} answers differently under a reordered registry`);
 }
 
+/* ==========================================================================
+ * THE FIDELITY FAMILY OF THE SAME ARM, 2026-10-16.
+ *
+ * Its own frozen registry, for the same CI-safety reason, and its own fixtures
+ * because the thing that differs is the CLASS: Capital Group's designations are
+ * codes the equality test reaches, Fidelity's are words filers contract, so this
+ * family opts into matching the class by the relation. What is checked here and
+ * nowhere else:
+ *   - the four observed contractions resolving and STAYING DISTINCT (`IPR` and
+ *     `INSTP` to Institutional Premium, `PRM` and `PREMIE` to Premier), which is
+ *     the conflation that would otherwise publish the wrong class on ~6,000 rows;
+ *   - a bare `K` ABSTAINING in the Advisor series, which registers `Class K6` and
+ *     no `Class K` — the relation alone would read it as K6;
+ *   - that `fidelity` is skippable on the SERIES side, without which the whole
+ *     family answers nothing;
+ *   - that the per-series class uniqueness condition has a case at all. Over the
+ *     whole LIVE family that condition is INERT — 0 tails derived from class
+ *     words match two classes of one series — so the fixture carries a
+ *     CONSTRUCTED series (`Premier Class` beside `Premium Class`, both matched by
+ *     `prm`) and is labelled as the nearest reachable shape rather than claiming
+ *     to be a real one. The condition is kept because the registry refreshes and
+ *     the inertness is a property of that file, not of this code.
+ * ========================================================================== */
+const FID_FIXTURE = [
+  ...R("FIDELITY ABERDEEN STREET TRUST", "Fidelity Freedom 2050 Fund",
+    [["FFFHX", "Fidelity Freedom 2050 Fund"], ["FNSBX", "Class K"], ["FZTKX", "Class K6"],
+      ["FFPFX", "Premier Class"]]),
+  ...R("FIDELITY ABERDEEN STREET TRUST", "Fidelity Freedom Index 2050 Fund",
+    [["FIPFX", "Investor Class"], ["FFOPX", "Institutional Premium Class"],
+      ["FRLPX", "Premier Class"], ["FAVQX", "Premier II Class"]]),
+  /* the Advisor ladder: `Class K6` and NO `Class K` — the `stated` case */
+  ...R("FIDELITY ABERDEEN STREET TRUST", "Fidelity Advisor Freedom 2050 Fund",
+    [["FFFLX", "Class A"], ["FFFPX", "Class I"], ["FVGLX", "Class K6"], ["FIJRX", "Class Z"]]),
+  /* the Blend ladder is a REGISTERED mutual fund as well as a collective trust;
+   * the per-row pooled gate is what keeps a trust-typed row blank, so this is
+   * here to be measured rather than to be refused */
+  ...R("FIDELITY ABERDEEN STREET TRUST", "Fidelity Freedom Blend 2050 Fund",
+    [["FHWDX", "Class K"], ["FHEDX", "Class K6"], ["FFBWX", "Premier Class"]]),
+  ...R("FIDELITY SALEM STREET TRUST", "Fidelity Strategic Real Return Fund",
+    [["FSRKX", "Class K6"], ["FSRRX", "Fidelity Strategic Real Return Fund"]]),
+  ...R("FIDELITY SALEM STREET TRUST", "Fidelity 500 Index Fund", [["FXAIX", "Fidelity 500 Index Fund"]]),
+  /* CONSTRUCTED, and labelled: no live series puts two classes one tail can
+   * match side by side, so the uniqueness condition would otherwise have no
+   * single-protection case at all */
+  ...R("FIDELITY ABERDEEN STREET TRUST", "Fidelity Freedom Index 2099 Fund",
+    [["XXPRA", "Premier Class"], ["XXPRB", "Premium Class"], ["XXK6A", "Class K6"]]),
+  /* CONSTRUCTED for the same reason: the `stated` refusal needs a designation of
+   * at least two characters, or the class-run FLOOR protects the case as well
+   * and neither condition is tested. Fidelity registers no two-character class
+   * today, so `Class PRE` is put in the family to make `pre` a stated key while
+   * `Premier Class` sits in another series for the relation to reach. */
+  ...R("FIDELITY ABERDEEN STREET TRUST", "Fidelity Freedom Index 2098 Fund",
+    [["XXPRE", "Class PRE"], ["XXK6B", "Class K6"]]),
+  /* FOREIGN, with no family marker, so it must stay out of the derived family */
+  ...R("VANGUARD INDEX FUNDS", "Vanguard 500 Index Fund", [["VFIAX", "Admiral Shares"]]),
+];
+const FIDX = M.buildFidIndex(FID_FIXTURE);
+{
+  const fam = [...FIDX.family].sort();
+  if (JSON.stringify(fam) !== JSON.stringify(["FIDELITY ABERDEEN STREET TRUST", "FIDELITY SALEM STREET TRUST"]))
+    bad(`the Fidelity class-ladder family derivation changed: ${JSON.stringify(fam)}`);
+  /* the NAME TEST is the extra guard this family carries, because its marker
+   * derives four registrants rather than thirty-nine and one foreign house
+   * would be a quarter of it. Asserted by making it throw. */
+  const poisoned = FID_FIXTURE.concat(R("FRANKLIN TEMPLETON TRUST", "Franklin Growth Fund", [["FKGRX", "Class K6"]]));
+  let threw = false;
+  try { M.assertFamily(M.buildFidIndex(poisoned)); } catch { threw = true; }
+  if (!threw) bad("assertFamily did NOT throw on a foreign registrant carrying the family marker — the safety claim is unguarded");
+  if (M.assertFamily(FIDX) !== 2) bad("assertFamily does not accept the two-registrant fixture family");
+}
+
+const FID_MUST_FIRE = [
+  ["FID FDM IDX 2050 IPR", "FFOPX", "the class by the RELATION: Institutional Premium"],
+  ["FID FDM IDX 2050 INSTP", "FFOPX", "a second contraction of the same class"],
+  ["FID FDM IDX 2050 PRM", "FRLPX", "Premier — and NOT Institutional Premium"],
+  ["FID FDM IDX 2050 INV", "FIPFX", "Investor, which no other class of that series can absorb"],
+  ["Fidelity Freedom Index 2050 Premier", "FRLPX", "spelled out: the undamaged control, by EQUALITY"],
+  ["Fidelity Freedom 2050 K", "FNSBX", "the class by EQUALITY, in a series that registers it"],
+  ["FID FREEDOM 2050 K6", "FZTKX", "a code class, unchanged by any of this"],
+  ["FID FRDM IDX 2050 Instl Premium", "FFOPX", "the class spelled out in two tokens"],
+];
+for (const [n, want, why] of FID_MUST_FIRE) {
+  const got = ask(M, FIDX, n);
+  if (got !== want) bad(`FID MUST FIRE (${why}): ${JSON.stringify(n)} should answer ${want}, got ${got || "nothing"}`);
+}
+
+const FID_MUST_NOT = [
+  ["FID ADV FDM 2050 K", "the Advisor series registers Class K6 and no Class K — a stated designation must ABSTAIN, never be offered the nearest class (protected twice: the class-run floor also refuses it)"],
+  ["Fidelity Advisor Freedom 2050 K", "the same, spelled out"],
+  ["FID FDM IDX 2050 IPR PRM", "two class claims at once"],
+  ["FID FDM IDX 2050 P", "a one-character class run: the floor"],
+  ["Fidelity Freedom 2050 P", "the same in a series where the prefix rule would allow it — the floor is the only protection"],
+  ["FID FDM IDX 2050 PREMIE", "six characters and still ambiguous: a prefix of `Premier II Class` as well as of `Premier Class`"],
+  ["FIDELITY FREEDOM INDEX 2050 IN", "a TRUNCATION, indistinguishable from Investor and from Institutional Premium"],
+  ["Fidelity Freedom 2050 PRE", "the constructed designation: `pre` is a class key elsewhere in the family"],
+  ["Fidelity Freedom 2050", "no class stated: the honest answer is a comparable, and comparables are the owner's"],
+  ["FT BEHAV SM-CPEQ R6", "another house behind a short leading run — `FT` is Franklin Templeton's own"],
+  ["FIT Balanced Portfolio Class C", "likewise, and the product pins no family series"],
+  ["Fidelity 500 Index Fund K6", "a family series that does not register the stated class"],
+  ["Fidelity Vanguard Freedom Index 2050 Premier", "a foreign house welded in behind a stated house"],
+  ["Freedom Index 2050 Premier", "no leading house at all"],
+  ["FID FDM IDX 2099 PRM", "the constructed series: `prm` matches Premier AND Premium, so the arm abstains"],
+];
+for (const [n, why] of FID_MUST_NOT) {
+  const got = ask(M, FIDX, n);
+  if (got) bad(`FID MUST NOT FIRE (${why}): ${JSON.stringify(n)} answered ${got}`);
+}
+
+const FID_MUTATIONS = [
+  { name: "a STATED designation refuses the class relation",
+    from: "      if (!fam.classRelation || stated || ck.length < 2) continue;",
+    to: "      if (!fam.classRelation || ck.length < 2) continue;",
+    /* `FID ADV FDM 2050 K` is the LIVE case and is protected TWICE — a bare `K`
+     * also falls under the class-run floor — so it proves neither condition and
+     * is asserted as a must-not-fire instead. This is the constructed
+     * three-character designation, aimed at the series that registers `Premier
+     * Class` and NO `Premier II`, so the prefix rule allows it and `stated` is
+     * the only thing refusing it. */
+    expect: [["Fidelity Freedom 2050 PRE", "FFPFX"]] },
+  { name: "the class run letter floor",
+    from: "      if (!fam.classRelation || stated || ck.length < 2) continue;",
+    to: "      if (!fam.classRelation || stated) continue;",
+    /* measured LIVE: with the floor removed, 34 single-character runs reach an
+     * answer across the real family, `P` -> Premier in the 28 Freedom series
+     * carrying no Premier II among them */
+    expect: [["Fidelity Freedom 2050 P", "FFPFX"]] },
+  { name: "a run that is also a PREFIX of a sibling class (a truncation, not an abbreviation)",
+    from: "      if (s.classList.some((c) => c.ck !== cm[0].ck && c.ck.startsWith(ck))) continue;",
+    to: "      if (false) continue;",
+    /* both LIVE shapes: `PREMIE` is six characters and still ambiguous between
+     * Premier and Premier II, and `IN` between Investor and Institutional
+     * Premium — the floor cannot see either */
+    expect: [["FID FDM IDX 2050 PREMIE", "FRLPX"], ["FIDELITY FREEDOM INDEX 2050 IN", "FIPFX"]] },
+  { name: "class uniqueness WITHIN the series",
+    from: "      if (cm.length !== 1) continue;             // ambiguous within the series: abstain",
+    to: "      if (cm.length < 1) continue;",
+    expect: [["FID FDM IDX 2099 PRM", "XXPRA"]] },
+  { name: "the family's own skip set (the house word on the SERIES side)",
+    from: "  skip: new Set([...BASE_SKIP, \"fidelity\"]), classRelation: true,",
+    to: "  skip: new Set([...BASE_SKIP]), classRelation: true,",
+    expect: [["FID FDM IDX 2050 IPR", null], ["Fidelity Freedom 2050 K", null]] },
+  { name: "the class relation is OPT-IN per family (Capital Group must not take it)",
+    from: "  markers: FAMILY_CLASSES, house: HOUSE_PHRASES, skip: SKIP, classRelation: false,",
+    to: "  markers: FAMILY_CLASSES, house: HOUSE_PHRASES, skip: SKIP, classRelation: true,",
+    /* `R2E` would EQUAL the class key and so answers under the shipped arm too;
+     * `R2` abbreviates `Class R-2E` without equalling its key, so it answers
+     * only if Capital Group takes the relation. */
+    expect: [["AMERFUNDS 2055 TARG DATERET R2", "RBEMX"]], af: true },
+];
+for (const mut of FID_MUTATIONS) {
+  if (!SRC.includes(mut.from)) { bad(`FID MUTATION "${mut.name}": its anchor is no longer in the source — re-derive it`); continue; }
+  const src = SRC.split(mut.from).join(mut.to);
+  let mod;
+  try { mod = await load(src); } catch (e) { bad(`FID MUTATION "${mut.name}": the mutated module does not load (${String(e && e.name)})`); continue; }
+  const base = mut.af ? IDX : FIDX;
+  const idx2 = mut.af ? mod.buildAfIndex(FIXTURE) : mod.buildFidIndex(FID_FIXTURE);
+  let ok = true;
+  for (const [n, wantMutated] of mut.expect) {
+    let b = null, got = null;
+    try { b = ask(M, base, n); } catch { b = "(threw)"; }
+    try { got = ask(mod, idx2, n); } catch { got = "(threw)"; }
+    if (b === wantMutated) {
+      ok = false;
+      bad(`FID MUTATION "${mut.name}": the SHIPPED arm already answers ${JSON.stringify(b)} on ${JSON.stringify(n)} — this case cannot test that condition`);
+    } else if (got !== wantMutated) {
+      ok = false;
+      bad(`FID MUTATION "${mut.name}" did NOT change the verdict on ${JSON.stringify(n)} (shipped ${b || "nothing"}, mutant ${got || "nothing"}, expected mutant ${wantMutated || "nothing"}) — DECORATIVE here, or the case is protected twice`);
+    }
+  }
+  if (ok) console.error(`  mutation ok  ${mut.name}`);
+}
+
+/* ---------- INVARIANTS the Fidelity family adds ---------- */
+{
+  /* (5) the two families are DISJOINT: neither house phrase opens the other's
+   *     names, so the order of the two arms at the call site cannot matter. */
+  for (const n of FID_MUST_FIRE.map((x) => x[0])) if (ask(M, IDX, n))
+    bad(`INVARIANT (5): the Capital Group family answered a Fidelity name: ${JSON.stringify(n)}`);
+  for (const n of MUST_FIRE.map((x) => x[0])) if (ask(M, FIDX, n))
+    bad(`INVARIANT (5): the Fidelity family answered a Capital Group name: ${JSON.stringify(n)}`);
+  /* (6) `buildAfIndex` is a WRAPPER, not a second copy: it must agree with the
+   *     generalised builder asked for the same family. */
+  const viaCfg = M.buildFamilyIndex(FIXTURE, M.AF_FAMILY);
+  if (viaCfg.family.size !== IDX.family.size || viaCfg.series.size !== IDX.series.size)
+    bad("INVARIANT (6): buildAfIndex and buildFamilyIndex(.., AF_FAMILY) disagree");
+  for (const [n] of MUST_FIRE) if (ask(M, viaCfg, n) !== ask(M, IDX, n))
+    bad(`INVARIANT (6): the wrapper and the generalised builder disagree on ${JSON.stringify(n)}`);
+  /* (7) the contractions stay DISTINCT — the conflation hazard, asserted rather
+   *     than argued, in both directions. */
+  if (ask(M, FIDX, "FID FDM IDX 2050 IPR") === ask(M, FIDX, "FID FDM IDX 2050 PRM"))
+    bad("INVARIANT (7): Institutional Premium and Premier resolve to the SAME ticker");
+}
+
 if (fails) { console.error(`\naf-abbrev-test: ${fails} FAILURE(S)`); process.exit(1); }
-console.error(`af-abbrev-test OK  (${MUST_FIRE.length} must-fire, ${MUST_NOT.length} must-not-fire, ${MUTATIONS.length} mutations, 4 invariants)`);
+console.error(`af-abbrev-test OK  (${MUST_FIRE.length + FID_MUST_FIRE.length} must-fire, ${MUST_NOT.length + FID_MUST_NOT.length} must-not-fire, ${MUTATIONS.length + FID_MUTATIONS.length} mutations, 7 invariants)`);

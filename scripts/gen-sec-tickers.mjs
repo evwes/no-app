@@ -65,7 +65,7 @@ import { buildRenderer } from "./apppath.mjs";
 import { servedLineup } from "./lib-ledger.mjs";
 import { buildIndex, resolveHolding, norm, decodeEntities,
   STRUCTURAL, CLASS_WORDS, DESCRIPTIVE, isAssetWord } from "./match-sec-tickers.mjs";
-import { buildAfIndex, assertAfFamily, afAbbrevAsk } from "./lib-af-abbrev.mjs";
+import { buildAfIndex, assertAfFamily, buildFidIndex, assertFamily, afAbbrevAsk } from "./lib-af-abbrev.mjs";
 import { codeFingerprint, codeLine, assetFingerprint } from "./lib-sec-fingerprint.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
@@ -630,6 +630,57 @@ const AF_FAMILY_N = assertAfFamily(AF_INDEX);
       throw new Error(`gen-sec-tickers: AF-ABBREV CONTROL — ${JSON.stringify(n)} should answer ${want || "nothing"}, got ${got ? got.ticker : "nothing"}`);
   }
   console.error(`af-abbrev controls OK  (family ${AF_FAMILY_N} registrants, ${AF_INDEX.series.size} series)`);
+}
+
+/* ---------- THE SAME ARM, THE FIDELITY FAMILY ----------
+ * 2026-10-16. The Freedom ladder carries the identical defect and the relation
+ * needed no change: `lib-af-abbrev.mjs` is now parameterised by a family
+ * (registry marker, house phrase, skippable series words, and whether the CLASS
+ * may be matched by the relation as well as by equality), and the Capital Group
+ * arm is a thin wrapper over it — asserted at 0 differences over all 644,064
+ * distinct strings in the store, against HEAD's own copy of the module.
+ *
+ * WHAT IS FIDELITY-SPECIFIC IS THE CLASS. Capital Group's designations are CODES
+ * that survive normalisation; Fidelity's are WORDS filers contract, so a filed
+ * `IPR` can never equal `classKey("Institutional Premium Class")`. The family
+ * header carries the whole argument, including why the tokens stay distinct
+ * under the relation and why a token that IS a registered designation elsewhere
+ * in the family (a bare `K`) must abstain rather than be offered the nearest
+ * class.
+ *
+ * THE HOUSE PHRASE IS ONE WORD, which is weaker than `american funds`, so it was
+ * checked by READING rather than by argument: all 21 leading runs the phrase
+ * accepts anywhere in the store were enumerated, and the eleven SHORT ones — `f`,
+ * `ft`, `fit`, `fl`, `fd`, `fe`, `fei`, `fi`, `flt`, `fdl`, `fdlty`, where
+ * another house could hide (`FT` is Franklin Templeton's own abbreviation) — hold
+ * 316 distinct names of which the arm answers on ZERO. The product match is what
+ * refuses them, which is a structural refusal rather than a blocklist. */
+const FID_INDEX = buildFidIndex(regRows);
+const FID_FAMILY_N = assertFamily(FID_INDEX);
+{
+  const must = [
+    ["FID FDM IDX 2050 IPR", "FFOPX"],             // class by the RELATION: Institutional Premium
+    ["FID FDM IDX 2050 INSTP", "FFOPX"],           // a second contraction of the same class
+    ["FID FDM IDX 2050 PRM", "FRLPX"],             // Premier — and NOT Institutional Premium
+    ["Fidelity Freedom Index 2050 Premier", "FRLPX"], // spelled out, the undamaged control
+    ["Fidelity Freedom 2050 K", "FNSBX"],          // class by EQUALITY, unchanged
+    ["FID FREEDOM 2050 K6", "FZTKX"],
+    /* must NOT fire */
+    ["FID FDM IDX 2050 IPR PRM", null],            // two class claims: ambiguous
+    ["FIDELITY FREEDOM INDEX 2050 IN", null],      // a TRUNCATION: Investor or Institutional Premium
+    ["FID FDM IDX 2050 PREMIE", null],             // six characters and still a prefix of Premier II
+    ["Fidelity Freedom 2050 P", null],             // a one-character class run
+    ["FT BEHAV SM-CPEQ R6", null],                 // another house behind a short run
+    ["FIT Balanced Portfolio Class C", null],
+    ["Fidelity Freedom 2050", null],               // no class stated: a comparable is the owner's
+    ["Fidelity 500 Index Fund K6", null],          // outside the family's series
+  ];
+  for (const [n, want] of must) {
+    const got = afAbbrevAsk(FID_INDEX, n);
+    if ((got ? got.ticker : null) !== want)
+      throw new Error(`gen-sec-tickers: FID-ABBREV CONTROL — ${JSON.stringify(n)} should answer ${want || "nothing"}, got ${got ? got.ticker : "nothing"}`);
+  }
+  console.error(`fid-abbrev controls OK  (family ${FID_FAMILY_N} registrants, ${FID_INDEX.series.size} series)`);
 }
 
 const secCache = new Map();
@@ -1240,6 +1291,13 @@ function secAsk(nameRaw, nameClean, iss) {
     const a = afAbbrevAsk(AF_INDEX, nameRaw) || afAbbrevAsk(AF_INDEX, nameClean);
     if (a) out = a;
   }
+  /* and the Fidelity family of the same arm, appended after it for the same
+   * reason: `!out` makes it additive to everything already shipped, and the two
+   * families are disjoint by their house phrases */
+  if (!out) {
+    const a = afAbbrevAsk(FID_INDEX, nameRaw) || afAbbrevAsk(FID_INDEX, nameClean);
+    if (a) out = a;
+  }
   secCache.set(k, out);
   return out;
 }
@@ -1325,6 +1383,9 @@ let admRows = 0, admDollars = 0;
 const admKeys = new Set(), admAcks = new Set(), admPlans = new Map();
 let afRows = 0, afDollars = 0;
 const afKeys = new Set(), afAcks = new Set(), afPlans = new Map();
+let fidRows = 0, fidDollars = 0;
+const fidKeys = new Set(), fidAcks = new Set(), fidPlans = new Map();
+const fidClass = new Map();
 let admUnattested = 0; const admUnattestedKeys = new Set();
 const gains = [];
 const compKeys = new Set();
@@ -1411,6 +1472,17 @@ for (let s = 0; s < 64; s++) {
        * registry-derived Capital Group family, a product abbreviating exactly
        * ONE of its series, and a class that series registers. */
       const viaAf = (sec.why || "") === "af-abbrev";
+      /* THE FIDELITY FAMILY OF THAT ARM IS **NOT** EXEMPT, AND THAT IS A
+       * MEASUREMENT RATHER THAN A JUDGMENT. The structural argument above
+       * applies to it word for word, so I shipped the exemption first and had
+       * the generator ask the guard anyway and tally the refusals it would have
+       * made: **0 rows / 0 keys** of 13,183 gains. The exemption was therefore
+       * licensing nothing — Fidelity's registrant names carry `fidelity` and
+       * `attestedAnySpelling` accepts even the contracted `FID` — so it is
+       * removed and the guard runs, which is strictly safer and one fewer
+       * special case. Proven equivalent rather than argued: the two
+       * generations differ by ADDED 0 / REMOVED 0 / CHANGED 0 keys. */
+      const viaFid = (sec.why || "") === "fid-abbrev";
       /* `attestedAnySpelling`, not `registrantAttested`: the guard is asked of
        * the filing as written AND of the destination-blind typo repair, which
        * is the only one of the four candidate spellings that is both
@@ -1441,6 +1513,15 @@ for (let s = 0; s < 64; s++) {
         afKeys.add(key);
         afAcks.add(ack);
         for (const m of mem) afPlans.set(`${m.ein}|${m.pn}`, m.ppl);
+      }
+      if (viaFid) {
+        fidRows++;
+        fidDollars += +f.value || 0;
+        fidKeys.add(key);
+        fidAcks.add(ack);
+        for (const m of mem) fidPlans.set(`${m.ein}|${m.pn}`, m.ppl);
+        const ckey = `${sec.how || "?"}:${sec.className || "?"}`;
+        fidClass.set(ckey, (fidClass.get(ckey) || 0) + 1);
       }
       const prev = table.get(key);
       if (prev !== undefined && prev !== sec.ticker) conflicts.push([key, prev, sec.ticker]);
@@ -1501,6 +1582,11 @@ console.error([
   `THE CAPITAL GROUP ABBREVIATION ARM, attributed by the af-abbrev tag:`,
   `  GAIN an ASSERTED symbol                 ${afRows.toLocaleString()} rows / ${afKeys.size.toLocaleString()} keys / ${afAcks.size.toLocaleString()} acks -> ${afPlans.size.toLocaleString()} plans / ${sum(afPlans).toLocaleString()} ppl / $${afDollars.toLocaleString()}`,
   `  registry-derived family                 ${AF_FAMILY_N} registrants / ${AF_INDEX.series.size} series`,
+  ``,
+  `THE FIDELITY FAMILY OF THAT ARM, attributed by the fid-abbrev tag:`,
+  `  GAIN an ASSERTED symbol                 ${fidRows.toLocaleString()} rows / ${fidKeys.size.toLocaleString()} keys / ${fidAcks.size.toLocaleString()} acks -> ${fidPlans.size.toLocaleString()} plans / ${sum(fidPlans).toLocaleString()} ppl / $${fidDollars.toLocaleString()}`,
+  `  registry-derived family                 ${FID_FAMILY_N} registrants / ${FID_INDEX.series.size} series`,
+  `  by class and route:                     ${[...fidClass].sort((a, b) => b[1] - a[1]).map(([k, n]) => `${k} x${n}`).join(" · ") || "(none)"}`,
 ].join("\n"));
 if (admForeignKeys.size) {
   console.error(`\nEVERY key the Admiral arm refused for a foreign house in the NAME:`);

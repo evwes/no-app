@@ -82,6 +82,43 @@ const BARE_KEY = "\u0000Fidelity Worldwide Fund";
     "...ASSERTED, never the Advisor class behind an asterisk");
 }
 
+/* (2b-ii) THE FIDELITY CLASS CONTRACTIONS, pinned against the COMMITTED table
+ * for the same reason and with one extra claim of their own: these four tokens
+ * must stay DISTINCT. `IPR` is Institutional Premium (FFOPX), `PRM` is Premier
+ * (FRLPX), `PREM II` is Premier II (FAVQX) and `Inv` is Investor (FDEWX) — four
+ * classes of ONE series at four different costs, so a regen that conflated any
+ * two would publish a different class's symbol as fact on thousands of rows.
+ * The generator's own fid-abbrev controls read the live `sec-funds.json`; these
+ * read only the committed table. The pair asserted UNEQUAL at the end is the
+ * conflation claim itself rather than a restatement of the four verdicts. */
+const FID_PINS = [
+  ["\u0000FID FDM IDX 2050 IPR", "FFOPX", "Institutional Premium, contracted to three letters"],
+  ["\u0000Fidelity Freedom Index 2050 PRM", "FRLPX", "Premier — and NOT Institutional Premium"],
+  ["\u0000FID FREEDOM INDEX 2050 PREM II", "FAVQX", "Premier II, two tokens"],
+  ["\u0000Fidelity Freedom Indx 2055 Inv", "FDEWX", "Investor"],
+];
+/* AND THE RESIDUE, ASSERTED AS AN ABSENCE so it cannot be mistaken for a gap in
+ * the arm. `Fidelity Freedom 2050 K Fund` is NOT in the table and must not be:
+ * the base matcher answers it as a COMPARABLE, the call site drops a comparable
+ * before the Fidelity arm is reached, and promoting a comparable to an assertion
+ * is a different claim from filling a blank — the same boundary the Admiral
+ * arm's own 383 comparable cells sit behind. Measured: 6,510 of the arm's 6,572
+ * `K`-class rows are in this residue. */
+const FID_RESIDUE = "\u0000Fidelity Freedom 2050 K Fund";
+{
+  const got = [];
+  for (const [key, tk, why] of FID_PINS) {
+    const hit = lookupTicker(rowFromKey(key));
+    got.push(hit ? hit.tk : null);
+    ok(!!hit && hit.tk === tk, `the Fidelity contraction arm still ships (${why}): ${JSON.stringify(key.slice(1))} -> ${tk} (got ${hit ? hit.tk : "null"})`);
+    ok(!!hit && hit.comparable === false, `...ASSERTED, never behind an asterisk (${why})`);
+  }
+  const res = lookupTicker(rowFromKey(FID_RESIDUE));
+  ok(!res, `the comparable residue is still a residue: ${JSON.stringify(FID_RESIDUE.slice(1))} resolves nothing, because the base matcher's comparable is dropped before this arm runs (got ${res ? res.tk : "null"})`);
+  ok(new Set(got.filter(Boolean)).size === got.filter(Boolean).length,
+    `the four class contractions resolve to DIFFERENT symbols — a conflation would publish the wrong class as fact (got ${JSON.stringify(got)})`);
+}
+
 /* (2c) THE FILER'S TYPO, pinned against the COMMITTED table for the same
  * reason as (2b): the generator's own evidence for `MEFS` -> `MFS` is read out
  * of the live `sec-funds.json` (0 of 29,406 rows spell MEFS, 695 spell MFS), so

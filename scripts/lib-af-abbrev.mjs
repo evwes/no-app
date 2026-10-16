@@ -117,8 +117,9 @@ export const afToks = (s) =>
  * Retirement Fund` against a filed rest of `2055 TARG DATERET`. Skipping is a
  * PERMISSION, never an obligation, so `AMERICAN BALANCED FUND` can still be
  * matched by a filed `AMER BALANCED`. */
-const SKIP = new Set(["the", "of", "and", "inc", "incorporated", "fund", "funds", "series",
-  "trust", "company", "co", "american", "capital", "group"]);
+const BASE_SKIP = ["the", "of", "and", "inc", "incorporated", "fund", "funds", "series",
+  "trust", "company", "co"];
+const SKIP = new Set([...BASE_SKIP, "american", "capital", "group"]);
 
 /* ---------- noise in the leftover run, tested BY THE SAME RELATION ----------
  * MY FIRST DRAFT LISTED THE SPELLINGS AND THE LIST COST 276 ROWS ON ITS FIRST
@@ -225,10 +226,10 @@ const NO_SKIP = new Set();
  * is refused by the SERIES MATCH on its own and never reaches an answer.
  * `af-abbrev-test.mjs` asserts that rather than leaving it to a comment. */
 const HOUSE_PHRASES = [["american", "funds"], ["capital", "group"]];
-export function houseRun(T) {
+export function houseRun(T, phrases = HOUSE_PHRASES) {
   for (let n = Math.min(3, T.length); n >= 1; n--) {
     const head = T.slice(0, n);
-    for (const ph of HOUSE_PHRASES) if (abbreviates(head, ph, 2, NO_SKIP)) return n;
+    for (const ph of phrases) if (abbreviates(head, ph, 2, NO_SKIP)) return n;
   }
   return 0;
 }
@@ -238,50 +239,128 @@ const FAMILY_CLASSES = new Set(["class r-2e", "class r-5e", "class 529-a"]);
 const classKey = (cn) => String(cn || "").toLowerCase()
   .replace(/\b(class|shares|share)\b/g, " ").replace(/[^a-z0-9]+/g, "").trim();
 
-export function buildAfIndex(funds) {
+/* ---------- A FAMILY IS A CONFIGURATION, NOT A SECOND COPY OF THE ARM -------
+ * 2026-10-16. The Fidelity Freedom ladder has the identical defect — a filer
+ * contracts the name and the page publishes no symbol — and the relation above
+ * already accepts all four observed Fidelity spellings (`FID FDM IDX 2050`,
+ * `FID FREEDOM 2050`, `FID FRDM IDX 2050`, spelled out) against the registered
+ * series names. So nothing about the relation is Capital Group's; what is
+ * Capital Group's is the registry marker that derives the family, the house
+ * phrase the filing must open with, and the series words a filer may omit.
+ * Those three are a config, and `buildAfIndex`/`assertAfFamily` stay as thin
+ * wrappers so there is exactly ONE copy of each shipped predicate.
+ *
+ * ONE THING GENUINELY DIFFERS AND IT IS THE CLASS. Capital Group's class
+ * designations are CODES that survive normalisation (`R6` -> `Class R-6`), so
+ * the equality test reaches them. Fidelity's are WORDS, and filers contract
+ * them: `IPR` for `Institutional Premium Class`, `PRM` and `PREMIE` for
+ * `Premier Class`, `INSTP`, `INV`. `classKey("Institutional Premium Class")` is
+ * `institutionalpremium` and a filed `IPR` can never equal it. So this family
+ * opts into matching the class BY THE SAME RELATION, and the tokens stay
+ * DISTINCT under it rather than needing a guard: `IPR` reaches Institutional
+ * Premium and NOT Premier (the `p` of `premier` is a mandatory first letter the
+ * `i` cannot match), `PRM` reaches Premier and not Institutional Premium, and
+ * neither reaches `Premier II Class` because the `ii` is left unconsumed. The
+ * conflation that would publish the wrong class as fact on ~6,000 rows is
+ * absent by construction. Measured over all 70 registered Freedom series.
+ *
+ * AND THE RELATION IS REFUSED WHERE THE TOKEN IS ITSELF A REGISTERED
+ * DESIGNATION. A bare `K` is `Class K`, and `absorbs("k", ["k6"])` is true, so
+ * in the 14 `Fidelity Advisor Freedom` series — which register `Class K6` and no
+ * `Class K` — the relation alone would read a filed `K` as K6 and publish a
+ * different class's ticker as fact. The rule is not a blocklist: if the token
+ * EQUALS a class key anywhere in the family then the filer stated that class,
+ * and a series that does not register it must ABSTAIN rather than be offered the
+ * nearest one. Equality still runs first, so the 4,988 `K` rows whose series
+ * does register `Class K` are unaffected.
+ *
+ * THE PER-SERIES CLASS UNIQUENESS CONDITION IS INERT ON TODAY'S REGISTRY AND IS
+ * KEPT ANYWAY, LABELLED. Over the whole live family, 0 tails derived from class
+ * words match two classes of one series — the designations are far enough apart
+ * that the relation separates them — so no real single-protection case exists.
+ * It is retained because the inertness is a property of `sec-funds.json`, which
+ * refreshes from the SEC, not a property of this code, which is the same reason
+ * the sliced `pooledVehicleRow` call is kept and labelled rather than deleted.
+ * `af-abbrev-test.mjs` carries a CONSTRUCTED series (`Premier Class` beside
+ * `Premium Class`, both reachable by `prm`) so the condition is tested on the
+ * nearest reachable shape rather than claiming to have a live one. */
+export const AF_FAMILY = {
+  key: "af", label: "Capital Group", why: "af-abbrev",
+  markers: FAMILY_CLASSES, house: HOUSE_PHRASES, skip: SKIP, classRelation: false,
+  band: [30, 55], nameTest: null,
+  must: ["EUPAC FUND", "NEW PERSPECTIVE FUND", "AMERICAN BALANCED FUND",
+    "SMALLCAP WORLD FUND INC", "American Funds Target Date Retirement Series"],
+};
+export const FID_FAMILY = {
+  key: "fid", label: "Fidelity", why: "fid-abbrev",
+  markers: new Set(["class k6"]), house: [["fidelity"]],
+  skip: new Set([...BASE_SKIP, "fidelity"]), classRelation: true,
+  band: [2, 10], nameTest: /fidelity/i,
+  must: ["FIDELITY SALEM STREET TRUST", "FIDELITY ABERDEEN STREET TRUST"],
+};
+const CLASS_SKIP = new Set(["class", "shares", "share"]);
+
+export function buildFamilyIndex(funds, fam) {
   const family = new Set();
   for (const r of funds) {
     const reg = String(r[0]).split("::")[0].trim();
-    if (FAMILY_CLASSES.has(String(r[3] || "").trim().toLowerCase())) family.add(reg);
+    if (fam.markers.has(String(r[3] || "").trim().toLowerCase())) family.add(reg);
   }
-  /* series -> { tokens, classes: Map(classKey -> ticker), name, reg } */
+  /* series -> { tokens, classes: Map(classKey -> ticker), classList, name, reg } */
   const series = new Map();
+  const famClassKeys = new Set();
   for (const r of funds) {
     const parts = String(r[0]).split("::");
     const reg = parts[0].trim();
     if (!family.has(reg)) continue;
     const name = (parts[1] || parts[0]).trim();
     const id = `${reg}\u0000${name}`;
-    if (!series.has(id)) series.set(id, { name, reg, toks: afToks(name), classes: new Map() });
+    if (!series.has(id)) series.set(id, { name, reg, toks: afToks(name), classes: new Map(), classList: [] });
     const ck = classKey(r[3]);
-    if (ck) series.get(id).classes.set(ck, r[1]);
+    if (!ck) continue;
+    series.get(id).classes.set(ck, r[1]);
+    series.get(id).classList.push({ ck, cn: String(r[3] || ""), toks: afToks(r[3]), ticker: r[1] });
+    famClassKeys.add(ck);
   }
-  return { family, series };
+  return { family, series, famClassKeys, fam };
 }
+export const buildAfIndex = (funds) => buildFamilyIndex(funds, AF_FAMILY);
+export const buildFidIndex = (funds) => buildFamilyIndex(funds, FID_FAMILY);
 
 /* THE FAMILY IS ASSERTED, NOT TRUSTED. If a refresh of `sec-funds.json` ever
  * puts a registrant in here that is not a Capital Group trust, the arm's whole
  * safety claim — that a wrong answer can only be the wrong Capital Group fund —
  * is void, so this throws rather than shipping it. The band is wide enough for
- * a trust to be added or wound up and narrow enough to catch a house. */
-export function assertAfFamily(idx) {
+ * a trust to be added or wound up and narrow enough to catch a house. The
+ * Fidelity family carries a NAME TEST as well, because its marker derives four
+ * registrants rather than thirty-nine and a single foreign one would be a
+ * larger share of it. */
+export function assertFamily(idx) {
+  const fam = idx.fam;
   const n = idx.family.size;
-  if (n < 30 || n > 55)
-    throw new Error(`lib-af-abbrev: the registry-derived Capital Group family is ${n} registrants, outside 30-55 — read the list before widening this band:\n  ${[...idx.family].sort().join("\n  ")}`);
-  for (const must of ["EUPAC FUND", "NEW PERSPECTIVE FUND", "AMERICAN BALANCED FUND",
-    "SMALLCAP WORLD FUND INC", "American Funds Target Date Retirement Series"])
+  const [lo, hi] = fam.band;
+  if (n < lo || n > hi)
+    throw new Error(`lib-af-abbrev: the registry-derived ${fam.label} family is ${n} registrants, outside ${lo}-${hi} — read the list before widening this band:\n  ${[...idx.family].sort().join("\n  ")}`);
+  if (fam.nameTest) {
+    const foreign = [...idx.family].filter((r) => !fam.nameTest.test(r));
+    if (foreign.length)
+      throw new Error(`lib-af-abbrev: the ${fam.label} family carries ${foreign.length} registrant(s) the name test refuses — the safety claim that a wrong answer can only be the wrong ${fam.label} fund is VOID:\n  ${foreign.join("\n  ")}`);
+  }
+  for (const must of fam.must)
     if (!idx.family.has(must))
-      throw new Error(`lib-af-abbrev: ${must} is no longer in the derived family (${n} registrants) — the class-ladder witness has moved`);
+      throw new Error(`lib-af-abbrev: ${must} is no longer in the derived ${fam.label} family (${n} registrants) — the class-ladder witness has moved`);
   return n;
 }
+export const assertAfFamily = (idx) => assertFamily(idx);
 
 /* ---------- the arm ----------
  * `afAbbrevAsk(idx, filedName)` -> { ticker, series, className, why } or null.
  * ASSERTED answers only, and only where ONE series and ONE class answer. */
 export function afAbbrevAsk(idx, filedName) {
+  const fam = idx.fam || AF_FAMILY;
   const T = afToks(filedName);
   if (T.length < 3) return null;                 // house run plus a product plus a class
-  const h = houseRun(T);
+  const h = houseRun(T, fam.house);
   if (!h) return null;
   let rest = T.slice(h);
   /* trailing vehicle words sit BEHIND the class as often as in front of it
@@ -298,16 +377,44 @@ export function afAbbrevAsk(idx, filedName) {
     if (!ck) continue;
     /* a product run must carry real words, not one letter */
     if (head.join("").length < 4) continue;
+    /* the token is a registered designation in its own right, so the relation
+     * must not reinterpret it as an abbreviation of a different class */
+    const stated = idx.famClassKeys ? idx.famClassKeys.has(ck) : true;
     const hits = [];
     for (const s of idx.series.values()) {
-      if (!s.classes.has(ck)) continue;
-      if (!abbreviates(head, s.toks)) continue;
-      hits.push({ ticker: s.classes.get(ck), series: s.name, reg: s.reg, ck });
+      if (!abbreviates(head, s.toks, 3, fam.skip)) continue;
+      if (s.classes.has(ck)) { hits.push({ ticker: s.classes.get(ck), series: s.name, reg: s.reg, ck, how: "equal" }); continue; }
+      if (!fam.classRelation || stated || ck.length < 2) continue;
+      const cm = s.classList.filter((c) => abbreviates(tail, c.toks, 3, CLASS_SKIP));
+      if (cm.length !== 1) continue;             // ambiguous within the series: abstain
+      /* A TRUNCATION IS A PREFIX AND AN ABBREVIATION NEED NOT BE. The relation
+       * answers `IN` -> Investor correctly by its own definition — `in` cannot
+       * abbreviate `Institutional Premium`, whose `p` is a mandatory first
+       * letter — and a filer cutting `INSTITUTIONAL PREMIUM` at a field width
+       * produces those same two characters. So where the run is also a PREFIX of
+       * a DIFFERENT class the same series registers, the two readings cannot be
+       * told apart and the arm abstains. Measured: this is the only condition
+       * refusing `IN` (Investor vs Institutional Premium) and `PREMIE` (Premier
+       * vs Premier II), and it costs nothing on `IPR`, `IP`, `INSTP`, `INV` or
+       * `PRM`, none of which is a prefix of a sibling class.
+       *
+       * IT IS NOT A SUBSTITUTE FOR THE LENGTH FLOOR ABOVE, and I wrote exactly
+       * that claim into this comment before measuring it and it was FALSE. Over
+       * the whole live family **34 single-character runs reach an answer** with
+       * the floor removed — `P` -> Premier in the 28 Freedom series that
+       * register no Premier II, and `E` -> ETF Class — so the floor's
+       * single-protection population is real and live, not hypothetical. The two
+       * conditions catch different things: the floor refuses a run too thin to
+       * be anyone's abbreviation, and the prefix rule refuses a run that is
+       * thick enough and still ambiguous (`PREMIE`, 275 rows, is six characters).
+       * Each has its own live case in `af-abbrev-test.mjs`. */
+      if (s.classList.some((c) => c.ck !== cm[0].ck && c.ck.startsWith(ck))) continue;
+      hits.push({ ticker: cm[0].ticker, series: s.name, reg: s.reg, ck: cm[0].ck, how: "relation" });
     }
     if (hits.length !== 1) continue;             // ambiguous or nothing: abstain
     const hit = hits[0];
     return { ticker: hit.ticker, series: hit.series, registrant: hit.reg,
-      className: hit.ck, comparable: false, why: "af-abbrev" };
+      className: hit.ck, comparable: false, how: hit.how, why: fam.why };
   }
   return null;
 }
