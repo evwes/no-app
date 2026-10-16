@@ -65,7 +65,7 @@ import { buildRenderer } from "./apppath.mjs";
 import { servedLineup } from "./lib-ledger.mjs";
 import { buildIndex, resolveHolding, norm, decodeEntities,
   STRUCTURAL, CLASS_WORDS, DESCRIPTIVE, isAssetWord } from "./match-sec-tickers.mjs";
-import { buildAfIndex, assertAfFamily, buildFidIndex, assertFamily, afAbbrevAsk } from "./lib-af-abbrev.mjs";
+import { buildAfIndex, assertAfFamily, buildFidIndex, assertFamily, afAbbrevAsk, afToks } from "./lib-af-abbrev.mjs";
 import { codeFingerprint, codeLine, assetFingerprint } from "./lib-sec-fingerprint.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
@@ -1212,6 +1212,45 @@ function admAsk(nameRaw, nameClean, iss) {
   console.error(`admiral controls OK  (${must.filter((m) => m[2]).length} must-see incl. the motivating row and both stand-down cases, ${must.filter((m) => !m[2]).length} must-abstain incl. 2 foreign-house, 2 wrong-class and the MM decoy)`);
 }
 
+/* distinct (issuer, raw, clean) triples, not rows — `secAsk` is cached, so this
+ * counter sees each spelling once however many plans file it */
+let compOverridden = 0;
+
+/* ---------- DOES THE FILING STATE THE CLASS THIS SYMBOL IS REGISTERED AS? ----------
+ *
+ * The licensing test for the precedence override below. The registry's own
+ * designation for the resolved ticker, reduced to the token a filer types
+ * (`Class R-2` -> `r2`, `Class 529-A` -> `529a`), must appear among the filed
+ * name's tokens — adjacent PAIRS included, because `R-6` tokenises to `r` + `6`
+ * and a token-equality test refused 46 rows whose class the filing states
+ * perfectly well. That was a defect in my first measurement, not in the rows,
+ * and it is written out here so the next reader does not rediscover it. */
+function classStated(ticker, filedName) {
+  const rec = idx.byTicker.get(String(ticker).toUpperCase());
+  if (!rec) return false;
+  const want = String(rec.className || "").toLowerCase()
+    .replace(/\bclass\b|\bshares?\b/g, "").replace(/[^a-z0-9]/g, "");
+  if (!want) return false;
+  const tk = afToks(filedName).map((t) => t.replace(/[^a-z0-9]/g, ""));
+  if (tk.includes(want)) return true;
+  for (let i = 0; i + 1 < tk.length; i++) if (tk[i] + tk[i + 1] === want) return true;
+  return false;
+}
+{
+  /* controls in both directions, each a real filed spelling from the measured
+   * population, so neither direction is an invention */
+  for (const [tk, nm, want] of [
+    ["FSNQX", "Fidelity Freedom 2030 K Fund", true],            // Class K, stated
+    ["RBKTX", "American Funds Trgt Date Ret 2040 R2", true],     // Class R-2, stated as R2
+    ["RNWBX", "American Funds New World Fund Class R-2", true],  // the HYPHEN case
+    ["FIKFX", "Fidelity Freedom Index Retirement Inc", false],   // Investor Class, NOT stated
+    ["FSNQX", "Fidelity Freedom 2030 Fund", false],              // no class token at all
+  ]) {
+    const got = classStated(tk, nm);
+    if (got !== want) throw new Error(`gen-sec-tickers: classStated CONTROL — ${tk} / ${JSON.stringify(nm)} should be ${want}, got ${got}`);
+  }
+  console.error("classStated controls OK  (stated, hyphenated, absent)");
+}
 function secAsk(nameRaw, nameClean, iss) {
   const k = `${iss}\u0000${nameRaw}\u0000${nameClean}`;
   if (secCache.has(k)) return secCache.get(k);
@@ -1302,6 +1341,52 @@ function secAsk(nameRaw, nameClean, iss) {
   if (!out) {
     const a = afAbbrevAsk(FID_INDEX, nameRaw) || afAbbrevAsk(FID_INDEX, nameClean);
     if (a) out = a;
+  }
+  /* ---------- AND A HEDGED REGISTRY ANSWER DOES NOT OUTRANK AN ARM THAT NAMES
+   * THE STATED CLASS (2026-10-16) ----------
+   *
+   * Everything above runs on `!out`, which is what makes each arm additive by
+   * construction — and that position has a COST this file already names for
+   * `admAsk` ("381 cells / 528 store rows reach a COMPARABLE above and so never
+   * arrive here") and had never measured for the abbreviation arms. Measured:
+   * **311 published+served rows / 88 plans / 47,008 ppl / $154,824,314**, every
+   * one of them BLANK on the page today, where `resolveHolding` answers a
+   * COMPARABLE of the WRONG class and the arm would have ASSERTED the right
+   * one. `American Funds Trgt Date Ret 2040 R2` hedges **AAGTX**, which the
+   * registry registers as **Class A**, where the arm asserts **RBKTX**, which
+   * it registers as **Class R-2** — the class the filing states.
+   *
+   * SO THE SWAP IS NOT A WIDENING, IT IS A PRECEDENCE: nothing new resolves.
+   * A comparable is never shipped from this generator, so each of these rows
+   * publishes nothing at all today; preferring the assertion can only turn a
+   * blank into a symbol, never one symbol into another.
+   *
+   * THE LICENSING CONDITION IS THE ARM'S OWN AND IS ASSERTED, NOT ASSUMED.
+   * `afAbbrevAsk` resolves a product to exactly ONE series of a
+   * registry-derived family and then requires a class THAT SERIES REGISTERS,
+   * read out of `sec-funds.json`; so an assertion from it carries the stated
+   * class by construction. Checked over the whole population rather than
+   * sampled: 311 of 311 assert a symbol whose registered `className`
+   * designation appears in the filed name, 0 refused. (My first pass of that
+   * check read 46 refusals and every one was a hyphen — `R-6` tokenises to `r`
+   * + `6` — which is a defect in the CHECK, not in the rows.)
+   *
+   * It is restricted to a COMPARABLE deliberately. An ASSERTED registry answer
+   * stands: that one is not hedged, the two agree on the fund, and overriding
+   * it would be this generator deciding a share class against the matcher
+   * rather than filling a blank.
+   *
+   * AND `classStated` IS NOT DECORATION — it refuses exactly ONE row of the
+   * 7,332, and that row is the reason to have it. `Fidelity Freedom Index
+   * Retirement Inc` reaches `FIKFX`, whose registered class is `Investor
+   * Class`, by reading `Inc` as an abbreviation of it; the filing almost
+   * certainly means INCOME. Same symbol as the hedge, so nothing is lost by
+   * refusing, and an assertion whose class the filing never states is the
+   * owner-gated wrong-share-class defect arriving by a new route. */
+  if (out && out.comparable) {
+    const a = afAbbrevAsk(AF_INDEX, nameRaw) || afAbbrevAsk(AF_INDEX, nameClean)
+      || afAbbrevAsk(FID_INDEX, nameRaw) || afAbbrevAsk(FID_INDEX, nameClean);
+    if (a && classStated(a.ticker, nameClean)) { compOverridden++; out = a; }
   }
   secCache.set(k, out);
   return out;
@@ -1592,6 +1677,9 @@ console.error([
   `  GAIN an ASSERTED symbol                 ${fidRows.toLocaleString()} rows / ${fidKeys.size.toLocaleString()} keys / ${fidAcks.size.toLocaleString()} acks -> ${fidPlans.size.toLocaleString()} plans / ${sum(fidPlans).toLocaleString()} ppl / $${fidDollars.toLocaleString()}`,
   `  registry-derived family                 ${FID_FAMILY_N} registrants / ${FID_INDEX.series.size} series`,
   `  by class and route:                     ${[...fidClass].sort((a, b) => b[1] - a[1]).map(([k, n]) => `${k} x${n}`).join(" · ") || "(none)"}`,
+  ``,
+  `PRECEDENCE: a hedged registry answer replaced by an arm naming the STATED class`,
+  `  spellings overridden                    ${compOverridden.toLocaleString()}  (distinct (iss, raw, clean) triples — \`secAsk\` is cached, so this is not a row count)`,
 ].join("\n"));
 if (admForeignKeys.size) {
   console.error(`\nEVERY key the Admiral arm refused for a foreign house in the NAME:`);
