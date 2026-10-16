@@ -1167,3 +1167,38 @@ omitted-series-word relaxation (2,868 rows, cross-fund exposure, carry the real
 rows out of the store), or the 1,178 Income-rename rows, which need a SOURCED
 rename and not a relaxation.
 `docs/accuracy-log.md` 2026-10-16 (18:3xZ).
+
+### 2026-10-16 19:3xZ — VERDICT: #681 delivered 41.32 exactly, and the cycle's work is live
+
+**`tkExact` 41.02 -> 41.32, exactly ONE of 35 keys moved**, compared against the
+line attributed by the COMMIT that introduced it (`840e6455`, which appended one
+line and rewrote none). Second registration of the day to land dead on its point
+estimate — 41.02 on #680 and 41.32 on #681, both derived by RUNNING
+`audit-data.mjs` over the committed store with the new asset rather than
+reasoning about it. **NOTHING IS PRE-REGISTERED AND PENDING.** Mirrored
+`f5fdb563 -> ba333a4a`, mirror-gate 0 plans / 0 participants.
+**THE DRAW (seed 16102026) found one thing and it is SIZED, NOT SHIPPED: a
+benefit-responsive CAPTION welded in front of a real name — 449 rows / 445 plans
+/ 951,311 ppl / $2.86B, 0 publishing a ticker and 2 a fee.** Lowe Enterprises
+publishes `Fully benefit-responsive investment contract Lincoln Stable Value
+Account` at 28.6% of its own menu. It is the INVERSE of this morning's 09:4xZ
+ship (there the caption IS the whole name and gets a label; here it is a PREFIX,
+so the remedy is a STRIP and a label would be false) — **and it is three classes:
+the remainder names a VEHICLE on 305 rows / $1.67B (strip), an ENTITY on 85 /
+$511M (the trustee-weld family), and the BASIS caption `at contract value` on 59
+/ $681M, where a strip must leave a string the shipped predicates still reach or
+it turns a nameless row into one that reads as a name.** `FULLY
+BENEFIT-RESPONSIVE INVESTMENT CONTRACT, AT CONTRACT VALUE T. Rowe Price
+Associates` (45,556 ppl) carries all three and is the case any arm must be tested
+against. Salesforce (57,193 ppl) drew clean — every collective trust correctly
+unpriced.
+**NEXT, in order:** (1) the welded caption above, whose measurement is the
+COMPOSITION with `isContractBasisCaption`/`isGenericTypeName` and not a wider
+pattern; (2) the omitted-series-word relaxation, worth **at most 2,868 rows**,
+carrying the recorded cross-fund exposure; (3) the 1,178 Income-rename rows,
+which need a SOURCED rename via `fund-facts` and not a relaxation.
+**STILL WITH THE OWNER, unchanged and each worth millions of cells:** may a fee
+be WITHDRAWN where it cannot be sourced; a bulk per-ticker expense-ratio file or
+outbound `sec.gov` access (measured today: `CONNECT tunnel failed, 403`); and the
+asterisk/comparable decision, 188,846 rows / ~49M readers.
+`docs/accuracy-log.md` 2026-10-16 (19:1xZ).
