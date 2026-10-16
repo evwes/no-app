@@ -1202,3 +1202,28 @@ be WITHDRAWN where it cannot be sourced; a bulk per-ticker expense-ratio file or
 outbound `sec.gov` access (measured today: `CONNECT tunnel failed, 403`); and the
 asterisk/comparable decision, 188,846 rows / ~49M readers.
 `docs/accuracy-log.md` 2026-10-16 (19:1xZ).
+
+### 2026-10-16 19:3xZ — REFUTED: the benefit-responsive caption strip, and the caption is the witness
+
+The queue's own next item, worked and **not shipped.** The composition it asked
+about came back clean — the shipped bare-whitespace caption arm's `at` furniture
+already refuses the whole BASIS bucket (59 rows, the class's largest member by
+dollars), its four-token floor refuses the bare `VALIC`, and one scoped
+condition splits the ENTITY bucket at SHIP 104 distinct / 149 rows vs HOLD 18 /
+36, **all 122 read and the 18 held bare legal names 18 of 18.**
+***THEN THE DIFFERENTIAL KILLED IT, on two columns the sizing never asked
+about: 55 rows newly publish the owner-gated fabricated 0.35 on $199,219,334,
+and 25 rows go from a true `Investment contract` to a false `Mutual fund`.***
+The caption is what keeps `fund-er.js`'s stable-value pattern off the row and
+the only evidence the page has for the vehicle. Ticker 0, asterisk 0, row
+membership 0, control 17,705 non-candidates differing on 0, twin agreeing on all
+4,616 candidate rows — *so a strip can be net harmful while moving none of the
+three cells this record already says to check.* Both files reverted.
+**WHAT REPLACES IT is a DISPLAY change, not a name one:** the vehicle is already
+in the type column, so the caption wants CONSUMING into the label it already
+produces (`Investment contract · Lincoln Stable Value Account`) rather than
+deleting. That is a change to what the row prints.
+**NEXT:** (1) that display form, if it is worth it; (2) the omitted-series-word
+relaxation, at most 2,868 rows with the recorded cross-fund exposure; (3) the
+1,178 Income-rename rows, which need a SOURCED rename via `fund-facts`.
+`docs/accuracy-log.md` 2026-10-16 (19:3xZ).

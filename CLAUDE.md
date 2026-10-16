@@ -6481,6 +6481,23 @@ These outlived the versions that produced them. The accuracy log has the case.
   running it in-session cost 15+ polling turns of the one resource this file
   names as genuinely scarce. Runners are free here and measured so.
   `docs/accuracy-log.md` 2026-10-16 (16:1xZ).
+- **A CAPTION THAT LOOKS LIKE FURNITURE CAN BE THE PAGE'S ONLY WITNESS FOR A
+  CLAIM IT MAKES ABOUT THE ROW (2026-10-16).** A benefit-responsive caption
+  welded in front of a stable-value product's own name was sized at 951,311
+  readers and prescribed as a STRIP. The composition with the shipped caption
+  predicates came back clean, and the differential through both copies of
+  `renderRow` refuted it on two columns the sizing never asked about: **55 rows
+  newly published the owner-gated fabricated 0.35 on $199,219,334**, because
+  `fund-er.js` is a NAME table and the caption was what kept its stable-value
+  pattern off the row; and **25 rows went from a true `Investment contract` to a
+  false `Mutual fund`**, because that caption is the only evidence the page has
+  for the vehicle and without it the row falls back to the filer's wrong type
+  cell. Ticker 0, asterisk 0, row membership 0 — *so a strip can be net harmful
+  while moving none of the three cells this record already says to check.*
+  **Price every name strip through the TYPE and FEE columns**, and note the
+  inverse of the recorded `gicRow` family: there a blank type cell DEFEATS a
+  suppressor, here the name is what SAVES it. `docs/accuracy-log.md` 2026-10-16
+  (19:3xZ).
 - **A JOB LOG IS READABLE — THROUGH THE GITHUB MCP SERVER, NOT THROUGH `gh`
   (2026-10-16).** `gh api repos/…/actions/jobs/<id>/logs` refuses the blob
   redirect GitHub serves logs from, and that was written down here as a property
