@@ -2073,17 +2073,95 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   trust with no ticker to find. Worth doing for half a million readers, worth
   nothing in the priced columns, and a name change still carries the recorded
   `ID_ONLY` row-membership risk, so it needs a full differential.
-  **AND THE EMPLOYER-STOCK BLANK IS NOT CAUSED BY EITHER OF THEM.**
-  `plans-all` carries `ticker: "T"` for this plan. Varying one thing at a time
-  on the REAL plan record — as filed, CUSIP removed, issuer removed, rewritten
-  to `AT&T Inc. Common Stock` — leaves `stockRow` FALSE and `tk` EMPTY in all
-  four, and the draw shows no flags on the real row either. ***The cause is
-  undiagnosed and may be my harness rather than the page***, since a plan object
-  assembled field by field is exactly the *guessed SHAPE fails as a clean zero*
-  trap, so it is recorded as an open question needing the real render path and
-  NOT as a diagnosed defect. What is certain from the committed page:
-  **$3,859,276,939 of this plan's own employer stock publishes no ticker.**
-  `docs/accuracy-log.md` 2026-10-12 (13:4xZ).
+  **AND THE EMPLOYER-STOCK BLANK IS DIAGNOSED AS OF 2026-10-16 03:3xZ — THREE
+  GATES IN SERIES, AND THIS ENTRY'S OWN "NOT CAUSED BY EITHER OF THEM" WAS HALF
+  WRONG: THE CUSIP IS LOAD-BEARING ON THE SECOND GATE.** Rendered through the
+  tracked `apppath` harness on the row and plan record carried OUT OF THE STORE,
+  with a positive control: the type cell forced to `Company stock` makes
+  `stockRow` FIRE, and `tk` appears only when the CUSIP is ALSO removed —
+  `employerStockSymbolOk("00206R102 AT&T INC")` is **false** and
+  `…("AT&T INC")` **true**, because `espRestIsCaption` accepts a pure digit run
+  (`/^\d+$/`) and `00206r102` carries an `R`, so the 9-character identifier is
+  filler to no arm. ***A probe that varies one field and reads the same answer
+  every time is measuring a population an EARLIER gate already emptied*** — the
+  recorded probe left the type cell alone, so it filed a true observation under
+  a false conclusion.
+  **GATE 1 IS THE PARSER'S SECTION CLASSIFIER AND THE FILING NAMES IT.** The
+  attachment heads the row **`EMPLOYER RELATED - SECURITIES`**;
+  `lib-4i.mjs:3433` sets `rowType = classify(curSection)`, and
+  `TYPE_PATTERNS`'s `/common stock|company stock|employer securit/i` requires
+  ADJACENCY — `classify("EMPLOYER SECURITIES")` = `"Company stock"`,
+  `classify("EMPLOYER RELATED - SECURITIES")` = `""`. *Tenth instance of a fix
+  for one phrasing of a class not being a fix for the class, on an INTERVENING
+  WORD*, where the arm two lines above already handles that for named trusts.
+  **Proven by six headings, not one example: running the shipped `classify` on
+  this filing's six headings predicts the stored type on 11 of 12 rows**, so the
+  classifier read these headings and the blank is OURS.
+  **AND THE ACK ATTRIBUTION ABOVE IS WRONG: `servedLineup` returns the TRUST
+  ack `20251008165336NAL0014306450001`, served to pn=009 ALONE** (1 plan,
+  192,505 ppl, one ticker — so the plan-dependence hazard is absent here), and
+  **the control is one plan away: At&T pn=004 (27,558 ppl) publishes `AT&T INC`
+  typed `Company stock` with `tk T`, correctly.**
+  **GATE 2 HAS NO INDEPENDENT POPULATION:** over all published+served rows on
+  ticker-bearing plans, `stockRow` TRUE with no symbol is **51 rows / 43 plans /
+  1,143,127 ppl** (the deliberate withdrawals) and a CUSIP strip clears **0** —
+  so the identifier-token relaxation must ship WITH the parser arm, never
+  before it.
+  **CLASS SIZED AND READ: 30 published+served rows / 28 plans / 1,549,230 ppl /
+  $37,734,930,804 gross ($25,651,550,050 over 26 distinct holdings), EVERY ONE
+  BLANK-TYPED, 12 at >=10% of their own menu, 0 publishing a fee** — Caterpillar
+  $5.50B ×3 plans, AT&T, AbbVie $2.19B, Home Depot $1.48B to 468,817 readers,
+  Textron, Coca-Cola, Citigroup, Cummins, Phillips 66, 3M, PepsiCo (161,067),
+  Aptiv at **38.8% of its menu**. 38 members read at >=$50M, **8 refuted** — a
+  fund house sponsoring its own plan (BlackRock, Franklin) and a sponsor whose
+  LEGAL name carries a generic word (Mastercard **International**). Below $50M
+  unsized.
+  ***AND "EMPLOYER STOCK" IS REFUTED FOR AT LEAST 2 OF THE 30 BY READING THEIR
+  FILINGS, WHICH MAKES THE TYPE REMEDY HARMFUL THERE:*** `CATERPILLAR INC COM`
+  sits in an **alphabetical list of hundreds of ordinary equities** between
+  Castle Biosciences and Cathay General under `Corporate Stock - Common` (missed
+  on word ORDER), and Home Depot's between Hexcel and Howmet — so labelling that
+  heading would publish the sponsor's symbol on CAVA Group, which is the
+  recorded Bank of America defect exactly.
+  **THE STRUCTURALLY RIGHT REMEDY IS A NEW SOURCE AND IT IS IN THE FILINGS: the
+  CUSIP is printed beside every one of these rows** (`00206R102`,
+  `CUSIP: 149123101`, `CUSIP: 437076102`). A CUSIP -> ticker table names them all
+  and dissolves the "is it the employer's" judgment, where every name-based route
+  needs a securities-listing vocabulary (`com`, `stck`, `paysop`, `usd5`, `wi`)
+  of the shape this record has measured harmful. **NOTHING SHIPPED, and
+  deliberately: both routes are NEW COVERAGE rather than a repair** — a blank
+  becomes a published symbol — and `app.js:4267`'s own comment is the reason to
+  refuse unasked (*`stockRow` PUBLISHES the plan sponsor's own symbol … a blank
+  is honest; a symbol reads as knowledge*). `PARSER_VERSION` stays 203.
+  `docs/accuracy-log.md` 2026-10-12 (13:4xZ) and 2026-10-16 (03:3xZ).
+- **FOUND BY WORKING THAT ITEM AND IT IS A WRONG ANSWER, WHICH OUTRANKS IT —
+  COMCAST PUBLISHES ITS OWN SWITCHBOARD AS A $2,152,861,700 HOLDING TO 124,285
+  READERS, 9.4% OF ITS MENU.** `COMCAST CORPORATION` at `$2,152,861,700` is
+  **(215) 286-1700**, read off the Form 5500 cover page where line 2a is the
+  sponsor's name and **line 2c the telephone** — confirmed from the filing, the
+  two on adjacent lines. The served entry (`20251007174512NAL0008660608003`,
+  trust, 43 funds) is otherwise a genuine Vanguard-vintage menu and carries a
+  second artifact at row 42 (`Plans Participating In Master Trust: 12458 28024`,
+  $28,050); **the REAL stock is row 12, `CORPORATE STOCKS COMMON` at
+  $413,748,360, blank-typed and unqualified.**
+  ***NOTHING CATCHES IT BECAUSE OF THE DENOMINATOR:*** the stored
+  `coverageRatio` is **1.12** against the TRUST's assets, under
+  `lineup-overshoot`'s 1.15, while against the served plan's own Schedule H it
+  is **1.168** and falls to **1.059** with the phantom withdrawn.
+  ***AND THE PHONE-SHAPE SCREEN IS REFUTED BY ITS OWN OUTPUT — DO NOT REBUILD
+  IT.*** 221 published+served rows carry an exact NANP-shaped 10-digit value
+  (a large dollar figure IS one); adding "the name is the sponsor's / plan's /
+  trust's own" reads 7 rows / 619,993 ppl and **6 of 7 are REAL** — Exxon Mobil
+  $7,367,951,000, Chevron $4,739,578,000, Eli Lilly, Lowe's $3,095,315,796
+  (289,398 ppl), Performance Contracting (72.4%), Oracle. *A count keyed on a
+  character shape measures the character shape.* **The discriminator that works
+  is the RATIO DIRECTION** (Comcast 1.168 -> 1.059 toward 1.0; Exxon 0.995 ->
+  0.709, Lowe's 0.988 -> 0.650 away), and Comcast is also the only one of the
+  seven whose type cell is blank. **ONE ROW, so named and not shipped as a
+  class:** it is the recorded Home Depot form-artifact family, it is
+  PARSER-side, and a siblings-consulting guard for one row is not worth the
+  composition risk. Owner's call with that family.
+  `docs/accuracy-log.md` 2026-10-16 (03:3xZ).
 - **AND A ONE-PLAN RESIDUE FROM THE SAME DRAW: `CERT. OF DEP.` typed `—` is not
   labelled**, because `cert` and `dep` are abbreviations `CAPTION_WORD` does not
   carry — the `corp`/`instr` shape again, at $30,043 on one plan. Named, not
