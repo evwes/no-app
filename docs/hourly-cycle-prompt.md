@@ -1303,3 +1303,17 @@ contract label, 683 rows / 1,213,651 ppl, measurement ready; (3) the
 omitted-series-word relaxation, at most 2,868 rows; (4) the 1,178 Income-rename
 rows, needing a SOURCED rename via `fund-facts`.
 `docs/accuracy-log.md` 2026-10-16 (21:1xZ).
+
+**2026-10-19 — OWNER-DIRECTED MAP WORK, shipped and mirrored (`a4c06171`).**
+Zoom was magnifying the marks (a length in VIEWBOX units is drawn larger as the
+viewBox shrinks — stroke and label had the same defect and were missed first
+time), pan was dead after one frame (`pointermove` re-rendered and destroyed the
+svg holding the pointer capture), and a dot named no plan (now a card with
+company / provider / participants / avg balance, staying on the map; >8 plans
+still opens the table, which is map-test's contract). Tethered by
+`scripts/map-zoom-test.mjs` in site-test. Full reading: `docs/accuracy-log.md`
+2026-10-19 (02:1xZ) — including that the new test's first green run asserted
+NOTHING, an `else if` debug line having swallowed the card block.
+**THE QUEUE IS STILL PARKED** pending the owner's answer on withdrawing
+unsourceable fees (~20M participants, needs no new data), the comparable/
+asterisk call (188,846 rows / ~49M readers) and a per-fund fee source.

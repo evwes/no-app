@@ -61194,3 +61194,56 @@ and it must be priced through **ROW MEMBERSHIP**, since `cleanFiledName` runs
 upstream of `app.js`'s `ID_ONLY` drop and `Mutual Funds……………..` strips to a bare
 caption. The prize is one-directional and is a TICKER on a real fund, which is
 the opposite of the 19:3xZ strip's profile.
+
+## 2026-10-19 02:1xZ — THE MAP VIEW: A LENGTH IN VIEWBOX UNITS IS NOT A LENGTH ON SCREEN, AND A RE-RENDER MID-DRAG DESTROYS THE ELEMENT THE DRAG IS ATTACHED TO
+
+Owner-reported, three defects, all shipped and mirrored (`a4c06171`, site-test
+#227 green, Pages deployed on main's HEAD).
+
+**(1) ZOOMING MAGNIFIED THE MARKS INSTEAD OF SEPARATING THE PLANS.** A circle's
+`r` is a length in VIEWBOX units and the viewBox SHRINKS as you zoom, so a
+constant `r` is drawn LARGER on screen the further in you go — the owner's
+screenshot is overlapping discs covering whole states where individual plans
+should have resolved. Every mark is now sized in SCREEN space and divided by
+the zoom; the cluster cell was already zoom-keyed, so going in genuinely splits
+groups. The ceiling tightens too (34 -> 12 screen px by zoom 8) and the floor is
+4, so a single plan is a dot you can aim at. ***The same defect reaches every
+other length in that coordinate system and they were all missed the first
+time***: the white stroke (`stroke-width: 1`) and the count label
+(`font-size: 10px`) are CSS lengths in user units, corrected through `--msw`
+and `--mfs` set on the svg, with the fallbacks left in the stylesheet.
+Measured: largest dot **34.7px -> 17.1px on screen** while the viewBox narrows
+**960 -> 234**.
+
+**(2) PAN WAS DEAD AFTER ONE FRAME, which is why it read as "zoom works, I
+cannot slide".** `pointermove` called `renderMap()`, which replaces the canvas's
+`innerHTML` — destroying the very `<svg>` that holds the pointer capture and
+that the listener is attached to. The first move landed and every later one
+went to a detached node. ***Nothing about a pan changes what is DRAWN*** — the
+clustering is keyed on zoom alone — so the honest update is the viewBox
+attribute and nothing else. The wheel handler also captured the render-time
+viewBox, which a pan can now move between renders, so it recomputes it.
+*A handler that re-renders the element it is bound to is a handler that fires
+once.*
+
+**(3) A DOT SAID NOTHING ABOUT ITS PLAN.** Clicking a dot of <=8 plans prints a
+card with company / provider / participants / average balance and STAYS on the
+map, with an explicit button for the old jump-to-table; above that a dot is a
+cluster rather than a holding and still opens the table, which is also the
+contract `map-test.mjs` exercises (it clicks the largest cluster). Every field
+is already in the boot payload, so the card cannot disagree with the table
+beside it, and an unnamed provider reads "not yet verified" rather than a guess.
+
+**TETHERED by `scripts/map-zoom-test.mjs`, in `site-test` with its paths
+filter** — it measures the radius in SCREEN PIXELS via `getBoundingClientRect`
+(which resolves the whole viewBox transform, so the test needs no arithmetic of
+its own), drags in SEVERAL steps because ***a single-step drag cannot see this
+bug — the first move always landed***, and requires all four card fields.
+
+***AND ITS FIRST GREEN RUN ASSERTED NOTHING.*** A debug line patched in as
+`else if (process.env.MZ_DEBUG) console.log(...)` sat directly before the
+original `else {`, so with the flag set the ENTIRE card block was skipped and
+the suite passed having tested none of it. The tell was that the card's own
+output line never printed. *A check that does not run reads exactly like a
+check that passes* — this record's oldest lesson, met in my own instrument, and
+caught only because the instrument prints what it asserts.
