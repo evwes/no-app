@@ -8,6 +8,10 @@ on:
     # how a broken map reached the live site unnoticed.
     paths: ["app.js", "index.html", "styles.css", "data.js", "fund-er.js",
             "scripts/smoke-test.mjs", "scripts/map-test.mjs",
+            # the map's VIEW — zoom scaling, pan and the dot card. Separate from
+            # map-test.mjs, which owns the data alignment and the selection
+            # contract; this one owns what the marks DO on screen.
+            "scripts/map-zoom-test.mjs",
             "scripts/fund-er-test.mjs", "scripts/no-identity-test.mjs",
             "scripts/vesting-quote-test.mjs", "scripts/lib-quote.mjs",
             # v201 put `vestingQuoteUpgrade` in the PARSER, so a lib-4i change
@@ -246,6 +250,8 @@ jobs:
         run: node scripts/smoke-test.mjs
       - name: Map view — draws, filters, and never misplaces a plan
         run: node scripts/map-test.mjs
+      - name: Map zoom, pan and the dot card — marks shrink, drag slides, a dot names its plan
+        run: node scripts/map-zoom-test.mjs
       # LAST ON PURPOSE, and the placement is the decision rather than an
       # afterthought. `gen-sec-tickers.mjs` shipped a `--check` that was wired
       # into no workflow, so the generated table could sit beside code that did

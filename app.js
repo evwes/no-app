@@ -5345,27 +5345,57 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
     const groups = [...cells.values()].sort((a, b) => b.n - a.n);
     MAP.groups = groups; // dot clicks resolve through this, by index
     const maxN = groups.length ? groups[0].n : 1;
+    /* EVERY MARK IS SIZED IN SCREEN SPACE AND DIVIDED BY THE ZOOM, 2026-10-19.
+     *
+     * `r` is a length in VIEWBOX units and the viewBox SHRINKS as you zoom in,
+     * so a constant `r` is drawn LARGER on screen the further in you go. That
+     * is the opposite of what zooming is for: the owner reported circles that
+     * grew into overlapping blobs covering whole states instead of resolving
+     * into locatable points. Dividing by the zoom holds each mark at a fixed
+     * size ON SCREEN, and the cluster cell above already shrinks with zoom, so
+     * going in genuinely separates plans rather than magnifying one disc.
+     *
+     * The CEILING tightens as well (34 -> 12 screen px by zoom 8) because a
+     * cluster that is honest at country scale is a blot at street scale, and
+     * the floor of 4 screen px is what makes a single plan a DOT you can aim
+     * at. The stroke and the count label are lengths in the same units and
+     * have the same defect, so they are passed to CSS as `--msw` and `--mfs`
+     * rather than left at the stylesheet's fixed 1 and 10px. */
+    const z = MAP.zoom;
+    const rMax = Math.max(6, 34 / Math.sqrt(z));
     const circles = groups.map((g, gi) => {
       const x = g.x / g.n, y = g.y / g.n;
       // area ∝ plan count, floored so a single plan is still clickable
-      const r = Math.max(4, Math.min(34, 4 + 30 * Math.sqrt(g.n / maxN)));
+      const rScreen = Math.max(4, Math.min(rMax, 4 + 30 * Math.sqrt(g.n / maxN)));
+      const r = rScreen / z;
       const avg = g.assets / g.n;
-      const label = g.n >= 3 ? `<text class="map-count" x="${x.toFixed(1)}" y="${(y + 3.5).toFixed(1)}">${g.n >= 1000 ? (g.n / 1000).toFixed(1) + "k" : g.n}</text>` : "";
+      // the count only fits while the mark is big enough to hold it
+      const label = g.n >= 3 && rScreen >= 9 ? `<text class="map-count" x="${x.toFixed(1)}" y="${(y + 3.5 / z).toFixed(2)}">${g.n >= 1000 ? (g.n / 1000).toFixed(1) + "k" : g.n}</text>` : "";
       const one = g.n === 1 ? esc(g.plans[0].company) : `${fmtInt.format(g.n)} plans`;
-      return `<g class="map-dot ${bandOf(avg)}" data-g="${gi}"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}">` +
+      return `<g class="map-dot ${bandOf(avg)}" data-g="${gi}"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(2)}">` +
         `<title>${one} · ${fmtCompact.format(g.ppl)} participants · $${fmtCompact.format(g.assets)} — click to open in the table</title>` +
         `</circle>${label}</g>`;
     }).join("");
 
-    const vw = MAP_W / MAP.zoom, vh = MAP_H / MAP.zoom;
-    const vx = Math.max(0, Math.min(MAP_W - vw, MAP.cx * MAP_W - vw / 2));
-    const vy = Math.max(0, Math.min(MAP_H - vh, MAP.cy * MAP_H - vh / 2));
+    /* THE VIEWBOX IS DERIVED FROM MAP STATE ON DEMAND, never captured, because
+     * a PAN now updates it in place without re-rendering (see pointermove) —
+     * so any closure holding the render-time numbers would be reading a stale
+     * view the moment the user drags. */
+    const viewBox = () => {
+      const w = MAP_W / MAP.zoom, h = MAP_H / MAP.zoom;
+      const x = Math.max(0, Math.min(MAP_W - w, MAP.cx * MAP_W - w / 2));
+      const y = Math.max(0, Math.min(MAP_H - h, MAP.cy * MAP_H - h / 2));
+      return { x, y, w, h };
+    };
+    const v0 = viewBox();
     canvas.innerHTML =
-      `<svg id="mapSvg" viewBox="${vx.toFixed(1)} ${vy.toFixed(1)} ${vw.toFixed(1)} ${vh.toFixed(1)}" ` +
+      `<svg id="mapSvg" viewBox="${v0.x.toFixed(1)} ${v0.y.toFixed(1)} ${v0.w.toFixed(1)} ${v0.h.toFixed(1)}" ` +
+      `style="--msw:${(1 / z).toFixed(3)};--mfs:${(10 / z).toFixed(2)}px" ` +
       `preserveAspectRatio="xMidYMid meet" role="img" aria-label="Plans by filing location">` +
       `<g class="map-states">${statePaths()}</g><g class="map-dots">${circles}</g></svg>` +
       `<div class="map-zoom"><button id="mapIn" aria-label="Zoom in">+</button>` +
-      `<button id="mapOut" aria-label="Zoom out">−</button></div>`;
+      `<button id="mapOut" aria-label="Zoom out">−</button></div>` +
+      `<div id="mapInfo" class="map-info" hidden></div>`;
 
     const ppl = groups.reduce((s, g) => s + g.ppl, 0);
     const assets = groups.reduce((s, g) => s + g.assets, 0);
@@ -5405,15 +5435,27 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
       const rect = svg.getBoundingClientRect();
       MAP.cx = Math.max(0, Math.min(1, drag.cx - (e.clientX - drag.x) / rect.width / MAP.zoom));
       MAP.cy = Math.max(0, Math.min(1, drag.cy - (e.clientY - drag.y) / rect.height / MAP.zoom));
-      renderMap();
+      /* PANNING MOVES THE VIEWBOX AND MUST NOT RE-RENDER, 2026-10-19. This
+       * called renderMap(), which replaces the canvas's innerHTML — destroying
+       * the very <svg> that holds the pointer capture and that this listener
+       * is attached to. The first move landed, the element it came from was
+       * then thrown away, and every later move went to a detached node: the
+       * owner reported being able to zoom but never to slide north/south or
+       * east/west. Nothing about a pan changes what is DRAWN — the clustering
+       * is keyed on zoom alone — so the honest update is the view attribute
+       * and nothing else. */
+      const v = viewBox();
+      svg.setAttribute("viewBox", `${v.x.toFixed(1)} ${v.y.toFixed(1)} ${v.w.toFixed(1)} ${v.h.toFixed(1)}`);
     });
     svg.addEventListener("pointerup", () => { const moved = drag && drag.moved; drag = null; if (moved) suppressClick = true; });
+    svg.addEventListener("pointercancel", () => { drag = null; });
     // wheel zoom toward the cursor: the point under the pointer stays put
     svg.addEventListener("wheel", (e) => {
       e.preventDefault();
       const rect = svg.getBoundingClientRect();
       const fx = (e.clientX - rect.left) / rect.width, fy = (e.clientY - rect.top) / rect.height;
-      const px = (vx + fx * vw) / MAP_W, py = (vy + fy * vh) / MAP_H; // map-space point under cursor
+      const v = viewBox(); // live, because a pan since this render moved it
+      const px = (v.x + fx * v.w) / MAP_W, py = (v.y + fy * v.h) / MAP_H; // map-space point under cursor
       const nz = Math.max(1, Math.min(8, MAP.zoom * (e.deltaY < 0 ? 1.25 : 0.8)));
       if (nz === MAP.zoom) return;
       // keep (px,py) at the same screen fraction after the zoom
@@ -5432,6 +5474,16 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
       if (dot) {
         const g = MAP.groups[+dot.dataset.g];
         if (!g) return;
+        /* A SMALL DOT ANSWERS ON THE MAP; A BIG ONE STILL OPENS THE TABLE,
+         * 2026-10-19. Zooming in now separates plans into individual dots, and
+         * the point of aiming at one is to find out WHOSE it is — jumping to
+         * the table for that loses the place you just navigated to. So up to
+         * MAP_CARD_MAX plans the dot prints its own card, with the four things
+         * the owner asked for, and the card carries an explicit button for the
+         * old path. Above that the dot is a cluster rather than a holding and
+         * the table is the honest answer, which is also what the map test
+         * exercises (it clicks the LARGEST cluster). */
+        if (g.n <= MAP_CARD_MAX) { showMapCard(g); return; }
         state.dotPick = new Set(g.plans.map((p) => p.id));
         if (g.n === 1) {
           const plan = g.plans[0];
@@ -5453,6 +5505,44 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
     });
   }
   let suppressClick = false; // a completed drag must not fire the click handler
+
+  /* THE DOT'S OWN CARD — company, provider, participants, average balance.
+   *
+   * Every field is one the boot payload already carries, so the card needs no
+   * fetch and cannot be stale against the table beside it: `publicName` is the
+   * same name the table prints, `avgBal` the same number in the same units,
+   * and the provider is the recordkeeper the filing names. Where the filing
+   * names none it says so — this site never fills a blank with a guess, and
+   * "not yet verified" is the phrasing the rest of the page uses. */
+  const MAP_CARD_MAX = 8;
+  function showMapCard(g) {
+    const box = $("mapInfo");
+    if (!box) return;
+    const rows = g.plans.slice(0, MAP_CARD_MAX).map((p) => {
+      const prov = p.provider || p.recordkeeper || "";
+      return `<div class="map-info-plan">` +
+        `<div class="map-info-name">${esc(publicName(p) || p.company)}</div>` +
+        `<dl>` +
+        `<div><dt>Provider</dt><dd>${prov ? esc(prov) : "<i>not yet verified</i>"}</dd></div>` +
+        `<div><dt>Participants</dt><dd>${p.participants ? fmtInt.format(p.participants) : "—"}</dd></div>` +
+        `<div><dt>Avg balance</dt><dd>${p.avgBal != null ? money(p.avgBal / 1e6) : "—"}</dd></div>` +
+        `</dl></div>`;
+    }).join("");
+    box.innerHTML =
+      `<button id="mapInfoClose" class="map-info-close" aria-label="Close">×</button>` +
+      (g.n > 1 ? `<div class="map-info-head">${fmtInt.format(g.n)} plans filed from here</div>` : "") +
+      rows +
+      `<button id="mapInfoTable" class="map-info-open">Open ${g.n === 1 ? "this plan" : "these plans"} in the table</button>`;
+    box.hidden = false;
+    $("mapInfoClose").onclick = () => { box.hidden = true; box.innerHTML = ""; };
+    $("mapInfoTable").onclick = () => {
+      state.dotPick = new Set(g.plans.map((p) => p.id));
+      if (g.n === 1) { state.expanded.add(g.plans[0].id); ensureDetail(g.plans[0]); }
+      setView("table");
+      render();
+      window.scrollTo({ top: $("tableSection").offsetTop - 70, behavior: "smooth" });
+    };
+  }
 
   function setView(which) {
     const map = which === "map";
