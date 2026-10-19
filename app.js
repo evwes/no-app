@@ -5481,25 +5481,18 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
       if (dot) {
         const g = MAP.groups[+dot.dataset.g];
         if (!g) return;
-        /* A SMALL DOT ANSWERS ON THE MAP; A BIG ONE STILL OPENS THE TABLE,
-         * 2026-10-19. Zooming in now separates plans into individual dots, and
-         * the point of aiming at one is to find out WHOSE it is — jumping to
-         * the table for that loses the place you just navigated to. So up to
-         * MAP_CARD_MAX plans the dot prints its own card, with the four things
-         * the owner asked for, and the card carries an explicit button for the
-         * old path. Above that the dot is a cluster rather than a holding and
-         * the table is the honest answer, which is also what the map test
-         * exercises (it clicks the LARGEST cluster). */
-        if (g.n <= MAP_CARD_MAX) { showMapCard(g); return; }
-        state.dotPick = new Set(g.plans.map((p) => p.id));
-        if (g.n === 1) {
-          const plan = g.plans[0];
-          state.expanded.add(plan.id);
-          ensureDetail(plan);
-        }
-        setView("table");
-        render();
-        window.scrollTo({ top: $("tableSection").offsetTop - 70, behavior: "smooth" });
+        /* EVERY DOT ANSWERS ON THE MAP. The map stays; the sponsors are listed
+         * below it.
+         *
+         * This was gated at 8 plans, above which a click still jumped to the
+         * table — and the owner hit a NINE-plan dot in Florida and lost the map
+         * they had navigated to. The threshold was mine and it was arbitrary:
+         * whether a dot is worth reading in place has nothing to do with how
+         * many plans happen to share its pixel, and a reader who clicked a
+         * point on a map is asking about that point, not asking to leave it.
+         * The panel caps what it PRINTS and says how many more there are; the
+         * table is one button away for the full paginated list. */
+        showMapCard(g);
         return;
       }
       const st = e.target.closest(".map-state");
@@ -5521,11 +5514,19 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
    * and the provider is the recordkeeper the filing names. Where the filing
    * names none it says so — this site never fills a blank with a guess, and
    * "not yet verified" is the phrasing the rest of the page uses. */
-  const MAP_CARD_MAX = 8;
+  /* how many sponsors the panel PRINTS. It is not a gate on whether a dot
+   * answers — every dot does — it is only the point past which a list stops
+   * being readable on the page and the paginated table is the better surface.
+   * The panel says how many it is not showing, so the cap is never silent. */
+  const MAP_CARD_MAX = 50;
   function showMapCard(g) {
     const box = $("mapInfo");
     if (!box) return;
-    const rows = g.plans.slice(0, MAP_CARD_MAX).map((p) => {
+    /* biggest first. The dot's plans arrive in shard order, which is arbitrary,
+     * and a reader scanning a location wants the employers that matter there at
+     * the top rather than whichever happened to be parsed first. */
+    const ranked = g.plans.slice().sort((a, b) => (b.participants || 0) - (a.participants || 0));
+    const rows = ranked.slice(0, MAP_CARD_MAX).map((p) => {
       const prov = p.provider || p.recordkeeper || "";
       return `<tr>` +
         `<td class="map-info-name">${esc(publicName(p) || p.company)}</td>` +
@@ -5536,11 +5537,12 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
     }).join("");
     box.innerHTML =
       `<button id="mapInfoClose" class="map-info-close" aria-label="Close">×</button>` +
-      `<div class="map-info-head">${g.n === 1 ? "Selected plan" : `Selected location — ${fmtInt.format(g.n)} plans filed from here`}</div>` +
+      `<div class="map-info-head">${g.n === 1 ? "Selected plan" : `Selected location — ${fmtInt.format(g.n)} plans filed from here`}` +
+      (g.n > MAP_CARD_MAX ? ` · showing the ${MAP_CARD_MAX} largest` : "") + `</div>` +
       `<table class="map-info-table"><thead><tr>` +
       `<th>Company</th><th>Provider</th><th class="num">Participants</th><th class="num">Avg balance</th>` +
       `</tr></thead><tbody>${rows}</tbody></table>` +
-      `<button id="mapInfoTable" class="map-info-open">Open ${g.n === 1 ? "this plan" : "these plans"} in the table</button>`;
+      `<button id="mapInfoTable" class="map-info-open">Open ${g.n === 1 ? "this plan" : `all ${fmtInt.format(g.n)} plans`} in the table</button>`;
     box.hidden = false;
     $("mapInfoClose").onclick = () => { box.hidden = true; box.innerHTML = ""; };
     $("mapInfoTable").onclick = () => {

@@ -180,15 +180,36 @@ const dotXY = await page.evaluate(() => {
 if (!dotXY) fail.push("no dot found to click");
 else await page.mouse.click(dotXY.x, dotXY.y);
 await page.waitForTimeout(2000);
+
+/* THE CONTRACT CHANGED ON 2026-10-19 AND THESE ASSERTIONS MOVED RATHER THAN
+ * WENT AWAY. A dot click used to switch straight to the table; it now lists the
+ * sponsors BELOW THE MAP and leaves the map up, because a reader who clicked a
+ * point is asking about that point and jumping away loses the place they
+ * navigated to. The table selection is still reachable, behind the panel's own
+ * button, so everything this test used to certify — dotPick reaches the table,
+ * the banner appears, the table is not empty, the banner clears — is still
+ * certified, one click further along. */
+const onMap = await page.evaluate(() => ({
+  mapStillShown: !document.querySelector("#mapSection").hidden,
+  panel: !document.querySelector("#mapInfo").hidden,
+  listed: document.querySelectorAll("#mapInfo tbody tr").length,
+  openBtn: !!document.querySelector("#mapInfoTable"),
+}));
+if (!onMap.mapStillShown) fail.push("clicking a dot left the map view");
+if (!onMap.panel) fail.push("clicking a dot did not open the sponsor panel below the map");
+if (!onMap.listed) fail.push("the sponsor panel listed no plans");
+if (!onMap.openBtn) fail.push("the sponsor panel offers no way into the table");
+await page.evaluate(() => document.querySelector("#mapInfoTable")?.click());
+await page.waitForTimeout(2000);
 const pick = await page.evaluate(() => ({
   tableShown: !document.querySelector("#tableSection").hidden,
   banner: !document.querySelector("#mapPick").hidden,
   bannerText: document.querySelector("#mapPickText")?.textContent || "",
   rows: document.querySelectorAll("#tbody tr").length,
 }));
-if (!pick.tableShown) fail.push("clicking a dot did not switch to the table view");
-if (!pick.banner) fail.push("clicking a dot did not show the selection banner");
-if (!pick.rows) fail.push("clicking a dot produced an empty table");
+if (!pick.tableShown) fail.push("the panel's open-in-table button did not switch to the table view");
+if (!pick.banner) fail.push("opening the selection in the table showed no banner");
+if (!pick.rows) fail.push("opening the selection in the table produced an empty table");
 if (!/plan/.test(pick.bannerText)) fail.push(`selection banner text is wrong: "${pick.bannerText}"`);
 await page.evaluate(() => document.querySelector("#mapPickClear")?.click());
 await page.waitForTimeout(1500);
