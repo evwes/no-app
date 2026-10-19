@@ -1,4 +1,5 @@
 {
-  "_schema": "one entry per ticker (upper-case key); every figure carries its as-of date and its source URL; er and ytd are percents as numbers (0.04 = 0.04%, -3.2 = -3.2%); written only by the fund-facts agent, validated by node scripts/fund-facts-check.mjs; nothing from memory, nothing undated",
-  "funds": {}
+  "_schema": "THE ONLY place a sourced ticker, expense ratio or return may live. `funds` is keyed one entry per TICKER (upper-case); `vehicles` is keyed `provider::fund` in lower-case slugs, for a collective trust, separate account or guaranteed option that HAS no ticker. Every figure carries its as-of date and its source URL; er and ytd are percents as numbers (0.04 = 0.04%, -3.2 = -3.2%). A vehicle's `erBasis` says whose price it is -- `vehicle-stated` is the provider's published figure and is commonly NOT what a given plan pays, so it must never be printed as the plan's. Written by the fund-facts agent or by scripts/fund-facts-ingest.mjs from a provider capture in data/sources/; validated by node scripts/fund-facts-check.mjs, which runs in site-test. Nothing from memory, nothing undated, nothing unsourced.",
+  "funds": {},
+  "vehicles": {}
 }

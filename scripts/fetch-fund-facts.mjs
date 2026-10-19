@@ -133,7 +133,15 @@ for (const t of tickers) {
   await sleep(400);
 }
 doc._schema = doc._schema || "one entry per ticker; every figure carries its as-of date and source; validate with node scripts/fund-facts-check.mjs";
-const ordered = { _schema: doc._schema, funds: Object.fromEntries(Object.entries(doc.funds).sort()) };
+/* `vehicles` is carried through UNTOUCHED. This script only ever writes tickers,
+ * and rebuilding the document as `{_schema, funds}` silently DELETED any other
+ * section — so the first ingest of a ticker-less vehicle would have been wiped
+ * by the next ticker refresh, with nothing failing to say so. */
+const ordered = {
+  _schema: doc._schema,
+  funds: Object.fromEntries(Object.entries(doc.funds).sort()),
+  ...(doc.vehicles ? { vehicles: Object.fromEntries(Object.entries(doc.vehicles).sort()) } : {}),
+};
 fs.writeFileSync(FILE, JSON.stringify(ordered, null, 2) + "\n");
-console.log(`fund-facts: ${written} written, ${failed} failed, ${Object.keys(ordered.funds).length} entries in the file`);
+console.log(`fund-facts: ${written} written, ${failed} failed, ${Object.keys(ordered.funds).length} ticker entries and ${Object.keys(ordered.vehicles || {}).length} vehicle entries in the file`);
 process.exit(written ? 0 : 1);
