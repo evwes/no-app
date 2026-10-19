@@ -69,6 +69,20 @@ for (let s = 0; s < 64; s++) {
     }
   }
 }
+/* A COMPLETE silent console for the vm sandboxes below.
+ *
+ * Three of them used `{ log() {} }`, which is every console method the sliced
+ * code happened to call ON THE DAY THE SLICE WAS WRITTEN. `merge-4i.mjs` later
+ * reported one refusal through `console.warn`, and this whole suite died with
+ * `TypeError: console.warn is not a function` — a crash in the TEST caused
+ * entirely by production logging through a different method. The harness is
+ * supposed to notice when the shipped code changes, not fall over.
+ *
+ * A Proxy answers every property with a no-op, so the sandbox cannot go stale
+ * against a method the sliced body starts using next. Enumerating log/warn/error
+ * would have fixed today's crash and left the same trap set for `console.info`. */
+const quietConsole = new Proxy({}, { get: () => () => {} });
+
 function make(drop) {
   /* the caps arm loads its registry witness with readFileSync, so the vm
    * context needs it and the path must resolve from the repo root rather than
@@ -639,7 +653,7 @@ if (issBad) process.exitCode = 1;
     const funds = [{ name: "FoodBar Growth Fund", iss: "BazzQux Trust Company", value: 1 },
       ...fill(5, { name: "Food Bar Growth Fund", iss: "Bazz Qux Trust Company" })];
     const bucket = { ACK1: { confident: true, funds } };
-    const ctx = { buckets: [bucket], SHARDS: 1, console: { log() {} }, JUNK_NAME_RE,
+    const ctx = { buckets: [bucket], SHARDS: 1, console: quietConsole, JUNK_NAME_RE,
       readFileSync: (f, enc) => fs.readFileSync(path.isAbsolute(f) ? f : `${R}/${f}`, enc) };
     vm.createContext(ctx);
     /* no braces: `body` and `L` are the block's two halves and the block's own
@@ -855,7 +869,7 @@ if (issBad) process.exitCode = 1;
     if (drop === "punct") b = b
       .replace("if (!/^[A-Za-z0-9]/.test(lead)) break;", "")
       .replace("if (!/^[A-Za-z0-9]/.test(rest)) continue;", "");
-    const ctx = { console: { log() {} }, whole: wholeMap,
+    const ctx = { console: quietConsole, whole: wholeMap,
       nk: (s) => String(s).trim().toLowerCase(),
       ck: (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim(),
       readFileSync: (f, enc) => fs.readFileSync(path.isAbsolute(f) ? f : `${R}/${f}`, enc) };
@@ -982,7 +996,7 @@ if (issBad) process.exitCode = 1;
       "if (/[\\u0000-\\u001f\\u007f]/.test(run)) {", "if (true) {");
     if (drop === "junk") b = b.replace(
       "if (JUNK_NAME_RE.test(a) && !JUNK_NAME_RE.test(b)) return null;", "");
-    const ctx = { console: { log() {} }, cnt: (w) => tok.get(String(w).toLowerCase()) || 0,
+    const ctx = { console: quietConsole, cnt: (w) => tok.get(String(w).toLowerCase()) || 0,
       JUNK_NAME_RE };
     vm.createContext(ctx);
     vm.runInContext(b + "\n; this.__x = cipherRepair;", ctx);

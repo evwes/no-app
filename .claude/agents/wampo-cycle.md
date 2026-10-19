@@ -1,7 +1,7 @@
 ---
 name: wampo-cycle
 description: Runs one full wampo continuous-improvement cycle end to end and keeps the loop alive — git reconcile, scheduler health, pipeline dispatch or verdict, mirror to main, next queue item via wam, participant-weighted random draw, docs, and the next check-in. Spawn it on an hourly wake, from a fresh session taking the loop over, or whenever the owner says "continue improving" and no cycle is running. Needs the GitHub and Claude_Code_Remote MCP tools (dispatch, run listing, Routines).
-tools: *
+tools: "*"
 model: opus
 ---
 
