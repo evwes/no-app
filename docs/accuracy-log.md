@@ -61368,3 +61368,88 @@ Vocabulary is ASC 820's own table labels plus the NAV practical-expedient
 table: none of them names an investment. WARN rather than HIGH while the class
 sits at its baseline, so the four standing HIGHs are not drowned; the rise is
 what escalates.
+
+## 2026-10-19 (17:5xZ) — v204 IS A NET HARM AS SHIPPED AND MUST NOT BE MIRRORED. DO NOT `--force-data`.
+
+#704 (`success`, 22/22 jobs, 3h28m) merged v204 and **the Merus fix delivered
+exactly as registered: 9 rows -> 23, ratio 0.815 -> 0.99, phantom gone, sum
+$28,358,678 against the filing's own $28,358,691.** 194 participants.
+
+`mirror.sh` then REFUSED, and it is right: **7 plans / 16,007 participants stop
+being served** — Saks Global 9,723, Pechanga Development 4,557, Adapt 639,
+Children's Home Society of West Virginia 407, Seti Institute 309, Moxie Hch
+Motors 187, Prime Digital 185 — with **0 benign** (none superseded, wound down,
+short-form or out of universe).
+
+**SAKS SETTLES IT AND THE WITHDRAWAL IS NOT A CORRECTION.** On main its entry is
+a REAL 21-fund Vanguard menu (Target Retirement 2020-2070 Trust PL, Instnl Total
+Stk Mrk D, Galliard Stable Return E, Neuberger Berman Multi Instl, MFS Intl
+Equity 3A) contaminated by THREE aggregate rows at the top — `Common collective
+trusts measured at net asset value (includ…` $992,821,033, `Common collective
+trusts` $457,011,074, `Mutual funds` $90,502,000 — which is why its ratio read
+**1.03**: it counted $1.54B of subtotals ON TOP of the ~$550M they subtotal.
+On the branch it is `confident=false, rows=3, ratio=0.76, dx=stmt`, holding the
+three captions and **none of the 21 real funds**.
+
+So `docStopRe` ends the merged span immediately after the caption block and the
+real schedule below it is cut off. **The trade is 14 rows for 194 readers against
+21 real funds for 9,723 readers plus six more plans: a net harm by three orders
+of magnitude on readers.**
+
+***NOTHING COUNT-BASED COULD HAVE CAUGHT THIS AND THE RATIO POINTED THE WRONG
+WAY.*** Saks's pre-v204 ratio of 1.03 is INSIDE every band — `lineup-overshoot`
+fires at 1.15 — and reads as a healthy menu precisely BECAUSE the double-counted
+subtotals pushed it toward 1.0. The only instrument that saw it is
+`mirror-gate`'s plan-keyed withdrawal list, which exists for exactly this and
+has now paid for itself: *a gate whose whole output is a refusal is not noise.*
+
+**WHAT v204 NEEDS BEFORE IT CAN SHIP, and the lever is already in the file:** the
+span must not be cut where what lies below it is a real menu. `parse4i` already
+carries the v166 swap arm (`lib-4i.mjs:4763`) that hands the plan to `bestMenu`
+when the winner's top row is an aggregate — Saks's winner's top row IS
+`Common collective trusts measured at…`, so the arm's own condition holds and it
+did not fire, which is the thing to diagnose first. Merus must stay at 23 rows
+and all 7 of these must keep their menus; both are the gate on the next attempt.
+
+**AND THE FAIR-VALUE NOTE CLASS IS RE-DERIVED AND UNCHANGED AT 76 rows / 69
+plans / 81,081 ppl / $1,591,156,313** (PIN: Merus contributes 1 row), with the
+cause now read off the filings rather than guessed. **BANK OF MARIN IS NOT A
+VOCABULARY PROBLEM: its real 23-holding schedule IS in the filing, in a BROKEN
+FONT ENCODING** (`0123ÿ56ÿ71892` is "Bank of Marin 401(k) Plan"), so `pdftotext`
+yields cipher and the only READABLE table is the ASC 820 note — which scores
+0.910 against plan assets and is therefore **CONFIDENT, so the OCR fallback,
+gated on `!isConfident`, never runs.** Rasterised and OCR'd by hand the page
+reads perfectly: 23 holdings summing to the note's own $51,612,335. *So demoting
+the note does not suppress a row, it triggers the read that recovers the
+schedule* — 22 real holdings, not one row removed.
+
+**v167's `navNote` is the lever and its own comment names the gap — "the phrase
+must LEAD the name".** `NAV_NOTE_ROW` is anchored `^investments?` and the note's
+subtotal is filed under at least **14 openings**: a bare `hierarchy`,
+`Measured at Net Asset Value`, `Common collective trusts measured at…`,
+`Total assets at fair value`, `Assets in the fair value hierarchy`,
+`CCT measured at…`, `net asset value (NAV)`, and wrapped forms where the label's
+own words arrive out of order (`value hierarchy Investments measured at` —
+Bank Of Marin). Eleventh instance of *a fix for one phrasing of a class is not a
+fix for the class.* Priced with v167's 25% materiality bar KEPT (load-bearing:
+beneath a real menu the same words are a 6.7% footnote, and v166 condemned a
+29-fund Fidelity menu whole for it): **10 entries / 26,259 readers newly demoted,
+all served** — and Bank Of Marin is NOT among them, because its wrapped name
+defeats both anchors, so *the screen cannot see its own motivating row.*
+
+***AND A PHRASE TEST IS REFUTED BY READING ALL 182 CANDIDATE NAMES: THE NOTE
+CAPTION IS ROUTINELY WELDED IN FRONT OF A REAL HOLDING.*** `Investment in
+Elliott International Limited, measured at net asset value (a)` is a hedge fund;
+`…(Net Asset Value Practical Expedient) Vanguard Retir…`, `…at net asset value
+Principal LifeTime Hybrid 2…`, `Investments valued at NAV Federated Hermes
+Capital Pres`, `Assets reported at NAV (practical expedient) MORLEY STABLE
+VALUE`, `Invesco Stable Value Trust Class I - at NAV`, `Common Trust Funds (at
+net asset value) T. Rowe Price Retirement Blend Funds` and `Putnam stable value
+common collective trust, at net asset value` are all REAL funds carrying the
+caption. A phrase test condemns the fund with the caption. What works is a
+CLOSED-WORLD RESIDUE — anchor phrase present AND nothing left once the note's own
+words, the generic vehicle classes and filler are removed — so that what the word
+list OMITS does the refusing. By token: `hierarchy` is 17 distinct names / 31
+rows with **0 decoys**; the decoys live entirely in `net asset value` and
+`at NAV`. Specified and NOT shipped: it is a `PARSER_VERSION` bump and v204 must
+be narrowed first.
