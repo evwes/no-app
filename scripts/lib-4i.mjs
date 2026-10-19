@@ -14,7 +14,7 @@ import { dirname, join } from "node:path";
 import { vestingQuoteOk, accelerationOnlyVesting } from "./lib-quote.mjs";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 203;
+export const PARSER_VERSION = 204;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -4122,6 +4122,47 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
   // cents tolerance made it readable and the region summed both copies
   // (Sierra Space, ratio 1.0 → 1.89, real 29-fund menu lost)
   const stopRe = /^portfolio (valuation|statement)s?$|^(schedule|statement) of (portfolio )?investments?$|^summary of (net )?(trust|plan) assets$/i;
+  /* v204: THE AUDITED REPORT BEGINS WHERE THE ATTACHMENT ENDS.
+   *
+   * A multi-page 4i attachment repeats its page banner, so the table is seeded
+   * as several regions and the merge below re-joins them — but the merged span
+   * ends only at `endRe`, `stopRe` or the next heading, and in a composite PDF
+   * whose attachment comes FIRST there is none of those between the last row
+   * and the end of the document. Merus Corporation's merged candidate ran 620
+   * lines past its own table, through the table of contents and the auditor's
+   * report into the notes, and swallowed the fair-value tables: 25 rows at
+   * ratio 2.583 (it counts the holdings AND the note's totals of them), which
+   * lost to an 8-row FRAGMENT at 0.442. The reader got 8 of 23 holdings.
+   *
+   * These headings are document STRUCTURE: each one can only follow a schedule
+   * of assets, never sit inside one. Anchored to the whole trimmed line for the
+   * reason `stopRe` is — the notes say "The supplemental schedule of Schedule H,
+   * line 4i ... is presented for purposes of additional analysis", and an
+   * in-table mention must never truncate a real table.
+   *
+   * THEY APPLY TO A *MERGED* SPAN ONLY, and that is measured rather than
+   * cautious. Applied to every region they regressed FOUR of the gate's ten
+   * live specimens, three of them the same way: `statements of net assets
+   * available for benefits` is the heading `isStatement` reads to RECOGNISE a
+   * balance sheet, so ending a region before it leaves a fragment no longer
+   * known to be a statement, which then publishes as a real lineup — MetLife's
+   * $15,319,879,000 of letterhead rows and Premier Care's 99% `Mutual Funds`
+   * category row both went stmt=true -> stmt=false. And `notes to financial
+   * statements` is a RUNNING PAGE HEADER in Premier Care's filing, on all ten
+   * pages of its notes. ***A heading that ENDS a span is also evidence the
+   * span may need about itself, and the same words do both jobs.***
+   *
+   * The split resolves it without a vocabulary judgement. A span merged across
+   * repeated page banners exists for ONE purpose — to cover a multi-page
+   * attachment — so it must stop where the attachment does; a region seeded by
+   * a SINGLE heading is the one that has to carry the evidence of what it is,
+   * and is left exactly as it was. */
+  const docStopRe = new RegExp(
+    "^(?:table of contents"
+    + "|(?:report of )?independent (?:registered public accounting firm|auditors?'?s?(?: report)?)"
+    + "|notes? to (?:the )?(?:consolidated )?financial statements"
+    + "|statements? of (?:changes in )?net assets available for (?:plan )?benefits"
+    + ")[\\s.:*—–-]*$", "i");
   /* v132: ANOTHER STATUTORY SCHEDULE'S PAGES END THE 4i REGION.
    * A region runs from its heading to the next heading, an end marker or a
    * statement stop — and where the 4i table is short and the composite PDF
@@ -4142,7 +4183,8 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
    * page that titles the 4i attachment itself "Schedule C — Schedule of
    * Assets" from stopping its own region. */
   const otherSchedRe = /^(?:form\s*5500[,:\s]*)?schedule\s+c\b(?!.{0,80}\bassets\b)|\binformation on service providers\b/i;
-  const atStop = (line) => (!trusteeMode && stopRe.test(line.trim())) || otherSchedRe.test(line.trim());
+  const atStop = (line, merged) => (!trusteeMode && stopRe.test(line.trim())) || otherSchedRe.test(line.trim())
+    || (merged && docStopRe.test(line.trim()));
 
   const starts = [];
   for (let i = 0; i < lines.length; i++) if (headRe.test(lines[i])) starts.push(i);
@@ -4266,7 +4308,7 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
     const nxt = starts.find((x) => x > lastStart);
     if (nxt) end = Math.min(end, nxt);
     for (let i = lastStart + 3; i < end; i++) {
-      if (endRe.test(lines[i]) || atStop(lines[i])) { end = i; break; }
+      if (endRe.test(lines[i]) || atStop(lines[i], true)) { end = i; break; }
     }
     candidates.push([cl[0], end]);
     // SUFFIX candidates: a cluster often chains a TOC line and statement
@@ -4636,7 +4678,7 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
           - (va.repair ? 0.05 : 0)
           - (gainLast && parsed.funds.length >= 60 ? 0.2 : 0);
         if (TRACE_CANDS) {
-          console.error(`[cand] rows=${String(pFunds.length).padStart(3)} ratio=${ratio.toFixed(3).padStart(7)} scale=${scale} score=${score.toFixed(4).padStart(9)}` +
+          console.error(`[cand] span=${String(s).padStart(5)}..${String(end).padEnd(5)} rows=${String(pFunds.length).padStart(3)} ratio=${ratio.toFixed(3).padStart(7)} scale=${scale} score=${score.toFixed(4).padStart(9)}` +
             ` stmt=${isStatement ? 1 : 0} prov=${isProvPage ? 1 : 0} split=${isSplitPage ? 1 : 0} code=${isCodePage ? 1 : 0} summary=${isSummary ? 1 : 0} repair=${va.repair ? 1 : 0} unread=${unreadableShare(judged).toFixed(2)}` +
             `  top=${JSON.stringify((pFunds[0] || {}).name || "").slice(0, 46)}`);
         }

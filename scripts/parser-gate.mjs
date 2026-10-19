@@ -301,6 +301,21 @@ const SPECIMENS = [
    * #224 and caught in loss triage. This one must stay CONFIDENT. */
   ["Hari Donuts (three-fund 'Total ...' Vanguard menu is a menu, not aggregates)", "20260228103447NAL0002165200001", 119600,
     { found: true, n: 3, sum: 101395 }],
+  /* v204: ONE TABLE READ AS THREE, AND A PHANTOM ROW TO MAKE IT PUBLISHABLE.
+   * Merus repeats its 4i page banner three times inside a 23-row schedule, so
+   * the table seeds three regions (11, 4 and 8 rows). The merge that exists to
+   * rejoin them ran 620 lines PAST the attachment — through the table of
+   * contents and the auditor's report into the notes — and came back at ratio
+   * 2.583 counting the holdings AND the fair-value note's totals of them, so
+   * it lost to the 8-row FRAGMENT at 0.442. That fragment is below the 0.45
+   * confidence floor; what carried it over was a row the parser then appended
+   * from the note, `hierarchy Investments measured at net`, whose $10,639,220
+   * is the 2025 and 2024 columns ADDED TOGETHER and appears in no filing.
+   * The reader got 8 of 23 holdings and a $10.6M holding that does not exist.
+   * Owner-reported. Must stay at 23 rows: that is the whole schedule, and the
+   * sum is Schedule H to within 0.6%. */
+  ["Merus (4i split by its own page banner; merged span must stop at the audit)",
+    "20260827112658NAL0001578688001", 28530388, { found: true, n: 23 }],
   /* v111: a GENERIC TYPE as the dominant row. Premier Care's 2023 fallback
    * filing reports "Mutual Funds" at 99.4% of the sum — a category, not a
    * holding — and v110's letterhead cleanup promoted the region into the

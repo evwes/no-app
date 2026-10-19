@@ -61247,3 +61247,85 @@ the suite passed having tested none of it. The tell was that the card's own
 output line never printed. *A check that does not run reads exactly like a
 check that passes* — this record's oldest lesson, met in my own instrument, and
 caught only because the instrument prints what it asserts.
+
+## 2026-10-19 — v204: ONE 4i TABLE READ AS THREE, AND A PHANTOM ROW THAT MADE THE FRAGMENT PUBLISHABLE (OWNER-REPORTED)
+
+Merus Corporation (194 ppl) published **8 of its 23 holdings**, plus a $10.6M
+holding that exists in no filing, at 45.8% of the menu. The owner reported it
+with the filing beside the page. Diagnosed from the PDF, not inferred.
+
+**THE FILING SPLITS ITSELF.** The 4i attachment repeats its page banner
+(`SCHEDULE H, line 4i − SCHEDULE OF ASSETS…`, once with the EIN block and the
+column headers) THREE times inside a 23-row table, so `headRe` seeds three
+regions and the scorer, which picks one region, chose the 8-row fragment:
+
+    span=1703..1744  rows=11  ratio=0.301  score=-1.1444  top="Dodge & Cox Income I Fund"
+    span=1744..1756  rows= 4  ratio=0.251  score=-1.3597  top="Fidelity 500 Index Fund"
+    span=1756..1792  rows= 8  ratio=0.442  score=-0.7747  top="Principal Guaranteed Option"  <-- WINNER
+
+**THE MERGE THAT EXISTS FOR THIS DID FIRE, AND THAT IS THE FINDING.** The
+cluster merge produced its whole-span candidate — and ran **620 lines past the
+attachment**, through the table of contents and the auditor's report into the
+notes, because `endRe` is three phrases (`line 4j`, `acquired and disposed`,
+`signature of`) and a composite PDF whose attachment comes FIRST has none of
+them after the last row. It came back `span=1703..2412 rows=25 ratio=2.583` —
+counting the holdings AND the fair-value note's totals OF those holdings — and
+lost to the fragment. ***A merge can fire, produce the right span's start, and
+still lose because nothing told it where to stop.***
+
+**AND THE FRAGMENT WAS BELOW THE FLOOR, so a phantom carried it over.** 0.442
+is under `isConfident`'s 0.45. The published entry had NINE rows: the eight plus
+`hierarchy Investments measured at net` at **$10,639,220**, which is the fair
+value note's wrapped row label, and whose value is **5,731,788 + 4,907,432 —
+the 2025 and 2024 columns ADDED TOGETHER**. That lifted the ratio to 0.815 and
+made the entry publishable. *The defect that made the page wrong is also what
+let it reach a reader.*
+
+**THE FIX IS A STOP VOCABULARY, SCOPED TO MERGED SPANS ONLY, and the scoping is
+measured rather than cautious.** Four document-structure headings end a merged
+span: `table of contents`, the auditor's report, `notes to financial
+statements`, `statements of net assets available for benefits`. Applied to
+EVERY region they regressed **four of the gate's ten live specimens**, three the
+same way — ***the balance-sheet heading is what `isStatement` READS to recognise
+a balance sheet***, so ending a region before it leaves a fragment no longer
+known to be a statement, which then publishes as a real lineup (MetLife's
+$15,319,879,000 of letterhead rows, Premier Care's 99% `Mutual Funds` category
+row, both stmt=true -> stmt=false). And `notes to financial statements` is a
+RUNNING PAGE HEADER on all ten pages of Premier Care's notes.
+***A heading that ENDS a span is also evidence the span may need ABOUT ITSELF,
+and the same words do both jobs.*** The split resolves it with no vocabulary
+judgement: a span merged across repeated banners exists only to cover a
+multi-page attachment, so it must stop where the attachment does; a region
+seeded by a SINGLE heading is the one that must carry the evidence of what it
+is, and is left exactly as it was.
+
+**DELIVERED on Merus: 9 rows -> 23, ratio 0.815 -> 0.994, the phantom gone, and
+the sum $28,358,678 against the filing's own `Total investments $28,358,691` —
+a $13 rounding difference.** Pinned as a gate specimen at n=23. Parser gate 80
+specimens green.
+
+**THE SIBLING CLASS IS SIZED AND NOT CLOSED BY THIS, which is the honest half.**
+The fair-value note published as a holding is **76 published+served rows / 69
+plans / 81,081 ppl / $1,591,156,313**: Bank Of Marin `value hierarchy
+Investments measured at` at **99.6%** of its menu, Community Care Partners
+81.4%, Saks Global Enterprises **$992,821,033** to 9,723 readers, Paul Hastings
+$283.5M, Carrollton Bank 61.0%. Merus's instance is cured because it came from
+the over-long merged span; **Bank Of Marin's is NOT — re-traced on the fixed
+code it still reads 4 rows with the note at 99.6%**, so its region is seeded
+another way and needs its own change. Queued as the next parser item, with the
+vocabulary already measured here (`FV` labels: `investments measured at net` 54,
+`hierarchy` 11, `measured at net asset value` 5, `fair value hierarchy` 4).
+
+**PRE-REGISTERED for the v204 run.** `pv` 203 -> 204 at ~99.9%. Merus moves
+9 -> 23 rows. Expect small movement in `confident` in BOTH directions: a region
+that was winning only because it ran into the notes now stops early, so a few
+entries lose a fabricated majority row and fall below the floor — Blue Mantis
+re-traces at ratio 0.352 CONFIDENT=false where it published `Total assets at
+fair value` at 68.4%, which is a coverage LOSS and an accuracy GAIN. Those are
+exactly what `losses-triage.txt` is for; read it against this paragraph rather
+than against a count. No display file changes, so `tkExact`/`tkComparable` must
+not move except as the store moves under them.
+
+**And the trace now prints each candidate's SPAN.** The whole diagnosis turned
+on `span=1703..2412` versus `span=1756..1792`, which the `[cand]` line did not
+carry; three wrong theories were refuted in one run once it did.
