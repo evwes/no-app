@@ -11,7 +11,7 @@
 <!-- start the data fetches during HTML parse, not after app.js runs -->
 <link rel="preload" href="plans-list.json" as="fetch" crossorigin>
 <link rel="preload" href="plans-index.json" as="fetch" crossorigin>
-<link rel="stylesheet" href="styles.css?v=421ba6bd">
+<link rel="stylesheet" href="styles.css?v=2f383e9b">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔎</text></svg>">
 </head>
 <body>
@@ -89,6 +89,10 @@
       <div class="map-legend" id="mapLegend"></div>
       <p class="fund-note" id="mapNote"></p>
     </div>
+    <!-- the selected dot's plans. BELOW the map and not floating over it:
+         as an overlay it covered the very dots being read, and near an edge
+         the map's own `overflow: hidden` clipped it. -->
+    <div class="map-info" id="mapInfo" hidden></div>
   </section>
 
   <section class="table-section card" id="tableSection">
@@ -140,6 +144,6 @@
      SEC_TICKERS from app.js before this script has run would hit the temporal
      dead zone and throw rather than read `undefined`. -->
 <script src="sec-tickers.js?v=f32e8db2"></script>
-<script src="app.js?v=2e2353d9"></script>
+<script src="app.js?v=083e3a8b"></script>
 </body>
 </html>

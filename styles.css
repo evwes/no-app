@@ -497,24 +497,34 @@ main { max-width: 1060px; margin: 0 auto; padding: 0 20px 48px; }
 .map-dot.b3 circle { fill: #7fa8d4; }
 .map-dot.b4 circle { fill: #1f4e79; }
 .map-count { fill: #fff; font-size: var(--mfs, 10px); font-weight: 600; text-anchor: middle; pointer-events: none; }
-/* the dot's own card: what the owner asked a selected plan to say, without
- * leaving the place on the map they navigated to */
-.map-info { position: absolute; top: 10px; right: 10px; width: 272px; max-height: calc(100% - 20px); overflow-y: auto;
-  background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 12px 12px 10px; box-shadow: 0 6px 20px rgba(0,0,0,.18); }
-.map-info-close { position: absolute; top: 4px; right: 6px; width: 22px; height: 22px; padding: 0; line-height: 1;
-  font-size: 17px; background: none; border: 0; color: var(--muted); cursor: pointer; }
+/* The selected dot's plans, BELOW the map rather than floating over it. As an
+ * overlay it covered the dots being read and, near an edge, the map's own
+ * `overflow: hidden` clipped it — the owner's screenshot shows a card with its
+ * values cut off by the state outline. `position: relative` is only so the
+ * close button can sit in the corner. */
+.map-info { position: relative; margin-top: 14px; padding: 12px 14px 12px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 8px; }
+.map-info-close { position: absolute; top: 6px; right: 8px; width: 24px; height: 24px; padding: 0; line-height: 1;
+  font-size: 18px; background: none; border: 0; color: var(--muted); cursor: pointer; }
 .map-info-close:hover { color: var(--fg); }
-.map-info-head { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 0 18px 8px 0; }
-.map-info-plan + .map-info-plan { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
-.map-info-name { font-weight: 600; font-size: 13px; line-height: 1.3; margin: 0 18px 6px 0; }
-.map-info dl { margin: 0; display: grid; gap: 2px; }
-.map-info dl > div { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; }
-.map-info dt { color: var(--muted); }
-.map-info dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
-.map-info dd i { color: var(--muted); font-style: italic; }
-.map-info-open { margin-top: 10px; width: 100%; padding: 6px 8px; font-size: 12px; cursor: pointer;
+.map-info-head { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 0 28px 8px 0; }
+.map-info-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.map-info-table th { font-size: 11px; text-transform: uppercase; letter-spacing: .03em; color: var(--muted);
+  font-weight: 600; text-align: left; padding: 0 10px 4px 0; border-bottom: 1px solid var(--line); }
+.map-info-table td { padding: 6px 10px 6px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.map-info-table tr:last-child td { border-bottom: 0; }
+.map-info-table .num { text-align: right; padding-right: 0; font-variant-numeric: tabular-nums; }
+.map-info-table th.num { text-align: right; padding-right: 0; }
+.map-info-name { font-weight: 600; }
+.map-info-table i { color: var(--muted); font-style: italic; }
+.map-info-open { margin-top: 10px; padding: 6px 12px; font-size: 12px; cursor: pointer;
   background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 5px; }
 .map-info-open:hover { border-color: var(--muted); }
+@media (max-width: 640px) {
+  /* the provider column is the first thing worth losing on a phone: the
+     company, the headcount and the balance are what identify the plan */
+  .map-info-table th:nth-child(2), .map-info-table td:nth-child(2) { display: none; }
+}
 .map-zoom { position: absolute; left: 10px; bottom: 10px; display: flex; flex-direction: column; gap: 4px; }
 .map-zoom button { width: 28px; height: 28px; font-size: 17px; line-height: 1; background: var(--card); border: 1px solid var(--line); border-radius: 5px; cursor: pointer; color: var(--fg); }
 .map-foot { margin-top: 10px; }

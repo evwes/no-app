@@ -5394,8 +5394,15 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
       `preserveAspectRatio="xMidYMid meet" role="img" aria-label="Plans by filing location">` +
       `<g class="map-states">${statePaths()}</g><g class="map-dots">${circles}</g></svg>` +
       `<div class="map-zoom"><button id="mapIn" aria-label="Zoom in">+</button>` +
-      `<button id="mapOut" aria-label="Zoom out">−</button></div>` +
-      `<div id="mapInfo" class="map-info" hidden></div>`;
+      `<button id="mapOut" aria-label="Zoom out">−</button></div>`;
+    /* the dot's card lives in index.html BELOW the map, not in this canvas: an
+     * overlay covered the dots being read and was clipped by the map's own
+     * `overflow: hidden` near an edge. It is cleared on every re-render because
+     * a re-render means the zoom or the filters moved, and the clusters with
+     * them — so "the plans at this dot" may no longer describe any dot. A PAN
+     * does not re-render (it moves the viewBox alone), so dragging the map
+     * keeps the list you are reading. */
+    { const info = $("mapInfo"); if (info) { info.hidden = true; info.innerHTML = ""; } }
 
     const ppl = groups.reduce((s, g) => s + g.ppl, 0);
     const assets = groups.reduce((s, g) => s + g.assets, 0);
@@ -5520,18 +5527,19 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
     if (!box) return;
     const rows = g.plans.slice(0, MAP_CARD_MAX).map((p) => {
       const prov = p.provider || p.recordkeeper || "";
-      return `<div class="map-info-plan">` +
-        `<div class="map-info-name">${esc(publicName(p) || p.company)}</div>` +
-        `<dl>` +
-        `<div><dt>Provider</dt><dd>${prov ? esc(prov) : "<i>not yet verified</i>"}</dd></div>` +
-        `<div><dt>Participants</dt><dd>${p.participants ? fmtInt.format(p.participants) : "—"}</dd></div>` +
-        `<div><dt>Avg balance</dt><dd>${p.avgBal != null ? money(p.avgBal / 1e6) : "—"}</dd></div>` +
-        `</dl></div>`;
+      return `<tr>` +
+        `<td class="map-info-name">${esc(publicName(p) || p.company)}</td>` +
+        `<td>${prov ? esc(prov) : "<i>not yet verified</i>"}</td>` +
+        `<td class="num">${p.participants ? fmtInt.format(p.participants) : "—"}</td>` +
+        `<td class="num">${p.avgBal != null ? money(p.avgBal / 1e6) : "—"}</td>` +
+        `</tr>`;
     }).join("");
     box.innerHTML =
       `<button id="mapInfoClose" class="map-info-close" aria-label="Close">×</button>` +
-      (g.n > 1 ? `<div class="map-info-head">${fmtInt.format(g.n)} plans filed from here</div>` : "") +
-      rows +
+      `<div class="map-info-head">${g.n === 1 ? "Selected plan" : `Selected location — ${fmtInt.format(g.n)} plans filed from here`}</div>` +
+      `<table class="map-info-table"><thead><tr>` +
+      `<th>Company</th><th>Provider</th><th class="num">Participants</th><th class="num">Avg balance</th>` +
+      `</tr></thead><tbody>${rows}</tbody></table>` +
       `<button id="mapInfoTable" class="map-info-open">Open ${g.n === 1 ? "this plan" : "these plans"} in the table</button>`;
     box.hidden = false;
     $("mapInfoClose").onclick = () => { box.hidden = true; box.innerHTML = ""; };

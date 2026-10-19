@@ -150,19 +150,30 @@ try {
     const card = await page.evaluate(() => {
       const box = document.getElementById("mapInfo");
       if (!box || box.hidden) return null;
+      const canvas = document.getElementById("mapCanvas");
+      const cb = canvas.getBoundingClientRect(), ib = box.getBoundingClientRect();
       return {
         name: (box.querySelector(".map-info-name")?.textContent || "").trim(),
-        labels: [...box.querySelectorAll("dt")].map((d) => d.textContent.trim()),
-        values: [...box.querySelectorAll("dd")].map((d) => d.textContent.trim()),
+        labels: [...box.querySelectorAll("th")].map((d) => d.textContent.trim()),
+        values: [...box.querySelectorAll("tbody td")].map((d) => d.textContent.trim()),
         openBtn: !!document.getElementById("mapInfoTable"),
         stillOnMap: !document.getElementById("mapSection").hidden,
+        /* the whole point of the move: the card must not float over the map,
+         * where it covered the dots being read and the canvas's own
+         * `overflow: hidden` clipped it near an edge */
+        insideCanvas: canvas.contains(box),
+        belowMap: ib.top >= cb.bottom - 1,
+        clipped: ib.width < 40 || ib.height < 20,
       };
     });
     if (!card) fail.push("clicking a small dot showed no card");
     else {
       if (!card.name) fail.push("the card names no company");
-      for (const want of ["Provider", "Participants", "Avg balance"])
-        if (!card.labels.includes(want)) fail.push(`the card is missing the "${want}" field`);
+      for (const want of ["Company", "Provider", "Participants", "Avg balance"])
+        if (!card.labels.includes(want)) fail.push(`the card is missing the "${want}" column`);
+      if (card.insideCanvas) fail.push("the card is inside the map canvas again — it will cover the dots and be clipped at an edge");
+      if (!card.belowMap) fail.push("the card is not below the map");
+      if (card.clipped) fail.push("the card is rendering clipped or collapsed");
       if (card.values.some((v) => !v)) fail.push("the card printed an empty value cell");
       if (!card.openBtn) fail.push("the card offers no way into the table");
       if (!card.stillOnMap) fail.push("clicking a small dot left the map");
