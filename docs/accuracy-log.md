@@ -61329,3 +61329,42 @@ not move except as the store moves under them.
 **And the trace now prints each candidate's SPAN.** The whole diagnosis turned
 on `span=1703..2412` versus `span=1756..1792`, which the `[cand]` line did not
 carry; three wrong theories were refuted in one run once it did.
+
+## 2026-10-19 — AND A CHECK FOR IT, BECAUSE NOTHING COULD HAVE SEEN IT
+
+v204 cured Merus's instance of the fair-value note published as a holding. The
+CLASS it belongs to was found only because the owner sent the filing, and the
+reason is worth writing down rather than apologising for.
+
+**`lineup-overshoot` could not fire.** It triggers at 1.15x plan assets, and
+Merus sat at **0.815** — comfortably inside the band — because the phantom row
+REPLACED the holdings it was summarising rather than being added to them. A
+check built on a menu summing to TOO MUCH is blind to a menu that sums to about
+the right amount out of the wrong rows. *The arithmetic closing is not evidence
+the rows are real.*
+
+**And the hands-on draw could not reach it.** The draw is
+participant-weighted, deliberately, so that a defect's size in READERS decides
+what gets read — which means a 194-participant plan is drawn approximately
+never. That is the right weighting for ranking work and it leaves a whole
+population structurally unobserved.
+
+So: `audit-data.mjs` now reports **FAIR-VALUE NOTE AS A HOLDING** every run,
+ranked by the SHARE OF THE MENU the phantom row carries (a note row at 99% and
+one at 2% are different findings, and the share is what says so), escalating on
+a RISE against a baseline written down rather than remembered. Measured on the
+v203 store at **75 rows across 68 confident menus / 80,115 participants**;
+worst by share Bank Of Marin **100%**, Community Care Partners 81%, Brunswick
+Hospital 70%.
+
+**THE BASELINE IS 68 AND NOT THE 69 THIS LOG RECORDS ONE ENTRY EARLIER, and the
+difference is the lesson.** That 69 is plan-deduplicated over published+SERVED
+rows through the renderer; this one is ack-keyed over confident entries. Two
+honest counts of one class, and a baseline keyed to the other population would
+let a plan appear without escalating. *A threshold must be keyed on the
+population the check itself measures.*
+
+Vocabulary is ASC 820's own table labels plus the NAV practical-expedient
+table: none of them names an investment. WARN rather than HIGH while the class
+sits at its baseline, so the four standing HIGHs are not drowned; the rise is
+what escalates.

@@ -868,6 +868,61 @@ try {
   else if (overT > 0)
     flag("warn", "trust-overshoot", `${overT} master-trust lineups (${overTPlans} plans / ${overTPpl.toLocaleString()} participants) sum to >=1.15x trust assets: ${worstOverT.slice(0, 3).map((x) => x[1]).join("; ")}`);
 
+  /* THE FAIR-VALUE NOTE PUBLISHED AS A HOLDING — 2026-10-19, owner-reported.
+   *
+   * Merus Corporation published `hierarchy Investments measured at net` at
+   * 45.8% of its menu, on $10,639,220 that is the note's 2025 and 2024 columns
+   * ADDED TOGETHER and appears in no filing. v204 cured that instance (the
+   * region had run past the attachment into the notes), but the CLASS is wider
+   * and is seeded other ways: Bank Of Marin re-traces on the fixed code still
+   * showing `value hierarchy Investments measured at` at 99.6% of its menu.
+   *
+   * ***NOTHING COULD SEE THIS, AND THAT IS THE POINT OF ADDING IT.***
+   * `lineup-overshoot` fires at 1.15x and Merus sat at 0.815 — comfortably
+   * inside the band, because the phantom row REPLACED the holdings it was
+   * summarising rather than being added to them. The hands-on draw is
+   * participant-weighted, so a 194-participant plan is drawn about never. The
+   * class was in the data the whole time with no screen pointed at it.
+   *
+   * The vocabulary is ASC 820's own table labels and the NAV practical-
+   * expedient table that follows it. None of them names an investment: a
+   * holding is a fund, a trust or a contract, never "Level 2" or "Total assets
+   * in the fair value hierarchy". Reported EVERY run like the overshoot checks
+   * above — a check whose number is never printed is a check nobody reads —
+   * and escalated on a RISE against a baseline written down rather than
+   * remembered. It must FALL. */
+  const FV_NOTE = /\bfair value hierarchy\b|\bhierarchy\b|investments? measured at net|measured at net asset value|\btotal (?:assets|investments) (?:in|at) (?:the )?fair value|\blevel [123]\b|\bunfunded commitments?\b/i;
+  /* 68 is THIS CHECK'S OWN count and not the 69 in the accuracy log: that one
+   * is plan-deduplicated over published+SERVED rows through the renderer, this
+   * one is ack-keyed over confident entries. Two honest counts of one class,
+   * and a baseline keyed to the other population would let a plan appear here
+   * without escalating. */
+  const FV_BASELINE = 68;             // confident menus, measured 2026-10-19 on the v203 store
+  let fvRows = 0, fvPlans = 0, fvPpl = 0;
+  const worstFv = [];
+  for (const [ack, e] of Object.entries(entriesByAckCov)) {
+    if (!e || !e.confident || !Array.isArray(e.funds) || !e.funds.length) continue;
+    const hits = e.funds.filter((x) => FV_NOTE.test(String(x.name || "")));
+    if (!hits.length) continue;
+    const row = byAck.get(ack);
+    if (!row) continue;
+    const ppl = g(row, "partEOY") || g(row, "participants") || 0;
+    const sum = e.funds.reduce((a, x) => a + (+x.value || 0), 0) || 1;
+    const worst = hits.reduce((a, x) => ((+x.value || 0) > (a ? +a.value : -1) ? x : a), null);
+    fvRows += hits.length; fvPlans++; fvPpl += ppl;
+    worstFv.push([(+worst.value || 0) / sum, ppl,
+      `${g(row, "sponsorName")} ${ppl.toLocaleString()}p ${(100 * (+worst.value || 0) / sum).toFixed(0)}% of menu ("${String(worst.name).slice(0, 34)}")`]);
+  }
+  // ranked by the SHARE of the menu the phantom carries: a note row at 99% is
+  // a different finding from one at 2%, and the share is what says so
+  worstFv.sort((a, b) => b[0] - a[0]);
+  auditCoverage.fvNote = fvPlans;
+  console.log(`== FAIR-VALUE NOTE AS A HOLDING: ${fvRows} rows across ${fvPlans} confident menus (${fvPpl.toLocaleString()} participants; baseline ${FV_BASELINE} measured 2026-10-19, must fall)`);
+  if (fvPlans > FV_BASELINE)
+    flag("high", "fair-value-note", `${fvPlans} published menus carry a fair-value NOTE label as a holding, up from the ${FV_BASELINE} measured 2026-10-19 — these rows are in no filing: ${worstFv.slice(0, 6).map((x) => x[2]).join("; ")}`);
+  else if (fvPlans > 0)
+    flag("warn", "fair-value-note", `${fvPlans} published menus (${fvPpl.toLocaleString()} participants) carry a fair-value note label as a holding — known open defect, docs/accuracy-log.md 2026-10-19: ${worstFv.slice(0, 3).map((x) => x[2]).join("; ")}`);
+
   console.log(`\n== FABRICATED-HOLDING SHAPES: ${genericPlans} generic-named, ${dominantPlans} dominant non-fund`);
   /* THE THRESHOLD IS DELIBERATELY NOT MOVED, and v196 crosses it. Widening
    * `isGenericTypeName` to the measurement-basis family took this count from
