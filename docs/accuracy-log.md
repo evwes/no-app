@@ -61453,3 +61453,78 @@ list OMITS does the refusing. By token: `hierarchy` is 17 distinct names / 31
 rows with **0 decoys**; the decoys live entirely in `net asset value` and
 `at NAV`. Specified and NOT shipped: it is a `PARSER_VERSION` bump and v204 must
 be narrowed first.
+
+## 2026-10-20 (02:0xZ) — v204 IS CORRECT AND THE 17:5xZ ENTRY ABOVE IS WITHDRAWN. ALL 7 WITHDRAWALS READ; `--force-data` IS EARNED.
+
+The entry above says *"v204 IS A NET HARM AS SHIPPED AND MUST NOT BE MIRRORED"*
+and names Saks Global as losing a real 21-fund Vanguard menu. **Both halves are
+wrong, and the error is mine, not the parser's.** All seven plans `mirror-gate`
+named have now been read against their filings, which is the condition the gate's
+own message set, and **every one of the seven is a FABRICATED menu**:
+
+| plan | ppl | what v203 publishes as that plan's fund menu |
+|---|---|---|
+| Saks Global | 9,723 | 3 fair-value-NOTE subtotals carrying $1,540,334,107 — 73% of the displayed value, naming no fund |
+| Pechanga Development | 4,557 | `Net position available for benefits` at **63.7%** — a financial-statement line |
+| Adapt | 639 | `Mutual Fund Participant Directed` at **85.3%** — a category |
+| Children's Home Society of WV | 407 | every row a caption; `Payments to participants` published as a holding |
+| Seti Institute | 309 | every row a caption (`Mutual shares`, `Issuances`), **zero** fund names |
+| Moxie Hch Motors | 187 | the INSURER at 32.9%, two welded table rows, and **`MOXIE HCH MOTORS, LLC` — the sponsor's own name — at 16.1%** |
+| Prime Digital | 185 | one row at **97.1%** plus `Guideline`, the recordkeeper's own name |
+
+**SAKS SETTLES THE CLASS AND ITS FILING STATES ITS OWN TOTAL.** The real 4i
+schedule is 21 Vanguard rows plus participant loans and totals
+**$562,708,546** — which our 21-row read reproduces TO THE DOLLAR — against
+~$2.03B of reported plan assets. So the honest coverage is **27.4%**, and v203
+reached ratio **1.03** only by merging in the ASC 820 note's subtotals.
+***A RATIO NEAR 1.0 IS NOT EVIDENCE A MENU RECONCILES; IT IS EVIDENCE THE ROWS
+SUM TO PLAN ASSETS, AND A NOTE SUBTOTAL SUMS BEAUTIFULLY BECAUSE IT IS A SUM.***
+That is the inverse of the recorded *a ratio is only as meaningful as its
+denominator*: here the denominator was right and the NUMERATOR was padded, and
+the padding is what made the number look healthy. The 1.03 is why I read the
+withdrawal as a loss without opening the filing.
+
+**WHAT v204 DELIVERS, measured through the replay rather than asserted:** Merus
+**9 rows @0.815 -> 23 @0.994** (the owner-reported defect, sum $28,358,678 against
+the filing's own $28,358,691), and **The McClatchy Company, 3,323 ppl, 23 rows
+@0.142 -> 20 @0.998** — a gain `mirror-gate` counted as `+9 gained` and never
+named, which nothing in the previous cycle had looked at.
+
+**THE INSTRUMENT IS THE DURABLE PART: `scripts/parse-replay.mjs`.** It runs the
+REAL `parse4i` over a population under two refs and diffs confidence, rows and
+ratio, weighted by readers. Over the 323-filing local text cache it reproduced
+v204's whole effect **in 90 seconds** against the 3h28m the pipeline took. Its
+load-bearing line is a CONTROL rather than a result — for every ack the store
+knows, the baseline parse's confidence must equal the stored `c` flag; it agreed
+on **27 of 27**, and the script refuses to report at all above a 10% disagreement
+rate, because a replay whose predicate is not production's would invent losses no
+reader could see. Four pins came back UNJUDGEABLE (non-confident on both sides
+locally) and were resolved through the real path with
+`ONLY_ACKS_4I=… PARSE_SHARD=0 PARSE_SHARDS=1`, which does OCR; that split is now
+a reported block rather than a failure, because *a pin that cries wolf is how a
+gate becomes habitually red.*
+
+**TWO THINGS THE REAL PATH SHOWED THAT NO LOCAL REPLAY COULD.** Pechanga and Seti
+are served from their **2023** filings via the prior-year fallback, so a local run
+without `fallbacks.json` (artifact-only, built in prep) reports them as dropped
+for a reason that has nothing to do with the code under test. And Moxie and
+Children's Home are read through OCR, so `pdftotext` alone cannot judge them. *A
+replay is only as honest as its inputs, and the inputs differ by MODE, not only by
+corpus.*
+
+**ALSO CORRECTED: v204's CODE HAS BEEN ON MAIN SINCE 2026-10-19 16:34 AND THAT IS
+NOT A HAZARD.** The map mirror (`f6e12205`) carried `e77b8999` with it, because
+both sit on the dev branch and the map commits came after. `mirror.sh` passed
+because at that moment the branch's DATA was still v203, so there were no lineup
+losses to see. Main's store is nonetheless still **pv=203 at 99.87%** and Saks
+still has its 24 rows — **by design, not by luck**: `fetch-4i.mjs:420`'s
+`SCHEDULE_INCREMENTAL` makes a parser-version gap *not work* on a `schedule`
+event, and its own comment names this exact situation (*"Every mirror puts the dev
+branch's code on main ahead of the store it will produce"*). My first reading —
+"the next scheduled run will commit the Saks loss to main" — was wrong. Only a
+manual `workflow_dispatch` on main could do that.
+
+**SO THE SEQUENCE IS: dispatch v204 on the dev branch, then mirror with
+`--force-data` citing this entry.** The branch's store is pv=203 — the v204 store
+that #704 produced was dropped when the branch was rebased onto main's newer data
+— so there is nothing v204 to mirror until a run produces it.
