@@ -14,7 +14,7 @@ import { dirname, join } from "node:path";
 import { vestingQuoteOk, accelerationOnlyVesting } from "./lib-quote.mjs";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 204;
+export const PARSER_VERSION = 205;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -1814,6 +1814,159 @@ const FORM_LINE = /^(?:\d[a-z]\(\d\)(?:\([A-Za-z]\))?|\([a-z]\)\s+(?:amount|tota
  * is. Kept deliberately narrow: the phrase must LEAD the name, and the
  * qualifier ("(practical expedient)", "(a)", an OCR smudge) may trail it. */
 export const NAV_NOTE_ROW = /^(?:total\s+)?investments?,?\s+(?:measured|valued|carried|reported|stated)\s+at\s+(?:net asset value|nav|n\.a\.v\.)\b/i;
+/* v205: THE SAME NOTE LABEL, UNDER THE OTHER THIRTEEN OPENINGS.
+ *
+ * The comment above says the phrase must LEAD the name, and that is exactly the
+ * gap. Over all 1,730,931 stored rows the ASC 820 subtotal is filed under at
+ * least fourteen openings, and `NAV_NOTE_ROW` reaches one of them: a bare
+ * `hierarchy`, `Measured at Net Asset Value`, `Common collective trusts measured
+ * at net asset value (…`, `Total assets at fair value`, `Assets in the fair
+ * value hierarchy`, `CCT measured at net asset value (a)`, `net asset value
+ * (NAV)`, `within fair value hierarchy`, `Instruments measured at NAV`, and
+ * wrapped forms where the label's own words arrive out of order — Bank Of
+ * Marin's `value hierarchy Investments measured at`, which publishes at 99.6% of
+ * that plan's menu. Eleventh instance on this record of *a fix for one phrasing
+ * of a class is not a fix for the class*.
+ *
+ * WHAT IT BUYS IS A REAL SCHEDULE, NOT A SUPPRESSION, and that is the whole
+ * reason it is worth a version bump. Bank Of Marin's actual 23-holding schedule
+ * IS in its filing, in a broken font encoding (`0123ÿ56ÿ71892` is "Bank of Marin
+ * 401(k) Plan"), so `pdftotext` yields cipher and the only READABLE table is the
+ * note. The note scores 0.910 against plan assets, which makes the parse
+ * CONFIDENT, and fetch-4i's OCR fallback is gated on `!isConfident` — so the one
+ * mechanism that can read the real schedule never runs. Rasterised and OCR'd by
+ * hand the page reads perfectly: 23 holdings summing to the note's own
+ * $51,612,335. Demoting the note TRIGGERS the read that recovers the schedule.
+ *
+ * TWO CONDITIONS, BOTH REQUIRED, AND THE SECOND IS THE SAFETY:
+ *  (1) a note ANCHOR phrase is present — so a plain generic type name
+ *      ("Common Collective Trust") cannot reach this and move `navNote`'s
+ *      population; that row is `isGenericTypeName`'s business, not this one.
+ *  (2) the RESIDUE is EMPTY: once the note's own words, the generic
+ *      vehicle-class words and filler are removed, NOTHING is left. What the
+ *      word list OMITS does the refusing, so a fund house, a product name or an
+ *      entity survives and the row is spared.
+ *
+ * (2) exists because reading all 182 candidate names found that the caption is
+ * routinely WELDED IN FRONT OF A REAL FUND: `Investment in Elliott
+ * International Limited, measured at net asset value (a)` is a hedge fund;
+ * `…(Net Asset Value Practical Expedient) Vanguard Retir…`, `…at net asset value
+ * Principal LifeTime Hybrid 2…`, `Investments valued at NAV Federated Hermes
+ * Capital Pres`, `Assets reported at NAV (practical expedient) MORLEY STABLE
+ * VALUE`, `Invesco Stable Value Trust Class I - at NAV` and `Putnam stable value
+ * common collective trust, at net asset value` are all REAL holdings carrying
+ * the caption. A phrase test condemns the fund along with the caption.
+ *
+ * IT IS A UNION WITH THE SHIPPED ARM, NOT A REPLACEMENT. Those welded rows ARE
+ * matched by `NAV_NOTE_ROW` today, and this predicate's residue test would
+ * refuse eight of them — so taking the residue test alone would REMOVE existing
+ * stmt marking. More marking withdraws menus and less marking publishes notes,
+ * so neither direction is free; the union changes nothing already matched and
+ * adds only unambiguous labels. By token, `hierarchy` is 17 distinct names / 31
+ * rows with ZERO decoys; every decoy in the class lives under `net asset value`
+ * and `at NAV`, which is why those two need the residue test and `hierarchy`
+ * would not.
+ *
+ * v167's 25% MATERIALITY BAR AT THE CALL SITE IS UNTOUCHED and is load-bearing:
+ * beneath a REAL menu the same words are a small footnote (Ford Gum files
+ * `Investments measured at NAV*` twice, at 6.7% and 7.5% of a 29-row Fidelity
+ * menu that v166 condemned whole, costing the plan its lineup). */
+const FV_ANCHOR = new RegExp(
+  "(?:measured?s?|valued?|carried|reported|stated)\\s+(?:at|using)\\s+(?:the\\s+)?(?:net\\s+)?"
+  + "(?:net\\s+asset\\s+values?|nav|n\\.?a\\.?v\\.?|auv)\\b"
+  + "|\\bat\\s+(?:the\\s+)?(?:net\\s+)?(?:net\\s+asset\\s+values?|nav)\\b"
+  /* `hierarchy` ANYWHERE, not only leading. The motivating row is Bank Of
+   * Marin's `value hierarchy Investments measured at` — the label's own words
+   * arrived out of order and truncated, so neither "fair value hierarchy" nor a
+   * leading "hierarchy" is present, and an anchored arm cannot reach the very
+   * row this change is about. It is safe because it is MEASURED safe: over all
+   * 1,730,931 stored rows the token appears in 17 distinct names / 31 rows and
+   * every one is a note label — ZERO decoys — and the residue test still has to
+   * agree, so a real fund that somehow carried the word would survive on its
+   * own name. No registered fund or collective trust is named "hierarchy". */
+  + "|\\bhierarch(?:y|ies)\\b"
+  + "|\\bnet\\s+asset\\s+value\\s*\\(?\\s*(?:nav|practical\\s+expedient)"
+  + "|\\btotal\\s+(?:assets|investments)\\s+(?:in|at)\\s+(?:the\\s+)?fair\\s+value\\b"
+  + "|^\\s*within\\s+fair\\s+value\\b", "i");
+/* the note's own words, the generic vehicle classes, and filler. Deliberately
+ * does NOT carry a fund house, a product word (growth, index, 500, equity, bond,
+ * retirement, savings, capital, preservation) or an entity suffix — that absence
+ * is the protection, so a token added here must be priced against every real
+ * holding it would newly admit. */
+const FV_OK_WORD = new RegExp("^(?:"
+  + "investments?|assets?|instruments?|holdings?|securit(?:y|ies)"
+  + "|measure[sd]?|measures|valued?|carried|reported|stated"
+  + "|at|using|as|a|an|the|in|of|and|or|to|by|on|with|for|per|including|incl"
+  + "|net|nav|n|v|auv|value[sd]?|fair|contract|cost|market|estimated"
+  + "|hierarch(?:y|ies)|practical|expedient|expedients|level|levels"
+  + "|total|totals|subtotal|within|measurement|measurements|basis"
+  + "|common|collective|collection|trusts?|cct|ccts|cit|cits|ctf"
+  + "|separate|accounts?|pooled|interest|interests"
+  + "|stable|funds?|target|date|dated|mutual|registered|compan(?:y|ies)"
+  + "|variable|annuit(?:y|ies)|insurance|general|cash|equivalents?"
+  + "|plan|plans|participant|participants|directed|held|other|all"
+  + "|i|ii|iii|iv|shares?|units?|class|classes|non|lending"
+  + ")$", "i");
+export function isFvNoteRow(name) {
+  const raw = String(name || "").trim();
+  if (!raw) return false;
+  if (NAV_NOTE_ROW.test(raw)) return true;          // the shipped arm, unchanged
+  if (!FV_ANCHOR.test(raw)) return false;
+  /* strip money, digits, footnote marks and punctuation, then ask what WORDS are
+   * left. A trailing `(a)` / `(1)` / `*` / an OCR smudge is noise by
+   * construction once digits and non-letters are gone — and a welded table row
+   * (`hierarchy 10,457,936 $ 10,457,936 $ - $ - Investments measured at NAV`) is
+   * reached for the same reason, correctly: it is the note's own line with its
+   * columns glued on. */
+  for (const w of raw.replace(/\$/g, " ").replace(/[\d][\d,. ]*/g, " ")
+    .replace(/[^\p{L}\s]/gu, " ").split(/\s+/)) {
+    if (w && !FV_OK_WORD.test(w)) return false;
+  }
+  return true;
+}
+/* IMPORT-TIME CONTROLS. The union property and the decoy refusals are asserted
+ * rather than described, because this predicate's whole safety is which names it
+ * does NOT reach, and a comment asserting that is not executed by anything. */
+{
+  const mustFire = [
+    "value hierarchy Investments measured at",          // Bank Of Marin, 99.6% of its menu
+    "hierarchy", "Hierarchy", "Value Hierarchy",
+    "Measured at Net Asset Value",
+    "Investments measured at net net asset value (a)",
+    "Common collective trusts measured at net asset value (including stable value",
+    "Total assets at fair value", "Assets in the fair value hierarchy",
+    "Investments in the fair value hierarchy", "within fair value hierarchy",
+    "net asset value (NAV)", "CCT measured at net asset value (a)",
+    "Instruments measured at NAV", "Total investments at fair value",
+    "hierarchy Investments measured at net",
+    "hierarchy 10,457,936 $ 10,457,936 $ - $ - Investments measured at NAV",
+    "Investments measured at net asset value (a)",      // the shipped arm's own
+  ];
+  const mustNot = [
+    /* a real holding carrying the caption. Each is a live stored name, and the
+     * residue test is the only thing between this rule and the fund. */
+    "Common Collective Trusts (Net Asset Value Practical Expedient) Putnam, Large",
+    "Common Collective Trust (Net Asset Value Practical Expedient) Vanguard Retir",
+    "Collective Investment Trust (Net Asset Value Practical Expedient) Fidelity M",
+    "Common Trust Funds (at net asset value) T. Rowe Price Retirement Blend Funds",
+    "Collective investment trusts, at net asset value Principal LifeTime Hybrid 2",
+    "Pooled separate account, at net asset value Principal Strategic Asset Manage",
+    "Putnam stable value common collective trust, at net asset value",
+    "Invesco Stable Value Trust Class I - at NAV",
+    "Common/Collective Trusts - Net Asset Value Target Retirement 2020 Trust II",
+    "Retirement Savings Trust (at net asset value)",
+    /* and a plain generic type name, which must stay isGenericTypeName's */
+    "Common Collective Trust", "Mutual funds", "Separate accounts",
+  ];
+  for (const n of mustFire) if (!isFvNoteRow(n)) throw new Error(`lib-4i: isFvNoteRow must fire on ${JSON.stringify(n)} — the ASC 820 note's own label`);
+  for (const n of mustNot) if (isFvNoteRow(n)) throw new Error(`lib-4i: isFvNoteRow must NOT fire on ${JSON.stringify(n)} — it names a real holding or a plain type caption`);
+  /* the UNION property, asserted: nothing the shipped arm matches may be lost */
+  for (const n of ["Investments valued at NAV Federated Hermes Capital Pres",
+    "Investments measured at net asset value U.S.", "Investments measured at NAVⁱ",
+    "Investment in Elliott International Limited, measured at net asset value (a)"]) {
+    if (NAV_NOTE_ROW.test(n) && !isFvNoteRow(n)) throw new Error(`lib-4i: isFvNoteRow is not a superset of NAV_NOTE_ROW — ${JSON.stringify(n)}`);
+  }
+}
 /* v155 part 2: a `(N)` prefix is a Schedule H LINE only when what follows is
  * that line's own text — `(3) Other`, `(8) Participant loans`, `(14) … held in
  * insurance company general account`, `(2) From this plan`. Filings also
@@ -4619,7 +4772,7 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
        * that v166 condemned whole, costing the plan its lineup. Run #398's
        * verdict found it; the risk had been written down when v166 shipped and
        * the bar is what the write-down was missing. */
-      const navSum = judged.reduce((s, f) => s + (NAV_NOTE_ROW.test(String(f.name || "").trim()) ? (+f.value || 0) : 0), 0);
+      const navSum = judged.reduce((s, f) => s + (isFvNoteRow(String(f.name || "").trim()) ? (+f.value || 0) : 0), 0);
       const judgedSum = judged.reduce((s, f) => s + (+f.value || 0), 0);
       const navNote = navSum > 0 && judgedSum > 0 && navSum / judgedSum >= 0.25;
       const isStatement = (judged.length <= 8 && stmty / judged.length >= 0.5)
@@ -4774,7 +4927,7 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
      * arm the plan simply loses its lineup instead of gaining the menu. */
     if (wsum && (+wt.value || 0) / wsum >= 0.5 &&
         (GENERIC_TYPE_NAME.test(wn) || AGG_DISCLOSURE.test(wn) || NOT_FUND_SHAPED.test(wn) ||
-         NAV_NOTE_ROW.test(wn))) best = bestMenu;
+         isFvNoteRow(wn))) best = bestMenu;
   }
   /* v144: post-selection works on the UNCAPPED winner so the itemized fold
    * sees every row; the display cap is re-applied after the folds (below)

@@ -61528,3 +61528,92 @@ manual `workflow_dispatch` on main could do that.
 `--force-data` citing this entry.** The branch's store is pv=203 — the v204 store
 that #704 produced was dropped when the branch was rebased onto main's newer data
 — so there is nothing v204 to mirror until a run produces it.
+
+## 2026-10-20 (16:xxZ) — v204 IS LIVE ON MAIN AND MERUS PUBLISHES 23 ROWS. v205 IS SPECIFIED, MEASURED AND HELD ON ONE PLAN.
+
+**#707 (`success`, dev branch, 9068fee5): `confident +2, match -3, vesting -3,
+lineups +2 — improved or held`, `pv 204 at 99.6%` of 69,046 acks.** Mirrored to
+main with `--force --force-data`, both earned by measurement and not asserted:
+
+* the GIT gate's condition — main's four scheduled data commits carry **nothing
+  the branch lacks**: 112,652 plans both sides, **0 only-on-main, 0 only-on-dev,
+  0 plans under a differing ack**, and 69,046 status acks with 0 either way. A
+  quiet ingest window, which this record says is the normal state.
+* the DATA gate's condition — all **7** withdrawn plans READ against their
+  filings and every one a fabricated menu (the 02:0xZ entry above has the table).
+
+**MERUS IS LIVE: 23 rows, ratio 0.99, sum $28,358,678 against the filing's own
+$28,358,691.** The owner reported it on 2026-10-19; it is published.
+
+**HIGH 11 IS FULLY ATTRIBUTED AND IS NOT A REGRESSION: 4 baseline + exactly the
+7 `reparse-loss` findings**, which the merge job names one by one under
+`== READ BEFORE MIRRORING`. They are the CI-only self-clearing class this record
+already documents. `warn` 556 -> 571, `overshoot` 370 -> 366, `dl` 93 -> **240**
+(0.35%, under the 1% threshold; a rise means the EFAST2 bucket grew and the next
+cycle should HEAD-probe the increment rather than inherit the label).
+
+**THE `rows-dropped` SET WAS READ RATHER THAN COUNTED: 14 acks / 53,798
+readers, and the weighting inverts the alarm.** The two largest — Hitachi
+25,702 ppl (35r@0.99 -> 34r@0.92) and Estes Express 21,498 ppl (23r@1.01 ->
+20r@0.96) — are **47,200 of the 53,798 readers losing one to three rows with
+real funds still published** (`Contrafund Commingled Pool Class D`,
+`Fidelity 500 Index Fund`, `BTC LifePath Index Fund O`). The genuinely degraded
+members are **~2,400 readers**: Brothers Trading 27r -> 3 captions, Marketing
+Displays 26r -> `Mutual Funds`/`FOR BENEFITS`/`Participants' Withdrawals`,
+Lincoln Bancorp 40r -> 35 rows of the INSURER's name repeated, Echo Maintenance
+33r -> 7. Against 16,007 readers who stop being shown fiction, that is the trade,
+and it is the right way round. *A count of findings ranks by nothing; the same
+list weighted by readers ranks itself.*
+
+### v205 — the ASC 820 note under its other thirteen openings. SPECIFIED, MEASURED, NOT DISPATCHED.
+
+`isFvNoteRow` in `lib-4i.mjs`: a UNION with the shipped `NAV_NOTE_ROW` (asserted,
+**0 rows the old arm matches and the new one refuses**) plus an anchor-and-empty-
+residue test for the thirteen other openings. 85 distinct names newly matched, 31
+of them the `hierarchy` family. 19 import-time controls: 18 must-fire including
+Bank Of Marin's `value hierarchy Investments measured at`, 13 must-NOT-fire drawn
+from live stored names where the caption is WELDED onto a real fund (`…(Net Asset
+Value Practical Expedient) Vanguard Retir…`, `Invesco Stable Value Trust Class I
+- at NAV`, `Putnam stable value common collective trust, at net asset value`),
+and the union property.
+
+**WHAT IT BUYS IS A REAL SCHEDULE.** Bank Of Marin's 23 holdings ARE in its
+filing in a broken font encoding; the note scores 0.910, which makes the parse
+CONFIDENT, which suppresses the OCR fallback gated on `!isConfident`. Demoting the
+note triggers the read that recovers the schedule — OCR'd by hand it reads 23
+holdings summing to the note's own $51,612,335.
+
+**HELD ON ONE PLAN, AND IT IS THE ONE THE BAR EXISTS FOR. The Toro Company,
+8,866 readers, 23 rows of which 22 ARE GENUINE** (`Vanguard Target 2025`-`2055`,
+`Vanguard Retirement Savings Trust IV`, the employer stock) with a single note
+footnote at **25.6%** — a tenth of a point over v167's 25% materiality bar, and
+exactly the Ford Gum shape that bar was written for. Demoting Toro costs 22 real
+funds. The other 13 newly-demoted regions were read and are all-caption tables:
+**Cisco Systems, 70,957 readers, nine rows and NOT ONE names a fund**
+(`Collective Trusts(1) at NAV` 77.9%, `Common stock`, `Mutual funds`,
+`International funds`, `Money market funds`, `Fixed income funds`,
+`Certificates of deposit`) — so the change is a 70,957-reader improvement held
+up by an 8,866-reader harm.
+
+***AND THE OBVIOUS DISCRIMINATOR IS REFUTED BY ITS OWN OUTPUT.*** "Spare a region
+where most rows name a fund", implemented with the parser's own
+`isGenericTypeName` + `NOT_FUND_SHAPED`, calls **Cisco 67% fund-named** — because
+`International funds`, `Money market funds`, `Fixed income funds` and
+`Certificate of deposits` escape both vocabularies — and M.J. Employment **80%**
+when its rows are `Participants'`, `Interest income and other` and the OCR
+garbage `Ll EE ee ee eee DE ES ee ee 390,657.00`. Third instance in one day of
+*a count keyed on a vocabulary measures the vocabulary*, and the first where the
+vocabulary is the PARSER's own shipped one. What separates Toro from Cisco is a
+HOUSE or proper noun (`Vanguard`, `The Toro Company`) against pure asset-class
+words, and this record already measures `LEADING_HOUSE` as calling 209,225 of
+405,738 names house-free — so the witness is not a vocabulary and is not yet
+built.
+
+**AND THE REPLAY'S OWN NO-OP IS NOT EVIDENCE OF SAFETY.** `parse-replay --vs
+HEAD` over the 324-filing cache reported **0 lost / 0 gained / 288 unchanged**
+with its control at **267 of 267** — because the cache does not CONTAIN the 14
+affected filings. *A population that excludes the change's own target reports a
+clean no-difference, and the control being perfect makes that reassuring rather
+than suspicious.* The next step is the replay over the 14 named acks with
+`--download`, after the Toro witness exists. Merus's `--must-reach …:23` pin
+passed, so v205 does not disturb v204's delivery.
