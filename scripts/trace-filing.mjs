@@ -30,6 +30,7 @@ import { execFileSync } from "node:child_process";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { materialiseAt } from "./lib-refmod.mjs";
 import { loadPlans, loadStatus, loadTrusts } from "./lib-schema.mjs";
 
 /* The repo root, for materialising a `--vs` baseline that can still reach the
@@ -149,33 +150,12 @@ if (vsRef) {
    * tree runs with one, and degrades silently. Holding the data file constant
    * across both sides is also the right control for a PARSER comparison: vary
    * the code, not the corpus. */
-  const root = mkdtempSync(path.join(os.tmpdir(), "trace-"));
-  const tmp = path.join(root, "scripts");
-  mkdirSync(tmp);
-  for (const asset of ["sec-funds.json", "plans-all.json", "mtias.json",
-    "lineups-status.json", "data"]) {
-    const from = path.join(REPO, asset);
-    if (existsSync(from)) symlinkSync(from, path.join(root, asset));
-  }
-  const seen = new Set();
-  const fetchAt = (rel) => {
-    if (seen.has(rel)) return;
-    seen.add(rel);
-    let src;
-    try {
-      src = execFileSync("git", ["show", `${vsRef}:scripts/${rel}`],
-        { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
-    } catch {
-      throw new Error(`--vs ${vsRef}: scripts/${rel} does not exist at that ref. ` +
-        `The baseline's module graph cannot be assembled, and resolving it against ` +
-        `the working tree instead would mix two versions into one "baseline".`);
-    }
-    writeFileSync(path.join(tmp, rel), src);
-    for (const m of src.matchAll(/\bfrom\s+["'](\.\/[^"']+)["']/g)) fetchAt(m[1].slice(2));
-    for (const m of src.matchAll(/\bimport\s*\(\s*["'](\.\/[^"']+)["']\s*\)/g)) fetchAt(m[1].slice(2));
-  };
-  fetchAt("lib-4i.mjs");
-  console.log(`  baseline graph at ${vsRef}: ${[...seen].join(", ")}`);
-  report(`baseline ${vsRef}`, await import(path.join(tmp, "lib-4i.mjs")));
+  /* the materialisation itself now lives in lib-refmod.mjs, shared with
+   * scripts/parse-replay.mjs, which needs the identical thing over a whole
+   * population. Behaviour is unchanged; the three hard-won properties and the
+   * reasons they exist moved with it. One copy, so a fix reaches both. */
+  const base = materialiseAt(vsRef, "lib-4i.mjs", { label: "trace" });
+  console.log(`  baseline graph at ${vsRef}: ${base.files.join(", ")}`);
+  report(`baseline ${vsRef}`, await import(base.entryPath));
 }
 report("working tree", work);
