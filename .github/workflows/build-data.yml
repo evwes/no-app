@@ -301,7 +301,17 @@ jobs:
             # No "|| true" here: a map built against the wrong universe is a
             # wrong answer, and a failed build should fail the run.
             node scripts/build-map-points.mjs
-            git add plans-all.json plans-list.json plans-index.json mtias.json fee-percentiles.json lineups-status.json lineups-index.json data/lineups data/fees data/plans docs/coverage-history.jsonl p sitemap.xml robots.txt map-points.json
+            # THE FIELD LEDGER'S TRAIL. lib-ledger.mjs answers the question the
+            # owner actually asks -- for this plan, which of the things a reader
+            # came for do we know -- and reduces it to ONE participant-weighted
+            # scalar. It has existed since 2026-10-06, is imported by nine
+            # scripts, and was never TRAILED, so nothing could say whether a
+            # week of work moved it. The field agents are each accountable to a
+            # number in this line, so the line has to exist per run.
+            # `|| true`: a ledger failure must never stop the pipeline
+            # committing filings -- it is a REPORT, not a gate.
+            node scripts/ledger-trail.mjs || true
+            git add plans-all.json plans-list.json plans-index.json mtias.json fee-percentiles.json lineups-status.json lineups-index.json data/lineups data/fees data/plans docs/coverage-history.jsonl docs/ledger-history.jsonl p sitemap.xml robots.txt map-points.json
             if git diff --cached --quiet; then echo "No data changes."; exit 0; fi
             git commit -m "Update filed plan data (Form 5500 + Schedule H 4i lineups)"
             if git push origin "HEAD:${GITHUB_REF_NAME}"; then exit 0; fi
