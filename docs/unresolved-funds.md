@@ -1,4 +1,4 @@
-# Unresolved funds — 2026-10-21
+# Unresolved funds — 2026-10-25
 
 Of **1,722,662** fund rows wampo publishes, the resolver finds a ticker for
 **760,255** and nothing for **962,407**. Those group into
