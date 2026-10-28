@@ -7,6 +7,78 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-10-28 (14:3xZ) — A HOLD THAT LIVED ONLY IN PROSE: v205 WAS COMMITTED, VERSION-BUMPED AND WIRED WHILE BEING REPORTED AS HELD, AND THE CYCLE SKILL HAD DRIFTED INTO NAMING A RETIRED AGENT
+
+**Two defects, both in the project's own operating machinery rather than in a
+published cell, both found by auditing my own recent work rather than by a
+failure. Nothing a reader sees moves: `scripts/lib-4i.mjs` is now 174
+insertions and ZERO deletions against `origin/main`, so parser behaviour is
+byte-identical and no store can change.**
+
+**(1) `PARSER_VERSION = 205` AND BOTH CALL SITES WERE LIVE ON THE DEV BRANCH
+WHILE THE SHIP WAS REPORTED AS "specified, measured and HELD".** The arm was
+committed with `[skip ci]`, so no run was created THAT DAY — and that is the
+whole of the protection it had. `lib-4i.mjs` is one of the six files in
+`build-data.yml`'s push path filter, so **the next push to it without
+`[skip ci]` would have answered the version gap with a full 3.5-hour re-parse
+at an unvalidated parser**, on a branch whose store is at 204.
+`SCHEDULE_INCREMENTAL` does not help: it is set for `github.event_name ==
+'schedule'` only, so a push run takes the gap as work.
+***A VERSION CONSTANT IS THE STATEMENT THAT COUNTS. A change held in a sentence
+while the constant is bumped and the call sites are wired is not held, it is
+armed with the trigger disabled by a commit-message flag.***
+**PARKED, not reverted:** the bump goes back to 204 and both call sites return
+to `NAV_NOTE_ROW.test(...)`, while `isFvNoteRow` and its 19 import-time controls
+stay defined with **no caller** and a header saying so — the work and its
+evidence remain tested, and the file is purely additive against main, which is
+the mechanical proof that parking is complete rather than a claim about it.
+**What it still needs before it can be re-armed is a DISCRIMINATOR, not more
+vocabulary**: `parse-replay` reported 0 menus moved because its 324-filing cache
+does not contain the 14 filings the arm touches, and the "most rows name a fund"
+test built from `isGenericTypeName` + `NOT_FUND_SHAPED` calls Cisco **67%
+fund-named** when all nine of its rows are captions. Re-arm only with a replay
+over a population that provably contains those 14, and a witness that spares
+Toro (8,866 readers, 22 genuine funds) while still demoting Cisco (70,957).
+
+**(2) `.claude/skills/wampo-cycle/SKILL.md` CARRIED THE WHOLE LOOP A SECOND TIME
+AND HAD DRIFTED OUT OF AGREEMENT WITH ITSELF.** 183 lines, 15 stale references:
+its section 5 was *"The queue item — finish it, with `wam`"* and `wam` was
+RETIRED on 2026-10-21; its title and description said *"the hourly loop that
+must never stop"* nine days after the owner cut the cadence to daily and
+withdrew "never idle"; and it named the scheduler `wampo hourly cycle
+(self-bind)` where the task is `wampo daily cycle (self-bind)`. **The disabled
+daily task's stored prompt invokes this skill**, so arming the loop as it stood
+would have failed three steps in, trying to spawn an agent that does not exist.
+***THE CAUSE IS DUPLICATION, SO THE FIX IS NOT TO RE-SYNC IT.*** The procedure
+lived in the skill AND in the agent definitions; two descriptions of one loop do
+not stay duplicated, they stay in two states and the reader cannot tell which is
+live. Rewritten to **122 lines of preamble plus a hand-off**, keeping only what
+an agent cannot do for itself — get the checkout into a known state, and report
+scheduler health — with the loop itself owned by `.claude/agents/wampo-daily.md`
+and the retired agents named as retired so a stale prompt is recognisable.
+
+**AND IT RECORDS A CONTAINER HAZARD MEASURED THREE DAYS EARLIER THAT NOTHING
+HAD WRITTEN DOWN: a fresh container can come up with the local dev branch
+pointing at MAIN's tip.** On 2026-10-25 the Sunday report's wake found HEAD at a
+data commit, `scripts/unresolved-funds.mjs` and the nine agent files absent, and
+`PARSER_VERSION` reading main's value. Nothing was lost — origin's dev branch
+was intact at `3db88c45` — but **a session that trusts the checkout measures
+main while believing it is measuring the branch**, and the scheduled task's own
+first line was `git pull --ff-only`, which cannot succeed on genuinely diverged
+refs and fails exactly when the reconcile matters most. The skill now carries
+the fetch-and-reset recovery and an explicit refusal of `--ff-only`.
+
+**PREVENTION.** The skill states that a version constant is the statement that
+counts, and that `[skip ci]` is scoped to the six build-data files — putting it
+anywhere else only suppresses the gate that would have checked the change, which
+is what kept `site-test` from ever running the fund-facts receipts step or
+v205's own 19 controls. This commit is pushed WITHOUT `[skip ci]` deliberately,
+so `site-test` runs those controls; `build-data` fires on the dev branch too and
+is harmless by construction — no version gap, and a parser whose behaviour is
+byte-identical to main's cannot move a row.
+
+---
+
 ## 2026-10-16 (11:4xZ) — THE FIDELITY FREEDOM ARM IS NOW FULLY SPECIFIED WITH EVERY PREMISE VERIFIED RATHER THAN ASSUMED: THE RELATION GENERALISES, THE BLOCKER IS CLASS MATCHING BY EQUALITY, AND A REGISTRY-DERIVED FAMILY MARKER EXISTS
 
 **Nothing built, and the reason is that four premises had to be checked first —

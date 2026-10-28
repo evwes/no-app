@@ -14,7 +14,7 @@ import { dirname, join } from "node:path";
 import { vestingQuoteOk, accelerationOnlyVesting } from "./lib-quote.mjs";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 205;
+export const PARSER_VERSION = 204;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -1907,6 +1907,27 @@ const FV_OK_WORD = new RegExp("^(?:"
   + "|plan|plans|participant|participants|directed|held|other|all"
   + "|i|ii|iii|iv|shares?|units?|class|classes|non|lending"
   + ")$", "i");
+/* PARKED, NO CALLER -- v205 AND ITS TWO CALL SITES WERE REVERTED 2026-10-28.
+ *
+ * This arm is specified, measured and HELD. It was committed with
+ * `PARSER_VERSION = 205` and wired at `navSum` and the `best = bestMenu` swap,
+ * which is NOT what "held" means: the push trigger covers this file, so the
+ * next push to it without `[skip ci]` would have answered the version gap with
+ * a full 3.5-hour re-parse at an unvalidated parser. A hold that lives only in
+ * prose is not a hold -- the version constant is the statement that counts.
+ *
+ * What is missing before it can ship is a DISCRIMINATOR, not more vocabulary:
+ * `parse-replay` reported 0 menus moved because its 324-filing cache does not
+ * contain the 14 filings this touches, and the "most rows name a fund" test
+ * built from `isGenericTypeName` + `NOT_FUND_SHAPED` calls Cisco 67% fund-named
+ * when all nine of its rows are captions. Re-arm it ONLY with a replay over a
+ * population that provably contains those 14, and a witness that spares Toro
+ * (8,866 readers, 22 genuine funds) while still demoting Cisco (70,957).
+ *
+ * The function and its controls below are deliberately kept and still run at
+ * import, so the work and its evidence stay tested while nothing calls it.
+ * `docs/accuracy-log.md` 2026-10-28.
+ */
 export function isFvNoteRow(name) {
   const raw = String(name || "").trim();
   if (!raw) return false;
@@ -4772,7 +4793,7 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
        * that v166 condemned whole, costing the plan its lineup. Run #398's
        * verdict found it; the risk had been written down when v166 shipped and
        * the bar is what the write-down was missing. */
-      const navSum = judged.reduce((s, f) => s + (isFvNoteRow(String(f.name || "").trim()) ? (+f.value || 0) : 0), 0);
+      const navSum = judged.reduce((s, f) => s + (NAV_NOTE_ROW.test(String(f.name || "").trim()) ? (+f.value || 0) : 0), 0);
       const judgedSum = judged.reduce((s, f) => s + (+f.value || 0), 0);
       const navNote = navSum > 0 && judgedSum > 0 && navSum / judgedSum >= 0.25;
       const isStatement = (judged.length <= 8 && stmty / judged.length >= 0.5)
@@ -4927,7 +4948,7 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
      * arm the plan simply loses its lineup instead of gaining the menu. */
     if (wsum && (+wt.value || 0) / wsum >= 0.5 &&
         (GENERIC_TYPE_NAME.test(wn) || AGG_DISCLOSURE.test(wn) || NOT_FUND_SHAPED.test(wn) ||
-         isFvNoteRow(wn))) best = bestMenu;
+         NAV_NOTE_ROW.test(wn))) best = bestMenu;
   }
   /* v144: post-selection works on the UNCAPPED winner so the itemized fold
    * sees every row; the display cap is re-applied after the folds (below)

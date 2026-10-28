@@ -1,183 +1,121 @@
 ---
 name: wampo-cycle
-description: Run one wampo continuous-improvement cycle (the hourly loop that must never stop) — reconcile git, verify the durable scheduler, dispatch or verdict the pipeline run, mirror main, take the next queue item with the wam agent, do the hands-on random draw, and re-arm the next wake. Use on every hourly Routine wake, on `/wampo-cycle`, or from a fresh session that has to take the loop over. `/wampo-cycle install` recreates the hourly Routine bound to the current session when list_triggers shows it gone or failing.
+description: Open one wampo work cycle — reconcile git (including the case where the container comes up with the dev branch pointing at main's tip), report scheduler health, then hand the cycle to the wampo-daily agent, which owns the loop. Use on a scheduled wake, on `/wampo-cycle`, or from a fresh session taking the loop over.
 ---
 
-# wampo cycle — the loop that must never stop
+# wampo cycle — the preamble, then hand off
 
-Owner directive (2026-09-01, restated 2026-09-17): **work, report, continue —
-hourly, around the clock, forever.** A cycle that finds nothing to do has
-looked in the wrong place; there is always a queue item, a verdict, or a
-random draw to read. Never idle, never poll a running job, never delay
-finished work for a clock.
+**This skill is deliberately thin.** It used to carry the whole 183-line
+procedure, and that procedure was ALSO written into the agents — so two
+descriptions of one loop drifted until this file was telling sessions to spawn
+`wam`, an agent that no longer exists, and calling the cadence hourly four days
+after the owner cut it to daily. *A duplicated procedure does not stay
+duplicated; it stays in two states and the reader cannot tell which is live.*
 
-Everything below is the procedure. The **queue** and the project's open
-findings live in `CLAUDE.md` ("Current state", "Known residuals", "FIELD
-COVERAGE"), `docs/hourly-cycle-prompt.md` (the queue block under its
-`---` divider) and `docs/accuracy-log.md` (newest entries = open defects).
-Read those; do not copy numbers from memory — a number carried forward is a
-number asserted again.
+So what lives here is only what an agent cannot reliably do for itself: get the
+checkout into a known state, and say whether the scheduler is actually running.
+**The loop itself is `.claude/agents/wampo-daily.md`.** Read that, not this, for
+what the cycle does.
 
-## 0. Arguments
+## 1. Reconcile git — every wake, before anything else
 
-- `/wampo-cycle` — run one cycle (default).
-- `/wampo-cycle install` — the scheduler is gone: recreate it (section 7).
-- `/wampo-cycle verdict <run-id>` — only the verdict + mirror path for a
-  finished run (section 4).
+```
+git fetch origin main claude/wampo-401k-live-nx1t4o
+git log --oneline origin/main --not origin/claude/wampo-401k-live-nx1t4o
+git log --oneline origin/claude/wampo-401k-live-nx1t4o --not origin/main
+```
 
-## 1. Bootstrap (every wake)
+**A fresh container can come up with the local dev branch pointing at MAIN's
+tip, with none of the branch's work in the checkout.** Measured 2026-10-25: the
+local ref was a data commit, `scripts/unresolved-funds.mjs` and the nine agent
+files were absent, and `PARSER_VERSION` read main's value. Nothing was lost —
+origin's dev branch was intact — but a session that trusts the checkout is
+measuring main while believing it is measuring the branch.
 
-1. `git fetch origin main claude/wampo-401k-live-nx1t4o`. Show
-   `git log --oneline origin/main --not origin/claude/...` and the reverse.
-   The pipeline commits data hourly to whichever branch ran; a fast-forward
-   pull of the dev branch is normal. **If the working tree has uncommitted
-   changes you did not make, a `wam` agent is mid-flight — do not pull, do
-   not commit them, do not touch `scripts/`.**
-2. First wake after a reprovision: append `<UTC> alive` to
-   `docs/routine-heartbeat.log`, commit `[skip ci]`, push. A denied push is
-   the finding; report the exact error and stop.
-3. Once per session: `mcp__Claude_Code_Remote__list_triggers` must show
-   `wampo hourly cycle (self-bind)` (`trig_017vdX5dSSYh5v68Cwe6EUBu`)
-   enabled with a recent SUCCEEDED `last_run`. If it is gone, disabled, or
-   failing, go to section 7 before anything else.
-4. If a previous cycle in this session left work mid-flight (an agent
-   running, a run dispatched, a check-in armed), continue it — do not start
-   anew.
+Check it and recover before any measurement:
 
-## 2. Run in flight?
+```
+git rev-parse HEAD; git rev-parse origin/claude/wampo-401k-live-nx1t4o
+# if they differ and the tree is clean:
+git reset --hard origin/claude/wampo-401k-live-nx1t4o
+```
 
-`mcp__github__actions_list` (`list_workflow_runs`, `build-data.yml`, perPage
-2). A run `in_progress`/`queued` on **either** branch means:
-- pipeline files (`scripts/build-data.mjs`, `fetch-4i.mjs`, `lib-4i.mjs`,
-  `merge-4i.mjs`, `scripts/.kick`, the workflow) are committed **only with
-  `[skip ci]`** — a push without it cancels the run and its hours;
-- a run in flight **on main** also blocks the mirror (a force push under a
-  run that is about to commit to main is the unsafe case);
-- keep working (sections 5–6) and let the **next hourly wake** carry the
-  verdict. **Do NOT arm a `send_later` check-in (owner directive 2026-10-09).**
-  Every one of those raises a Deny/Allow prompt the owner has to click — the
-  tool is in `permissions.allow` and prompts regardless, because only the
-  **Auto** permission mode runs non-edit tool calls unattended and the mode is
-  a UI dropdown no session can set for itself. A per-run check-in buys about
-  thirty minutes of verdict latency against an interruption every single
-  cycle, around the clock. That is a bad trade and the loop does not make it.
-  The ONLY case for one is a run whose end is far from the next wake and whose
-  result gates something time-critical — and then say so when arming it.
+**Do NOT use `git pull --ff-only` here.** The refs genuinely diverge — the
+branch carries commits main does not, and the merge job can fast-forward the dev
+ref under you — so `--ff-only` fails exactly when you most need the reconcile to
+work. Fetch and reset against the explicit remote ref.
 
-## 3. No run in flight? Dispatch — every hour
+If the working tree has uncommitted changes you did not make, an agent is
+mid-flight: do not pull, do not commit them, do not touch `scripts/`.
 
-`mcp__github__actions_run_trigger` `run_workflow`, `build-data.yml`,
-`ref: claude/wampo-401k-live-nx1t4o`. **Then verify it exists in the run
-listing within a minute** — the push trigger is intermittent, the dispatch
-is not, and a run that never started once went unnoticed for two days.
-Dispatch on the dev branch only; a scheduled run on main is GitHub's
-backstop for hours with no session (its cron fires 4–8h late, measured).
-Do not push code and let the push be the dispatch; commit `[skip ci]` and
-dispatch explicitly.
+## 2. Report scheduler health — do not silently change it
 
-**Hold the dispatch when the branch head carries a `PARSER_VERSION` above
-the store's dominant `pv` and you intend to mirror first** — mirroring code
-ahead of its store makes main's own cron run a duplicate full re-parse on
-main. Order is: dispatch on dev, verdict, then mirror the matched pair.
+`mcp__Claude_Code_Remote__list_triggers` is the **only** authority on the
+cadence. The session-start banner is hardcoded and has been wrong twice: it said
+"hourly at :07" for three wakes after the cadence changed, and it still asserts
+the daily routine "wakes THIS web session" while that routine reads
+`enabled: false`.
 
-## 4. Run just finished? Verdict, then mirror
+Two wampo tasks exist today:
 
-Pull the branch, then measure (never take a report's numbers on trust; the
-agent's FTBFX count was understated once and the fix was re-measuring):
-1. pv distribution — one dominant pv ≥ 97% (`partial-store` HIGH otherwise;
-   a cancelled run STILL commits via `if: always()`).
-2. `tail -1 docs/coverage-history.jsonl` — `confident`, `high` (baseline 4),
-   `overshoot` (must not rise), `dl` (must not jump; 91 permanently-403).
-3. `node scripts/audit-generic-names.mjs` (threshold 230),
-   `node scripts/audit-dominant-row.mjs` (must be 0).
-4. Confidence losses reconciled ack by ack against the pre-run status
-   (`git show <prev>:lineups-status.json`): every loss is a justified
-   fabrication or the change is rolled back. `reparse-loss` HIGHs on a
-   justified refusal set clear on the next run.
-5. Whatever the change predicted, check it — the prediction was written
-   next to the change in `docs/accuracy-log.md`.
-6. Mirror **only** with `bash scripts/mirror.sh`. It refuses when main has
-   commits the branch lacks (compare the stores with the main-vs-branch
-   script pattern: 0 acks / 0 plans on main the branch lacks, main newer
-   on 0 → `--force` is justified for the GIT check) and when the data gate
-   sees losses (`--force-data` only with the reconciliation on the record,
-   said so in the commit). Then confirm `pages-build-deployment` builds
-   the new main; cancelled Pages runs superseded by a newer commit are
-   normal, a red one is not.
-7. Record: `docs/accuracy-log.md` verdict entry; `CLAUDE.md` "LIVE on main"
-   bullet re-derived from the store (never edit the date on a copied line).
+- **`wampo daily cycle (self-bind)`** (`trig_017vdX5dSSYh5v68Cwe6EUBu`),
+  `CRON_TZ=America/New_York 59 7 * * *`, bound to the session that owns the
+  repo. **It is DISABLED as of 2026-10-25 and has not fired since 2026-10-19.**
+- **`Wampo unresolved funds (Sunday)`** (`trig_01522BhCucS2ghmrYcJxPkJm`),
+  `CRON_TZ=America/New_York 44 7 * * 0`, which delivers the owner's weekly
+  unresolved-fund worklist.
 
-## 5. The queue item — finish it, with `wam`
+**Report the state; do not arm, disable or rewrite a task unasked.** Enabling
+the loop changes what runs against the live branch every morning, which is the
+owner's call and not a housekeeping step. Its stored prompt also needs checking
+before it is armed — it still carries "v204 IS HELD AND MUST NOT BE MIRRORED", a
+verdict that was retracted and a mirror that was then performed.
 
-Take the next item by **people affected**, defects before coverage, from the
-live sources (CLAUDE.md residuals `reachable` column, FIELD COVERAGE,
-accuracy-log newest entries, `docs/hourly-cycle-prompt.md` queue block).
-**Spawn `wam`** (owner directive 2026-09-15) with: the item, its size in
-participants, where the evidence is, the acks to trace, the gate/diff/
-specimen/log requirements, and the standing rules — commit `[skip ci]`,
-never dispatch or mirror, never touch `.kick`/the workflow, scripts to files
-not heredocs. Run it in the background and **do not touch the tree while it
-runs** (its commit would sweep your edits). It must return each item as
-FIXED (commit, gate, diff, before/predicted sizes, what the run must show)
-or DOCUMENTED AS UNREACHABLE (cause from evidence, page says the true
-thing). Anything needing a `PARSER_VERSION` bump that is NEW COVERAGE (not a
-repair) is the owner's call: record the proposal with its size and move on.
+**Fresh-session tasks are dead** and must never be created: their sessions get
+no repo source and no push credential, and ~40 firings landed nothing
+(`docs/hourly-cycle-prompt.md`, diagnosed 2026-09-08). Two such tasks are still
+enabled and still no-ops — `Wampo daily sweep` and `Wampo weekly status` both
+target `/Users/ea/...` on the owner's Mac, which no cloud session can reach, and
+both report SUCCESS in seconds. A task that must survive has to be self-bound to
+a session that holds the repo.
 
-When it reports, **verify before dispatch**: parser gate green,
-`node scripts/diff-lineups.mjs <pre-agent-commit>` (0 fabricated introduced,
-every loss justified), and a `trace-filing` of the headline specimen.
+## 3. Hand the cycle to `wampo-daily`
 
-## 6. The hands-on draw — every cycle
+Spawn the **`wampo-daily`** agent. It reads the field ledger
+(`node scripts/ledger-report.mjs`), takes the Tier A field with the most readers
+missing an answer, dispatches that field's owner, verifies the number moved, and
+mirrors. **It owns the one pipeline dispatch per batch** — no field agent
+dispatches, because a parser change costs 3.5 hours of wall clock and the
+batching is what makes six field agents affordable.
 
-Draw **randomly, weighted by participants, from PUBLISHED lineups** (the
-frame that found Walmart, UPMC, Medtronic, TJX) and read the rows against
-the filing (`node scripts/trace-filing.mjs <ack>`). Every finding goes into
-the queue block with a size or an explicit "unsized", and into
-`docs/accuracy-log.md`. Size a class before fixing it (scripts to a file;
-print members; a round number or a zero is reporting on the query). A
-one-plan fix is recorded as one plan.
+The field owners are `tier-a-contributions`, `tier-a-plan-terms`,
+`tier-a-custodian`, `tier-a-fees`, `tier-a-lineup` and `plan-report`;
+`wampo-integrity` is the weekly adversarial pass. `wam`, `wampo-cycle`,
+`filing-forensics` and `funds-and-tickers` are RETIRED — if a prompt or document
+tells you to spawn one, that document is stale.
 
-## 7. Resurrection — when the scheduler is gone
+## Rules that outlive any cadence
 
-The loop has three layers; check them in this order and repair the first
-broken one:
-1. **The Routine** (durable; survives container restarts). From the session
-   that owns the repo (push credential): `mcp__Claude_Code_Remote__get_session`
-   for your own session id, then `create_trigger` with `name: "wampo hourly
-   cycle (self-bind)"`, `cron_expression: "7 * * * *"`, `initiation:
-   human_request`, no `create_new_session_on_fire` (self-bind — fresh-session
-   Routines get no repo and no push credential; ~40 firings landed nothing),
-   and the wake prompt below. Delete the dead trigger, update the id in
-   `docs/hourly-cycle-prompt.md` and this file.
-2. **In-memory `CronCreate`** (`7 * * * *`, same prompt) — only while the
-   Routine cannot be created; it dies with the container.
-3. **GitHub's own cron** on `build-data.yml` (hourly `:23`, daily, weekly)
-   keeps parsing and auditing with no session at all; never remove it.
-
-Wake prompt (verbatim):
-
-> wampo hourly cycle wake. Invoke the `wampo-cycle` skill and follow it:
-> reconcile git first (fetch origin main + claude/wampo-401k-live-nx1t4o,
-> adopt any data-bot commits), then dispatch or verdict the pipeline run,
-> mirror main, take the next queue item with the wam agent, do the random
-> draw, and re-arm the next check-in. If work from a previous cycle in this
-> session is mid-flight, continue it instead of starting anew. Never idle.
-
-## 8. Before 7:00 AM ET
-
-`docs/morning-brief.md` is overwritten nightly and mirrored: what shipped and
-what it changed in numbers, what was found and whether it is fixed or
-queued, what was mirrored, what was HELD and why, what waits on the owner
-(ranked by participants, with a recommendation), what continues alone.
-
-## Rules that are not optional
-
-- Accuracy is the first principle: every defect gets a permanent
-  `docs/accuracy-log.md` entry — wrong → change → prevention. Never delete.
-- Nothing fabricated, nothing guessed; a blank is honest, a name reads as
-  knowledge.
-- Read stores through `scripts/lib-schema.mjs`; lineup shard hash is
-  fetch-4i's `h*31+c >>> 0` `% 64`.
-- Commits end with the session's attribution lines; no model identifiers in
-  anything pushed.
-- Repo stays PUBLIC (Actions minutes are free only because of that).
+- **A cycle with nothing worth shipping says so in one line and stops.** The old
+  "never idle, there is always something" directive is **withdrawn** (owner,
+  2026-10-19): idling is cheaper than a small ship that costs a full pipeline
+  run. Three consecutive quiet cycles is a signal about the queue, not a failure.
+- **Never mirror by hand.** `bash scripts/mirror.sh` only. It refuses when main
+  carries a commit the branch lacks and when local disagrees with origin, and
+  both refusals have negative-control tests.
+- **Never push `build-data.mjs`, `fetch-4i.mjs`, `lib-4i.mjs`, `merge-4i.mjs`,
+  `scripts/.kick` or `build-data.yml` while a run is in flight on the same
+  ref** — concurrency cancels it and hours evaporate. `[skip ci]` is scoped to
+  those six files; putting it on anything else just suppresses the gate that
+  would have checked the change.
+- **A version constant is the statement that counts.** A parser change held in
+  prose while `PARSER_VERSION` is bumped and wired is not held: the push trigger
+  covers that file, and the next push without `[skip ci]` answers the gap with a
+  full re-parse. Park a held change by reverting the bump and its call sites.
+- **Read the numbers out of the store, never out of a document.** `CLAUDE.md`'s
+  "Current state" is a snapshot that has gone stale five times; the trail
+  (`docs/coverage-history.jsonl`, `docs/ledger-history.jsonl`),
+  `lineups-status.json` and `lib-4i`'s `PARSER_VERSION` are the authority.
+- **Verify `conclusion` on CI, not that a run exists.** site-test was red for
+  ten consecutive runs while commit messages said the tests were green — true
+  locally, nobody opened CI.
