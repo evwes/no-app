@@ -1,4 +1,4 @@
-# Unresolved funds — 2026-10-25
+# Unresolved funds — 2026-11-01
 
 Of **1,722,662** fund rows wampo publishes, the resolver finds a ticker for
 **760,255** and nothing for **962,407**. Those group into
@@ -13,6 +13,22 @@ Of **1,722,662** fund rows wampo publishes, the resolver finds a ticker for
 
 Readers are plan-deduplicated inside a bucket. A plan can appear in several
 buckets, so the four do not sum to the universe and are not meant to.
+
+### If this report looks unchanged since last week
+
+That is a real answer, not a stalled one, and these two figures are how you
+tell the difference:
+
+- **Store rebuilt:** `2026-11-01T11:51:02.698Z` — **under a day old**
+  The pipeline downloads the DOL extracts and rebuilds the plan file every
+  run, so a recent stamp means it ran; a stale one means it did not.
+- **Universe:** **112,652** plans, unchanged since **2026-09-30**.
+  EFAST2 lands as discrete refreshes rather than a continuous feed, so between
+  them this count — and every fund row under it — genuinely does not move.
+
+A fresh stamp with an unmoved count is a quiet period. A stale stamp, or a
+count that moves while these buckets do not, is a defect worth reporting.
+(Trail consulted: 507 merge lines.)
 
 The fee and the page's own type column were read by rendering the top
 **2,500** families through the real page code. Below that the family is

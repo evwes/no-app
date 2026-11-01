@@ -40,7 +40,7 @@
  * Writes docs/unresolved-funds.md (readable) and docs/unresolved-funds.csv
  * (openable in Excel, which is what the owner actually works in).
  */
-import { readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { readFileSync, readdirSync, writeFileSync, openSync, readSync, closeSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildRenderer } from "./apppath.mjs";
@@ -58,6 +58,33 @@ const n = (x) => Math.round(x).toLocaleString();
 const R = buildRenderer({ appjs: path.join(ROOT, "app.js") });
 const lidx = JSON.parse(readFileSync(`${ROOT}/lineups-index.json`, "utf8")).plans;
 const d = loadPlans();
+/* READ THE STAMP HERE, BESIDE THE ROWS, NOT LATER IN THE REPORT.
+ * It was first read in the report section, and a mid-run restore of the staged
+ * store then left the report quoting a 12-day-old stamp beside freshly measured
+ * rows -- an inconsistent pair that reads as "the pipeline is stale" when it is
+ * not, which is the very false alarm this block exists to prevent. Provenance
+ * must be captured at the same instant as the data it describes. */
+/* `loadPlans` returns {fields, rows, col, get} and NO `generated` -- that field
+ * belongs to `loadStatus`. Asking `d.generated` printed "(no stamp)" and the
+ * loader's throw-on-unknown-field Proxy could not catch it, because that guard
+ * covers ROW fields and not the shape of its own return. So read the stamp from
+ * the file, where `"generated"` is the first key, and make a FAILURE TO READ it
+ * say so: a missing stamp and a stale pipeline must not print the same way,
+ * which is the exact ambiguity this block exists to remove. */
+let stamp = null, stampErr = null, stampAgeDays = null;
+try {
+  const fd = openSync(`${ROOT}/plans-all.json`, "r");
+  const buf = Buffer.alloc(4096);
+  const nread = readSync(fd, buf, 0, 4096, 0);
+  closeSync(fd);
+  const m = /"generated"\s*:\s*"([^"]+)"/.exec(buf.subarray(0, nread).toString("utf8"));
+  if (!m) stampErr = "the key is not in the first 4KB of plans-all.json";
+  else {
+    stamp = m[1];
+    const t = Date.parse(stamp);
+    if (Number.isFinite(t)) stampAgeDays = (Date.now() - t) / 86400000;
+  }
+} catch (e) { stampErr = e.message; }
 R.setPlans(d.rows.map((r) => ({ sponsorName: d.get(r, "sponsorName"), ticker: d.get(r, "ticker") })));
 
 /* every plan an ack actually serves, so participants are right and a family can
@@ -234,6 +261,37 @@ const dols = (arr) => arr.reduce((a, x) => a + x.dollars, 0);
 const today = new Date().toISOString().slice(0, 10);
 const feeFirst = [...A].sort((x, y) => (y.fee != null) - (x.fee != null) || byPpl(x, y));
 
+/* STORE PROVENANCE — so a FLAT week is visibly honest rather than suspicious.
+ *
+ * Two consecutive reports came back byte-identical, and a reader holding two
+ * identical CSVs cannot tell a quiet market from a stalled ingest. They are
+ * different things and the difference is checkable: the DOL publishes EFAST2 as
+ * discrete refreshes, so between them the universe genuinely does not move,
+ * while the pipeline still rebuilds `plans-all.json` from freshly downloaded
+ * extracts every run. The distinguishing evidence is therefore the FRESHNESS of
+ * the store (a recent `generated` stamp proves the pipeline ran) set beside the
+ * STABILITY of the count (an unmoved plan total proves the extracts said the
+ * same thing). Printing one without the other is what made "nothing moved"
+ * ambiguous. */
+const planCount = d.rows.length;
+let universeSince = null, trailLines = 0;
+try {
+  const trail = readFileSync(`${ROOT}/docs/coverage-history.jsonl`, "utf8")
+    .split("\n").filter(Boolean).map((l) => { try { return JSON.parse(l); } catch { return null; } })
+    .filter(Boolean);
+  trailLines = trail.length;
+  /* walk back to the newest line that DISAGREES with today's count: the
+   * universe has read its current value since the line after that one */
+  for (let i = trail.length - 1; i >= 0; i--) {
+    if (trail[i].plans != null && trail[i].plans !== planCount) {
+      universeSince = (trail[i + 1] || {}).d || null;
+      break;
+    }
+  }
+  if (universeSince === null && trail.length && trail[0].plans === planCount)
+    universeSince = trail[0].d || null;   // unmoved for the whole trail
+} catch { /* no trail in this checkout — the stamp alone still says if it ran */ }
+
 /* ---- the readable report ------------------------------------------------- */
 const md = [];
 md.push(`# Unresolved funds — ${today}`);
@@ -251,6 +309,22 @@ md.push(`| D — a single security | ${n(D.length)} | ${n(rows(D))} | ${n(reach(
 md.push("");
 md.push(`Readers are plan-deduplicated inside a bucket. A plan can appear in several`);
 md.push(`buckets, so the four do not sum to the universe and are not meant to.`);
+md.push("");
+md.push(`### If this report looks unchanged since last week`);
+md.push("");
+md.push(`That is a real answer, not a stalled one, and these two figures are how you`);
+md.push(`tell the difference:`);
+md.push("");
+md.push(`- **Store rebuilt:** ${stamp ? `\`${stamp}\`${stampAgeDays != null ? ` — **${stampAgeDays < 1 ? "under a day" : Math.round(stampAgeDays) + " day" + (Math.round(stampAgeDays) === 1 ? "" : "s")} old**` : ""}` : `**COULD NOT READ THE STAMP** (${stampErr}) — that is a fault in this report, not a fact about the store`}`);
+md.push(`  The pipeline downloads the DOL extracts and rebuilds the plan file every`);
+md.push(`  run, so a recent stamp means it ran; a stale one means it did not.`);
+md.push(`- **Universe:** **${n(planCount)}** plans${universeSince ? `, unchanged since **${universeSince}**` : ""}.`);
+md.push(`  EFAST2 lands as discrete refreshes rather than a continuous feed, so between`);
+md.push(`  them this count — and every fund row under it — genuinely does not move.`);
+md.push("");
+md.push(`A fresh stamp with an unmoved count is a quiet period. A stale stamp, or a`);
+md.push(`count that moves while these buckets do not, is a defect worth reporting.`);
+md.push(`(Trail consulted: ${n(trailLines)} merge lines.)`);
 md.push("");
 md.push(`The fee and the page's own type column were read by rendering the top`);
 md.push(`**${n(rendered)}** families through the real page code. Below that the family is`);
