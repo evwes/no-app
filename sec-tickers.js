@@ -7,7 +7,7 @@
  *
  * ASSERTED ANSWERS ONLY. A `comparable` — the SEC registers several share
  * classes and the filing states none — is NOT in here: it would publish an
- * asterisked approximation on 34,865 plans reaching 48,289,550
+ * asterisked approximation on 34,852 plans reaching 48,320,332
  * participants, which is a decision of its own.
  *
  * Key: the two raw cells the page holds, joined by NUL —
@@ -16,8 +16,8 @@
  * spelling absent from this table resolves to nothing, which is the honest
  * status quo and never a wrong symbol.
  *
- * 16,963 keys, covering 59,990 published rows across 16,086 plans
- * reaching 19,599,751 participants. Swaps 0, losses 0: a key is written only
+ * 16,964 keys, covering 60,141 published rows across 16,131 plans
+ * reaching 19,633,546 participants. Swaps 0, losses 0: a key is written only
  * where the page's chain returns nothing AND the row carries no `f.tk`.
  */
 const SEC_TICKERS = {
@@ -279,6 +279,7 @@ const SEC_TICKERS = {
 "\u0000AFS Washington Mutual Investor R-6":"RWMGX",
 "\u0000AFS Washington Mutual Investor R6":"RWMGX",
 "\u0000ALLSPRING SPECIAL MID CAP VALUE R6 Mutual Funds":"WFPRX",
+"\u0000ALLSPRING TREASURY PLUS MM INST":"PISXX",
 "\u0000AM FDS 2030 TRGT DTE RTM R6 FD":"RFETX",
 "\u0000AM FDS 2035 TRGT DTE RTM R6 FD":"RFFTX",
 "\u0000AM FDS 2040 TRGT DTE RTM R6 FD":"RFGTX",
@@ -1233,6 +1234,7 @@ const SEC_TICKERS = {
 "\u0000Amer Fnds Cap Wld Gr & Inc R6":"RWIGX",
 "\u0000Amer Fnds Capital World Bd R6":"RCWGX",
 "\u0000Amer Fnds EUPAC Fund R3":"RERCX",
+"\u0000Amer Fnds EUPAC Fund R5":"RERFX",
 "\u0000Amer Fnds EUPAC Fund R6":"RERGX",
 "\u0000Amer Fnds Fundamental Invt R3":"RFNCX",
 "\u0000Amer Fnds Fundamental Invt R6":"RFNGX",
@@ -1243,12 +1245,16 @@ const SEC_TICKERS = {
 "\u0000Amer Fnds Invmt Co of Amer R6":"RICGX",
 "\u0000Amer Fnds New Perspective R3":"RNPCX",
 "\u0000Amer Fnds New Perspective R4":"RNPEX",
+"\u0000Amer Fnds New Perspective R5":"RNPFX",
 "\u0000Amer Fnds New Perspective R6":"RNPGX",
+"\u0000Amer Fnds New World Fund R3":"RNWCX",
 "\u0000Amer Fnds New World Fund R6":"RNWGX",
 "\u0000Amer Fnds SMALLCAP World R6":"RLLGX",
+"\u0000Amer Fnds Strategic Bond R6":"RANGX",
 "\u0000Amer Fnds US Govt Secs R6":"RGVGX",
 "\u0000Amer Fnds Wash Mutual Inv R3":"RWMCX",
 "\u0000Amer Fnds Wash Mutual Inv R4":"RWMEX",
+"\u0000Amer Fnds Wash Mutual Inv R5":"RWMFX",
 "\u0000Amer Fnds Wash Mutual Inv R6":"RWMGX",
 "\u0000Amer Fnds Washington Mutual Investors R6":"RWMGX",
 "\u0000Amer Fund Cap Wld Bnd R6 Fund":"RCWGX",
@@ -1965,6 +1971,7 @@ const SEC_TICKERS = {
 "\u0000American Funds 2045 Target Date R6 Mutual Fund":"RFHTX",
 "\u0000American Funds 2045 Target Date R6 Registered Investment Company":"RFHTX",
 "\u0000American Funds 2045 Target Date Ret Fd - R3":"RCHTX",
+"\u0000American Funds 2045 Target Date Ret Fnd CL R6":"RFHTX",
 "\u0000American Funds 2045 Target Date Retire R2":"RBHTX",
 "\u0000American Funds 2045 Target Date Retire R5E":"RHHTX",
 "\u0000American Funds 2045 Target Date Retirement Class R6":"RFHTX",
@@ -2257,7 +2264,6 @@ const SEC_TICKERS = {
 "\u0000American Funds Am Balancd R6":"RLBGX",
 "\u0000American Funds Am Balance R-6":"RLBGX",
 "\u0000American Funds Am Balanced Class R6":"RLBGX",
-"\u0000American Funds Am Balanced Fd R3":"RLBCX",
 "\u0000American Funds Am Balanced Fd R6":"RLBGX",
 "\u0000American Funds Am Balanced Fund R6":"RLBGX",
 "\u0000American Funds Am Balanced R2":"RLBBX",
@@ -2566,7 +2572,6 @@ const SEC_TICKERS = {
 "\u0000American Funds Capital Inc Bldr R4":"RIREX",
 "\u0000American Funds Capital Inc Bldr R5":"RIRFX",
 "\u0000American Funds Capital Inc Bldr R6":"RIRGX",
-"\u0000American Funds Capital Inc Bldr R6 Fund":"RIRGX",
 "\u0000American Funds Capital Inc Bldr R6 a":"RIRGX",
 "\u0000American Funds Capital Inc Builder R6":"RIRGX",
 "\u0000American Funds Capital Inc. BLDR R2 - Registered Investment Company":"RIRBX",
@@ -3146,6 +3151,7 @@ const SEC_TICKERS = {
 "\u0000American Funds Preservation Port R3":"RPPCX",
 "\u0000American Funds Preservation Port R4":"RPPEX",
 "\u0000American Funds Preservation Port R6":"RPPGX",
+"\u0000American Funds Prsrvtn Prt R6":"RPPGX",
 "\u0000American Funds Retire Inc Po-Mod R6":"RURPX",
 "\u0000American Funds Retire Inc Port - CNSRV R6":"RTRPX",
 "\u0000American Funds Retire Inc Port - MOD R6":"RURPX",
@@ -3353,6 +3359,7 @@ const SEC_TICKERS = {
 "\u0000American Funds US Government Securities R6 Fund":"RGVGX",
 "\u0000American Funds US Government See R3":"RGVCX",
 "\u0000American Funds US Government See R6":"RGVGX",
+"\u0000American Funds US Govmt Sec R6":"RGVGX",
 "\u0000American Funds US Govt Money Market Fund R6":"RAFXX",
 "\u0000American Funds US Govt Money Market R2":"RABXX",
 "\u0000American Funds US Govt Money Market R2E":"RBEXX",
@@ -5134,7 +5141,6 @@ const SEC_TICKERS = {
 "\u0000Fidelity Freedom 2010 K6":"FOTKX",
 "\u0000Fidelity Freedom 2010 PRM":"FFOWX",
 "\u0000Fidelity Freedom 2015 Fund - Cl K":"FSNLX",
-"\u0000Fidelity Freedom 2015 Fund CL K":"FSNLX",
 "\u0000Fidelity Freedom 2015 Fund K":"FSNLX",
 "\u0000Fidelity Freedom 2015 K":"FSNLX",
 "\u0000Fidelity Freedom 2015 K Fund":"FSNLX",
@@ -5147,7 +5153,6 @@ const SEC_TICKERS = {
 "\u0000Fidelity Freedom 2020 K6":"FATKX",
 "\u0000Fidelity Freedom 2020 PRM":"FFOZX",
 "\u0000Fidelity Freedom 2020 k":"FSNOX",
-"\u0000Fidelity Freedom 2025 Fund CL K":"FSNPX",
 "\u0000Fidelity Freedom 2025 Fund K":"FSNPX",
 "\u0000Fidelity Freedom 2025 Index Inst Prem Class":"FFEDX",
 "\u0000Fidelity Freedom 2025 K":"FSNPX",
@@ -5164,7 +5169,6 @@ const SEC_TICKERS = {
 "\u0000Fidelity Freedom 2030 K6":"FGTKX",
 "\u0000Fidelity Freedom 2030 PRM":"FFPBX",
 "\u0000Fidelity Freedom 2035 Fund - Cl K":"FSNUX",
-"\u0000Fidelity Freedom 2035 Fund CL K":"FSNUX",
 "\u0000Fidelity Freedom 2035 Fund K":"FSNUX",
 "\u0000Fidelity Freedom 2035 Index Inst Prem Class":"FFEZX",
 "\u0000Fidelity Freedom 2035 K":"FSNUX",
@@ -5181,7 +5185,6 @@ const SEC_TICKERS = {
 "\u0000Fidelity Freedom 2040 K6":"FHTKX",
 "\u0000Fidelity Freedom 2040 K6 Mutual Fund bs":"FHTKX",
 "\u0000Fidelity Freedom 2040 PRM":"FFPDX",
-"\u0000Fidelity Freedom 2045 Fund CL K":"FSNZX",
 "\u0000Fidelity Freedom 2045 Fund Class K; f":"FSNZX",
 "\u0000Fidelity Freedom 2045 Fund K":"FSNZX",
 "\u0000Fidelity Freedom 2045 Fund K a":"FSNZX",
@@ -5196,7 +5199,6 @@ const SEC_TICKERS = {
 "\u0000Fidelity Freedom 2050 K Fund":"FNSBX",
 "\u0000Fidelity Freedom 2050 K6":"FZTKX",
 "\u0000Fidelity Freedom 2050 PRM":"FFPFX",
-"\u0000Fidelity Freedom 2055 Fund CL K":"FNSDX",
 "\u0000Fidelity Freedom 2055 Fund K":"FNSDX",
 "\u0000Fidelity Freedom 2055 Index Inst Prem Class":"FFLDX",
 "\u0000Fidelity Freedom 2055 K":"FNSDX",
@@ -5213,7 +5215,6 @@ const SEC_TICKERS = {
 "\u0000Fidelity Freedom 2060 K6":"FVTKX",
 "\u0000Fidelity Freedom 2060 PRM":"FFPMX",
 "\u0000Fidelity Freedom 2065 Fund - Cl K":"FFSDX",
-"\u0000Fidelity Freedom 2065 Fund CL K":"FFSDX",
 "\u0000Fidelity Freedom 2065 Fund Class K; +t":"FFSDX",
 "\u0000Fidelity Freedom 2065 Fund K":"FFSDX",
 "\u0000Fidelity Freedom 2065 Index Inst Prem Class":"FFIKX",
@@ -13647,6 +13648,7 @@ const SEC_TICKERS = {
 "Fidelity Management Trust Company\u0000Balanced Fund":"FBALX",
 "Fidelity Management Trust Company\u0000Balanced Fund - Class K":"FBAKX",
 "Fidelity Management Trust Company\u0000Balanced Fund Class K6":"FBKFX",
+"Fidelity Management Trust Company\u0000Baron Asset Fund":"BARAX",
 "Fidelity Management Trust Company\u0000Capital & Income Fund":"FAGIX",
 "Fidelity Management Trust Company\u0000Capital and Income":"FAGIX",
 "Fidelity Management Trust Company\u0000Capital and Income Fund":"FAGIX",
@@ -16279,7 +16281,6 @@ const SEC_TICKERS = {
 "Vanguard Fiduciary Trust Company\u0000Windsor II Fund Admiral Shares":"VWNAX",
 "Vanguard Fiduciary Trust Company\u0000Windsor II Fund Investor Shares":"VWNFX",
 "Vanguard Fixed Income Securities Funds\u0000Vanguard Short-Term Investment-Grade Admiral Fund":"VFSUX",
-"Vanguard Funds\u0000Federal Money Market":"VMFXX",
 "Vanguard Funds\u0000Federal Money Market Fund":"VMFXX",
 "Vanguard Funds\u0000Federal Money Market Investor":"VMFXX",
 "Vanguard Funds\u0000Short-Term Investment-Grade ADM":"VFSUX",
@@ -16997,4 +16998,4 @@ const SEC_TICKERS_PIN = {"key":"\u0000(CL)Victory Sycamore Established Val R6","
  * was not regenerated, so every key that change would add is silently
  * withheld — which is how 66 gain rows / 9,224 participants accumulated
  * unreported across five ships on 2026-10-11. */
-const SEC_TICKERS_CODE = "sha256:2a121e0e9e386d2fd8027faa081c36e8b1f97f2ee28f797be414aebf4974cd18";
+const SEC_TICKERS_CODE = "sha256:f812392371749ee23ba30a613c2ee7c4e962651a15ba5c48bbd5ad6c0e7a97b1";
