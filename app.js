@@ -312,12 +312,39 @@
   }
   window.__wampoFrozenClaimOk = frozenClaimOk;  // read by the smoke test only
 
+  /* CODE -> NAME, for the state filter's labels. NOTE THE DIRECTION: the
+   * long-standing `US_STATES` below runs the OTHER way (name -> code) and
+   * serves the typed search, so indexing it with a code silently returns
+   * undefined and every label falls back to bare letters. Keys are LOWERCASE
+   * to match `stateFromQuery`, which is the file's one convention for a state
+   * code. Territories and armed-forces codes are here because filers use them;
+   * the option list is still built from the DATA, so an unknown code shows its
+   * own letters rather than disappearing. */
+  const STATE_NAMES = {
+    al: "Alabama", ak: "Alaska", az: "Arizona", ar: "Arkansas", ca: "California",
+    co: "Colorado", ct: "Connecticut", de: "Delaware", dc: "District of Columbia",
+    fl: "Florida", ga: "Georgia", hi: "Hawaii", id: "Idaho", il: "Illinois",
+    in: "Indiana", ia: "Iowa", ks: "Kansas", ky: "Kentucky", la: "Louisiana",
+    me: "Maine", md: "Maryland", ma: "Massachusetts", mi: "Michigan",
+    mn: "Minnesota", ms: "Mississippi", mo: "Missouri", mt: "Montana",
+    ne: "Nebraska", nv: "Nevada", nh: "New Hampshire", nj: "New Jersey",
+    nm: "New Mexico", ny: "New York", nc: "North Carolina", nd: "North Dakota",
+    oh: "Ohio", ok: "Oklahoma", or: "Oregon", pa: "Pennsylvania",
+    ri: "Rhode Island", sc: "South Carolina", sd: "South Dakota", tn: "Tennessee",
+    tx: "Texas", ut: "Utah", vt: "Vermont", va: "Virginia", wa: "Washington",
+    wv: "West Virginia", wi: "Wisconsin", wy: "Wyoming",
+    pr: "Puerto Rico", gu: "Guam", vi: "U.S. Virgin Islands", as: "American Samoa",
+    mp: "Northern Mariana Islands", aa: "Armed Forces Americas",
+    ae: "Armed Forces Europe", ap: "Armed Forces Pacific",
+  };
+
   const state = {
     deepLinkMiss: null,   // a #plan= link that matched nothing, surfaced instead of ignored
     query: "",
     filters: { brokerage: false, megaBackdoor: false, immediateVesting: false, fullFiling: false },
     provider: "",
     industry: "",
+    stateCode: "",   // USPS code; `st` is a boot column, so this needs no shard
     planType: "",
     matchType: "",
     tableSort: { key: "assets", dir: -1 },
@@ -3569,6 +3596,7 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
     if (f.fullFiling && (plan.cf & 8)) return false;
     if (state.provider && plan.provider !== state.provider) return false;
     if (state.industry && plan.industry !== state.industry) return false;
+    if (state.stateCode && (plan.state || "").toLowerCase() !== state.stateCode) return false;
     if (state.planType && !(plan.planTypes || []).includes(state.planType)) return false;
     if (state.matchType && !(plan.matchTypes || []).includes(state.matchType)) return false;
     return true;
@@ -5076,7 +5104,7 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
     // filtering 110k plans is cheap but not free, and render() runs on every
     // keystroke — the totals only move when a FILTER moves, so memo on that
     const sig = JSON.stringify([state.filters, state.planType, state.industry,
-      state.provider, state.matchType, state.plans.length]);
+      state.provider, state.matchType, state.stateCode, state.plans.length]);
     if (sig === heroSig) return;
     heroSig = sig;
     const scoped = state.plans.filter(passesFilters);
@@ -5108,6 +5136,7 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
       f.megaBackdoor ? "with after-tax / mega backdoor" : "",
       f.immediateVesting ? "with immediate vesting" : "",
       state.planType || "", state.industry || "",
+      state.stateCode ? (STATE_NAMES[state.stateCode] || state.stateCode.toUpperCase()) : "",
       state.provider ? state.provider + " plans" : "",
       state.matchType ? state.matchType.replace(/-/g, " ") + " match" : "",
     ].filter(Boolean);
@@ -5316,7 +5345,11 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
      * and reset to the whole country when the state query is cleared. Manual
      * zoom/pan afterwards is untouched — autoState only moves the view when
      * it CHANGES. */
-    const sc = stateFromQuery(mapQ);
+    /* the DROPDOWN focuses the map exactly as typing a state does -- two ways
+     * to set one filter must not behave differently on the map. A typed state
+     * wins over the dropdown because it is the more immediate gesture; when
+     * both are set the table is their AND either way. */
+    const sc = stateFromQuery(mapQ) || state.stateCode || null;
     if (sc !== MAP.autoState) {
       MAP.autoState = sc;
       if (sc) fitState(sc);
@@ -5594,6 +5627,7 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
 
   $("providerFilter").addEventListener("change", (ev) => { state.provider = ev.target.value; state.rowLimit = MAX_ROWS; render(); });
   $("industryFilter").addEventListener("change", (ev) => { state.industry = ev.target.value; state.rowLimit = MAX_ROWS; render(); });
+  $("stateFilter").addEventListener("change", (ev) => { state.stateCode = ev.target.value; state.rowLimit = MAX_ROWS; render(); });
   $("typeFilter").addEventListener("change", (ev) => { state.planType = ev.target.value; state.rowLimit = MAX_ROWS; render(); });
   $("matchTypeFilter").addEventListener("change", (ev) => { state.matchType = ev.target.value; state.rowLimit = MAX_ROWS; render(); });
 
@@ -5643,6 +5677,23 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
       const opt = document.createElement("option");
       opt.value = p; opt.textContent = p;
       $("providerFilter").appendChild(opt);
+    }
+    /* Built from the plans actually loaded, not from a hardcoded 50: filers
+     * carry territories (PR, GU, VI) and armed-forces codes, and a state
+     * present in the data with no option is a plan the reader cannot reach.
+     * The count is shown because "which states have plans at all" is itself
+     * the question an advisor is asking. */
+    const stateCounts = new Map();
+    for (const p of state.plans) {
+      const c = (p.state || "").toLowerCase();
+      if (c) stateCounts.set(c, (stateCounts.get(c) || 0) + 1);
+    }
+    for (const code of [...stateCounts.keys()].sort((a, b) =>
+      (STATE_NAMES[a] || a).localeCompare(STATE_NAMES[b] || b))) {
+      const opt = document.createElement("option");
+      opt.value = code;
+      opt.textContent = `${STATE_NAMES[code] || code.toUpperCase()} (${stateCounts.get(code).toLocaleString()})`;
+      $("stateFilter").appendChild(opt);
     }
     const industries = [...new Set(state.plans.map((p) => p.industry).filter(Boolean))].sort();
     for (const ind of industries) {

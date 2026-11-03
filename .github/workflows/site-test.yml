@@ -12,6 +12,7 @@ on:
             # map-test.mjs, which owns the data alignment and the selection
             # contract; this one owns what the marks DO on screen.
             "scripts/map-zoom-test.mjs",
+            "scripts/state-filter-test.mjs",
             # the ONLY place a sourced ticker, fee or return may live, plus the
             # two scripts that write and police it. A figure here is published
             # with its source URL and as-of date or not at all, and that is a
@@ -260,6 +261,8 @@ jobs:
         run: node scripts/map-test.mjs
       - name: Map zoom, pan and the dot card — marks shrink, drag slides, a dot names its plan
         run: node scripts/map-zoom-test.mjs
+      - name: State filter — narrows, agrees with the typed path, composes and clears
+        run: node scripts/state-filter-test.mjs
       # LAST ON PURPOSE, and the placement is the decision rather than an
       # afterthought. `gen-sec-tickers.mjs` shipped a `--check` that was wired
       # into no workflow, so the generated table could sit beside code that did

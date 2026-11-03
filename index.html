@@ -57,6 +57,10 @@
         <option value="discretionary">Discretionary</option>
         <option value="none">None / frozen</option>
       </select>
+      <!-- State is filterable because `st` is a BOOT column of plans-list.json.
+           City is not: it is detail-only, which is why search by city does not
+           work. Do not add a city filter here without moving city to boot. -->
+      <select id="stateFilter" class="pill-select" aria-label="Filter by state"><option value="">State</option></select>
       <select id="industryFilter" class="pill-select" aria-label="Filter by industry"><option value="">Industry</option></select>
       <select id="providerFilter" class="pill-select" aria-label="Filter by recordkeeper"><option value="">Recordkeeper</option></select>
       <div class="toolbar-divider" aria-hidden="true"></div>
@@ -144,6 +148,6 @@
      SEC_TICKERS from app.js before this script has run would hit the temporal
      dead zone and throw rather than read `undefined`. -->
 <script src="sec-tickers.js?v=f32e8db2"></script>
-<script src="app.js?v=8507617e"></script>
+<script src="app.js?v=d3042047"></script>
 </body>
 </html>
