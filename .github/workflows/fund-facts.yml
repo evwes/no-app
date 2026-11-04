@@ -42,7 +42,14 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: claude/wampo-401k-live-nx1t4o
-          fetch-depth: 0
+          # DEPTH 50, NOT 0. Run #6 sat THIRTEEN MINUTES in checkout where run
+          # #5 took seven seconds, because `fetch-depth: 0` clones the whole
+          # history and this repo commits multi-megabyte single-line JSON
+          # stores every hour. Nothing in this job reads history: the probes are
+          # stateless and the commit step only needs enough to rebase onto the
+          # branch tip. (`mirror-gate-test` is what wanted depth 0, and it does
+          # not run here.) Raise it if a step ever needs an older commit.
+          fetch-depth: 50
       - uses: actions/setup-node@v4
         with:
           node-version: 20
