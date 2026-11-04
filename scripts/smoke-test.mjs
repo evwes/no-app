@@ -12,6 +12,9 @@ import { readFileSync } from "fs";
 import { spawn } from "child_process";
 import vm from "node:vm";
 import { chromium } from "playwright";
+/* the SHIPPED Schedule D menu rule, so the specimen selection below applies
+ * the same condition the render applies instead of restating its floor */
+import { trustScheduleDMenu } from "./lib-disclose.mjs";
 
 const PORT = 8901;
 const fail = (msg) => { console.error("SMOKE FAIL: " + msg); process.exit(1); };
@@ -21,6 +24,10 @@ const d = JSON.parse(readFileSync("plans-all.json", "utf8"));
 const F = d.fields; const ix = Object.fromEntries(F.map((f, i) => [f, i]));
 const g = (r, f) => r[ix[f]];
 const idx = JSON.parse(readFileSync("lineups-index.json", "utf8")).plans;
+/* `mtias.json`'s `trusts` is keyed by ARRAY INDEX, not by ack -- a lookup by
+ * ack returns undefined and reads as "this trust has no Schedule D list",
+ * which would quietly restore the very bug this selection fixes. */
+const TRUSTS = Object.values(JSON.parse(readFileSync("mtias.json", "utf8")).trusts || {});
 const dash = (ein) => String(ein).slice(0, 2) + "-" + String(ein).slice(2);
 const id = (r) => `${dash(g(r, "ein"))}|${g(r, "pn")}|${g(r, "ticker") || ""}`;
 
@@ -73,8 +80,29 @@ if (!loanPlan) fail("could not pick a participant-loan specimen — no published
  * shipped, which is exactly how a specimen silently stops covering a case. */
 const trustUnlinkedPlan = byAssets.find((r) =>
   !g(r, "sf") && ((bootBits[rowOf.get(r)] || 0) & 65536) && !((bootBits[rowOf.get(r)] || 0) & 131072));
-const trustOpaquePlan = byAssets.find((r) =>
-  !g(r, "sf") && ((bootBits[rowOf.get(r)] || 0) & 131072));
+/* BIT 131072 IS NO LONGER SUFFICIENT TO REACH THAT PARAGRAPH, and on
+ * 2026-11-04 that turned this test red against a page that was RIGHT.
+ *
+ * The bit means "trust-held, no fund list, and the trust's own return is opaque
+ * too", and it was written before `trustScheduleDMenu` shipped (2026-10-02) --
+ * which gives a plan its TRUST's Schedule D fund list, a SECOND source of a
+ * menu that the bit knows nothing about. The specimen drifted onto Verizon
+ * Savings Plan For Management Employees, whose `VERIZON MASTER SAVINGS TRUST`
+ * carries a 15-fund Schedule D list, so app.js renders that table and returns
+ * BEFORE the "no fund list can be shown" paragraph. The page is MORE
+ * informative than this test expected, and the test failed it.
+ *
+ * So the selection must apply the same condition the RENDER applies, and it
+ * asks the SHIPPED predicate rather than restating the floor -- a transcribed
+ * copy of a rule measures the transcription, and `TRUST_MENU_MIN_FUNDS` has
+ * moved before. A specimen must carry the bit AND have no usable Schedule D
+ * list, or it cannot reach the branch under test. */
+const trustOpaquePlan = byAssets.find((r) => {
+  if (g(r, "sf") || !((bootBits[rowOf.get(r)] || 0) & 131072)) return false;
+  const ack = g(r, "mtiaAck");
+  const trust = ack ? TRUSTS.find((t) => t.ack === ack) : null;
+  return !trustScheduleDMenu(trust, false, false);
+});
 if (!trustUnlinkedPlan) fail("could not pick a trust-held-but-UNLINKED specimen — no live plan carries 65536 without 131072");
 if (!trustOpaquePlan) fail("could not pick a trust-linked-but-OPAQUE specimen — no live plan carries bit 131072");
 /* THE COMPARABLE CEILING, 2026-10-10. `app.js:4073` is
