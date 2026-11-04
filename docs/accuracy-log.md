@@ -61851,3 +61851,118 @@ cannot tell those worlds apart, so three foreign-house tickers were added
 (Fidelity FXAIX, Vanguard VTTVX, and JPMorgan JSMYX read out of `sec-funds.json`
 rather than guessed). If it is general it prices the whole 35.9%; if it is a
 shelf it prices almost none of it. A ticker is not a fee.
+
+---
+
+## 2026-11-04 (23:1xZ) — THE FEE WAS THE DAY'S PRICE CHANGE, ON ALL FOUR FUNDS
+
+**THE CHAIN IS NOW MEASURED END TO END AND EVERY LINK WAS A SEPARATE QUESTION.**
+Run #8 settled the one the fetcher had been waiting on: `schwab.wallst.com` is a
+GENERAL source rather than Schwab's own shelf — it answered a GitHub runner at
+200 carrying BOTH an expense ratio and a YTD return for three FOREIGN houses
+(Fidelity FXAIX, Vanguard VTTVX, JPMorgan JSMYX, the last read out of
+`sec-funds.json` rather than guessed) in about 400ms each. 11 of 20 candidates
+answered and 7 carry what `fund-facts` needs, against 8 and 4 before. **SWPPX
+alone could never have shown that**, which is why three foreign tickers were
+added rather than one sample being trusted — *a source that answers for its own
+products is not thereby a source.*
+
+So: **filed name → `sec-funds.json` → ticker → Schwab research → fee + return.**
+Measured locally, 31 of the top 40 worklist names yield a usable ticker (grades
+exact 19 / subset 8 / nearest 7, ambiguous 1, none 5), and `tickerFor` **never
+chooses a share class** — a ticker comes back only where the series registers
+exactly one, or where the filed name states the class — because returning an
+unstated class is the owner-gated wrong-share-class defect arriving by a new
+route, and this is the one point in the chain where it would be easy.
+
+**AND THEN THE CALIBRATION STEP CAUGHT FOUR WRONG FEES ONE RUN BEFORE THEY WOULD
+HAVE BEEN WRITTEN AS VERIFIED FACTS.** Run #9's `--explain` pass shows the page
+putting every LABEL first and every VALUE after:
+
+```
+Net Expense Ratio  YTD Return  <help text>  $263.13  +0.96 (0.37%)  0.015%  12.73%
+```
+
+so **the first percentage after "Net Expense Ratio" is THE DAY'S PRICE CHANGE.**
+The label-proximity extractor read FXAIX as `er=0.37 / ytd=0.37` where the truth
+is **0.015 and 12.73**, and it was wrong THE SAME WAY on all four funds it
+reached — FSMDX `0.02` against 0.025/11.86, FSSNX `0.23` against 0.025/13.77.
+***Every one of those figures is plausible on its face, carries a correct as-of
+date and a real source URL, and is wrong.*** Nothing downstream would have
+questioned them: `fund-facts-check` validates that a figure is dated and
+sourced, not that it is the right column.
+
+***A FIGURE READ FROM THE WRONG COLUMN IS INDISTINGUISHABLE FROM A FIGURE READ
+CORRECTLY, UNLESS SOMETHING PRINTS THE NEIGHBOURS.*** This record already says
+*print every field of the ANSWER the page acts on* and *print every field of the
+ARGUMENT the resolver reads*; this is the third face of it — **print the fields
+the instrument does NOT act on, when position is what distinguishes them.** It is
+also why `--explain` is written up as a required calibration step rather than a
+debug flag: the patterns were authored against a page shape the sandbox cannot
+fetch, and *a guessed pattern's silent zero is indistinguishable from "the source
+does not carry it"* while a guessed pattern's silent WRONG VALUE is worse than
+either.
+
+**THE FIX IS POSITIONAL, because position is the only thing on that page that
+separates a fee from a day's move**: anchor on the value group's own structure —
+price, change, change-in-parens, then expense ratio, then YTD. **THERE IS
+DELIBERATELY NO FALLBACK TO PROXIMITY.** *A refuted pattern kept as a fallback is
+a refuted pattern that still ships*, and this one fails in the direction that
+publishes a confident wrong number; a page that does not match is reported as a
+miss. Two column controls refuse rather than guess: er and ytd both equalling
+the day's change means we are reading the quote again (the exact defect), and an
+expense ratio outside 0–5% is a column shift — the bound loose on purpose,
+because it exists to catch a shift and not to judge a fee.
+
+**`scripts/fund-facts-extract-test.mjs` TETHERS IT AND ITS FIXTURES ARE REAL
+TEXT COPIED FROM RUN #9'S OWN LOG**, truncation included, because *a hand-built
+fixture tests the cases its author already imagined* and these test the case
+that actually fooled me. It SLICES the extractor out of the shipped source, in
+ONE contiguous range — my first attempt took four overlapping ranges and threw
+on a redeclared `MONTHS`, and *a slicer that assembles fragments is also a
+slicer that can silently omit one.* Four must-read cases including a **NEGATIVE
+YTD** (without it the extractor would work only in a rising market and fail in
+January looking like a layout change), three must-refuse cases drawn from real
+failure shapes, and a control asserting the valid case still passes — without
+which a change that refused everything would satisfy every must-refuse case and
+read as a pass. Verified offline: FXAIX 0.015/12.73, FSMDX 0.025/11.86, FSSNX
+0.025/13.77, all @2026-11-03, which are the real figures. It runs in the
+workflow BEFORE the fetch, so nothing can write a fee while it is red.
+
+**A DELIVERABLE THAT IS BUILT AND STILL INERT, stated rather than claimed:**
+`.github/workflows/company-links.yml` cannot be dispatched — the API returns
+**404** — because GitHub exposes `workflow_dispatch` and fires `schedule` only
+for workflows present on the DEFAULT branch. So the job the owner asked for does
+nothing until it reaches `main`, and reporting it as working would have been
+false. Its three steps are ordered deliberately: the 21-case tether FIRST
+(a checker that only ever passes is decorative, so if it reddens the gate below
+means nothing), then the file validation, then liveness LAST because it is the
+only step that depends on the open internet. **Liveness fails ONLY on 404/410** —
+a company site sits behind a CDN that will challenge, rate-limit or refuse an
+unfamiliar client, and a `gated: true` portal is EXPECTED to answer 403, so
+failing those would punish an entry for being honest; this project lost three
+days to ten consecutive red `site-test` runs nobody opened. Its schedule was
+converted with the repo's own `et-schedule.mjs --check` rather than by hand.
+
+**THE BRANCH IS NOW CONVERGED WITH MAIN AND THE CONTROL IS BYTE-LEVEL.** main
+was 86 data commits ahead and the branch 25 of code ahead, so the merge job's
+auto-fast-forward could not reconcile them and left it for a session. The 26
+commits rebased onto `origin/main` with **no conflicts** — because they touch
+**zero** data-store files — and afterwards all eight stores are **byte-identical
+to main** (`plans-all`, `plans-list`, `plans-index`, `lineups-status`,
+`lineups-index`, `mtias`, `fee-percentiles`, `coverage-history`) with **0**
+differing lineup/plan/fee shards. That is the real "the mirror discards fresh
+filings" hazard measured rather than assumed. Pushed with
+`--force-with-lease` pinned to the pre-rebase tip, and a `backup/` ref kept.
+
+**A PROCESS CORRECTION, recorded because I made the same mistake twice in one
+sequence:** I asserted twice that cutting `fetch-depth` from 0 to 50 "did not
+help". Run #7's own step timings refute it — checkout **45 seconds**, whole job
+two minutes, against thirteen minutes at depth 0. ***What I was reading was a
+job that had not begun its checkout: the run list reports `in_progress` from the
+moment a run is created, while the job may still be QUEUED, so a queued job and
+a slow step are indistinguishable there.*** Only the per-step timestamps
+separate them and they are one API call away. Depth 1 plus a `--deepen` on the
+commit path was dropped in favour of the measured 50, because that branch sits
+where `mode: probe` never reaches and **a check no run has exercised is not a
+check**.
