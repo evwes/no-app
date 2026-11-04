@@ -37,41 +37,14 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const argv = process.argv.slice(2);
 const N_EX = +((argv[argv.indexOf("--examples") + 1]) || 25);
 
-/* ---- the check digit ------------------------------------------------------
- * CUSIP standard: value each character (0-9 = 0-9, A-Z = 10-35, * = 36,
- * @ = 37, # = 38), double every second value from the left, sum the DIGITS of
- * each result, and the check digit is (10 - sum % 10) % 10. */
-function cusipValid(s) {
-  if (!/^[0-9A-Z*@#]{9}$/.test(s)) return false;
-  let sum = 0;
-  for (let i = 0; i < 8; i++) {
-    const c = s[i];
-    let v;
-    if (c >= "0" && c <= "9") v = c.charCodeAt(0) - 48;
-    else if (c >= "A" && c <= "Z") v = c.charCodeAt(0) - 55;
-    else v = { "*": 36, "@": 37, "#": 38 }[c];
-    if (i % 2 === 1) v *= 2;
-    sum += Math.floor(v / 10) + (v % 10);
-  }
-  return ((10 - (sum % 10)) % 10) === Number(s[8]);
-}
-
-/* self-test FIRST, with real CUSIPs, because a broken checker reads as a clean
- * zero and this whole census is one number. 46641U473 is the owner's own URL. */
-const MUST_PASS = ["46641U473", "00206R102", "922908371", "037833100", "92202V583"];
-const MUST_FAIL = ["46641U474", "00206R103", "123456789", "999999999", "AAAAAAAAA"];
-for (const c of MUST_PASS) if (!cusipValid(c)) { console.error(`CHECKER BROKEN: ${c} must validate`); process.exit(1); }
-for (const c of MUST_FAIL) if (cusipValid(c)) { console.error(`CHECKER BROKEN: ${c} must NOT validate`); process.exit(1); }
+/* The check digit, the token shape and the self-test all live in
+ * `lib-cusip.mjs`, shared with `issuer-page-probe.mjs`: a transcribed copy of a
+ * predicate measures the transcription, and that module THROWS at import if the
+ * checker is broken -- which matters because a broken checker reads as a clean
+ * zero and this whole census is one number. */
+import { cusipValid, CUSIP_TOKEN, MUST_PASS, MUST_FAIL, falsePositiveRate } from "./lib-cusip.mjs";
 console.log(`check-digit self-test ok (${MUST_PASS.length} real CUSIPs pass, ${MUST_FAIL.length} near-misses fail)`);
-/* and the discriminating fact: how often does the shape alone pass? */
-{
-  let hit = 0;
-  for (let i = 0; i < 100000; i++) {
-    const s = String(Math.floor(Math.random() * 1e9)).padStart(9, "0");
-    if (cusipValid(s)) hit++;
-  }
-  console.log(`a random 9-digit run validates ${(hit / 1000).toFixed(1)}% of the time — that is the false-positive floor\n`);
-}
+console.log(`a random 9-digit run validates ${(falsePositiveRate() * 100).toFixed(1)}% of the time — that is the false-positive floor\n`);
 
 /* ---- the store ------------------------------------------------------------ */
 const d = loadPlans();
@@ -95,7 +68,8 @@ for (const r of d.rows) {
   plansOf.set(s.ack, (plansOf.get(s.ack) || 0) + 1);
 }
 
-const TOKEN = /\b[0-9A-Z][0-9A-Z*@#]{7}[0-9]\b/g;
+/* CUSIP_TOKEN is a FACTORY, not a shared regex: a `/g` literal carries
+ * `lastIndex`, so one object reused across 1.7M rows would skip matches. */
 const tally = { rows: 0, withCusip: 0, shapeOnly: 0, readers: 0, dollars: 0, noTicker: 0, acks: new Set(), cusips: new Set() };
 const examples = [];
 const dir = path.join(ROOT, "data", "lineups");
@@ -112,7 +86,7 @@ for (const f of readdirSync(dir).filter((x) => x.endsWith(".json"))) {
       /* look in BOTH cells, because the page prints `issuer · name` and the
        * record notes the identifier turning up in either */
       const hay = `${fund.iss || ""} ${fund.nameRaw || fund.name || ""}`.toUpperCase();
-      const cands = [...new Set((hay.match(TOKEN) || []))];
+      const cands = [...new Set((hay.match(CUSIP_TOKEN()) || []))];
       if (!cands.length) continue;
       const good = cands.filter(cusipValid);
       if (!good.length) { tally.shapeOnly++; continue; }

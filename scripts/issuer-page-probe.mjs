@@ -11,30 +11,39 @@
  * `/products/<slug>-<cusip>` and the OTHER vintages CANNOT be derived by
  * changing the year -- every fund and share class has its own CUSIP. Guessing
  * would produce 404s indistinguishable from a hostile host, which is the exact
- * mistake this script exists to stop making twice.
+ * mistake this script exists to stop making twice. CONFIRMED by run #5: the
+ * owner's path answered 200 / 232,923B / er=0.440% while both guesses 404'd on
+ * the same host, same UA, same minute.
  *
- * So: fetch the page the owner gave, prove it answers, and HARVEST every
- * sibling product link out of it. A target-date page normally carries a vintage
- * selector, which makes one known URL the key to the whole ladder.
+ * WHAT RUN #5 THEN SHOWED, and why this file is now a second pass: harvesting
+ * `/products/` HREFS found exactly ONE link -- the page itself -- so the
+ * vintage selector is drawn by JavaScript and the ladder is not in the markup
+ * as links. But the first version only fell back to scanning the body for loose
+ * identifiers when it found ZERO links, and it had found one. That condition
+ * was wrong: what matters is whether any SIBLING was found, not whether any
+ * link was. So this pass ALWAYS scans the body for CUSIP-shaped tokens and
+ * validates each against the check digit, because a SPA that renders a selector
+ * usually ships the selector's data in the page as JSON.
  *
  * It WRITES NOTHING. Its output is evidence for what the fetcher should request.
  * Must run on a runner: in the sandbox every host is ENOTFOUND, and `http=000`
  * reports on the query, not the source.
  *
- * Run: node scripts/issuer-page-probe.mjs <url> [<url> ...]
+ * Run: node scripts/issuer-page-probe.mjs [<url> ...]
  */
+import { cusipValid, CUSIP_TOKEN, falsePositiveRate } from "./lib-cusip.mjs";
+
 const UA = "wampo-fund-facts/1.0 (+https://github.com/evwes/no-app)";
 const urls = process.argv.slice(2);
 if (!urls.length) {
   urls.push("https://am.jpmorgan.com/us/en/asset-management/adv/products/jpmorgan-smartretirement-2060-fund-a-46641u473");
 }
 
-/* a CUSIP is 9 alphanumerics; in these slugs it is the final segment */
 const PRODUCT_LINK = /["'(]([^"'()\s]*\/products\/[a-z0-9-]*-([0-9a-z]{9}))["')]/gi;
-const CUSIP_ANY = /\b([0-9A-Z]{6}[0-9A-Z]{2}[0-9A-Z])\b/g;
+console.log(`cusip check digit admits ${(falsePositiveRate() * 100).toFixed(1)}% of random 9-digit runs — the floor under every count below\n`);
 
 for (const url of urls) {
-  console.log(`\n=== ${url}`);
+  console.log(`=== ${url}`);
   let r, body = "";
   try {
     r = await fetch(url, { headers: { "User-Agent": UA, Accept: "text/html,*/*" },
@@ -47,39 +56,45 @@ for (const url of urls) {
     const why = `${e.message} ${e.cause?.code || ""} ${e.cause?.message || ""}`;
     const blocked = /ENOTFOUND|EAI_AGAIN|ECONNREFUSED|ECONNRESET|CERT|timeout|aborted|fetch failed/i.test(why);
     console.log(blocked
-      ? `BLOCKED HERE — says NOTHING about the source. Run this on a runner. (${e.message.slice(0, 60)})`
+      ? `BLOCKED HERE — says NOTHING about the source. Run this on a runner. (${why.trim().slice(0, 70)})`
       : `ERROR ${why.trim().slice(0, 80)}`);
     continue;
   }
   console.log(`http=${r.status} bytes=${body.length}`);
-  /* the figures we are after, sniffed only to say whether the page carries them */
   const er = /(acquired fund fees|net expense ratio|expense ratio)[\s\S]{0,400}?(\d{1,2}\.\d{1,3})\s*%/i.exec(body);
   const ytd = /(ytd|year[- ]to[- ]date)[\s\S]{0,400}?(-?\d{1,3}\.\d{1,2})\s*%/i.exec(body);
   console.log(`carries: expense-ratio=${er ? er[2] + "%" : "-"}  ytd=${ytd ? ytd[2] + "%" : "-"}`);
 
-  /* HARVEST. The question the owner asked: does one known vintage lead to the
-   * rest? Dedupe by CUSIP, because the same fund appears under several slugs
-   * (share classes) and the CUSIP is what distinguishes them. */
+  /* PASS 1 -- links. Dedupe by CUSIP, because one fund appears under several
+   * share-class slugs and the CUSIP is what distinguishes them. */
+  const self = (url.match(/([0-9a-z]{9})\/?$/i) || [])[1]?.toUpperCase() || "";
   const byCusip = new Map();
   for (const m of body.matchAll(PRODUCT_LINK)) {
-    const href = m[1], cusip = m[2].toUpperCase();
-    if (!byCusip.has(cusip)) byCusip.set(cusip, href);
+    const c = m[2].toUpperCase();
+    if (!byCusip.has(c)) byCusip.set(c, m[1]);
   }
-  console.log(`sibling product links found: ${byCusip.size}`);
-  const ladder = [...byCusip.entries()].filter(([, h]) => /smartretirement|target|retirement|20\d\d/i.test(h));
-  console.log(`of which look like a target-date ladder: ${ladder.length}`);
-  for (const [cusip, href] of ladder.slice(0, 40)) {
-    const slug = href.split("/").pop();
-    console.log(`   ${cusip}  ${slug}`);
+  const siblings = [...byCusip.keys()].filter((c) => c !== self);
+  console.log(`product links in the markup: ${byCusip.size} (siblings, excluding this page: ${siblings.length})`);
+  for (const c of siblings.slice(0, 40)) console.log(`   LINK ${c}  ${byCusip.get(c).split("/").pop()}`);
+
+  /* PASS 2 -- ALWAYS. A JS-rendered selector normally ships its data in the
+   * page, so the identifiers can be present with no href anywhere. Validated
+   * against the check digit; the shape alone would measure the shape. */
+  const loose = [...new Set([...body.matchAll(CUSIP_TOKEN())].map((m) => m[0].toUpperCase()))];
+  const valid = loose.filter(cusipValid).filter((c) => c !== self && !byCusip.has(c));
+  console.log(`CUSIP-shaped tokens in the body: ${loose.length}, of which ${valid.length} validate and are NEW`);
+  for (const c of valid.slice(0, 60)) {
+    /* print a little context, because a validated token is still only a token
+     * until something nearby says it names a fund */
+    const i = body.toUpperCase().indexOf(c);
+    const ctx = body.slice(Math.max(0, i - 90), i + 60).replace(/\s+/g, " ").replace(/["'<>{}]/g, " ").trim();
+    console.log(`   BODY ${c}  …${ctx.slice(-120)}`);
   }
-  if (!byCusip.size) {
-    /* no links in the HTML usually means the list is fetched by JS afterwards.
-     * Say so plainly rather than concluding the ladder is not published. */
-    const loose = [...new Set([...body.matchAll(CUSIP_ANY)].map((m) => m[1]))]
-      .filter((c) => /\d/.test(c) && /[A-Z]/.test(c));
-    console.log(`no product links in the HTML. Loose CUSIP-shaped tokens in the body: ${loose.length}`);
-    console.log(loose.slice(0, 20).join(" ") || "   (none)");
-    console.log("If this is 200 with real bytes and no links, the list is JS-rendered:");
-    console.log("the remedy is the embedded JSON blob or headless Chromium, NOT a different URL.");
+  if (!siblings.length && !valid.length) {
+    console.log(`\nNO SIBLINGS BY EITHER ROUTE. With ${body.length} real bytes that is not a closed`);
+    console.log(`host -- it is a page whose list is fetched after load. The remedy is headless`);
+    console.log(`Chromium (pre-installed at /opt/pw-browsers/chromium) or the XHR it calls,`);
+    console.log(`NOT another guessed URL. A CUSIP cannot be derived, so it must be sourced.`);
   }
+  console.log("");
 }
