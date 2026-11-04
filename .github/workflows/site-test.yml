@@ -23,6 +23,14 @@ on:
             # fire is indistinguishable from no gate.
             "data/fund-facts.json", "scripts/fund-facts-check.mjs",
             "scripts/fund-facts-ingest.mjs",
+            # the ISSUER-PAGE extractor and its tether. The tether's own
+            # workflow (fund-facts.yml) is dispatch-only, so without these two
+            # entries a change to the extractor would run no test of its own --
+            # a gate the file it guards cannot trigger is indistinguishable
+            # from no gate, and this one stands between a sourced fee and the
+            # day's price change.
+            "scripts/fund-facts-issuer.mjs", "scripts/fund-facts-extract-test.mjs",
+            "scripts/lib-fundmatch.mjs",
             "scripts/fund-er-test.mjs", "scripts/no-identity-test.mjs",
             "scripts/vesting-quote-test.mjs", "scripts/lib-quote.mjs",
             # v201 put `vestingQuoteUpgrade` in the PARSER, so a lib-4i change
@@ -308,3 +316,13 @@ jobs:
       # data file, not a broken page.
       - name: Sourced figures carry their receipts
         run: node scripts/fund-facts-check.mjs
+      # THE FEE MUST COME FROM ITS OWN COLUMN, NOT FROM THE DAY'S QUOTE. The
+      # issuer page puts every label first and every value after, so a
+      # label-proximity read returns the price change: it gave FXAIX 0.37%
+      # where the truth is 0.015%, and was wrong the same way on all four funds
+      # it reached -- four plausible, dated, sourced and WRONG figures. The
+      # fixtures are real page text. Runs here as well as in fund-facts.yml
+      # because that workflow is dispatch-only and this is where a change to
+      # the extractor can actually trigger its own test. No network, no store.
+      - name: Issuer-page extractor — the fee is not the price change
+        run: node scripts/fund-facts-extract-test.mjs
