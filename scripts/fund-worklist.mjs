@@ -19,9 +19,17 @@
  * Run: node scripts/fund-worklist.mjs [--top 1000] [--out data/fund-worklist.json]
  */
 import { readFileSync, readdirSync } from "node:fs";
-import { loadPlans } from "/home/user/no-app/scripts/lib-schema.mjs";
-import { servedLineup } from "/home/user/no-app/scripts/lib-ledger.mjs";
-const ROOT="/home/user/no-app";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { loadPlans } from "./lib-schema.mjs";
+import { servedLineup } from "./lib-ledger.mjs";
+/* NEVER HARDCODE THE SANDBOX PATH IN ANYTHING CI RUNS. This file was lifted
+ * from a scratchpad copy that imported /home/user/no-app/... absolutely, and
+ * run #3 died on a runner with ERR_MODULE_NOT_FOUND naming that exact path.
+ * The record already carries this trap in capitals -- `map-test.mjs` hardcoded
+ * a cwd and produced `spawn python3 ENOENT`, which read as a missing binary
+ * and hid ten consecutive red runs. Resolve from the file's own location. */
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const lidx=JSON.parse(readFileSync(`${ROOT}/lineups-index.json`,"utf8")).plans;
 const d=loadPlans();
 const members=new Map();
