@@ -12,7 +12,7 @@
    "ytd": 12.73,
    "ytdAsOf": "2026-11-03",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FXAIX",
-   "filedNames": 2
+   "filedNames": 4
   },
   "FSMDX": {
    "name": "Fidelity Mid Cap Index Fund",
@@ -25,7 +25,7 @@
    "ytd": 11.86,
    "ytdAsOf": "2026-11-03",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FSMDX",
-   "filedNames": 2
+   "filedNames": 4
   },
   "FSSNX": {
    "name": "Fidelity Small Cap Index Fund",
@@ -38,7 +38,7 @@
    "ytd": 13.77,
    "ytdAsOf": "2026-11-03",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FSSNX",
-   "filedNames": 2
+   "filedNames": 4
   },
   "FXNAX": {
    "name": "Fidelity U.S. Bond Index Fund",
@@ -51,7 +51,7 @@
    "ytd": -2.85,
    "ytdAsOf": "2026-11-03",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FXNAX",
-   "filedNames": 2
+   "filedNames": 4
   },
   "FSPSX": {
    "name": "Fidelity International Index Fund",
@@ -64,7 +64,7 @@
    "ytd": 10.15,
    "ytdAsOf": "2026-11-03",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FSPSX",
-   "filedNames": 2
+   "filedNames": 4
   },
   "VFIFX": {
    "name": "Vanguard Target Retirement 2050 Fund",
@@ -77,7 +77,7 @@
    "ytd": 11.32,
    "ytdAsOf": "2026-11-03",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VFIFX",
-   "filedNames": 3
+   "filedNames": 6
   },
   "VTHRX": {
    "name": "Vanguard Target Retirement 2030 Fund",
@@ -90,7 +90,7 @@
    "ytd": 6.54,
    "ytdAsOf": "2026-11-03",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VTHRX",
-   "filedNames": 3
+   "filedNames": 6
   },
   "FSMAX": {
    "name": "Fidelity Extended Market Index Fund",
@@ -103,7 +103,7 @@
    "ytd": 11.47,
    "ytdAsOf": "2026-11-03",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FSMAX",
-   "filedNames": 2
+   "filedNames": 4
   },
   "VTIVX": {
    "name": "Vanguard Target Retirement 2045 Fund",
@@ -116,7 +116,7 @@
    "ytd": 10.16,
    "ytdAsOf": "2026-11-03",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VTIVX",
-   "filedNames": 3
+   "filedNames": 6
   },
   "VTTHX": {
    "name": "Vanguard Target Retirement 2035 Fund",
@@ -129,7 +129,7 @@
    "ytd": 7.78,
    "ytdAsOf": "2026-11-03",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VTTHX",
-   "filedNames": 3
+   "filedNames": 6
   },
   "VFORX": {
    "name": "Vanguard Target Retirement 2040 Fund",
@@ -142,7 +142,7 @@
    "ytd": 8.97,
    "ytdAsOf": "2026-11-03",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VFORX",
-   "filedNames": 3
+   "filedNames": 6
   },
   "VFFVX": {
    "name": "Vanguard Target Retirement 2055 Fund",
@@ -155,7 +155,7 @@
    "ytd": 11.46,
    "ytdAsOf": "2026-11-03",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VFFVX",
-   "filedNames": 3
+   "filedNames": 6
   },
   "VTTSX": {
    "name": "Vanguard Target Retirement 2060 Fund",
@@ -168,7 +168,7 @@
    "ytd": 11.46,
    "ytdAsOf": "2026-11-03",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VTTSX",
-   "filedNames": 3
+   "filedNames": 6
   },
   "VTTVX": {
    "name": "Vanguard Target Retirement 2025 Fund",
@@ -181,7 +181,7 @@
    "ytd": 5.16,
    "ytdAsOf": "2026-11-03",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VTTVX",
-   "filedNames": 3
+   "filedNames": 6
   },
   "VLXVX": {
    "name": "Vanguard Target Retirement 2065 Fund",
@@ -194,7 +194,7 @@
    "ytd": 11.47,
    "ytdAsOf": "2026-11-03",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VLXVX",
-   "filedNames": 3
+   "filedNames": 6
   },
   "VTWNX": {
    "name": "Vanguard Target Retirement 2020 Fund",
@@ -207,7 +207,7 @@
    "ytd": 3.24,
    "ytdAsOf": "2026-11-03",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VTWNX",
-   "filedNames": 3
+   "filedNames": 6
   },
   "VTINX": {
    "name": "Vanguard Target Retirement Income Fund",
@@ -220,7 +220,7 @@
    "ytd": 2.8,
    "ytdAsOf": "2026-11-03",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VTINX",
-   "filedNames": 4
+   "filedNames": 8
   },
   "VSVNX": {
    "name": "Vanguard Target Retirement 2070 Fund",
@@ -233,7 +233,7 @@
    "ytd": 11.44,
    "ytdAsOf": "2026-11-03",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VSVNX",
-   "filedNames": 3
+   "filedNames": 9
   },
   "FCNTX": {
    "name": "Fidelity Contrafund",
@@ -246,7 +246,7 @@
    "ytd": 13.52,
    "ytdAsOf": "2026-11-03",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FCNTX",
-   "filedNames": 1
+   "filedNames": 2
   },
   "IWN": {
    "name": "Russell 2000 Value ETF",
@@ -259,7 +259,7 @@
    "ytd": 16.71,
    "ytdAsOf": "2026-11-04",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=IWN",
-   "filedNames": 1
+   "filedNames": 2
   },
   "FIPDX": {
    "name": "Fidelity Inflation-Protected Bond Index Fund",
@@ -272,7 +272,7 @@
    "ytd": -1.89,
    "ytdAsOf": "2026-11-03",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FIPDX",
-   "filedNames": 1
+   "filedNames": 4
   },
   "FTIHX": {
    "name": "Fidelity Total International Index Fund",
@@ -285,14 +285,14 @@
    "ytd": 13.63,
    "ytdAsOf": "2026-11-03",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FTIHX",
-   "filedNames": 2
+   "filedNames": 5
   },
   "VVMCX": {
    "name": "Mid Cap Value Fund",
    "updated": "2026-11-04",
    "matchGrade": "exact",
    "matchWhy": "filing states the class (Mid Cap Value Fund)",
-   "filedNames": 1,
+   "filedNames": 2,
    "er": 0.81,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VVMCX",
@@ -305,7 +305,7 @@
    "updated": "2026-11-04",
    "matchGrade": "exact",
    "matchWhy": "filing states the class (Small Cap Growth Fund)",
-   "filedNames": 1,
+   "filedNames": 2,
    "er": 0.88,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VVSGX",
@@ -318,7 +318,7 @@
    "updated": "2026-11-04",
    "matchGrade": "exact",
    "matchWhy": "filing states the class (Fidelity Government Money Market Fund)",
-   "filedNames": 1,
+   "filedNames": 2,
    "er": 0.42,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SPAXX",
@@ -327,11 +327,11 @@
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SPAXX"
   },
   "FTKFX": {
-   "name": "Fidelity Total Bond K6",
+   "name": "Fidelity Total Bond K6 Fund",
    "updated": "2026-11-04",
-   "matchGrade": "subset",
+   "matchGrade": "exact",
    "matchWhy": "sole registered class",
-   "filedNames": 1,
+   "filedNames": 3,
    "er": 0.3,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FTKFX",
@@ -344,7 +344,7 @@
    "updated": "2026-11-04",
    "matchGrade": "exact",
    "matchWhy": "sole registered class",
-   "filedNames": 1,
+   "filedNames": 2,
    "er": 0.45,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FLCNX",
@@ -357,7 +357,7 @@
    "updated": "2026-11-04",
    "matchGrade": "exact",
    "matchWhy": "filing states the class (International Growth Fund)",
-   "filedNames": 1,
+   "filedNames": 2,
    "er": 0.82,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VCINX",
@@ -370,7 +370,7 @@
    "updated": "2026-11-04",
    "matchGrade": "exact",
    "matchWhy": "filing states the class (Fidelity Low-Priced Stock Fund)",
-   "filedNames": 1,
+   "filedNames": 2,
    "er": 0.59,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FLPSX",
@@ -383,7 +383,7 @@
    "updated": "2026-11-04",
    "matchGrade": "exact",
    "matchWhy": "sole registered class",
-   "filedNames": 1,
+   "filedNames": 3,
    "er": 0.11,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VMFXX",
@@ -396,7 +396,7 @@
    "updated": "2026-11-04",
    "matchGrade": "exact",
    "matchWhy": "sole registered class",
-   "filedNames": 1,
+   "filedNames": 3,
    "er": 0.035,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FSPGX",
@@ -409,7 +409,7 @@
    "updated": "2026-11-04",
    "matchGrade": "exact",
    "matchWhy": "sole registered class",
-   "filedNames": 2,
+   "filedNames": 4,
    "er": 0.6,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FOCSX",
@@ -422,7 +422,7 @@
    "updated": "2026-11-04",
    "matchGrade": "exact",
    "matchWhy": "sole registered class",
-   "filedNames": 1,
+   "filedNames": 3,
    "er": 0.015,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FSKAX",
@@ -435,7 +435,7 @@
    "updated": "2026-11-04",
    "matchGrade": "exact",
    "matchWhy": "filing states the class (T. Rowe Price Retirement 2040 Fund)",
-   "filedNames": 1,
+   "filedNames": 2,
    "er": 0.59,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TRRDX",
@@ -448,7 +448,7 @@
    "updated": "2026-11-04",
    "matchGrade": "exact",
    "matchWhy": "sole registered class",
-   "filedNames": 1,
+   "filedNames": 3,
    "er": 0.055,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FSGGX",
@@ -461,7 +461,7 @@
    "updated": "2026-11-04",
    "matchGrade": "exact",
    "matchWhy": "filing states the class (Fidelity Total Bond Fund)",
-   "filedNames": 1,
+   "filedNames": 2,
    "er": 0.45,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FTBFX",
@@ -474,7 +474,7 @@
    "updated": "2026-11-04",
    "matchGrade": "exact",
    "matchWhy": "filing states the class (Fidelity Blue Chip Growth Fund)",
-   "filedNames": 1,
+   "filedNames": 2,
    "er": 0.72,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FBGRX",
@@ -487,7 +487,7 @@
    "updated": "2026-11-04",
    "matchGrade": "exact",
    "matchWhy": "filing states the class (T. Rowe Price Retirement 2045 Fund)",
-   "filedNames": 1,
+   "filedNames": 2,
    "er": 0.6,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TRRKX",
@@ -500,7 +500,7 @@
    "updated": "2026-11-04",
    "matchGrade": "exact",
    "matchWhy": "sole registered class",
-   "filedNames": 1,
+   "filedNames": 2,
    "er": 0.91,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VCSTX",
@@ -513,7 +513,7 @@
    "updated": "2026-11-04",
    "matchGrade": "exact",
    "matchWhy": "filing states the class (International Value Fund)",
-   "filedNames": 1,
+   "filedNames": 2,
    "er": 0.78,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VCFVX",
@@ -526,7 +526,7 @@
    "updated": "2026-11-04",
    "matchGrade": "exact",
    "matchWhy": "filing states the class (T. Rowe Price Retirement 2030 Fund)",
-   "filedNames": 1,
+   "filedNames": 2,
    "er": 0.55,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TRRCX",
@@ -539,7 +539,7 @@
    "updated": "2026-11-04",
    "matchGrade": "exact",
    "matchWhy": "filing states the class (T. Rowe Price Retirement 2025 Fund)",
-   "filedNames": 1,
+   "filedNames": 2,
    "er": 0.53,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TRRHX",
@@ -552,7 +552,7 @@
    "updated": "2026-11-04",
    "matchGrade": "exact",
    "matchWhy": "filing states the class (T. Rowe Price Retirement 2050 Fund)",
-   "filedNames": 1,
+   "filedNames": 2,
    "er": 0.62,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TRRMX",
@@ -565,7 +565,7 @@
    "updated": "2026-11-04",
    "matchGrade": "exact",
    "matchWhy": "filing states the class (T. Rowe Price Retirement 2035 Fund)",
-   "filedNames": 1,
+   "filedNames": 2,
    "er": 0.58,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TRRJX",
@@ -578,7 +578,7 @@
    "updated": "2026-11-04",
    "matchGrade": "exact",
    "matchWhy": "filing states the class (T. Rowe Price Retirement 2060 Fund)",
-   "filedNames": 1,
+   "filedNames": 2,
    "er": 0.64,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TRRLX",
@@ -591,7 +591,7 @@
    "updated": "2026-11-04",
    "matchGrade": "exact",
    "matchWhy": "filing states the class (T. Rowe Price Retirement 2020 Fund)",
-   "filedNames": 1,
+   "filedNames": 2,
    "er": 0.51,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TRRBX",
@@ -604,7 +604,7 @@
    "updated": "2026-11-04",
    "matchGrade": "exact",
    "matchWhy": "filing states the class (T. Rowe Price Retirement 2055 Fund)",
-   "filedNames": 1,
+   "filedNames": 2,
    "er": 0.63,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TRRNX",
@@ -613,11 +613,11 @@
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TRRNX"
   },
   "FPADX": {
-   "name": "FIDELITY EMERGING MARKETS INDEX",
+   "name": "Fidelity Emerging Markets Index Fund",
    "updated": "2026-11-04",
-   "matchGrade": "nearest",
+   "matchGrade": "exact",
    "matchWhy": "sole registered class",
-   "filedNames": 1,
+   "filedNames": 3,
    "er": 0.075,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FPADX",
@@ -630,7 +630,7 @@
    "updated": "2026-11-04",
    "matchGrade": "exact",
    "matchWhy": "filing states the class (High Yield Fund)",
-   "filedNames": 1,
+   "filedNames": 2,
    "er": 0.82,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=THYUX",
@@ -643,13 +643,559 @@
    "updated": "2026-11-04",
    "matchGrade": "exact",
    "matchWhy": "filing states the class (T. Rowe Price Retirement 2015 Fund)",
-   "filedNames": 1,
+   "filedNames": 2,
    "er": 0.49,
    "erAsOf": "2026-11-03",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TRRGX",
    "ytd": 4.95,
    "ytdAsOf": "2026-11-03",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TRRGX"
+  },
+  "VCGAX": {
+   "name": "Systematic Core Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "sole registered class",
+   "filedNames": 1,
+   "er": 0.63,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VCGAX",
+   "ytd": 9.7,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VCGAX"
+  },
+  "TRRAX": {
+   "name": "T. Rowe Price Retirement 2010 Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "filing states the class (T. Rowe Price Retirement 2010 Fund)",
+   "filedNames": 1,
+   "er": 0.49,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TRRAX",
+   "ytd": 4.63,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TRRAX"
+  },
+  "FBALX": {
+   "name": "Fidelity Balanced Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "filing states the class (Fidelity Balanced Fund)",
+   "filedNames": 1,
+   "er": 0.46,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FBALX",
+   "ytd": 10.5,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FBALX"
+  },
+  "VUSXX": {
+   "name": "Vanguard Treasury Money Market",
+   "updated": "2026-11-04",
+   "matchGrade": "subset",
+   "matchWhy": "sole registered class",
+   "filedNames": 1,
+   "er": 0.07,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VUSXX",
+   "ytd": 2.76,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VUSXX"
+  },
+  "TRSJX": {
+   "name": "T. Rowe Price Retirement 2065 Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "filing states the class (T. Rowe Price Retirement 2065 Fund)",
+   "filedNames": 1,
+   "er": 0.64,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TRSJX",
+   "ytd": 11.64,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TRSJX"
+  },
+  "FDIVX": {
+   "name": "Fidelity Diversified International Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "filing states the class (Fidelity Diversified International Fund)",
+   "filedNames": 1,
+   "er": 0.66,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FDIVX",
+   "ytd": 11.95,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FDIVX"
+  },
+  "FFFEX": {
+   "name": "Fidelity Freedom 2030 Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "filing states the class (Fidelity Freedom 2030 Fund)",
+   "filedNames": 1,
+   "er": 0.61,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFFEX",
+   "ytd": 7.03,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFFEX"
+  },
+  "FFTHX": {
+   "name": "Fidelity Freedom 2035 Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "filing states the class (Fidelity Freedom 2035 Fund)",
+   "filedNames": 1,
+   "er": 0.63,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFTHX",
+   "ytd": 8.52,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFTHX"
+  },
+  "FFTWX": {
+   "name": "Fidelity Freedom 2025 Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "filing states the class (Fidelity Freedom 2025 Fund)",
+   "filedNames": 1,
+   "er": 0.58,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFTWX",
+   "ytd": 5.96,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFTWX"
+  },
+  "FFFFX": {
+   "name": "Fidelity Freedom 2040 Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "filing states the class (Fidelity Freedom 2040 Fund)",
+   "filedNames": 1,
+   "er": 0.66,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFFFX",
+   "ytd": 11.17,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFFFX"
+  },
+  "VMRXX": {
+   "name": "Vanguard Cash Reserves Federal",
+   "updated": "2026-11-04",
+   "matchGrade": "subset",
+   "matchWhy": "sole registered class",
+   "filedNames": 1,
+   "er": 0.1,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VMRXX",
+   "ytd": 2.74,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VMRXX"
+  },
+  "FDGRX": {
+   "name": "Fidelity Growth Company Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "filing states the class (Fidelity Growth Company Fund)",
+   "filedNames": 1,
+   "er": 0.69,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FDGRX",
+   "ytd": 26.18,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FDGRX"
+  },
+  "FCPVX": {
+   "name": "Fidelity Small Cap Value Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "filing states the class (Fidelity Small Cap Value Fund)",
+   "filedNames": 1,
+   "er": 0.75,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FCPVX",
+   "ytd": 17.05,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FCPVX"
+  },
+  "FFFDX": {
+   "name": "Fidelity Freedom 2020 Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "filing states the class (Fidelity Freedom 2020 Fund)",
+   "filedNames": 1,
+   "er": 0.54,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFFDX",
+   "ytd": 4.96,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFFDX"
+  },
+  "FSRNX": {
+   "name": "Fidelity Real Estate Index Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "sole registered class",
+   "filedNames": 2,
+   "er": 0.07,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FSRNX",
+   "ytd": 3.66,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FSRNX"
+  },
+  "FCPGX": {
+   "name": "Fidelity Small Cap Growth Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "filing states the class (Fidelity Small Cap Growth Fund)",
+   "filedNames": 1,
+   "er": 0.86,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FCPGX",
+   "ytd": 16.29,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FCPGX"
+  },
+  "FFFGX": {
+   "name": "Fidelity Freedom 2045 Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "filing states the class (Fidelity Freedom 2045 Fund)",
+   "filedNames": 1,
+   "er": 0.68,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFFGX",
+   "ytd": 12.9,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFFGX"
+  },
+  "FFFHX": {
+   "name": "Fidelity Freedom 2050 Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "filing states the class (Fidelity Freedom 2050 Fund)",
+   "filedNames": 1,
+   "er": 0.68,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFFHX",
+   "ytd": 13.14,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFFHX"
+  },
+  "TRRFX": {
+   "name": "T. Rowe Price Retirement 2005 Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "filing states the class (T. Rowe Price Retirement 2005 Fund)",
+   "filedNames": 1,
+   "er": 0.49,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TRRFX",
+   "ytd": 4.12,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TRRFX"
+  },
+  "FDKVX": {
+   "name": "Fidelity Freedom 2060 Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "filing states the class (Fidelity Freedom 2060 Fund)",
+   "filedNames": 1,
+   "er": 0.68,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FDKVX",
+   "ytd": 13.49,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FDKVX"
+  },
+  "FDEEX": {
+   "name": "Fidelity Freedom 2055 Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "filing states the class (Fidelity Freedom 2055 Fund)",
+   "filedNames": 1,
+   "er": 0.68,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FDEEX",
+   "ytd": 13.46,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FDEEX"
+  },
+  "VHYLX": {
+   "name": "High Yield Bond Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "sole registered class",
+   "filedNames": 1,
+   "er": 0.68,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VHYLX",
+   "ytd": -0.38,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VHYLX"
+  },
+  "FFSFX": {
+   "name": "Fidelity Freedom 2065 Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "filing states the class (Fidelity Freedom 2065 Fund)",
+   "filedNames": 1,
+   "er": 0.68,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFSFX",
+   "ytd": 13.49,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFSFX"
+  },
+  "FFVFX": {
+   "name": "Fidelity Freedom 2015 Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "filing states the class (Fidelity Freedom 2015 Fund)",
+   "filedNames": 1,
+   "er": 0.49,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFVFX",
+   "ytd": 4.08,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFVFX"
+  },
+  "VTRIX": {
+   "name": "Vanguard International Value Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "sole registered class",
+   "filedNames": 1,
+   "er": 0.36,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VTRIX",
+   "ytd": 13,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VTRIX"
+  },
+  "FPURX": {
+   "name": "Fidelity Puritan Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "filing states the class (Fidelity Puritan Fund)",
+   "filedNames": 1,
+   "er": 0.47,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FPURX",
+   "ytd": 9.54,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FPURX"
+  },
+  "CSRIX": {
+   "name": "Cohen & Steers Institutional Realty Shares",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "sole registered class",
+   "filedNames": 1,
+   "er": 0.75,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=CSRIX",
+   "ytd": 7.17,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=CSRIX"
+  },
+  "SWPPX": {
+   "name": "Schwab S&P 500 Index Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "sole registered class",
+   "filedNames": 2,
+   "er": 0.02,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SWPPX",
+   "ytd": 12.71,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SWPPX"
+  },
+  "FFFCX": {
+   "name": "Fidelity Freedom 2010 Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "filing states the class (Fidelity Freedom 2010 Fund)",
+   "filedNames": 1,
+   "er": 0.46,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFFCX",
+   "ytd": 3.41,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFFCX"
+  },
+  "CPFXX": {
+   "name": "Capital Preservation Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "sole registered class",
+   "filedNames": 1,
+   "er": 0.47,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=CPFXX",
+   "ytd": 2.46,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=CPFXX"
+  },
+  "FFIDX": {
+   "name": "FIDELITY FUND",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "filing states the class (Fidelity Fund)",
+   "filedNames": 1,
+   "er": 0.42,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFIDX",
+   "ytd": 7.34,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFIDX"
+  },
+  "SVSPX": {
+   "name": "State Street S&P 500 Index",
+   "updated": "2026-11-04",
+   "matchGrade": "nearest",
+   "matchWhy": "sole registered class",
+   "filedNames": 1,
+   "er": 0.157,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SVSPX",
+   "ytd": 12.61,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SVSPX"
+  },
+  "NOLVX": {
+   "name": "Large Cap Value Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "sole registered class",
+   "filedNames": 1,
+   "er": 0.56,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=NOLVX",
+   "ytd": 14.24,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=NOLVX"
+  },
+  "VCTPX": {
+   "name": "Inflation Protected Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "sole registered class",
+   "filedNames": 1,
+   "er": 0.53,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VCTPX",
+   "ytd": -1.23,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VCTPX"
+  },
+  "VGREX": {
+   "name": "Global Real Estate Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "filing states the class (GLOBAL REAL ESTATE FUND)",
+   "filedNames": 1,
+   "er": 0.88,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VGREX",
+   "ytd": 3.73,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VGREX"
+  },
+  "FRBDX": {
+   "name": "Fidelity Freedom 2070 Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "filing states the class (Fidelity Freedom 2070 Fund)",
+   "filedNames": 1,
+   "er": 0.68,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FRBDX",
+   "ytd": 13.44,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FRBDX"
+  },
+  "VASVX": {
+   "name": "Vanguard Selected Value Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "sole registered class",
+   "filedNames": 1,
+   "er": 0.34,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VASVX",
+   "ytd": 10.75,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VASVX"
+  },
+  "FKIDX": {
+   "name": "Fidelity Diversified International K6 Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "sole registered class",
+   "filedNames": 1,
+   "er": 0.6,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FKIDX",
+   "ytd": 12.08,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FKIDX"
+  },
+  "PGFCX": {
+   "name": "Retirement Conservative Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "subset",
+   "matchWhy": "sole registered class",
+   "filedNames": 1,
+   "er": 0.35,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=PGFCX",
+   "ytd": 3.3,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=PGFCX"
+  },
+  "FILFX": {
+   "name": "Strategic International Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "nearest",
+   "matchWhy": "sole registered class",
+   "filedNames": 1,
+   "er": 0.41,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FILFX",
+   "ytd": 10.52,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FILFX"
+  },
+  "FOSFX": {
+   "name": "Fidelity Overseas Fund",
+   "updated": "2026-11-04",
+   "matchGrade": "exact",
+   "matchWhy": "filing states the class (Fidelity Overseas Fund)",
+   "filedNames": 1,
+   "er": 0.67,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FOSFX",
+   "ytd": 4.16,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FOSFX"
+  },
+  "FMDGX": {
+   "name": "Fidelity Mid Cap Growth Index",
+   "updated": "2026-11-04",
+   "matchGrade": "subset",
+   "matchWhy": "sole registered class",
+   "filedNames": 1,
+   "er": 0.05,
+   "erAsOf": "2026-11-03",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FMDGX",
+   "ytd": 0.94,
+   "ytdAsOf": "2026-11-03",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FMDGX"
   }
  },
  "vehicles": {},
