@@ -77,7 +77,12 @@ for (const [ticker, f] of Object.entries(funds)) {
     bad(`matchGrade ${f.matchGrade} is not exact/subset/nearest — "ambiguous" and a non-match must never reach a written entry`);
   }
   if (f.matchGrade !== undefined && typeof f.matchWhy !== "string") bad("matchGrade has no matchWhy explaining which class was taken and why");
-  for (const k of Object.keys(f)) if (!["name", "er", "erAsOf", "erSource", "ytd", "ytdAsOf", "ytdSource", "source", "updated", "status", "statusSource", "note", "matchGrade", "matchWhy"].includes(k)) bad(`unknown field ${k}`);
+  /* `filedNames` counts how many distinct filed spellings resolved to this one
+   * ticker -- about 2.3 on the first real run. It is a fact about the filings,
+   * and it is also the reason `name` and `matchGrade` must record the STRONGEST
+   * match rather than the last one written. */
+  if (f.filedNames !== undefined && !(Number.isInteger(f.filedNames) && f.filedNames >= 1)) bad(`filedNames ${f.filedNames} is not a positive integer`);
+  for (const k of Object.keys(f)) if (!["name", "er", "erAsOf", "erSource", "ytd", "ytdAsOf", "ytdSource", "source", "updated", "status", "statusSource", "note", "matchGrade", "matchWhy", "filedNames"].includes(k)) bad(`unknown field ${k}`);
 }
 
 /* VEHICLES: the same receipts, for something that has no ticker to be keyed by.

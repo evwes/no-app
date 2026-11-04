@@ -195,9 +195,27 @@ for (const w of work.slice(0, LIMIT)) {
   }
 
   if (!DRY && (e.er != null || e.ytd != null)) {
+    /* SEVERAL FILED NAMES RESOLVE TO ONE TICKER -- run #11 wrote 50 times and
+     * produced 22 entries, about 2.3 spellings per fund. The first version let
+     * the LAST write win, which is wrong twice over: the worklist is sorted by
+     * readers DESCENDING, so overwriting keeps the SMALLEST name, and it also
+     * kept the LAST grade rather than the best. FXAIX ended up labelled
+     * `nearest` under "Fidelity 500 Index" when "Fidelity 500 Index Fund" --
+     * 11.4M readers -- had matched it EXACTLY.
+     *
+     * That understates our own confidence, which is the safe direction and
+     * still wrong: `matchGrade` is published provenance and must describe the
+     * STRONGEST evidence tying this ticker to a filed name, not the most
+     * recent. So keep the best grade and the name that earned it, and record
+     * how many spellings arrived -- which is a fact about the filings worth
+     * having rather than a detail to discard. */
+    const RANK = { exact: 3, subset: 2, nearest: 1 };
     const ent = facts.funds[t.tk.toUpperCase()] ||= { name: w.name, updated: today };
-    ent.name = w.name; ent.updated = today;
-    ent.matchGrade = hit.grade; ent.matchWhy = t.why;
+    ent.updated = today;
+    if (!ent.matchGrade || (RANK[hit.grade] || 0) > (RANK[ent.matchGrade] || 0)) {
+      ent.name = w.name; ent.matchGrade = hit.grade; ent.matchWhy = t.why;
+    }
+    ent.filedNames = (ent.filedNames || 0) + 1;
     if (e.er != null) { ent.er = e.er; ent.erAsOf = e.erAsOf; ent.erSource = e.src; }
     if (e.ytd != null) { ent.ytd = e.ytd; ent.ytdAsOf = e.ytdAsOf; ent.ytdSource = e.src; }
     rep.wrote++;
