@@ -101,9 +101,17 @@ jobs:
       # schwab.wallst.com, which answered 200 with er AND ytd for three foreign
       # houses. `fetch-fund-facts.mjs` is the Yahoo path and stays unused --
       # Yahoo 429'd runs #1 and #2 and has answered 401 to every probe since.
+      # LIMIT 400. Run #11 did 120 names in about two minutes of the job's
+      # twenty, at roughly one second each (a ~400ms fetch plus 600ms of
+      # politeness), so 400 costs about seven minutes and leaves headroom. The
+      # yield falls as the list goes deeper -- the top of the worklist is
+      # registered funds and the tail is collective trusts with no registered
+      # series at all -- so this is diminishing rather than linear, and the
+      # per-name misses are printed with their reason so the falloff is
+      # visible rather than assumed.
       - name: Fetch
         if: inputs.mode == 'fetch'
-        run: node scripts/fund-facts-issuer.mjs --limit 120 --verbose
+        run: node scripts/fund-facts-issuer.mjs --limit 400 --verbose
       - name: Validate
         run: node scripts/fund-facts-check.mjs
       - name: Commit to the dev branch
