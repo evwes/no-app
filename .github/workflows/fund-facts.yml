@@ -42,14 +42,18 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: claude/wampo-401k-live-nx1t4o
-          # DEPTH 50, NOT 0. Run #6 sat THIRTEEN MINUTES in checkout where run
-          # #5 took seven seconds, because `fetch-depth: 0` clones the whole
-          # history and this repo commits multi-megabyte single-line JSON
-          # stores every hour. Nothing in this job reads history: the probes are
-          # stateless and the commit step only needs enough to rebase onto the
-          # branch tip. (`mirror-gate-test` is what wanted depth 0, and it does
-          # not run here.) Raise it if a step ever needs an older commit.
-          fetch-depth: 50
+          # DEPTH 1, AND THE TWO EARLIER GUESSES WERE BOTH WRONG. `fetch-depth:
+          # 0` was inherited from `mirror-gate-test`, which does not run here;
+          # cutting it to 50 did NOT help, because fifty revisions of this
+          # repo's hourly multi-megabyte single-line JSON stores is still an
+          # enormous fetch. (And my own note on that commit was wrong: run #5's
+          # checkout did not take seven seconds, its LOG merely began after
+          # checkout finished -- so checkout was always minutes, and run #6 was
+          # the same cost rather than an anomaly. A step whose duration is only
+          # visible as the gap before the first log line is easy to read as
+          # free.) Nothing in this job reads history: both probes are stateless,
+          # and the commit step deepens on demand below.
+          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -83,6 +87,11 @@ jobs:
           git add data/fund-facts.json data/fund-worklist.json
           if git diff --cached --quiet; then echo "no change"; exit 0; fi
           git commit -qm "Update fund facts and the sourcing worklist [skip ci]"
+          # The checkout is depth 1, so a rebase has no common ancestor to work
+          # from. Deepen only HERE, on the one path that needs history, rather
+          # than paying for it on every probe-only run -- which is most of them,
+          # since `mode: probe` writes nothing and never reaches this step.
+          git fetch -q --deepen=50 origin claude/wampo-401k-live-nx1t4o || true
           for i in 1 2 3 4; do
             git pull -q --rebase origin claude/wampo-401k-live-nx1t4o && git push -q origin HEAD:claude/wampo-401k-live-nx1t4o && exit 0
             sleep $((i * 5))
