@@ -36,8 +36,15 @@ if (!Array.isArray(SEC)) { console.error("sec-funds.json: expected a .funds arra
 const work = JSON.parse(readFileSync(path.join(ROOT, "data", "fund-worklist.json"), "utf8")).work;
 if (!Array.isArray(work) || !work.length) { console.error("fund-worklist.json: empty"); process.exit(1); }
 
+/* `U.S.` NORMALISES TO TWO TOKENS AND THAT ALONE COST A 3,773,459-READER NAME.
+ * The registry writes `Fidelity U.S. Bond Index Fund` and filers write
+ * `Fidelity US Bond Index Fund`, so a token test sees {U, S} against {US} and
+ * matches neither way. Adjacent single-character tokens are therefore welded
+ * back together -- which is a fact about an ABBREVIATION, not a guess about a
+ * fund, and it is symmetric, applied to both sides. */
 const norm = (s) => String(s || "").toUpperCase().replace(/[^A-Z0-9]+/g, " ").trim();
-const toks = (s) => new Set(norm(s).split(" ").filter(Boolean));
+const weld = (s) => s.replace(/\b([A-Z])(?:\s+([A-Z])\b)+/g, (m) => m.replace(/\s+/g, ""));
+const toks = (s) => new Set(weld(norm(s)).split(" ").filter(Boolean));
 
 /* Index the registry by the SERIES name (the part after `::`), keeping every
  * class so an ambiguous name can be SEEN as ambiguous rather than silently
@@ -62,7 +69,7 @@ for (const p of PIN) {
 }
 console.log(`registry: ${SEC.length.toLocaleString()} class rows over ${bySeries.size.toLocaleString()} distinct series; both pins resolve\n`);
 
-const grades = { exact: [], subset: [], none: [] };
+const grades = { exact: [], subset: [], nearest: [], ambiguous: [], none: [] };
 for (const w of work) {
   const n = norm(w.name);
   if (bySeries.has(n)) { grades.exact.push({ ...w, hit: bySeries.get(n) }); continue; }
@@ -74,6 +81,22 @@ for (const w of work) {
   if (t.size >= 3) {
     const cand = seriesToks.filter(({ t: st }) => [...t].every((x) => st.has(x)));
     if (cand.length === 1) { grades.subset.push({ ...w, hit: bySeries.get(cand[0].k) }); continue; }
+    /* NEAREST, and it is a WEAKER claim kept in its own grade. `Fidelity 500
+     * Index` is a subset of both `Fidelity 500 Index Fund` and `Fidelity SERIES
+     * 500 Index Fund`, and those are genuinely different funds -- the Series
+     * ones exist inside Fidelity's target-date funds. So the tie-break is the
+     * FEWEST unexplained extra tokens, and it must be a STRICT minimum: a tie
+     * at the minimum is still an unanswered question and goes to `ambiguous`,
+     * because picking one would be the recorded wrong-fund defect by a new
+     * route. */
+    if (cand.length > 1) {
+      const scored = cand.map((c) => ({ c, extra: c.t.size - t.size }));
+      const best = Math.min(...scored.map((s) => s.extra));
+      const at = scored.filter((s) => s.extra === best);
+      if (at.length === 1) { grades.nearest.push({ ...w, hit: bySeries.get(at[0].c.k), extra: best }); continue; }
+      grades.ambiguous.push({ ...w, n: cand.length });
+      continue;
+    }
   }
   grades.none.push(w);
 }
@@ -82,7 +105,13 @@ const sum = (a) => a.reduce((s, x) => s + (+x.readers || 0), 0);
 const fmt = (n) => Math.round(n).toLocaleString("en-US");
 const total = sum(work);
 console.log(`worklist: ${work.length.toLocaleString()} names · ${fmt(total)} readers\n`);
-for (const [g, label] of [["exact", "EXACT registry series name"], ["subset", "filed name is a unique token-subset"], ["none", "registry says NOTHING"]]) {
+for (const [g, label] of [
+  ["exact", "EXACT registry series name"],
+  ["subset", "unique token-subset"],
+  ["nearest", "nearest series, strictly fewest extras"],
+  ["ambiguous", "several series tie — NOT resolved"],
+  ["none", "registry says NOTHING"],
+]) {
   const a = grades[g];
   console.log(`${label.padEnd(38)} ${String(a.length).padStart(5)} names · ${fmt(sum(a)).padStart(11)} readers (${(sum(a) / total * 100).toFixed(1)}%)`);
 }
@@ -90,7 +119,9 @@ for (const [g, label] of [["exact", "EXACT registry series name"], ["subset", "f
 /* AMBIGUITY IS NOT COVERAGE. A series with several classes gives a ticker only
  * once the filed name states the class, and most do not -- so this is split out
  * rather than folded into the headline. */
-const resolved = [...grades.exact, ...grades.subset];
+/* `nearest` is included because it names ONE series, but it is the weakest
+ * grade and is printed separately above so a reader can discount it. */
+const resolved = [...grades.exact, ...grades.subset, ...grades.nearest];
 const oneClass = resolved.filter((x) => x.hit.classes.length === 1);
 const multi = resolved.filter((x) => x.hit.classes.length > 1);
 console.log(`\nof the resolved names:`);
