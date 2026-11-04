@@ -46,8 +46,19 @@ facts.funds ||= {}; facts.vehicles ||= {};
 
 /* sec-funds.json maps a registered series/class to its ticker. It is already in
  * the repo and is the cheapest way from a filed NAME to a profile URL. */
+/* THE SHAPE IS `{generated, source, count, funds: [...]}` AND THIS READ TOOK IT
+ * FOR A BARE ARRAY. `for (const r of SEC)` on a plain object throws "is not
+ * iterable", and the throw sat OUTSIDE the try -- so this script could never
+ * have completed a single run. Found 2026-11-04 by inspecting the file rather
+ * than by running the script, which is the only reason it was ever noticed:
+ * a crash on line 1 of the loop and a source that answers nothing look the
+ * same from the outside. Asserted now, so a shape change fails by name. */
 let SEC = [];
-try { SEC = JSON.parse(readFileSync(path.join(ROOT, "sec-funds.json"), "utf8")); } catch { /* optional */ }
+try {
+  const raw = JSON.parse(readFileSync(path.join(ROOT, "sec-funds.json"), "utf8"));
+  SEC = Array.isArray(raw) ? raw : raw.funds;
+  if (!Array.isArray(SEC)) throw new Error(`expected .funds array, got keys ${Object.keys(raw).join(",")}`);
+} catch (e) { console.log(`sec-funds.json unusable (${e.message}) — every name will need a search`); SEC = []; }
 const norm = (s) => String(s || "").toUpperCase().replace(/[^A-Z0-9]+/g, " ").trim();
 const secByName = new Map();
 for (const r of SEC) {
