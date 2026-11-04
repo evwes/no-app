@@ -42,18 +42,24 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: claude/wampo-401k-live-nx1t4o
-          # DEPTH 1, AND THE TWO EARLIER GUESSES WERE BOTH WRONG. `fetch-depth:
-          # 0` was inherited from `mirror-gate-test`, which does not run here;
-          # cutting it to 50 did NOT help, because fifty revisions of this
-          # repo's hourly multi-megabyte single-line JSON stores is still an
-          # enormous fetch. (And my own note on that commit was wrong: run #5's
-          # checkout did not take seven seconds, its LOG merely began after
-          # checkout finished -- so checkout was always minutes, and run #6 was
-          # the same cost rather than an anomaly. A step whose duration is only
-          # visible as the gap before the first log line is easy to read as
-          # free.) Nothing in this job reads history: both probes are stateless,
-          # and the commit step deepens on demand below.
-          fetch-depth: 1
+          # DEPTH 50, AND THIS IS THE MEASURED VALUE RATHER THAN THE THIRD
+          # GUESS. `fetch-depth: 0` was inherited from `mirror-gate-test`,
+          # which does not run here, and it cost run #6 thirteen minutes in
+          # checkout against a repo that commits multi-megabyte single-line
+          # JSON stores hourly. Depth 50 was then measured on run #7 from its
+          # own step timings: checkout 23:05:02 -> 23:05:47, FORTY-FIVE SECONDS,
+          # and the whole job 2 minutes.
+          #
+          # I claimed twice in commit messages that depth 50 "did not help" and
+          # both claims were read off a run that had not started its checkout at
+          # all -- the run list said `in_progress` while the job was still
+          # QUEUED. A queued job and a slow step are indistinguishable in that
+          # view; only the per-step timestamps separate them, and they are one
+          # API call away. Nothing here reads history, so depth could go lower,
+          # but 50 is what has been measured and it keeps the commit step's
+          # rebase working without a deepen-on-demand path that no run has yet
+          # exercised.
+          fetch-depth: 50
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -87,11 +93,6 @@ jobs:
           git add data/fund-facts.json data/fund-worklist.json
           if git diff --cached --quiet; then echo "no change"; exit 0; fi
           git commit -qm "Update fund facts and the sourcing worklist [skip ci]"
-          # The checkout is depth 1, so a rebase has no common ancestor to work
-          # from. Deepen only HERE, on the one path that needs history, rather
-          # than paying for it on every probe-only run -- which is most of them,
-          # since `mode: probe` writes nothing and never reaches this step.
-          git fetch -q --deepen=50 origin claude/wampo-401k-live-nx1t4o || true
           for i in 1 2 3 4; do
             git pull -q --rebase origin claude/wampo-401k-live-nx1t4o && git push -q origin HEAD:claude/wampo-401k-live-nx1t4o && exit 0
             sleep $((i * 5))
