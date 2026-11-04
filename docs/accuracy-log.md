@@ -61689,3 +61689,165 @@ clean no-difference, and the control being perfect makes that reassuring rather
 than suspicious.* The next step is the replay over the 14 named acks with
 `--download`, after the Toro witness exists. Merus's `--must-reach …:23` pin
 passed, so v205 does not disturb v204's delivery.
+
+---
+
+## 2026-11-04 (23:0xZ) — A FETCHER THAT COULD NEVER RUN, AND A LADDER ALREADY IN THE REPO
+
+The owner supplied a working J.P. Morgan product URL —
+`.../adv/products/jpmorgan-smartretirement-2060-fund-a-46641u473` — and asked
+whether the rest of the SmartRetirement target-date vintages could be found from
+it. Three things came out of answering that, and the largest was not about
+J.P. Morgan.
+
+**THE LINK ANSWERED EVERY QUESTION IT WAS ASKED, INCLUDING ONE ABOUT US.** Run #7
+reads it at `http=200 bytes=232923` carrying **expense ratio 0.440%** — the first
+J.P. Morgan figure this project has read. And **both of my earlier guessed paths
+404 on the same host, with the same user-agent, in the same minute**, so the
+2026-11-04 probe's J.P. Morgan 404s were OUR PATHS and not a closed host. That is
+exactly what the owner-supplied candidate was added to discriminate. The reason
+the guesses failed is visible in the real path: the tail `46641u473` is a
+**CUSIP**, so the shape is `/products/<slug>-<cusip>` and **no vintage can be
+derived by changing the year**. *A guessed 404 and a hostile 404 are
+indistinguishable, and they have opposite remedies* — which is why a
+known-good URL supplied by the owner is worth more than another guess.
+
+**AND THE LADDER IS NOT ON THAT PAGE: 1 product link in the markup, 0 siblings.**
+The body scan found exactly one further validated CUSIP, `46641Q332`, and its own
+surrounding JSON names it — `"fundIdentifier":"46641Q332","fundName":"JPMorgan
+Equity Premi…"` — a **Featured Fund cross-sell**, not a sibling vintage. So the
+selector is fetched after load. What the body did leak is the shape of
+J.P. Morgan's own data API (`fundIdentifier` / `fundName` pairs), which is the
+route if one is ever needed.
+
+**IT IS NOT NEEDED. `sec-funds.json` HAS BEEN IN THIS REPO ALL ALONG WITH ALL 154
+SmartRetirement ROWS** — every vintage, every share class, with tickers
+(JSMAX/JSMCX/JSMSX/JSMIX/JSMZX/JSMYX/JSMNX/JSMQX for 2030 alone), inside 29,406
+class rows over 12,440 series. ***I was one step from building a scraper for data
+sitting in the working directory.*** The recorded rule is *before adding a SOURCE,
+ask what the pipeline already reads and throws away*; this is its sharper form —
+**before building a RETRIEVER, ask what the repo already holds.**
+
+**AND THAT IS HOW A SCRIPT THAT HAS NEVER RUN WAS FOUND.**
+`fund-facts-issuer.mjs` — the fetcher written the previous cycle — read
+`sec-funds.json` as a bare ARRAY and then did `for (const r of SEC)`. The real
+shape is `{generated, source, count, funds: [...]}`, `for...of` on a plain object
+throws *"is not iterable"*, and **the throw sat OUTSIDE the `try`**, so that
+fetcher could not have completed a single run. It was found by INSPECTING the
+file, not by running the script, and that is the only reason it was noticed:
+***a crash on the first line of the loop and a source that answers nothing look
+identical from the outside*** — both produce no `fund-facts.json` entries, which
+is also what `fund-facts-check` reports today (0 entries, 0 failures). The read
+now asserts the shape and fails by name. Sibling of the recorded `loadStatus`
+lesson, with the twist that `sec-funds.json` has **no `lib-schema` loader**, so
+nothing was there to throw on a guessed shape.
+
+**WHAT THE REGISTRY CAN ALREADY NAME, measured by `scripts/worklist-resolvable.mjs`
+over the top-1,000 filed names that cover 91.2% of readers (941,450,472):**
+
+| grade | names | readers | |
+|---|---|---|---|
+| EXACT registry series name | 160 | 194,842,250 | 20.7% |
+| unique token-subset | 61 | 76,429,380 | 8.1% |
+| nearest series, strictly fewest extras | 62 | 66,519,102 | 7.1% |
+| several series TIE — **not** resolved | 55 | 54,744,053 | 5.8% |
+| registry says NOTHING | 662 | 548,915,687 | 58.3% |
+
+**The grades are never summed into one total**, because a looser grade is a
+weaker claim; `nearest` is the weakest and is printed on its own line so it can
+be discounted or dropped. Split again, because **ambiguity is not coverage**: 91
+names / 178,691,527 readers resolve to a series registering ONE class, so the
+ticker is unambiguous; 192 names / 159,099,205 readers hit a series registering
+several, where the filed name must state the class — choosing one would be the
+owner-gated wrong-share-class defect arriving by a new route.
+
+**TWO DEFECTS IN MY OWN MATCHER, BOTH FOUND BY READING THE UNRESOLVED LIST RATHER
+THAN ITS COUNT** — the largest misses were not collective trusts at all, they were
+registered funds we had failed to match. (1) **`U.S.` normalises to two tokens**:
+the registry writes `Fidelity U.S. Bond Index Fund`, filers write `Fidelity US
+Bond Index Fund`, a token test sees {U, S} against {US} and matches neither way,
+and that one punctuation artifact cost a **3,773,459-reader** name. Adjacent
+single-character tokens are now welded, symmetrically on both sides. (2) **a
+subset hitting several series was discarded whole**: `Fidelity 500 Index` is a
+subset of both `Fidelity 500 Index Fund` and `Fidelity **SERIES** 500 Index Fund`,
+which are genuinely different funds, so the tie-break is the fewest unexplained
+extra tokens and **must be a STRICT minimum** — a tie at the minimum stays
+unresolved. Those two took the addressable share from 28.8% to **35.9%**,
+recovering exactly the names the first list exposed (`Fidelity 500 Index` →
+FXAIX, `Fidelity Mid Cap Index` → FSMDX, `Fidelity Small Cap Index` → FSSNX).
+
+**THE REMAINING 58.3% IS FOUR CLASSES WITH FOUR REMEDIES, which the member list
+shows and no count would:** `Self-Directed Brokerage Account` (24,201,657
+readers) is not a fund and is correctly unresolved; `Vanguard Institutional 500
+Index Trust` and `Vanguard Institutional Total Bond Market Index Trust` are
+COLLECTIVE TRUSTS with no registered series, which is CUSIP territory;
+`AF EUROPAC GROWTH R6` and `FID 500 INDEX` are the recorded house-abbreviation
+class; `Vanguard Federal` and `Fidelity Government` are names the parser
+truncated. **None of the four is a wider screen.**
+
+**THE CUSIPS OUR OWN FILINGS CARRY — `scripts/cusip-census.mjs`, 369
+published+served rows / 324 distinct CUSIPs / 45 menus / 1,423,041 readers /
+$37,602,170,528, and 366 of the 369 publish NO ticker**, so where the identifier
+is present it is almost always on exactly the rows that need it. **THE SHAPE IS
+NOT THE WITNESS**: a 9-character alphanumeric run is also a dollar amount, an
+EIN, a plan number and a custodian's internal code, so every candidate is checked
+against the CUSIP **check digit** from the standard — arithmetic rather than a
+vocabulary, so it cannot go stale. It is load-bearing: 571 tokens matched the
+shape and **202 fail the check digit**, i.e. a shape-only count would have been
+55% larger. **AND THE FLOOR IS REPORTED RATHER THAN HIDDEN**: the module measures
+by sampling that ~10% of random 9-digit runs pass by chance, so **~58 of the 369
+are expected to be accidents** and the honest reading is "about 310 real"; two of
+the printed examples (`ACI0099W6`, `971DYYII8`) are the opaque custodian codes
+this record already names on the Lockheed menus and may well be among them.
+**CLEAREST MEMBER: AT&T (203,226 readers) files FOURTEEN `FIAM GROUP TR FOR
+EMPLOYEES COMMINGLED POOL CL F` vintages totalling ~$7.5B**, every one a
+collective trust with no ticker and no fee, each carrying its own distinct CUSIP
+(31565A687 … 31565A547) — a target-date ladder nameable by identifier today and
+not by inference at all.
+
+**THREE INSTRUMENT DEFECTS FOUND ON THE WAY, two of them mine and one of them the
+reason a measurement read a clean zero across 1.7M rows.**
+- **`lineups-index.json` keeps its ack map under `.plans`**, and `confident()`
+  indexes the map directly, so handing it the wrapper made EVERY ack read as
+  non-confident and the census printed `published+served rows scanned 0`.
+  *A clean zero is a report on the query*, and it looks exactly like a finding.
+  The inner map is now asserted non-empty and the run exits rather than printing
+  one. Three further guessed names in the same script each failed LOUDLY, which
+  is what `lib-schema` is for: `d.get(row)` with no field name threw, `col.parts`
+  is `d.col("participants")`, and the stored value is `fund.value` not `fund.v` —
+  that last printed **$0 on every row** until fixed.
+- **the body scan was gated on `!byCusip.size` and the size was 1**, so the pass
+  that could answer the owner's question was skipped by an off-by-one in its own
+  guard: the condition asked whether any LINK was found when the question is
+  whether any SIBLING was found. It now always runs, excludes the page's own
+  CUSIP from both passes, and prints context, *because a validated token is
+  still only a token until something nearby says it names a fund* — which is
+  precisely how `46641Q332` was identified as a cross-sell rather than a vintage.
+- **Node's `fetch` reports a bare `fetch failed` with the real code in
+  `e.cause`**, so testing `message` alone printed a sandbox DNS block as an
+  unexplained ERROR — the exact confusion that probe exists to prevent, since
+  `http=000` reports on the query and not the source.
+
+**AND A PROCESS NOTE WORTH MORE THAN THE SETTING IT CONCERNS: I asserted TWICE
+that cutting `fetch-depth` from 0 to 50 "did not help", and both assertions were
+false.** Run #7's own step timings settle it — checkout 23:05:02 → 23:05:47,
+**forty-five seconds**, whole job two minutes, against run #6's thirteen minutes
+at depth 0. ***What I was reading was a job that had not begun its checkout: the
+run list reports `in_progress` from the moment a run is created, while the job
+may still be QUEUED for a runner, so a queued job and a slow step are
+indistinguishable there.*** Only the per-step timestamps separate them and they
+are one API call away — the same call that had already corrected me once in the
+same sequence. Depth 50 is restored as the measured value; depth 1 plus a
+`--deepen` on the commit path was dropped because that branch sits where
+`mode: probe` never reaches, and **a check no run has exercised is not a check**.
+`fetch-depth: 0` was inherited from `mirror-gate-test`, which does not run in
+this workflow — the recorded shape of a setting carried over from the one
+workflow that needed it.
+
+**STILL OPEN, and deliberately not guessed:** whether `schwab.wallst.com` — the
+only candidate that answered a runner carrying BOTH an expense ratio and a YTD
+return, and keyed by TICKER — is general or only Schwab's own shelf. SWPPX alone
+cannot tell those worlds apart, so three foreign-house tickers were added
+(Fidelity FXAIX, Vanguard VTTVX, and JPMorgan JSMYX read out of `sec-funds.json`
+rather than guessed). If it is general it prices the whole 35.9%; if it is a
+shelf it prices almost none of it. A ticker is not a fee.
