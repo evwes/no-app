@@ -52,6 +52,14 @@ jobs:
       # probe runs first, writes NOTHING, and its log is the evidence.
       - name: Probe the candidate sources (writes nothing)
         run: node scripts/fund-source-probe.mjs
+      # ONE KNOWN URL AS THE KEY TO A WHOLE LADDER. The owner supplied a real
+      # J.P. Morgan product URL on 2026-11-04 and asked whether the other
+      # target-date vintages can be found from it. Each vintage and share class
+      # has its own CUSIP, so they cannot be guessed -- but a target-date page
+      # normally carries a vintage selector. This harvests the sibling links out
+      # of the page rather than assuming either way. Writes nothing.
+      - name: Harvest sibling product links from one known page (writes nothing)
+        run: node scripts/issuer-page-probe.mjs
       # The worklist is regenerated here because it is derived from the store,
       # and the store moves hourly. It sources nothing either.
       - name: Rebuild the worklist (top 1,000 names = 91.2% of readers)

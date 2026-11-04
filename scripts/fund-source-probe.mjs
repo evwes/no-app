@@ -84,12 +84,24 @@ const CANDIDATES = [
   { name: "BlackRock LifePath Index institutional page (the CIT family)",
     url: "https://www.blackrock.com/us/individual/products/251913/blackrock-lifepath-index-2030-fund-class-k-shares",
     want: "er+ytd" },
-  { name: "J.P. Morgan Asset Management product page (JLGMX)",
+  /* THE OWNER SUPPLIED THIS ONE ON 2026-11-04 AND IT IS THE CONTROL FOR THE
+   * WHOLE J.P. MORGAN FAMILY. The two guesses below it returned 404 WITH an
+   * expense ratio in the body -- a site that is open behind a wrong URL -- and
+   * the reason the guess was wrong is visible in this path: the tail
+   * `46641u473` is a CUSIP (46641U473), so the shape is
+   * `/products/<slug>-<cusip>` and no vintage can be derived by changing the
+   * year. If this ANSWERS and the guesses 404, the finding is "our paths were
+   * wrong", not "J.P. Morgan refuses runners" -- and those are opposite
+   * remedies. */
+  { name: "J.P. Morgan SmartRetirement 2060 A (OWNER-SUPPLIED, the control)",
+    url: "https://am.jpmorgan.com/us/en/asset-management/adv/products/jpmorgan-smartretirement-2060-fund-a-46641u473",
+    want: "er+ytd", note: "known-good path; a 404 here would mean the host refuses us, not that the path is wrong" },
+  { name: "J.P. Morgan product page, GUESSED CUSIP (JLGMX)",
     url: "https://am.jpmorgan.com/us/en/asset-management/adv/products/jpmorgan-large-cap-growth-fund-r6-4812a04050",
-    want: "er+ytd" },
-  { name: "J.P. Morgan fund lookup by ticker (JLGMX)",
+    want: "er+ytd", note: "the cusip in this path is a GUESS and is expected to 404" },
+  { name: "J.P. Morgan fund lookup by ticker, GUESSED shape (JLGMX)",
     url: "https://am.jpmorgan.com/us/en/asset-management/adv/funds/search/?ticker=JLGMX",
-    want: "er+ytd" },
+    want: "er+ytd", note: "guessed query shape" },
 ];
 
 const out = [];
