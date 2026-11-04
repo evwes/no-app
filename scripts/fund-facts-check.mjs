@@ -64,7 +64,20 @@ for (const [ticker, f] of Object.entries(funds)) {
     if (!["merged", "closed", "renamed"].includes(f.status)) bad(`status ${f.status} is not merged/closed/renamed`);
     if (!isUrl(f.statusSource)) bad("status has no statusSource URL");
   }
-  for (const k of Object.keys(f)) if (!["name", "er", "erAsOf", "erSource", "ytd", "ytdAsOf", "ytdSource", "source", "updated", "status", "statusSource", "note"].includes(k)) bad(`unknown field ${k}`);
+  /* `matchGrade` / `matchWhy` record HOW the filed fund name was tied to this
+   * ticker, added 2026-11-04 when `fund-facts-issuer.mjs` began resolving names
+   * through `sec-funds.json`. They are provenance about OUR inference, not a
+   * figure, and they matter because the grades are not equally strong: "exact"
+   * means the filed name IS the registered series name, while "nearest" means
+   * several series contained the filed tokens and one had fewest unexplained
+   * extras. A reader auditing a fee is entitled to know which. The allowlist
+   * is kept CLOSED rather than widened to anything -- it is what caught these
+   * two on their first run, which is the behaviour to preserve. */
+  if (f.matchGrade !== undefined && !["exact", "subset", "nearest"].includes(f.matchGrade)) {
+    bad(`matchGrade ${f.matchGrade} is not exact/subset/nearest — "ambiguous" and a non-match must never reach a written entry`);
+  }
+  if (f.matchGrade !== undefined && typeof f.matchWhy !== "string") bad("matchGrade has no matchWhy explaining which class was taken and why");
+  for (const k of Object.keys(f)) if (!["name", "er", "erAsOf", "erSource", "ytd", "ytdAsOf", "ytdSource", "source", "updated", "status", "statusSource", "note", "matchGrade", "matchWhy"].includes(k)) bad(`unknown field ${k}`);
 }
 
 /* VEHICLES: the same receipts, for something that has no ticker to be keyed by.
