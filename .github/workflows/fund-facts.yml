@@ -87,6 +87,13 @@ jobs:
       # One runner pass is then the evidence for the real patterns, instead of a
       # guessed pattern whose silent zero would be indistinguishable from "the
       # source does not carry it".
+      # THE TETHER BEFORE THE FETCH, ALWAYS. Its fixtures are REAL page text
+      # from run #9, where a label-proximity read took the day's price change
+      # for the expense ratio and gave FXAIX 0.37% instead of 0.015% -- four
+      # plausible, dated, sourced and WRONG figures that only --explain caught.
+      # If this suite reddens, nothing below it may write a fee.
+      - name: Tether — the fee must come from its own column, not the quote
+        run: node scripts/fund-facts-extract-test.mjs
       - name: Explain what the issuer page actually says (writes nothing)
         if: inputs.mode == 'probe'
         run: node scripts/fund-facts-issuer.mjs --limit 6 --explain

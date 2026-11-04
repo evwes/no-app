@@ -86,9 +86,29 @@ async function get(url) {
 const detag = (s) => s.replace(/<(script|style)[\s\S]*?<\/\1>/gi, " ").replace(/<[^>]+>/g, " ")
   .replace(/&nbsp;?/gi, " ").replace(/&amp;/gi, "&").replace(/\s+/g, " ");
 
-const ER_LABEL = /(net\s+expense\s+ratio|gross\s+expense\s+ratio|expense\s+ratio|operating\s+expenses)/i;
-const YTD_LABEL = /(ytd\s+return|ytd|year[\s-]to[\s-]date)/i;
+/* LABEL PROXIMITY IS REFUTED AND MUST NOT COME BACK. Run #9's --explain pass
+ * showed this page puts ALL the labels first and ALL the values after, so the
+ * first percentage following "Net Expense Ratio" is the DAY'S PRICE CHANGE:
+ *
+ *   Net Expense Ratio YTD Return <help text> $263.13 +0.96 (0.37%) 0.015% 12.73%
+ *
+ * A proximity read gave FXAIX er=0.37 and ytd=0.37 where the truth is 0.015
+ * and 12.73, and it was WRONG THE SAME WAY on all four funds it reached --
+ * every one plausible, dated and sourced. So the anchor is the VALUE GROUP's
+ * own structure: price, change, change-in-parens, then expense ratio, then YTD.
+ * Position is the only thing here that distinguishes a fee from a day's move.
+ *
+ * There is deliberately NO fallback to proximity. A refuted pattern kept as a
+ * fallback is a refuted pattern that still ships, and this one fails in the
+ * direction that publishes a confident wrong number. A page that does not match
+ * is reported as a miss instead. */
+const QUOTE_GROUP = /\$\s?([\d,]+\.\d{2})\s+([-+]?[\d.]+)\s+\(\s*([-+]?[\d.]+)\s*%\s*\)\s+([\d.]+)\s*%\s+([-+]?[\d.]+)\s*%/;
+const AS_OF = /Quote\s+data\s+as\s+of\s+(?:close\s+)?(\d{2}\/\d{2}\/\d{4})/i;
 const DATE_ANY = /(?:as\s+of\s*)?(\d{2}\/\d{2}\/\d{4})|(\d{4}-\d{2}-\d{2})|([A-Z][a-z]{2,8}\s+\d{1,2},\s+\d{4})/;
+/* An index fund's expense ratio is basis points, not tens of percent. The bound
+ * is loose on purpose -- some retail classes really do charge over 2% -- and it
+ * exists to catch a column shift rather than to judge a fee. */
+const ER_MAX = 5;
 
 const MONTHS = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 };
 function isoDate(m) {
@@ -104,37 +124,36 @@ function isoDate(m) {
   return null;
 }
 
-function pctNear(text, labelRe, { window = 260 } = {}) {
-  const m = labelRe.exec(text);
-  if (!m) return null;
-  const win = text.slice(m.index, m.index + window);
-  const p = /(-?\d{1,3}\.\d{1,3})\s*%/.exec(win);
-  if (!p) return { miss: "label found, no percentage within the window", win };
-  /* the date may sit before the label (a page-wide "as of") as well as after,
-   * so look in a wider span centred on the label */
-  const span = text.slice(Math.max(0, m.index - 400), m.index + window);
-  return { v: +p[1], asOf: isoDate(DATE_ANY.exec(span)), win };
-}
-
 function extract(text, url) {
   const out = { src: url };
-  const er = pctNear(text, ER_LABEL);
-  const ytd = pctNear(text, YTD_LABEL);
-  if (er && er.v != null) { out._er = er.v; out._erAsOf = er.asOf; }
-  if (ytd && ytd.v != null) { out._ytd = ytd.v; out._ytdAsOf = ytd.asOf; }
+  const g = QUOTE_GROUP.exec(text);
+  if (!g) {
+    out._win = "(the quote value group did not match — layout may have changed)";
+    return out;
+  }
+  const [, price, chg, chgPct, erPct, ytdPct] = g;
+  out._win = text.slice(Math.max(0, g.index - 150), g.index + g[0].length + 60);
+  const date = isoDate(AS_OF.exec(text) || DATE_ANY.exec(out._win));
+  const er = +erPct, ytd = +ytdPct;
+  out._er = er; out._ytd = ytd; out._chgPct = +chgPct; out._price = price;
+
+  /* THE CONTROL THAT THE COLUMNS ARE THE COLUMNS. If the "expense ratio" we
+   * read equals the day's price change, we are reading the quote again -- the
+   * exact run #9 defect -- so refuse rather than publish it. */
+  if (er === +chgPct && ytd === +chgPct) { out._reject = "er and ytd both equal the day's change — reading the quote, not the table"; return out; }
+  if (!(er >= 0 && er <= ER_MAX)) { out._reject = `expense ratio ${er}% outside 0-${ER_MAX}% — probably a column shift`; return out; }
+
   /* A FIGURE WITHOUT A DATE IS NOT WRITTEN. Kept under `_` so the report can
    * say "read it but dropped it", which is a different finding from "the page
    * does not carry it" -- and the two have different remedies. */
-  if (out._er != null && out._erAsOf) { out.er = out._er; out.erAsOf = out._erAsOf; }
-  if (out._ytd != null && out._ytdAsOf) { out.ytd = out._ytd; out.ytdAsOf = out._ytdAsOf; }
-  out._erWin = er?.win || er?.miss || "(no expense-ratio label on the page)";
-  out._ytdWin = ytd?.win || ytd?.miss || "(no YTD label on the page)";
+  if (date) { out.er = er; out.erAsOf = date; out.ytd = ytd; out.ytdAsOf = date; }
+  out._erAsOf = date; out._ytdAsOf = date;
   return out;
 }
 
 /* ---- the run -------------------------------------------------------------- */
 const rep = { names: 0, noTicker: 0, tried: 0, reached: 0, blocked: 0,
-  er: 0, ytd: 0, erNoDate: 0, ytdNoDate: 0, wrote: 0, byGrade: {} };
+  er: 0, ytd: 0, erNoDate: 0, ytdNoDate: 0, rejected: 0, wrote: 0, byGrade: {} };
 const today = new Date().toISOString().slice(0, 10);
 const misses = [];
 
@@ -162,12 +181,17 @@ for (const w of work.slice(0, LIMIT)) {
   if (e._er != null) { if (e.er != null) rep.er++; else rep.erNoDate++; }
   if (e._ytd != null) { if (e.ytd != null) rep.ytd++; else rep.ytdNoDate++; }
 
+  if (e._reject) rep.rejected++;
   if (VERBOSE) {
-    console.log(`${String(w.readers).padStart(10)} ppl  ${t.tk.padEnd(6)} ${hit.grade.padEnd(8)} er=${e.er ?? (e._er != null ? e._er + "(undated)" : "-")}@${e.erAsOf ?? "-"}  ytd=${e.ytd ?? (e._ytd != null ? e._ytd + "(undated)" : "-")}@${e.ytdAsOf ?? "-"}  ${w.name.slice(0, 40)}`);
+    console.log(`${String(w.readers).padStart(10)} ppl  ${t.tk.padEnd(6)} ${hit.grade.padEnd(8)} er=${e.er ?? (e._er != null ? e._er + "(held)" : "-")}@${e.erAsOf ?? "-"}  ytd=${e.ytd ?? (e._ytd != null ? e._ytd + "(held)" : "-")}@${e.ytdAsOf ?? "-"}  ${w.name.slice(0, 40)}`);
+    if (e._reject) console.log(`      REFUSED: ${e._reject}`);
   }
   if (EXPLAIN) {
-    console.log(`      ER  window: ${String(e._erWin).slice(0, 190)}`);
-    console.log(`      YTD window: ${String(e._ytdWin).slice(0, 190)}`);
+    /* The day's change is printed BESIDE the figures on purpose: it is the
+     * value a label-proximity read mistook for the fee, so showing all three
+     * is what makes a future regression obvious at a glance. */
+    console.log(`      price=${e._price ?? "-"} dayChange=${e._chgPct ?? "-"}%  ->  er=${e._er ?? "-"}% ytd=${e._ytd ?? "-"}%`);
+    console.log(`      window: ${String(e._win).slice(0, 200)}`);
   }
 
   if (!DRY && (e.er != null || e.ytd != null)) {
@@ -190,6 +214,7 @@ console.log(`\nnames ${rep.names} · no usable ticker ${rep.noTicker} · fetched
 console.log(`match grades: ${Object.entries(rep.byGrade).map(([k, v]) => `${k} ${v}`).join(" · ")}`);
 console.log(`extracted WITH a date: er ${rep.er} · ytd ${rep.ytd}`);
 console.log(`read but DROPPED for having no date: er ${rep.erNoDate} · ytd ${rep.ytdNoDate}`);
+console.log(`REFUSED by the column controls: ${rep.rejected}`);
 console.log(`wrote ${rep.wrote} entries${DRY ? " (DRY — nothing written)" : " to data/fund-facts.json"}`);
 if (rep.blocked) {
   console.log(`\n${rep.blocked} host(s) unreachable. If this ran in the CCR sandbox that is EXPECTED`);
