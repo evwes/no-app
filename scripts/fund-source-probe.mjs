@@ -54,6 +54,42 @@ const CANDIDATES = [
   { name: "Stooq daily CSV (no key, no auth)",
     url: "https://stooq.com/q/d/l/?s=fxaix.us&i=d",
     want: "price-only" },
+
+  /* THE FOUR THE OWNER ASKED FOR, 2026-11-04. Each gets more than one URL
+   * SHAPE because the shape is the part I would otherwise be guessing -- the
+   * Vanguard "profile API" guess came back 404 in the first probe, which is
+   * exactly the cost of assuming. Probe funds are chosen from the worklist so
+   * a hit is immediately useful:
+   *   TRRCX  T. Rowe Price Retirement 2030 -- the ladder is high in the list
+   *   SWPPX  Schwab S&P 500 Index
+   *   JLGMX  JPMorgan Large Cap Growth R6 -- on the owner's PulteGroup page
+   *   BlackRock's LifePath money is mostly COLLECTIVE TRUST, which is the
+   *          population with no ticker and no SEC filing, so both the iShares
+   *          product page and the institutional LifePath page are tried. */
+  { name: "T. Rowe Price fund research (TRRCX)",
+    url: "https://www.troweprice.com/personal-investing/tools/fund-research/TRRCX",
+    want: "er+ytd" },
+  { name: "T. Rowe Price product page (TRRCX)",
+    url: "https://www.troweprice.com/financial-intermediary/us/en/investments/mutual-funds/us-products/retirement-2030-fund.html",
+    want: "er+ytd" },
+  { name: "Schwab Asset Management product page (SWPPX)",
+    url: "https://www.schwabassetmanagement.com/products/swppx",
+    want: "er+ytd" },
+  { name: "Schwab research quote page (SWPPX)",
+    url: "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SWPPX",
+    want: "er+ytd" },
+  { name: "BlackRock iShares product search (fund list JSON)",
+    url: "https://www.ishares.com/us/product-screener/product-screener-v3.1.jsn?dcrPath=/templatedata/config/product-screener-v3/data/en/us-ishares/ishares-product-screener-backend-config",
+    want: "er+ytd" },
+  { name: "BlackRock LifePath Index institutional page (the CIT family)",
+    url: "https://www.blackrock.com/us/individual/products/251913/blackrock-lifepath-index-2030-fund-class-k-shares",
+    want: "er+ytd" },
+  { name: "J.P. Morgan Asset Management product page (JLGMX)",
+    url: "https://am.jpmorgan.com/us/en/asset-management/adv/products/jpmorgan-large-cap-growth-fund-r6-4812a04050",
+    want: "er+ytd" },
+  { name: "J.P. Morgan fund lookup by ticker (JLGMX)",
+    url: "https://am.jpmorgan.com/us/en/asset-management/adv/funds/search/?ticker=JLGMX",
+    want: "er+ytd" },
 ];
 
 const out = [];
