@@ -61966,3 +61966,95 @@ separate them and they are one API call away. Depth 1 plus a `--deepen` on the
 commit path was dropped in favour of the measured 50, because that branch sits
 where `mode: probe` never reaches and **a check no run has exercised is not a
 check**.
+
+---
+
+## 2026-11-04 (23:3xZ) — A TEST THAT FAILED A PAGE FOR BEING RIGHT, AND A LABEL THAT DESCRIBED US
+
+**`site-test` WAS RED ON MAIN AND THE PAGE IT FAILED WAS CORRECT.**
+
+```
+SMOKE FAIL: trust-linked-opaque: page does not say the assets are an interest in a master trust
+```
+
+**MY OWN CODE WAS EXONERATED BY MEASUREMENT RATHER THAN BY ARGUMENT:** swapping
+`origin/main`'s `app.js` and `index.html` in against the SAME data reproduced the
+failure identically, so it is pre-existing on main. The state filter was never
+implicated either — `stateCode` defaults to `""` and the filter is gated on
+truthiness, so it is inert on a fresh load — but *that was checked rather than
+assumed*, because a new filter over the plans table is exactly the shape of
+thing that would hide a deep-linked specimen.
+
+**THE DIAGNOSIS TOOK THE PAGE, BECAUSE INFERENCE RAN OUT.** Every condition in
+the guard read TRUE from the store: bit 65536 set, no lineup bit, `mtiaName`
+empty, and the plan's `mtiaAck` **absent from `mtias.json` under an ack lookup**.
+So the paragraph should have rendered and did not. Opening the report settled it
+in one line — `AVG EXPENSE RATIO — 15 funds held by its master trust`. The
+specimen had drifted onto **Verizon Savings Plan For Management Employees
+(119,145 participants)**, whose `VERIZON MASTER SAVINGS TRUST` carries a
+**FIFTEEN-FUND Schedule D list** (`EB DAILY LIQUIDITY STK INX FND` $16.9B and
+fourteen more), so `app.js` renders that table and returns BEFORE the "no fund
+list can be shown" paragraph. ***The page is MORE informative than the test
+expected, and the test failed it for that.***
+
+**THE CAUSE IS A BIT WHOSE MEANING WAS OVERTAKEN BY A SHIP.** Index bit 131072
+means *"trust-held, no fund list, and the trust's own return is opaque too"*, and
+it predates `trustScheduleDMenu` (2026-10-02) — which gives a plan its TRUST's
+Schedule D list, **a SECOND source of a menu that the bit knows nothing about.**
+The test selected on the bit alone where the render applies three conditions, and
+a DOL refresh moved the largest 131072 plan onto one with a Schedule D list.
+***A specimen picked from live data on a PROXY for a render condition stops
+covering its case the moment a new source of that condition ships*** — and the
+comment four lines above that selection already warned about specimen drift for a
+different reason, which is why the warning was not enough: it named the symptom
+and not the mechanism. The selection now applies the condition the RENDER
+applies and **asks the SHIPPED predicate** rather than restating its floor,
+because a transcribed copy of a rule measures the transcription and
+`TRUST_MENU_MIN_FUNDS` has moved before.
+
+**ONE TRAP WORTH THE COMMENT, and it would have made the fix green for the wrong
+reason:** `mtias.json`'s `trusts` map is keyed by **ARRAY INDEX, not by ack** —
+511 entries under `"0"`, `"1"`, `"2"`. A lookup by ack returns `undefined`, which
+the new predicate reads as *"this trust has no Schedule D list"*, i.e. it would
+have quietly restored the exact bug being fixed while printing SMOKE OK. The
+trust is found by matching `.ack` across the values. *Third guessed-shape error
+of the day on a store with no `lib-schema` loader* (after `sec-funds.json`'s
+`.funds` and `lineups-index.json`'s `.plans`), and the only one that would have
+failed SILENTLY rather than throwing. Verified in CI: **site-test green**.
+
+**AND THE OWNER'S "REMOVE FABRICATED" INSTRUCTION RESTS ON A CLASSIFICATION OF
+MINE THAT IS WRONG — MEASURED, AND NOT EXECUTED.**
+
+| bucket | rows | plans | readers | $ |
+|---|---|---|---|---|
+| FABRICATED | 280,307 | 50,365 | 78,670,272 | $779.6B |
+| ESTIMATE | 611,350 | 53,411 | 82,125,231 | $2,021.9B |
+| COMPARABLE | 54,510 | 9,341 | 39,195,416 | $1,783.3B |
+
+**The FABRICATED bucket is 280,222 of 280,307 rows — 99.97% — labelled only
+`no ticker resolved`, which describes OUR RESOLVER and not the filing.** Exactly
+85 rows carry a positive witness (84 employer stock, 1 stable-value). This
+record's own words: *that label describes US, not the filing, and shipping it as
+though it described the filing* is the recorded failure. And the matcher work of
+the same day proves it empirically rather than rhetorically: `Fidelity 500 Index`
+resolved to NOTHING that morning and resolves to **FXAIX at a sourced 0.015%**
+now, after two normalisation fixes.
+
+**READING THE LARGEST MEMBERS SPLITS IT THREE WAYS, with three different correct
+answers:** `ANG SM VAL IDX INST` (Amazon, **1,428,999 readers**, $356.7M) is
+Vanguard Small Cap Value Index Institutional with the house mangled — a real
+registered fund whose fee should be SOURCED, not withdrawn; ten
+`BlackRock Institutional Trust Company, . LIF…` rows (Target, **473,741
+readers**, $6.7B across the ladder) are the recorded welded-trustee class over
+real LifePath COLLECTIVE TRUSTS, which have no public fee by nature and should be
+withdrawn; `Money market fund` (Paychex, 759,234 readers) at 0.2% on $90,727
+names no fund and should be withdrawn. ***One instruction cannot serve all
+three***, and executing the blanket withdrawal would strip fees from identifiable
+funds for over a million readers at Amazon alone.
+
+**So 85 rows are withdrawable on present evidence and 78.6M readers' worth are
+not yet classified.** The collective-trust subset needs a VEHICLE witness, and
+the shipped suppressors read the TYPE CELL, which is blank on exactly these rows
+— the recorded `gicRow` shape for the seventh time. A name-vocabulary witness is
+the shape this record has measured as harmful more than once, so it is sized
+before it is built, and the owner has the split rather than a number.
