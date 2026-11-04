@@ -1,0 +1,104 @@
+{
+  "_schema": "THE ONLY place a sponsor's company website or benefits-guide link may live. Keyed by EIN (9 digits, no dash) because one company files several plans and they share one website. Every link carries `asOf` (the date it was verified), `method` (\"fetched\" = the page was read; \"search\" = an index described it and the host was unreachable) and `evidence` (the quote or result that convinced you). A benefits link over TWO YEARS old FAILS the checker: a benefits guide is a dated artifact and the motivating example is an annual-enrolment microsite replaced every autumn. `coversYear` is the guide's own stated year where it states one; `gated: true` marks a login portal a reader cannot open. Written by the company-links agent (.claude/agents/company-links.md), validated by scripts/company-links-check.mjs. NOT a filed fact -- this is the first curated field since data.js, and data.js is on record as going stale.",
+  "_network": "EVERY entry below is method \"search\". In a cloud session curl returns http=000 bytes=0 and WebFetch returns ENOTFOUND for all of these hosts: the egress policy allows the EFAST2 bucket and the search tool and little else. http=000 is a report on the QUERY, not a fact about the company -- it must never be read as \"the site is down\". Liveness belongs on a GitHub runner, which has open outbound network, or in a session whose network settings allow these hosts.",
+  "generated": "2026-11-04",
+  "companies": {
+    "134922641": {
+      "company": "American Electric Power",
+      "site": {
+        "url": "https://www.aep.com",
+        "asOf": "2026-11-04",
+        "method": "search",
+        "evidence": "Supplied by the owner as the worked example for this section; host unreachable from the session (curl http=000 bytes=0), so not independently read."
+      },
+      "benefits": {
+        "url": "https://businessolver.foleon.com/aep/aep-eguide-actives-2027-ae/",
+        "asOf": "2026-11-04",
+        "coversYear": 2027,
+        "method": "search",
+        "evidence": "Supplied by the owner. The path states 'actives 2027 ae' -- the 2027 annual-enrolment guide for active employees, administered by Businessolver; replaced each autumn.",
+        "gated": false
+      }
+    },
+    "911325671": {
+      "company": "Starbucks Corporation",
+      "site": {
+        "url": "https://www.starbucks.com",
+        "asOf": "2026-11-04",
+        "method": "search",
+        "evidence": "Search returned app.starbucks.com/careers/working-at-starbucks/benefits-and-perks as Starbucks' own careers content, establishing the corporate domain."
+      },
+      "benefits": {
+        "url": "https://www.starbucksbenefits.com",
+        "asOf": "2026-11-04",
+        "method": "search",
+        "evidence": "The site's own pages state it is 'an official site sponsored by Starbucks, maintained by the Starbucks benefits team'; it names the Starbucks Benefits Center and says the Benefits Plan Description is the governing document.",
+        "gated": false
+      }
+    },
+    "410215170": {
+      "company": "Target Corporation",
+      "site": {
+        "url": "https://corporate.target.com",
+        "asOf": "2026-11-04",
+        "method": "search",
+        "evidence": "corporate.target.com is Target's own careers and corporate domain across multiple returned paths (/careers/benefits, /careers/corporate/...)."
+      },
+      "benefits": {
+        "url": "https://corporate.target.com/careers/benefits",
+        "asOf": "2026-11-04",
+        "method": "search",
+        "evidence": "Target's own careers page covering pay and benefits; it directs team members to targetpayandbenefits.com (Alight-administered) for detail, which is itself login-gated and so not recorded here.",
+        "gated": false
+      }
+    },
+    "050494040": {
+      "company": "CVS Health Corporation",
+      "site": {
+        "url": "https://www.cvshealth.com",
+        "asOf": "2026-11-04",
+        "method": "search",
+        "evidence": "cvshealth.com is the corporate domain; jobs.cvshealth.com is its careers subdomain per multiple job postings."
+      },
+      "benefits": {
+        "url": "https://jobs.cvshealth.com/us/en/benefits",
+        "asOf": "2026-11-04",
+        "method": "search",
+        "evidence": "Multiple CVS Health job postings link to jobs.cvshealth.com/us/en/benefits for benefits detail. Attested by third-party job boards only, not read directly.",
+        "gated": false
+      }
+    },
+    "710415188": {
+      "company": "Walmart Inc.",
+      "site": {
+        "url": "https://corporate.walmart.com",
+        "asOf": "2026-11-04",
+        "method": "search",
+        "evidence": "corporate.walmart.com hosts Walmart's own benefits PDF under /content/dam/corporate/documents/about/working-at-walmart/."
+      },
+      "benefits": {
+        "url": "https://one.walmart.com/BenefitsGuide",
+        "asOf": "2026-11-04",
+        "method": "search",
+        "evidence": "Walmart's own associate documents direct readers to One.Walmart.com/BenefitsGuide; the leadership guide calls it a personalised guide to the benefits each associate is eligible for. Associate login required.",
+        "gated": true
+      }
+    },
+    "820544687": {
+      "company": "Amazon.com Services LLC",
+      "site": {
+        "url": "https://www.aboutamazon.com",
+        "asOf": "2026-11-04",
+        "method": "search",
+        "evidence": "aboutamazon.com is Amazon's own newsroom/corporate domain; returned pages include /md/news/workplace/ under Amazon's byline."
+      },
+      "benefits": {
+        "url": "https://hiring.amazon.com/why-amazon/benefits",
+        "asOf": "2026-11-04",
+        "method": "search",
+        "evidence": "An Amazon job listing refers candidates to hiring.amazon.com/why-amazon/benefits for benefits detail. Single attestation, not read directly -- the weakest entry here.",
+        "gated": false
+      }
+    }
+  }
+}
