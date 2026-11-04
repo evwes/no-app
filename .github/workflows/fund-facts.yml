@@ -12,6 +12,12 @@ on:
         description: "space-separated tickers (blank = refresh the file + seed list)"
         required: false
         default: ""
+      mode:
+        description: "probe = only ask which sources answer a runner, and write nothing; fetch = the Yahoo path (known to 429 here)"
+        required: false
+        default: "probe"
+        type: choice
+        options: ["probe", "fetch"]
   # SCHEDULE DISABLED 2026-09-18: runs #1 and #2 both got HTTP 429 from
   # Yahoo on every call (quoteSummary AND the crumb-free chart endpoint) —
   # Yahoo rate-limits GitHub's runner IP range outright. A daily red run is
@@ -40,7 +46,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      # WHICH SOURCE WILL TALK TO A RUNNER? Yahoo 429'd runs #1 and #2 on every
+      # call, which is why the schedule above is disabled. Building a second
+      # fetcher before answering that question would repeat the mistake, so the
+      # probe runs first, writes NOTHING, and its log is the evidence.
+      - name: Probe the candidate sources (writes nothing)
+        run: node scripts/fund-source-probe.mjs
+      # The worklist is regenerated here because it is derived from the store,
+      # and the store moves hourly. It sources nothing either.
+      - name: Rebuild the worklist (top 1,000 names = 91.2% of readers)
+        run: node scripts/fund-worklist.mjs --top 1000
       - name: Fetch
+        if: inputs.mode == 'fetch'
         run: node scripts/fetch-fund-facts.mjs ${{ github.event.inputs.tickers }}
       - name: Validate
         run: node scripts/fund-facts-check.mjs
@@ -48,9 +65,9 @@ jobs:
         run: |
           git config user.name "wampo-data-bot"
           git config user.email "noreply@anthropic.com"
-          git add data/fund-facts.json
+          git add data/fund-facts.json data/fund-worklist.json
           if git diff --cached --quiet; then echo "no change"; exit 0; fi
-          git commit -qm "Update fund facts (expense ratio + YTD return with as-of dates) [skip ci]"
+          git commit -qm "Update fund facts and the sourcing worklist [skip ci]"
           for i in 1 2 3 4; do
             git pull -q --rebase origin claude/wampo-401k-live-nx1t4o && git push -q origin HEAD:claude/wampo-401k-live-nx1t4o && exit 0
             sleep $((i * 5))
