@@ -37,7 +37,11 @@ concurrency:
 jobs:
   fetch:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # 35, up from 20: a 1,000-name fetch is about a second per name (a ~400ms
+    # request plus 600ms of politeness), so roughly 17 minutes of fetching plus
+    # checkout and the probes. The politeness delay is NOT what to cut if this
+    # ever runs long -- the limit is.
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
         with:
@@ -101,7 +105,8 @@ jobs:
       # schwab.wallst.com, which answered 200 with er AND ytd for three foreign
       # houses. `fetch-fund-facts.mjs` is the Yahoo path and stays unused --
       # Yahoo 429'd runs #1 and #2 and has answered 401 to every probe since.
-      # LIMIT 400. Run #11 did 120 names in about two minutes of the job's
+      # LIMIT 1000 -- the whole worklist, which is the 91.2%-of-readers set.
+      # Run #11 did 120 names in about two minutes of the job's
       # twenty, at roughly one second each (a ~400ms fetch plus 600ms of
       # politeness), so 400 costs about seven minutes and leaves headroom. The
       # yield falls as the list goes deeper -- the top of the worklist is
@@ -111,7 +116,7 @@ jobs:
       # visible rather than assumed.
       - name: Fetch
         if: inputs.mode == 'fetch'
-        run: node scripts/fund-facts-issuer.mjs --limit 400 --verbose
+        run: node scripts/fund-facts-issuer.mjs --limit 1000 --verbose
       - name: Validate
         run: node scripts/fund-facts-check.mjs
       - name: Commit to the dev branch
