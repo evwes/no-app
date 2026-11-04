@@ -78,6 +78,31 @@ const CANDIDATES = [
   { name: "Schwab research quote page (SWPPX)",
     url: "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SWPPX",
     want: "er+ytd" },
+
+  /* IS SCHWAB'S RESEARCH PAGE GENERAL, OR ONLY ITS OWN SHELF? It is the only
+   * candidate so far that answered a runner with BOTH an expense ratio and a
+   * YTD return, and it is keyed by TICKER -- which matters because
+   * `worklist-resolvable.mjs` measured that 35.9% of the top-1,000 names'
+   * readers can be turned into a ticker from `sec-funds.json` today. If this
+   * endpoint serves any symbol, it prices that whole population; if it serves
+   * only SWPPX and its siblings, it prices almost none of it, since Schwab's
+   * own funds are a small part of the worklist.
+   *
+   * SWPPX alone CANNOT distinguish those two worlds, which is the only reason
+   * these three exist: a Fidelity fund (the single largest name in the
+   * worklist, 11.4M readers), a Vanguard target-date fund, and a J.P. Morgan
+   * SmartRetirement class read straight out of sec-funds.json -- three houses
+   * that are not Schwab. A pass on all three makes it general; a pass on none
+   * makes it a shelf; a partial pass is its own finding. */
+  { name: "Schwab research, FOREIGN house — Fidelity FXAIX (11.4M readers)",
+    url: "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FXAIX",
+    want: "er+ytd", note: "tests whether the endpoint is general or only Schwab's own shelf" },
+  { name: "Schwab research, FOREIGN house — Vanguard VTTVX",
+    url: "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VTTVX",
+    want: "er+ytd" },
+  { name: "Schwab research, FOREIGN house — JPMorgan SmartRetirement 2030 R6 (JSMYX)",
+    url: "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=JSMYX",
+    want: "er+ytd", note: "ticker taken from sec-funds.json, not guessed" },
   { name: "BlackRock iShares product search (fund list JSON)",
     url: "https://www.ishares.com/us/product-screener/product-screener-v3.1.jsn?dcrPath=/templatedata/config/product-screener-v3/data/en/us-ishares/ishares-product-screener-backend-config",
     want: "er+ytd" },
