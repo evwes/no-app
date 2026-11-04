@@ -30,75 +30,27 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const argv = process.argv.slice(2);
 const N_EX = +((argv[argv.indexOf("--examples") + 1]) || 20);
 
-const rawSec = JSON.parse(readFileSync(path.join(ROOT, "sec-funds.json"), "utf8"));
-const SEC = Array.isArray(rawSec) ? rawSec : rawSec.funds;
-if (!Array.isArray(SEC)) { console.error("sec-funds.json: expected a .funds array"); process.exit(1); }
+/* The normalisers, the registry index, the pins and the graded resolver all
+ * live in `lib-fundmatch.mjs`, shared with `fund-facts-issuer.mjs`, because a
+ * transcribed copy of a predicate measures the transcription -- the recorded
+ * `tkExact` lesson, which cost 1.11 coverage points. `loadRegistry` THROWS on a
+ * wrong shape or a missing pin, so a broken index fails by name instead of
+ * reporting a clean low number. */
+import { loadRegistry, resolve, toks } from "./lib-fundmatch.mjs";
+
+const reg = loadRegistry(path.join(ROOT, "sec-funds.json"));
 const work = JSON.parse(readFileSync(path.join(ROOT, "data", "fund-worklist.json"), "utf8")).work;
 if (!Array.isArray(work) || !work.length) { console.error("fund-worklist.json: empty"); process.exit(1); }
-
-/* `U.S.` NORMALISES TO TWO TOKENS AND THAT ALONE COST A 3,773,459-READER NAME.
- * The registry writes `Fidelity U.S. Bond Index Fund` and filers write
- * `Fidelity US Bond Index Fund`, so a token test sees {U, S} against {US} and
- * matches neither way. Adjacent single-character tokens are therefore welded
- * back together -- which is a fact about an ABBREVIATION, not a guess about a
- * fund, and it is symmetric, applied to both sides. */
-const norm = (s) => String(s || "").toUpperCase().replace(/[^A-Z0-9]+/g, " ").trim();
-const weld = (s) => s.replace(/\b([A-Z])(?:\s+([A-Z])\b)+/g, (m) => m.replace(/\s+/g, ""));
-const toks = (s) => new Set(weld(norm(s)).split(" ").filter(Boolean));
-
-/* Index the registry by the SERIES name (the part after `::`), keeping every
- * class so an ambiguous name can be SEEN as ambiguous rather than silently
- * resolved to whichever class came first -- choosing one would be the recorded
- * wrong-share-class defect arriving by a new route. */
-const bySeries = new Map();
-for (const r of SEC) {
-  const series = String(r[0] || "").split("::").pop().trim();
-  const tk = r[1];
-  if (!series || !tk) continue;
-  const k = norm(series);
-  if (!bySeries.has(k)) bySeries.set(k, { series, classes: [] });
-  bySeries.get(k).classes.push({ tk, cls: r[3] || "" });
-}
-const seriesKeys = [...bySeries.keys()];
-const seriesToks = seriesKeys.map((k) => ({ k, t: toks(k) }));
-
-/* self-test: the owner's own family must resolve, or this measurement is void */
-const PIN = ["JPMORGAN SMARTRETIREMENT 2030 FUND", "FIDELITY 500 INDEX FUND"];
-for (const p of PIN) {
-  if (!bySeries.has(p)) { console.error(`PIN FAILED: registry has no series "${p}" — index is wrong, not the data`); process.exit(1); }
-}
-console.log(`registry: ${SEC.length.toLocaleString()} class rows over ${bySeries.size.toLocaleString()} distinct series; both pins resolve\n`);
+console.log(`registry: ${reg.rows.toLocaleString()} class rows over ${reg.bySeries.size.toLocaleString()} distinct series; both pins resolve\n`);
 
 const grades = { exact: [], subset: [], nearest: [], ambiguous: [], none: [] };
 for (const w of work) {
-  const n = norm(w.name);
-  if (bySeries.has(n)) { grades.exact.push({ ...w, hit: bySeries.get(n) }); continue; }
-  /* SUBSET: every token of the filed name appears in the series name. This is
-   * the direction that matters -- a filed name is usually an ABBREVIATION of
-   * the registered one, never a superset -- and it must be UNIQUE, because
-   * several matching series means we do not know which fund it is. */
-  const t = toks(w.name);
-  if (t.size >= 3) {
-    const cand = seriesToks.filter(({ t: st }) => [...t].every((x) => st.has(x)));
-    if (cand.length === 1) { grades.subset.push({ ...w, hit: bySeries.get(cand[0].k) }); continue; }
-    /* NEAREST, and it is a WEAKER claim kept in its own grade. `Fidelity 500
-     * Index` is a subset of both `Fidelity 500 Index Fund` and `Fidelity SERIES
-     * 500 Index Fund`, and those are genuinely different funds -- the Series
-     * ones exist inside Fidelity's target-date funds. So the tie-break is the
-     * FEWEST unexplained extra tokens, and it must be a STRICT minimum: a tie
-     * at the minimum is still an unanswered question and goes to `ambiguous`,
-     * because picking one would be the recorded wrong-fund defect by a new
-     * route. */
-    if (cand.length > 1) {
-      const scored = cand.map((c) => ({ c, extra: c.t.size - t.size }));
-      const best = Math.min(...scored.map((s) => s.extra));
-      const at = scored.filter((s) => s.extra === best);
-      if (at.length === 1) { grades.nearest.push({ ...w, hit: bySeries.get(at[0].c.k), extra: best }); continue; }
-      grades.ambiguous.push({ ...w, n: cand.length });
-      continue;
-    }
-  }
-  grades.none.push(w);
+  const hit = resolve(reg, w.name);
+  if (hit.grade === "exact") grades.exact.push({ ...w, hit });
+  else if (hit.grade === "subset") grades.subset.push({ ...w, hit });
+  else if (hit.grade === "nearest") grades.nearest.push({ ...w, hit, extra: hit.extra });
+  else if (hit.grade === "ambiguous") grades.ambiguous.push({ ...w, n: hit.n });
+  else grades.none.push(w);
 }
 
 const sum = (a) => a.reduce((s, x) => s + (+x.readers || 0), 0);

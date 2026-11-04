@@ -81,9 +81,22 @@ jobs:
       # and the store moves hourly. It sources nothing either.
       - name: Rebuild the worklist (top 1,000 names = 91.2% of readers)
         run: node scripts/fund-worklist.mjs --top 1000
+      # CALIBRATION, NOT DEBUGGING. The extractor's patterns are written against
+      # a page shape that cannot be fetched from the CCR sandbox, so --explain
+      # prints the bytes around each figure it looks for and writes NOTHING.
+      # One runner pass is then the evidence for the real patterns, instead of a
+      # guessed pattern whose silent zero would be indistinguishable from "the
+      # source does not carry it".
+      - name: Explain what the issuer page actually says (writes nothing)
+        if: inputs.mode == 'probe'
+        run: node scripts/fund-facts-issuer.mjs --limit 6 --explain
+      # The ticker-keyed path measured in run #8: sec-funds.json -> ticker ->
+      # schwab.wallst.com, which answered 200 with er AND ytd for three foreign
+      # houses. `fetch-fund-facts.mjs` is the Yahoo path and stays unused --
+      # Yahoo 429'd runs #1 and #2 and has answered 401 to every probe since.
       - name: Fetch
         if: inputs.mode == 'fetch'
-        run: node scripts/fetch-fund-facts.mjs ${{ github.event.inputs.tickers }}
+        run: node scripts/fund-facts-issuer.mjs --limit 120 --verbose
       - name: Validate
         run: node scripts/fund-facts-check.mjs
       - name: Commit to the dev branch
