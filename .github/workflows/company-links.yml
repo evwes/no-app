@@ -1,0 +1,66 @@
+name: Check the company website and benefits links
+
+# WHY THIS RUNS HERE AND NOT IN A SESSION. `data/company-links.json` holds, per
+# sponsor EIN, the company's own website and a benefits guide no more than two
+# years old. Validating the FILE needs no network and runs anywhere. Checking
+# that a URL still RESOLVES cannot run in a cloud session at all: every one of
+# those hosts returns `http=000 bytes=0` there, and a zero-byte fetch is a
+# report on the QUERY, not a fact about the company. It must never be read as
+# "the site is down". A runner has open egress, so liveness belongs here.
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 15:37 Eastern on Wednesdays. The minute is jittered off :00 and :30 on
+    # purpose (most crons sit there and get delayed), the hour avoids the
+    # 6-9 AM Pacific congestion window, and Wednesday keeps it clear of the
+    # Sunday-morning fund worklist the owner asked for.
+    #
+    # VERIFIED with this repo's own converter rather than computed by hand:
+    #   node scripts/et-schedule.mjs --check 20 37 15 37
+    #   -> cron "37 20 * * *" currently fires at 15:37 Eastern (EST) — OK
+    #
+    # GitHub cron speaks UTC only, so this is right for about eight months and
+    # then an hour out. Re-run that --check at the next transition
+    # (2027-03-14) rather than waiting for someone to notice.
+    - cron: "37 20 * * 3"
+
+permissions:
+  contents: read   # reports only; a replacement URL is a SOURCED fact and this
+                   # job must never invent one, so it needs no write access
+
+concurrency:
+  group: company-links
+  cancel-in-progress: false
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        # Depth 1: nothing here reads history, and `fetch-depth: 0` cost the
+        # fund-facts workflow thirteen minutes in checkout against this repo's
+        # hourly multi-megabyte JSON stores.
+        with: { fetch-depth: 1 }
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      # THE TETHER FIRST. `company-links-check.mjs` is the gate; this suite is
+      # what proves the gate can still FAIL -- 21 cases, each starting from a
+      # valid entry and breaking exactly one thing, with the two-year boundary
+      # pinned in both directions (731 days fails, 729 passes). A checker that
+      # only ever passes is decorative, so if this suite goes red the gate below
+      # means nothing and the job should stop here.
+      - name: Tether — the checker must still fail by name
+        run: node scripts/company-links-test.mjs
+      - name: Validate the file (shape, https, aggregators, the two-year rule)
+        run: node scripts/company-links-check.mjs
+      # LIVENESS LAST, because it is the only step that depends on the open
+      # internet and the only one whose failure is about the world rather than
+      # about us. It fails ONLY on 404/410; a CDN challenge, a rate-limit, a
+      # 5xx or a timeout is reported and passes, because this project lost
+      # three days to ten consecutive red runs nobody opened and a gate that
+      # reddens when nothing is wrong becomes a gate nobody reads.
+      - name: Liveness — only a GONE page fails
+        run: node scripts/company-links-live.mjs
