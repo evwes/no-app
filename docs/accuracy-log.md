@@ -62058,3 +62058,149 @@ the shipped suppressors read the TYPE CELL, which is blank on exactly these rows
 — the recorded `gicRow` shape for the seventh time. A name-vocabulary witness is
 the shape this record has measured as harmful more than once, so it is sized
 before it is built, and the owner has the split rather than a number.
+
+## 2026-11-05 (02:0xZ) — A CONFLATION GUARD THAT HAD SILENTLY BECOME A THREE-WAY CHECK, AND A PIN ASSERTING A PROPERTY ONE LAYER AWAY FROM WHERE IT IS TESTED
+
+**WHAT WAS WRONG.** `sec-tickers-test.mjs` holds four Fidelity share-class pins
+and, under them, the check that gives them their point: that the four
+contractions resolve to FOUR DIFFERENT symbols, because a conflation would
+publish one share class's ticker as another's. It read
+
+```js
+ok(new Set(got.filter(Boolean)).size === got.filter(Boolean).length, …)
+```
+
+so a pin resolving to **null** was dropped from BOTH sides before the comparison.
+With the Investor key absent from the table the suite printed
+`["FFOPX","FRLPX","FAVQX",null]` and reported *"the four class contractions
+resolve to DIFFERENT symbols"*. It had become a three-way check and said
+nothing.
+
+**A CONFLATION GUARD THAT TOLERATES AN ABSENT ANSWER IS WEAKEST EXACTLY WHEN A
+CLASS STOPS RESOLVING**, which is the event it exists to catch: the failure mode
+it guards against and the failure mode that disables it are the same event. The
+`filter(Boolean)` was certainly written to keep the check from throwing on a
+missing pin — a defensive habit that is right in a renderer and wrong in an
+assertion, because an assertion's job is to fail. Split in two: every pin must
+ANSWER, asserted separately from the distinctness.
+
+**AND THE PIN THAT EXPOSED IT WAS ASSERTING ITS PROPERTY IN THE WRONG PLACE.**
+The Investor pin asserted a KEY in the committed `sec-tickers.js` and failed two
+regenerations. Five candidate blockers were each refuted by measurement rather
+than argument: the filed spelling it named (`…Indx 2055 Inv`) is in **ZERO of
+1,783,536 published rows** (so the pin had gone stale on store drift and the
+spelling repair was right); the surviving spelling (`…Index 2055 Inv`, 9 rows)
+sits on CONFIDENT acks, so the publish gate is not it; `afAbbrevAsk` answers
+FDEWX for both spellings and both spelled-out Investor forms, so the ARM is not
+it; `resolve` answers FDEWX asserted (`why: "superset+class"`), so the base
+matcher is not it; and the generator's own note records attestation refusing
+**0 rows / 0 keys of 13,183 gains** for this family.
+
+**ONE GREP OF THE ARM'S OWN FIXTURES WAS THE WHOLE INVESTIGATION, AND I HAD
+ALREADY WRITTEN THE REPLACEMENT BEFORE RUNNING IT.** `af-abbrev-test.mjs`
+already carries
+`["FID FDM IDX 2050 INV", "FIPFX", "Investor, which no other class of that
+series can absorb"]` against its **FROZEN** fixture registry, in a series whose
+four classes are exactly the four this block holds apart. So the property was
+tested, in `site-test`, on evidence an SEC refresh cannot move. My patch would
+have been a **THIRD copy of one property, reading the LIVE `sec-funds.json`
+where the existing one reads a frozen registry** — worse on both counts, and it
+needed two new imports to say something already said. ***Sixth instance of
+"before building an instrument, ask whether the project already has one", and
+the first where the existing instrument was the fixture list of the very
+function I was about to assert against.*** The table pin is removed and its
+layer named rather than repaired, because a pin asserting something true of a
+layer it does not test is worse than one that names its layer honestly.
+
+**WHAT WAS DELIBERATELY NOT DONE.** Substituting an `INSTL` spelling was the
+convenient repair: it would have made the suite green, removed the only Investor
+case, and left the conflation check asserting four symbols differ with the
+hedged class gone — i.e. it would have papered over the degradation this entry
+is about. **A test that asserts something true but unverifiable is better left
+failing visibly than quietly loosened, and loosening one to make my own change
+ship would be exactly backwards.**
+
+**STILL OPEN:** why the regenerated table carries no Investor key is
+UNDIAGNOSED. 9 rows of one share class, publishing nothing today, against a
+property tested one layer down — and each further hypothesis costs a 30-minute
+regeneration, which is why it is recorded rather than chased.
+
+## 2026-11-05 (02:3xZ) — `overshoot` 366 -> 764 IS A DOL REFRESH AND NOT A REGRESSION, AND THE MECHANISM IS THE PRIOR-YEAR FALLBACK — BUT NOT FOR THE REASON THIS RECORD IMPLIES
+
+**THE RISE IS ATTRIBUTED, EXHAUSTIVELY, WITH THE AUDIT'S OWN FIGURES AS THE
+CONTROL.** `lineup-overshoot` escalated to HIGH at 764 against its written
+baseline of 471, with `PARSER_VERSION` unmoved at 204. The same trail line moved
+`plans` 112,652 -> **115,641** and `fullForm` 68,538 -> **71,484**, so a refresh
+landed on 2026-11-02 (`8c2ed9dd`; `0d88ee37` is the last pre-refresh commit) —
+and +4.3% plans against +109% overshoot menus is a **25x rate**, so "the
+universe grew" could not be accepted as the answer.
+
+Reproduced on BOTH stores from each ref's own data with the audit's exact
+conditions transcribed, and the control is that **the script reads 366 -> 764,
+the two figures the trail itself recorded.** Attribution, mutually exclusive and
+asserted to sum to the population:
+
+| | menus | ppl |
+|---|---|---|
+| SAME — already overshooting | 241 | 299,040 |
+| **NEW_ACK — the plan's newest filing changed** | **513** | **789,209** |
+| NEW_PLAN — not in the old universe | 10 | 4,808 |
+| DENOM_MOVED — same ack, assets moved | **0** | 0 |
+| NEW_LINEUP — same ack, newly confident | **0** | 0 |
+
+125 menus / 130,144 ppl LEFT the set, so the net +398 is a gross +523 against
+−125. **So it is a population change: 513 plans newly publish an inflated menu
+total because their newest filing changed, and the escalation is CORRECT — those
+readers see a wrong total today — while the comparator 471 now spans a universe
+change and says less than it looks.**
+
+**`fb` IS ENRICHED 3.1x, AND THE BASE RATE IS WHY THAT SENTENCE MEANS ANYTHING.**
+188 of 513 NEW_ACK members carry a prior-year fallback, which "looks high" and is
+worthless alone. Measured: `fb` is **9.06%** of all 61,584 confident menus with a
+plan row and **28.40%** of the 764 — enrichment **3.1x**. Within the fallbacks the
+excess is concentrated in TINY menus: **15.7% of fb overshoots have under 10 rows
+against 2.1% of all confident menus**, while the NON-fb overshoots sit at 2.6%,
+i.e. exactly the base rate. So the tiny-menu problem belongs to the fallback and
+not to overshoot in general, and a 3-row "menu" for Graphic Packaging or a 6-row
+one for BNSF Railway (32,708 ppl) is the recorded CATEGORY-TABLE class accepted
+because a summary happens to sum near plan assets.
+
+***AND THE ARITHMETIC THIS FILE IMPLIES IS REFUTED, WITH THE DIRECTION
+REVERSED.*** `lineups-status`'s own note says of a fallback that "ratio is judged
+against current-year assets", which reads as the hazard. Tested two
+ways: assets **GREW on 158 of 214** fb overshoots and shrank on 56, and judging
+the menu against BOY instead of EOY brings only **22%** into band against a
+**3%** non-fb control — so a year mismatch explains at most ~48 of 217 and is not
+the mechanism. The sharper half: **the ratio is WORSE against BOY on the same 158
+of 214**, and 9 of the 10 largest go that way (Charter 1.44x -> 1.67x, Marmon
+1.41x -> 1.78x, Cisco 1.22x -> 1.42x). ***The current-year denominator is
+FLATTERING these menus: the overshoot UNDERSTATES the fallback parses rather than
+inventing them.*** The fallback filings over-count against their own year too,
+and the newer, larger denominator hides part of it.
+
+**TWO OF MY OWN HYPOTHESES WERE REFUTED BY THEIR OWN OUTPUT AND NEITHER SHIPPED.**
+(a) Charter's largest row is named `"At fair value"`, Cisco's
+`"Collective Trusts(1) at NAV"`, Eli Lilly's `"measured at NAV"` — and the
+audit's `FV_NOTE` matches **none** of them, requiring the spelled-out
+phrasings, which is *a fix for one phrasing of a class is not a fix for the
+class* met on an abbreviation. It looked like the explanation and **is 2 of the
+395** single-row-explained overshoots; the widened vocabulary would newly flag
+**339 menus / 1,858,864 ppl** whose members include `TIAA Traditional Annuity
+Contracts` and real pooled products, so *a count keyed on a vocabulary measures
+the vocabulary* and the widening is refused rather than queued.
+(b) The phantom-caption framing: of the 395 menus a single row explains,
+**379 have a largest row that NAMES A REAL FUND** (Dollar Tree's
+`Vanguard Target Retirement 2035 Trust I` at 11% of menu, 1.16x -> 1.03x
+without it) and only 14 are already-qualified nameless rows. These are real rows
+summing past the plan, not labels read as holdings.
+
+**WHAT IS NOT DONE, AND DELIBERATELY.** The structurally right fix is to judge a
+fallback menu against the FALLBACK YEAR's assets and refuse confidence when it
+overshoots its own year — `fetch-4i`, so a `PARSER_VERSION` bump and a full
+re-parse: **the owner's call.** Raising `OVER_BASELINE` was considered and
+refused: the rise is a population change, but 513 plans really did start
+publishing a wrong total, and a baseline raised to make the number green is the
+loosening this record keeps warning about. The direction test is kept over a band
+test throughout, because *a band test is not a direction test*.
+Instruments: `scripts/overshoot-diff.mjs`, `overshoot-attribute.mjs`,
+`overshoot-fb.mjs`.

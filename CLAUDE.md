@@ -2108,6 +2108,61 @@ unreachable from the sandbox); and 19 of the 61 have no crawlable page, which is
 the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
 
 **QUEUED, SIZED, NOT SHIPPED:**
+- **`overshoot` 366 -> 764 IS A DOL REFRESH, NOT A REGRESSION — ATTRIBUTED
+  2026-11-05, AND ONE SENTENCE IN THIS FILE IS REFUTED WITH ITS DIRECTION
+  REVERSED.** `PARSER_VERSION` unmoved at 204; the 2026-11-02 refresh moved
+  `plans` 112,652 -> **115,641** and `fullForm` 68,538 -> **71,484**. Reproduced
+  on both stores with the audit's own conditions, control being that the script
+  reads **366 -> 764**, the trail's own pair: **NEW_ACK (the plan's newest filing
+  changed) 513 / 789,209 ppl**, SAME 241, NEW_PLAN 10, **DENOM_MOVED 0,
+  NEW_LINEUP 0**, and 125 menus left the set. So the escalation is CORRECT —
+  513 plans newly publish a wrong total — while the comparator 471 now spans a
+  universe change. **Do NOT raise `OVER_BASELINE` to make it green.**
+  **`fb` is enriched 3.1x** (28.40% of the 764 against a **9.06%** base rate over
+  61,584 confident menus — the base rate is what makes "188 of 513" mean
+  anything), and within the fallbacks **15.7% have under 10 rows against 2.1%
+  store-wide, while non-fb overshoots sit at 2.6%, i.e. the base rate** — so the
+  tiny-menu excess belongs to the FALLBACK and not to overshoot, and a 3-row
+  "menu" is the recorded category-table class accepted because a summary sums
+  near plan assets.
+  ***`lineups-status`'s note that a fallback's "ratio is judged against
+  current-year assets" reads as the hazard and the measurement says the
+  OPPOSITE:*** assets **GREW on 158 of 214**, judging against BOY brings only
+  **22%** into band against a **3%** non-fb control, and the ratio is **WORSE
+  against BOY on the same 158** (Charter 1.44x -> 1.67x, Marmon 1.41x -> 1.78x).
+  *The current-year denominator FLATTERS these menus — the overshoot UNDERSTATES
+  the fallback parses.* **REFUTED and not queued:** an abbreviated fair-value
+  vocabulary (`At fair value`, `at NAV`) is **2 of 395** and would newly flag
+  **339 menus / 1,858,864 ppl** including real pooled products; and **379 of the
+  395** single-row-explained overshoots have a largest row that NAMES A REAL
+  FUND, so this is not a phantom-caption class. **Owner-gated remedy:** judge a
+  fallback against the FALLBACK YEAR's assets and refuse confidence when it
+  overshoots its own year — `fetch-4i`, so a bump and a full re-parse.
+  `docs/accuracy-log.md` 2026-11-05 (02:3xZ).
+- **THE REGENERATED `sec-tickers.js` CARRIES NO KEY FOR THE FIDELITY INVESTOR
+  CLASS, AND WHY IS UNDIAGNOSED (2026-11-05).** 9 rows of one share class,
+  publishing nothing today. Five candidate blockers were each REFUTED by
+  measurement: the old pinned spelling (`...Indx 2055 Inv`) is in **0 of
+  1,783,536** published rows (store drift, so the spelling repair was right);
+  the surviving spelling (`...Index 2055 Inv`) sits on CONFIDENT acks, so the
+  publish gate is not it; `afAbbrevAsk` answers FDEWX for both spellings and
+  both spelled-out forms, so the ARM is not it; `resolve` answers FDEWX
+  asserted (`why: "superset+class"`), so the base matcher is not it; and the
+  generator's own note records attestation refusing **0 rows / 0 keys of 13,183
+  gains** for this family. Each further hypothesis costs a 30-minute
+  regeneration, which is why this is recorded rather than chased.
+  **The PROPERTY is tethered, one layer down and on better evidence:**
+  `af-abbrev-test.mjs` asserts `FID FDM IDX 2050 INV -> FIPFX` against its
+  FROZEN registry, in a series whose four classes are exactly the four
+  `sec-tickers-test`'s pins hold apart — so the table pin was REMOVED rather
+  than repaired with a convenient `INSTL` spelling, which would have left the
+  conflation check asserting four symbols differ with the hedged class gone.
+  ***And that conflation check had silently become a THREE-WAY check***:
+  `new Set(got.filter(Boolean))` dropped a null from both sides, so it reported
+  "the four class contractions resolve to DIFFERENT symbols" while printing one.
+  *A conflation guard that tolerates an absent answer is weakest exactly when a
+  class stops resolving.* Fixed; every pin must now answer, asserted separately
+  from the distinctness. `docs/accuracy-log.md` 2026-11-05 (02:0xZ).
 - **FOUND BY THE 12:07 DRAW AND SIZED — TWO SHAPES ON ONE 192,505-PARTICIPANT
   PAGE, BOTH READ OFF THE COMMITTED CRAWLABLE PAGE SO NEITHER NEEDS A HARNESS.**
   At&T Inc. (ratio 0.989, $42.7B) publishes
