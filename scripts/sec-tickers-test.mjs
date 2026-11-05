@@ -95,7 +95,31 @@ const FID_PINS = [
   ["\u0000FID FDM IDX 2050 IPR", "FFOPX", "Institutional Premium, contracted to three letters"],
   ["\u0000Fidelity Freedom Index 2050 PRM", "FRLPX", "Premier — and NOT Institutional Premium"],
   ["\u0000FID FREEDOM INDEX 2050 PREM II", "FAVQX", "Premier II, two tokens"],
-  ["\u0000Fidelity Freedom Indx 2055 Inv", "FDEWX", "Investor"],
+  /* `Index`, not `Indx`, AS OF 2026-11-05 — and the repair is the spelling
+   * only, deliberately. A regeneration failed this pin, and the cause is store
+   * drift rather than the arm: `Fidelity Freedom Indx 2055 Inv` is now in
+   * ZERO of 1,783,536 published rows, and the generator writes a key only for
+   * an (issuer, nameRaw) pair that EXISTS, so no row means no key. A removed
+   * key is a loss only if a reader stands behind it, and none does.
+   *
+   * `Fidelity Freedom Index 2055 Inv` is the surviving spelling (9 rows, of 103
+   * contracted-Investor spellings still stored), and FDEWX is unchanged:
+   * `sec-funds.json` registers it as the INVESTOR CLASS of Fidelity Freedom
+   * Index 2055, beside FFLDX Institutional Premium, FTYPX Premier and FAVRX
+   * Premier II -- which is the distinction the four pins exist to hold apart.
+   *
+   * WHAT DRIFTED IS THE PRODUCT CONTRACTION (`Indx`), NOT THE CLASS
+   * CONTRACTION (`Inv`), and `Inv` is what this pin tests. Substituting an
+   * `INSTL` spelling would have been the convenient repair and the wrong one:
+   * it would have removed the only Investor case and left the conflation check
+   * at line ~138 asserting four symbols differ with the hedged class gone.
+   *
+   * THE FRAGILITY IS THE REAL FINDING. Every verdict here is read off LIVE
+   * store attestations, so a DOL refresh can redden this suite with nothing
+   * wrong -- the same property this record names for `merge-name-test`, whose
+   * status flipped three times on drift alone. Freezing the evidence these
+   * pins read is the fix, and it is named here rather than done. */
+  ["\u0000Fidelity Freedom Index 2055 Inv", "FDEWX", "Investor"],
 ];
 /* THAT RESIDUE IS NO LONGER A RESIDUE, AND THIS PIN IS WHY THE CHANGE WAS
  * MEASURED BEFORE IT SHIPPED (2026-10-16).
