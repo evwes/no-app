@@ -62525,3 +62525,43 @@ candidates are the SEC matcher's own verdict (`resolveHolding` reaching a series
 at all, even as a comparable) and the row's menu siblings — the second being a
 new risk class, since every shipped suppressor judges a row by itself.
 Instrument: `scripts/mistyped-stock-fee-diff.mjs`.
+
+**ADDENDUM 2026-11-05 (13:0xZ) — THE SECOND WITNESS IS ALSO REFUTED, AND IT IS
+CIRCULAR BY CONSTRUCTION, WHICH CLOSES THE WHOLE WITNESS ROUTE.** The entry
+above names the SEC matcher's own verdict as the candidate: ask
+`resolveHolding` whether the registry holds a series these tokens name, on the
+reasoning that a real fund our page missed should answer and an unbranded
+pooled fund should not. Tested against the 21 rows whose truth the reading
+established, with controls (`Fidelity 500 Index Fund` -> FXAIX, employer stock
+-> null):
+
+```
+agreement 9/21
+DEFECT rows it would SPARE     0    (safe)
+REAL rows it would WITHDRAW   12    (useless)
+```
+
+It is silent on **12 of 13** real registered funds — `T. Rowe Price Retirement
+2030 Fund - R Class`, three `Fidelity Freedom … Class K` rows, `Vanguard Dev
+Mrkts Index Fund Adm`, two `iShares Tr …`, `First Trust Dow Jones Internet`,
+`Allspring Special Small Cap Value`, `PLUS Korea Defense Industry Index ETF` —
+answering only for Oakmark.
+
+***AND THAT IS NOT A WEAK WITNESS BUT A CIRCULAR ONE. The class is DEFINED by
+`!tk`, i.e. by every resolver on the page having failed; so asking another
+resolver whether its own silence is honest returns the same fact under a new
+name.*** A row is in this population precisely because the resolvers reach
+nothing, which is why `resolveHolding` reaching nothing carries no information
+about whether a fund exists behind the name. **Both refuted witnesses failed
+for the same underlying reason in different costumes:** the registrant
+vocabulary was contaminated by the words the rows are made of, and the matcher
+is downstream of the failure it was asked to explain.
+
+**SO THE NARROWING CANNOT COME FROM INSIDE THIS REPO'S RESOLVERS, and the
+honest route is the one the class's SIZE already permits:** the defect half is
+~9 rows on 11 plans, of which **Bristol-Myers Squibb and Duke Energy are 4
+rows, 71,457 of the 76,252 readers and 99.5% of the dollars.** That is small
+enough to settle by READING THE FOUR FILINGS, which is what this record
+prescribes at this scale — an enumerated, filing-verified set rather than a
+predicate. The remaining ~24 rows keep their estimates, correctly: we have no
+evidence those figures are wrong.
