@@ -101,7 +101,16 @@ for (const g of groups.values()) {
   const planObj = PLAN_BY_KEY.get(`${g.lead.ein}|${g.lead.pn}`) || anyPlan;
   let r;
   try { r = R.renderRow(planObj, g.fund, "menu", g.total); } catch { continue; }
-  if (!r || !r.tk) continue;
+  /* THE PAGE APPLIES `!star` AND SO MUST THIS. A starred row is a COMPARABLE:
+   * the plan holds a collective trust and the ticker is a registered
+   * equivalent whose retail fee the page already calls a ceiling. The sourced
+   * figure is not about that vehicle, so it is not applied there -- and the
+   * first version of this measurement omitted the condition, which put
+   * Amazon's twelve asterisked `VANGUARD TARGET <year>` trust rows in the AGREE
+   * bucket where the real behaviour was a hedge being relabelled a fact. A
+   * measurement of what a page publishes must apply every condition the page
+   * applies, in order. */
+  if (!r || !r.tk || r.star) continue;
   const fact = FACTS[String(r.tk).toUpperCase()];
   if (!fact || fact.er == null) continue;
   reached += g.rows;

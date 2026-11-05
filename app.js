@@ -4171,6 +4171,12 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
     const list = tab === "sma" ? lu.sma : orderLineup(lu.funds);
     const total = list.reduce((s, f) => s + f.value, 0);
     let starred = false;
+    /* Same shape as `starred` and for the same reason: declared here, set in the
+     * row callback below, read by the footnote after it. `list.map` is EAGER, so
+     * the template can read a flag the callback sets — and breaking that link
+     * would leave check marks printing with nothing explaining them, which is
+     * worse than either state. `fund-note-test.mjs` pins the chain. */
+    let sourcedAny = false;
     const rows = list.map((f) => {
       // a holding Schedule D reports as a collective trust is NOT the
       // same-named mutual fund: CIT pricing is negotiated per plan and is not
@@ -4548,6 +4554,47 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
         : star ? info.er
         : info && info.er != null ? info.er
         : (noPublicPrice ? null : fundERRow(f));
+      /* A SOURCED FEE OUTRANKS EVERY ESTIMATE ABOVE, and it is applied HERE
+       * rather than inside that chain so the suppressors keep their veto: a row
+       * that must publish no fee at all -- a loan, a subtotal, employer stock,
+       * a bank deposit -- still publishes none, because `er` is already null and
+       * this only speaks when the chain produced a figure or the row resolved a
+       * ticker the sourced table knows.
+       *
+       * `FUND_FACTS` is generated from `data/fund-facts.json`, where every
+       * figure carries the URL it was read from and the date the page stated,
+       * and `fund-facts-check.mjs` refuses anything undated or unsourced. So
+       * this is the one fee on the page that is not an inference: a fee is
+       * SOURCED, never derived, and until now 92 sourced fees reached no reader
+       * because nothing read the file.
+       *
+       * Measured before wiring, over all 1,775,956 published+served rows:
+       * 15,000 rows / 12,564,306 readers GAIN a fee where the page shows none,
+       * 244,727 rows AGREE with the estimate already there, and 41,453 rows /
+       * 36,596,945 readers MOVE -- 30,878 of them DOWNWARD, because the pattern
+       * table has been over-stating costs (FXAIX 0.03 against a sourced 0.015,
+       * FSMDX and FSSNX 0.1 against 0.025, worst single case 0.6 against
+       * 0.025). The `typeof` guard is the same one `SEC_TICKERS` uses, so the
+       * page still renders if the asset fails to load. */
+      /* `!star` IS THE WHOLE SAFETY OF THIS, and the page is what taught me so.
+       * A starred row is a COMPARABLE: the plan holds a collective trust or
+       * separate account, and the ticker shown is a registered equivalent whose
+       * retail fee this page already describes as "a ceiling, not the plan's
+       * price". Without this conjunct, Amazon's twelve `VANGUARD TARGET <year>`
+       * rows -- every one typed `Collective trust`, every ticker asterisked --
+       * took VTWNX's sourced 0.08 and printed it as a SOURCED FEE for the
+       * trust, with the asterisk stripped off the cell. That turns a hedge into
+       * a claim about a vehicle the figure is not even for, which is strictly
+       * worse than the estimate it replaced, and NO COUNT WOULD HAVE SHOWN IT:
+       * the fee value was unchanged, so the whole class sat in the AGREE bucket
+       * of my own impact measurement. Opening one page showed it at once. */
+      let erSourced = null;
+      if (!star && tk && typeof FUND_FACTS === "object" && FUND_FACTS) {
+        const sf = FUND_FACTS[String(tk).toUpperCase()];
+        if (sf && sf.er != null) erSourced = sf;
+      }
+      const erShown = erSourced ? erSourced.er : er;
+      if (erSourced) sourcedAny = true;
       // the brokerage window is a menu choice with no holdings of its own —
       // tint it so it reads as a doorway, not a fund (owner request)
       const brokRow = /brokerage window/i.test(f.type || "")
@@ -4617,7 +4664,18 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
       <tr${brokRow || subtotalRow || loanRow ? ` class="row-brokerage"` : ""}>
         <td class="fund-name-col"><div class="fund-name">${f.iss && !descLoanRow && !isNonIssuerCell(f.iss.replace(/\*+/g, "")) ? `<span class="fund-issuer">${esc(f.iss.replace(/\*+/g, "").trim())} · </span>` : ""}${esc(shownName)}</div>${tk ? `<div class="fund-ticker">${esc(tk)}${star ? "*" : ""}</div>` : ""}</td>
         <td class="fund-type">${esc(shownType)}</td>
-        <td class="num">${er != null ? er.toFixed(er < 0.1 ? 3 : 2) + "%" + (star ? "*" : "") : "—"}</td>
+        <td class="num">${erShown != null
+          ? erShown.toFixed(erShown < 0.1 ? 3 : 2) + "%"
+            /* A SOURCED FIGURE IS NOT AN ESTIMATE AND MUST NOT WEAR AN
+             * ESTIMATE'S MARKS. The asterisk means "a comparable registered
+             * fund, not the one held" and the column is headed `Est. ER`, so a
+             * fee read from a named page on a stated date gets NEITHER: it
+             * carries its own date in the cell's title instead, which is the
+             * only thing here a reader can check. The asterisk is still printed
+             * on an estimate, because withdrawing it would upgrade a hedge into
+             * a claim. */
+            + (erSourced ? "" : (star ? "*" : ""))
+          : "—"}${erSourced ? `<span class="er-sourced" title="Sourced figure, as of ${esc(erSourced.erAsOf)} — not an estimate">✓</span>` : ""}</td>
         <td class="num">${money(f.value / 1e6)}</td>
         <td class="num">${total ? ((f.value / total) * 100).toFixed(1) + "%" : "—"}</td>
       </tr>`;
@@ -4739,12 +4797,21 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
     ${npd}
     <div class="fund-scroll">
       <table class="fund-table">
-        <thead><tr><th class="fund-name-col">Holding</th><th>Type</th><th>Est. ER</th><th>Value</th><th>% of ${tab === "sma" ? "account" : (lu.fromTrust ? "trust" : "holdings")}</th></tr></thead>
+        <!-- "Expense ratio", not "Est. ER": the column is now MIXED. A cell
+             with a check mark was read from a named page on a stated date and
+             is not an estimate; every other cell is a pattern-table estimate
+             and the footnote below says so. Leaving the header as "Est. ER"
+             would have under-claimed 92 sourced figures, which is the safe
+             direction and still a mislabel. NOTE: no BACKTICKS in here -- this
+             comment sits inside a template literal, so a backtick ends the
+             literal and breaks the whole file. node --check caught it. -->
+        <thead><tr><th class="fund-name-col">Holding</th><th>Type</th><th>Expense ratio</th><th>Value</th><th>% of ${tab === "sma" ? "account" : (lu.fromTrust ? "trust" : "holdings")}</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
     </div>
     ${starred ? `<p class="fund-note"><strong>*Comparable fund.</strong> That holding is a collective trust or separate account — it has no ticker and no published expense ratio, because its fee is negotiated by the plan. The fund shown is its registered equivalent, so you can look up what it holds; the plan's trust class is normally <em>cheaper</em> than the retail fee shown, so read it as a ceiling, not the plan's price.</p>` : ""}
     ${classNote}
+    ${sourcedAny ? `<p class="fund-note"><strong>&#10003; Sourced fee.</strong> That expense ratio was read from the fund's own published figure on the date shown when you hover it, not estimated — every other number in the column is an estimate from the fund's name, which is why the rest of the column is approximate and this one is not. The sourced figures and the page each was read from are recorded in <code>data/fund-facts.json</code>.</p>` : ""}
     ${tab === "menu" && list.filter((f) => /stable value|\bgic\b/i.test(f.type || "")).length >= 5 ? `<p class="fund-note">The many <strong>Stable value / GIC</strong> rows are one menu option, itemized: plans file each piece of the stable value fund — the insurance-company contracts that wrap it and the individual securities inside its synthetic GICs (agency pools, corporate notes, asset-backed trusts). Participants choose the stable value fund as a single option; these securities are not separate choices, which is why they carry no expense ratio or ticker.</p>` : ""}
     ${tab === "menu" && list.some((f) => !lookupTicker(f) && !/company stock|employer (security|stock)|brokerage|stable value|\bgic\b/i.test((f.type || "") + " " + f.name)) ? `<p class="fund-note">Holdings with no ticker are ones we can't identify from the filed name alone: many are pooled vehicles — collective trusts, separate accounts — that have no ticker at all, and others are registered funds our reference table doesn't yet carry. Naming one on a guess would be worse than leaving it blank.</p>` : ""}`;
   }
