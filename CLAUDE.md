@@ -2125,6 +2125,26 @@ the `TOP_N` orphan item. `docs/accuracy-log.md` 2026-10-02 (17:1xZ).
   tiny-menu excess belongs to the FALLBACK and not to overshoot, and a 3-row
   "menu" is the recorded category-table class accepted because a summary sums
   near plan assets.
+  **AND 99.2% OF THE RISE IS READER-FACING, MEASURED 2026-11-05 02:5xZ: SERVED
+  758 menus / 957,189 ppl against DEMOTED 6 / 135,868.** `app.js:3428` demotes a
+  plan's own lineup of **<=8 rows with one row >=60% of the value** in favour of
+  the master trust — the parser's own trust-pointer shape — and **the guard is
+  nearly inert here because only 15 of the 764 have a LINKED TRUST at all**, so
+  749 have nowhere to fall back to. Inside the 6 it reaches, 83.3% carry `fb` and
+  83.3% are under 10 rows against 28.0% / 5.7% in the served 758, so the shape
+  test is a precise instrument with almost no population: ***a guard can be both
+  correct and nearly useless, and the limit is the ALTERNATIVE it needs rather
+  than the condition it tests.*** Charter is SERVED at 8 rows — exactly the row
+  cap — because it has no trust.
+  ***AND `lib-ledger`'s `servedLineup` DOES NOT APPLY THAT TEST*** (it asks only
+  `confident(idx, plan.ack)`), so every instrument built on it inherits the
+  blindness — a THIRD surface in the recorded "the two surfaces disagree about
+  when a trust menu is served". **My own Comcast alarm (121,034 ppl, a 4-row
+  `At fair value` menu where the pre-refresh store served a 43-fund trust) was
+  REFUTED by that guard, whose own comment NAMES COMCAST as one of the ten it
+  was measured on** — *read the shipped guard, and its COMMENT, before pricing a
+  cost it may already stop.* Comcast is in the `genericName` count and reaches no
+  reader on the report, so that figure wants the same qualification.
   ***`lineups-status`'s note that a fallback's "ratio is judged against
   current-year assets" reads as the hazard and the measurement says the
   OPPOSITE:*** assets **GREW on 158 of 214**, judging against BOY brings only

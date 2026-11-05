@@ -62204,3 +62204,70 @@ loosening this record keeps warning about. The direction test is kept over a ban
 test throughout, because *a band test is not a direction test*.
 Instruments: `scripts/overshoot-diff.mjs`, `overshoot-attribute.mjs`,
 `overshoot-fb.mjs`.
+
+## 2026-11-05 (02:5xZ) — THE OVERSHOOT RISE IS ALMOST ENTIRELY READER-FACING, AND MY OWN COMCAST ALARM WAS REFUTED BY A SHIPPED GUARD THAT NAMES COMCAST IN ITS COMMENT
+
+**WHAT I WAS ABOUT TO PUBLISH.** The `genericName` attribution named Comcast
+(121,034 ppl) as the largest new member: a FOUR-row menu topped by
+`"At fair value"`, with `fb=2023`, where the pre-refresh store had that same ack
+NON-CONFIDENT and served the trust's 43-fund Vanguard menu instead. Probed on
+both refs, the ack goes `conf=false / bit1=false` -> `conf=true / bit1=true`, so
+on the face of it the refresh had just handed a 121,034-participant page a
+four-row fair-value note table in place of a real menu.
+
+***IT HAD NOT, AND THE GUARD THAT STOPS IT NAMES COMCAST BY NAME.***
+`app.js:3428` reads
+
+```js
+if (mti / tot > 0.5 || (lu.funds.length <= 8 && top / tot >= 0.6)) { ownUsable = false; trustPointer = true; }
+```
+
+and its own comment says: *"A schedule of <=8 rows with one row >=60% of the
+value is the parser's own trust-pointer shape, name-blind … a sample of 10 held
+zero real menus — **"At fair value" (Comcast)**, OCR cipher (Home Depot),
+'Investments Held in the Trust' (United)."* So somebody had already measured
+this exact shape on this exact plan, and the page serves the trust. **Two
+recorded rules, both in one finding: *read the shipped guard before pricing a
+cost it may already stop*, and *read the shipped COMMENT, not only the shipped
+guard*.** The alarm was wrong twice over — Comcast's own menu also sums to
+0.77x its plan assets, so it was never in the overshoot population either.
+
+***AND `lib-ledger`'s `servedLineup` DOES NOT APPLY THAT TEST***, which is the
+half that outlives the anecdote. It asks only `confident(idx, plan.ack)`, so it
+answers `own` for Comcast where the page serves the TRUST — and every instrument
+built on it, including this cycle's own attribution scripts, inherits the
+blindness. The recorded note that *the two surfaces disagree about WHEN a trust
+menu is served* now has a third surface to it: the LEDGER disagrees with the
+report as well.
+
+**SO THE SPLIT WAS MEASURED, AND IT REFUTED MY TIDY HYPOTHESIS IN THE HONEST
+DIRECTION.** I expected the guard to absorb most of the fb-heavy tiny menus.
+Over the 764, with the test SLICED from app.js and a control asserting it
+reproduces the guard's own named verdict on Comcast:
+
+| | menus | ppl |
+|---|---|---|
+| DEMOTED by the trust-pointer shape test | **6** | 135,868 |
+| own lineup still SERVED | **758** | **957,189** |
+
+**The guard is nearly inert on this population, and the reason is structural:
+only 15 of the 764 have a LINKED TRUST at all, so there is nowhere to fall back
+to on the other 749.** Where it CAN reach, it is doing exactly the right thing —
+inside the demoted 6, **83.3% carry `fb` and 83.3% are under 10 rows**, against
+28.0% and 5.7% in the served 758 — so the shape test is a precise instrument
+with almost no population. ***A guard can be both correct and nearly useless,
+and the limit is the ALTERNATIVE it needs rather than the condition it tests.***
+
+**Charter Communications is the consequence: 117,639 readers, 8 rows (exactly at
+the row cap), `fb=2024`, 1.44x, and SERVED** — because it has no linked trust,
+so the one mechanism that would have caught its shape has nothing to serve
+instead. Cisco 70,957 at 1.22x, Eli Lilly 33,954 at 1.30x, Marmon 21,187 at
+1.41x and TE Connectivity 16,353 at 1.55x are the same story.
+
+**WHAT THIS CHANGES ABOUT THE EARLIER ENTRY.** The 02:3xZ attribution stands as
+a statement about the audit metric and its 513 NEW_ACK figure is unaffected; what
+is new is that **99.2% of the rise is reader-facing**, so the escalation is not
+merely formally correct but materially so. And the `genericName` figure needs the
+same qualification applied before it is quoted at a reader: Comcast is in that
+count and reaches no reader on the report.
+Instrument: `scripts/overshoot-served.mjs`.
