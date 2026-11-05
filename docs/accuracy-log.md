@@ -62433,3 +62433,95 @@ with the measured lesson, so the hardcoded banner is no longer the only
 description of what is scheduled — and the first instruction of the refreshed
 daily prompt is to read the ledger, which is the one artifact that can see its
 own absence.
+
+---
+
+## 2026-11-05 (05:4xZ) — THE FIRST SHIP UNDER THE NEW FEE DECISION WAS MEASURED, READ, AND HELD: 24 OF ITS 33 ROWS DO NOT MEET THE DECISION'S OWN CONDITION
+
+**The owner's standing decision (2026-11-05) is that a fee may be withdrawn
+where we have EVIDENCE the published figure is wrong and no replacement can be
+sourced. The condition is the operative half, and it is what held this ship.**
+
+**THE MECHANISM IS REAL AND NEWLY NAMED.** `app.js`'s `er` chain lists eight
+suppressors — `stockRow`, `gicRow`, `subtotalRow`, `loanRow`, `annuityRow`,
+`guaranteeOnlyFee && !tk`, `contractRow`, `mistypedGuaranteeFee`, `namelessRow`,
+`bankDepositFee` — and **not `mistypedStock`**. That predicate is true once the
+page knows the row is NOT the sponsor's own stock, so `stockRow` is false and
+its veto never reaches the row; `noPublicPrice` cannot fire either, because it
+reads the TYPE CELL and **the type cell is the thing that is wrong** — the
+recorded `gicRow` shape, where a mistyped type defeats a vehicle suppressor.
+
+**MEASURED AS A DIFFERENTIAL through BOTH copies of `renderRow`**, narrowed by a
+superset-by-construction property of the predicate (`isMistypedStockRow` returns
+false before looking at the name unless the type cell claims employer stock) and
+discharged on 8,407 sampled non-candidates at **0 differing**:
+
+```
+fee LOST 33  ·  11 plans  ·  76,252 readers  ·  $3,228,575,075
+fee GAINED 0 · fee CHANGED 0 · ticker 0 · asterisk 0 · shownType 0
+row membership 10,294 -> 10,294
+```
+
+***AND READING ALL 33 IS WHAT STOPPED IT.*** The class splits, and only ~9 rows
+meet the decision's condition:
+
+- **The defect, ~9 rows carrying 99.5% of the dollars and 94% of the readers:**
+  Bristol-Myers Squibb's `SP 500 INDEX PL CL E` at **0.03 on $2,423,813,562,
+  18.9% of its menu, 36,628 readers**; Duke Energy's `Non-US Equity Index
+  Fund` / `US Equity Small/Midcap Index Fund` / `Fixed Income Index Fund`
+  ($789M, 34,829 readers); Crescent River's bare `Vanguard Index Funds` and
+  `Vanguard Sector Index Funds`. These name no specific product — an unbranded
+  pooled fund priced off a mutual-fund NAME table — so the figure is a
+  fabrication and the evidence is internal.
+- **NOT the defect, ~24 rows / ~$15M:** `T. Rowe Price Retirement 2030 Fund -
+  R Class` at 0.49, eight `Fidelity Freedom <vintage> Fund Class K` rows with
+  OCR debris welded on (`: bi`, `; bad`), `Vanguard Dev Mrkts Index Fund Adm`,
+  seven `iShares Tr S&P …` rows, `Allspring Special Small Cap Value Fund: om`.
+  **These are REAL registered funds whose TICKER merely failed to resolve**, and
+  their house-pattern fee is the ESTIMATE bucket the sizing script itself calls
+  *"usually about right"*. ***We have no evidence those figures are wrong, so
+  the decision does not license withdrawing them*** — and doing so would trade
+  24 plausible estimates for 24 blanks.
+
+**SO `!tk` IS NECESSARY AND NOT SUFFICIENT.** It correctly spares the 50 rows
+where a ticker DOES resolve (H&R Block's VIIIX, IBEW's nine Vanguard vintages —
+247,336 readers whose fee is right), and it cannot separate "no ticker because
+the row names no fund" from "no ticker because our resolver missed a real one".
+
+***THE NARROWING WITNESS I REACHED FOR WAS REFUTED BY ITS OWN CONTROL, WHICH IS
+THE REUSABLE PART.*** The obvious discriminator is "does the name identify a
+registered fund HOUSE", and the record's approved shape for that is
+REGISTRY-DERIVED rather than hand-written — so the vocabulary was built from
+`sec-funds.json`'s registrant legal names, with a control asserting it contains
+`vanguard`/`fidelity`/`ishares`/`oakmark`/`allspring` and does NOT contain the
+generic words these rows are made of. **It threw on `fixed`:** some registrant's
+legal name carries it, so Duke's `Fixed Income Index Fund` reads as
+house-named. ***A vocabulary derived from registrant NAMES is contaminated by
+every generic financial word a registrant happens to be called*** — the
+recorded *a count keyed on a vocabulary measures the vocabulary*, now met on a
+vocabulary I did not write by hand. Patching the stop list would be writing it
+by hand after all, which is the thing the derivation was meant to avoid.
+
+**HELD, NOT SHIPPED.** `app.js` is reverted and reads byte-identical to
+`origin/main`. What is kept is `scripts/mistyped-stock-fee-diff.mjs`, which
+reproduces the 33 and whose controls are now anchored.
+
+**AND MY OWN CONTROL HAD THE SAME DEFECT ONE LAYER UP, which is why the harness
+is worth committing.** Its first version grepped the base ref for
+`mistypedStockFee` and reported *"origin/main ALREADY carries the arm — there is
+nothing to measure"*. It does not: **`mistypedStockFeeIsGuaranteeOnly` has been
+shipped 2,000 lines above for weeks, and my token is a PREFIX of it.**
+***A token keyed on a name matches every name it is a prefix of*** — so a
+control written to prove the two refs differ instead proved my grep was loose,
+and it read as a clean refusal rather than as a harness fault. The control now
+anchors on the whole declaration (`const mistypedStockPatternFee =`) and
+additionally asserts the base ref DOES carry the pre-existing guarantee-only arm,
+so a base ref that is not the app.js this harness was written against fails by
+name.
+
+**WHAT THE REAL SHIP NEEDS:** a witness that separates an unbranded pooled fund
+from a real fund our resolver missed, and which is not a word list. The
+candidates are the SEC matcher's own verdict (`resolveHolding` reaching a series
+at all, even as a comparable) and the row's menu siblings — the second being a
+new risk class, since every shipped suppressor judges a row by itself.
+Instrument: `scripts/mistyped-stock-fee-diff.mjs`.
