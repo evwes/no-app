@@ -267,6 +267,37 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   (`tools: *`, so it can dispatch and manage Routines). The Routine's wake
   prompt invokes the skill. A fresh session takes the loop over with one
   command; the queue stays in `docs/hourly-cycle-prompt.md` and this file.
+- **THE LOOP ROSTER, AND THE LESSON THAT THE LOOP WAS OFF FOR SEVENTEEN DAYS
+  AND NOTHING SAID SO (audited 2026-11-05).** `list_triggers` found
+  `wampo daily cycle (self-bind)` at **`enabled: false`**, last fired
+  **2026-10-19** — while the session-start banner was still printing it as the
+  DURABLE SCHEDULER, because that banner is hardcoded and warns about itself.
+  ***The field ledger is what proved the cost rather than the trigger list: the
+  one participant-weighted scalar read 79.82% on 2026-10-21 and 79.82% on
+  2026-11-05.*** Fifteen days, net zero, while the universe GREW 3.9M people —
+  so every improvement in that window came from the owner prompting
+  interactively. **A disabled loop is invisible from inside the work it was
+  meant to do; only a scoreboard with two points can see it.** Re-enabled with
+  a refreshed prompt (the stale "v204 MUST NOT BE MIRRORED" amendment was still
+  in it, spent since the 2026-11-05 mirror), and a second Routine created:
+
+  | Routine | cron (ET) | what it is for |
+  |---|---|---|
+  | `wampo daily cycle (self-bind)` | 07:59 daily | ledger-driven coverage: pick the field with the most ADDRESSABLE readers, dispatch its owner agent, verify the number moved, mirror |
+  | `wampo weekly integrity (self-bind)` | Sat 07:39 | *is what we publish TRUE* — participant-weighted draw read against the filings, error codes re-probed, gates checked for FIRING rather than existing |
+  | `Wampo unresolved funds (Sunday)` | Sun 07:44 | the unresolved-fund report and CSV, the input to fee/ticker sourcing |
+
+  **The two loops are separate ON PURPOSE and must not be merged: the daily one
+  is driven top-down by readers affected, so "is it complete" will always crowd
+  out "is it true".** All three SELF-BIND to the session that owns the repo —
+  fresh-session Routines get no repo source and no push credential, which is why
+  ~40 firings landed nothing.
+  **STILL ENABLED AND STILL NO-OPS, and worse than absent because the trigger
+  list looks healthy:** `Wampo daily sweep` and `Wampo weekly status` both
+  target `/Users/ea/Documents/Claude/Projects/wampo` — an OLDER Node/Express
+  build of the project on the owner's Mac, unreachable from any cloud session —
+  and both report **SUCCESS** after 8 and 4 seconds. Deleting them is the
+  owner's call since they may still serve the Mac copy.
 - **FRAGILE — the hourly agent cycle.** Runs as a `CronCreate` job, which is
   session-scoped: held in memory, never written to disk, and **killed by any
   container restart.** One was created at 06:30 ET on 2026-09-01 and was gone
@@ -1574,6 +1605,27 @@ times by accumulating them; the log holds 700 dated entries and every
 bullet in the Open list points into it.
 
 ### Open, in rough order of people affected
+
+**STANDING OWNER DECISION, 2026-11-05 — A FEE MAY BE WITHDRAWN WHERE IT CANNOT
+BE SOURCED.** Asked directly and answered YES: where we have evidence a
+published expense ratio is wrong and no replacement figure can be sourced, the
+cell is **blanked**, not kept. *A blank is honest; a wrong number reads as
+knowledge.* **So every fee family below is unblocked ON THAT QUESTION** — the
+fabricated stable-value 0.35, the generic estimate pre-empting an issuer figure,
+the American Funds R-6 inference, the one-ticker-two-fees class, the share-class
+fee families — and a session no longer needs to ask before withdrawing one.
+**What has NOT changed, and still gates each ship:** the differential through
+BOTH copies of `renderRow` with row membership and `star` priced; a seeded
+uniform draw read by hand with each row's filed TYPE printed; the serving
+condition and the publish gate applied before any reader figure; and an
+accuracy-log entry. ***And withdrawal is not re-pricing: a fee is SOURCED, never
+derived.*** A replacement goes through `data/fund-facts.json` via the
+`fund-facts` agent with a source URL and an as-of date, never from a pattern,
+never from memory. Where a figure IS sourced it outranks the estimate — that
+shipped 2026-11-05 and 92 funds are live.
+**The direction is one-way: this licenses REMOVING a claim, never adding one.**
+A ship that would newly PUBLISH a fee where the page shows none is a different
+decision and is still the owner's.
 
 **OWNER-GATED — a session must not start these unasked.** Each moves millions of
 published cells:

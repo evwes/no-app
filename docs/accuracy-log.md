@@ -62342,3 +62342,94 @@ Both gates are green on the regenerated asset: `sec-tickers-stamp-test` (the
 fingerprint matches the committed code) and `sec-tickers-test` (the committed
 table still answers its pins).
 Instrument: `scripts/sec-regen-diff.mjs`.
+
+---
+
+## 2026-11-05 (05:1xZ) — THE IMPROVEMENT LOOP WAS SWITCHED OFF FOR SEVENTEEN DAYS AND NOTHING SAID SO; THE FIELD LEDGER IS WHAT PROVED IT, AND THE FEE WITHDRAWAL IS NOW DECIDED
+
+**Not a published cell — a defect in the project's own machinery, which this log
+also covers. Asked "what loops should be running", `list_triggers` answered that
+the central one was not running at all.**
+
+**`wampo daily cycle (self-bind)` read `enabled: false`, `last_fired_at`
+2026-10-19** — seventeen days — while the session-start banner was still
+printing it as `DURABLE SCHEDULER: MCP Routine 'wampo daily cycle (self-bind)'
+wakes THIS web session`. That banner is hardcoded and **warns about itself** in
+its own text (*"DO NOT read the cadence out of this banner … list_triggers is
+the only authority"*), and it was read past anyway on every wake since.
+
+***WHAT PROVED THE COST WAS NOT THE TRIGGER LIST BUT THE SCOREBOARD.*** The
+field ledger reduces "for this plan, which of the things a reader came for do we
+know" to one participant-weighted scalar, and it now has two points:
+
+```
+universe      116,001,210 -> 119,907,098 people   (the 2026-11-02 DOL refresh)
+overall            79.82% -> 79.82%   +0.00
+  custodian        89.95  -> 90.22    +0.27
+  contributions    69.58  -> 71.92    +2.34
+  match            68.26  -> 67.98    -0.28     withheld 12.60M -> 13.12M
+  vesting          77.37  -> 76.70    -0.67     withheld 10.75M -> 10.84M
+  lineup           93.96  -> 92.08    -1.88     withheld  5.72M ->  7.53M
+```
+
+Fifteen days, **net zero**, while the universe gained 3.9M people. The three
+falls are honest rather than regressions — withholding rose in all three, and a
+withheld misread is an improvement — but nothing pushed the number up either.
+**A DISABLED LOOP IS INVISIBLE FROM INSIDE THE WORK IT WAS MEANT TO DO**: the
+durable pipeline kept ingesting filings, running the audit and maintaining the
+HIGH issue the whole time, so every surface a session normally reads looked
+alive. Only a scalar with two points separated in time can say that the
+JUDGEMENT layer stopped. That is the argument for the trail, made by the trail,
+one day after it was built.
+
+**AND I NEARLY FILED A SECOND, LOUDER DEFECT THAT DOES NOT EXIST.** The trail
+held one line dated 2026-10-21 while main had taken **80 data commits** since,
+and `ledger-trail.mjs` is called in the merge job behind `|| true` — the exact
+recorded *a suppressed command is an uninstrumented command* shape. I had the
+mechanism and the count before checking the one thing that settles it: the
+commit that CREATED the trail is `5598cd26`, dated **2026-11-04 23:18**, and its
+first line's `2026-10-21` is a BACKFILLED reading. The wiring was 26 hours old,
+had had exactly ONE merge opportunity, and **took it** — run #800 appended the
+second line in `7d101257`. ***A file's oldest timestamp is not the date the file
+was wired***, and `git log --diff-filter=A` is the one command that distinguishes
+them. Second retraction in two cycles after the Comcast alarm, and the same
+shape: a correct mechanism, a correct count, and a premise never checked. The
+accident was useful as a control, though — the line I had appended locally was
+**byte-identical** to the pipeline's, which is evidence `buildLedger()` is
+deterministic across environments.
+
+**WHAT CHANGED.** Both loops now exist and both self-bind to the session that
+owns the repo (fresh-session Routines get no repo source and no push credential;
+~40 firings landed nothing):
+
+| Routine | cron (ET) | job |
+|---|---|---|
+| `wampo daily cycle (self-bind)` | 07:59 daily | ledger-driven coverage; re-enabled, prompt refreshed |
+| `wampo weekly integrity (self-bind)` | Sat 07:39 | *is what we publish TRUE*; **NEW — the `wampo-integrity` agent had been written for weeks and scheduled by nothing** |
+
+**They are separate on purpose and must not be merged:** the daily loop is
+driven top-down by readers affected, so *"is it complete" will always crowd out
+"is it true"*. The daily prompt also carried a **spent** amendment —
+`v204 IS HELD AND MUST NOT BE MIRRORED` — which has been false since v204 was
+mirrored as a matched pair hours earlier; a stored prompt goes stale exactly
+like a queue entry, and nothing re-reads it but the next firing.
+
+**AND THE FEE DECISION THAT GATED ~20M READERS IS ANSWERED: YES, A FEE MAY BE
+WITHDRAWN WHERE IT CANNOT BE SOURCED.** Asked directly, answered directly: where
+we have evidence a published expense ratio is wrong and no replacement can be
+sourced, the cell is blanked. *A blank is honest; a wrong number reads as
+knowledge.* Recorded as a STANDING decision at the head of CLAUDE.md's Open list
+so no future session re-asks and no future session has to infer it. What it does
+NOT license is stated beside it, because a decision recorded without its limits
+is read as wider than it is: **the direction is one-way — it permits REMOVING a
+claim, never adding one**; withdrawal is not re-pricing, since *a fee is SOURCED,
+never derived*; and every ship still needs its `renderRow` differential with
+`star` and row membership priced, a seeded uniform draw read by hand with the
+filed TYPE printed, the serving condition and publish gate applied, and an entry
+here.
+
+**PREVENTION.** The loop roster is written into CLAUDE.md's automation section
+with the measured lesson, so the hardcoded banner is no longer the only
+description of what is scheduled — and the first instruction of the refreshed
+daily prompt is to read the ledger, which is the one artifact that can see its
+own absence.
