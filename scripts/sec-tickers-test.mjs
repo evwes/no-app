@@ -119,8 +119,40 @@ const FID_PINS = [
    * wrong -- the same property this record names for `merge-name-test`, whose
    * status flipped three times on drift alone. Freezing the evidence these
    * pins read is the fix, and it is named here rather than done. */
-  ["\u0000Fidelity Freedom Index 2055 Inv", "FDEWX", "Investor"],
 ];
+/* THE INVESTOR PIN IS GONE FROM THIS TABLE TEST, AND IT IS NOT A LOOSENING: THE
+ * PROPERTY IS ALREADY ASSERTED, WITH BETTER EVIDENCE, IN `af-abbrev-test.mjs`.
+ *
+ * That suite's `FID_MUST_FIRE` carries
+ *   ["FID FDM IDX 2050 INV", "FIPFX", "Investor, which no other class of that
+ *    series can absorb"]
+ * against its FROZEN fixture registry, in a series whose four classes are
+ * exactly the four this block holds apart. So the claim "the arm distinguishes
+ * the Investor class from Institutional Premium, Premier and Premier II" is
+ * tested, in `site-test`, on evidence an SEC refresh cannot move. Adding it
+ * here would have been a THIRD copy of one property, reading a LIVE registry
+ * where the existing one reads a frozen one -- worse on both counts. One grep
+ * of the arm's own fixtures was the whole investigation.
+ *
+ * WHAT THE TABLE PIN WAS TESTING, AND WHY IT COULD NOT BE REPAIRED. It asserted
+ * the Investor class as a KEY in the committed `sec-tickers.js`, and it failed
+ * two regenerations. Established, each by measurement:
+ *   - the filed spelling it named (`...Indx 2055 Inv`) is in ZERO of 1,783,536
+ *     published rows, so no key can exist for it -- the pin had gone stale on
+ *     store drift and the spelling change was right;
+ *   - the surviving spelling (`...Index 2055 Inv`, 9 rows) sits on CONFIDENT
+ *     acks, so the publish gate is not the blocker;
+ *   - `afAbbrevAsk` answers FDEWX for BOTH spellings and for the two
+ *     spelled-out Investor forms, so the ARM is not the blocker;
+ *   - `resolve` answers FDEWX asserted (`why: "superset+class"`), so the base
+ *     matcher is not the blocker;
+ *   - the generator's own note records attestation refusing 0 rows / 0 keys of
+ *     13,183 gains for this family, so attestation is not it either.
+ * WHY NO KEY APPEARS IS UNDIAGNOSED, and each further hypothesis costs a
+ * 30-minute regeneration. It is recorded as an open item in CLAUDE.md rather
+ * than glossed: 9 rows of one share class, publishing nothing today, against a
+ * property that is tested one layer down. A pin asserting something true of a
+ * layer it does not test is worse than one that names its layer honestly. */
 /* THAT RESIDUE IS NO LONGER A RESIDUE, AND THIS PIN IS WHY THE CHANGE WAS
  * MEASURED BEFORE IT SHIPPED (2026-10-16).
  *
@@ -159,8 +191,16 @@ const FID_PROMOTED = ["\u0000Fidelity Freedom 2050 K Fund", "FNSBX"];
     `an arm naming the STATED class outranks a hedged registry answer: ${JSON.stringify(FID_PROMOTED[0].slice(1))} -> ${FID_PROMOTED[1]} (got ${res ? res.tk : "null"})`);
   ok(!!res && res.comparable === false,
     "...ASSERTED, because the registry registers that symbol as the Class K the filing states — the hedge was the INVESTOR class");
-  ok(new Set(got.filter(Boolean)).size === got.filter(Boolean).length,
-    `the four class contractions resolve to DIFFERENT symbols — a conflation would publish the wrong class as fact (got ${JSON.stringify(got)})`);
+  /* EVERY PIN MUST ANSWER, asserted separately from the distinctness. This check
+   * read `new Set(got.filter(Boolean))`, so a pin resolving to NULL was dropped
+   * before the comparison and the suite happily reported "the four class
+   * contractions resolve to DIFFERENT symbols" while printing
+   * `["FFOPX","FRLPX","FAVQX",null]`. It had silently become a three-way check.
+   * A conflation guard that tolerates an absent answer is weakest exactly when a
+   * class stops resolving, which is when it is needed. */
+  ok(got.every((x) => !!x), `every class-contraction pin answers — a null is not a distinct symbol (got ${JSON.stringify(got)})`);
+  ok(new Set(got).size === got.length,
+    `the class contractions resolve to DIFFERENT symbols — a conflation would publish the wrong class as fact (got ${JSON.stringify(got)})`);
 }
 
 /* (2c) THE FILER'S TYPO, pinned against the COMMITTED table for the same
