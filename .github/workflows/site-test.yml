@@ -31,6 +31,11 @@ on:
             # day's price change.
             "scripts/fund-facts-issuer.mjs", "scripts/fund-facts-extract-test.mjs",
             "scripts/lib-fundmatch.mjs",
+            # the SOURCED-fee asset the page loads, and its generator. The JSON
+            # is the source of truth and this is what the browser reads, so a
+            # stale or hand-edited asset would publish a figure the receipts do
+            # not support -- which is the one thing fund-facts exists to prevent.
+            "fund-facts.js", "scripts/gen-fund-facts-asset.mjs",
             "scripts/fund-er-test.mjs", "scripts/no-identity-test.mjs",
             "scripts/vesting-quote-test.mjs", "scripts/lib-quote.mjs",
             # v201 put `vestingQuoteUpgrade` in the PARSER, so a lib-4i change
@@ -326,3 +331,12 @@ jobs:
       # the extractor can actually trigger its own test. No network, no store.
       - name: Issuer-page extractor — the fee is not the price change
         run: node scripts/fund-facts-extract-test.mjs
+      # THE ASSET MUST MATCH ITS RECEIPTS. `fund-facts.js` is what the browser
+      # reads; `data/fund-facts.json` is where each figure's source URL and
+      # as-of date live and what `fund-facts-check.mjs` polices. If the asset
+      # drifts from the JSON -- stale after an edit, or hand-edited directly --
+      # the page prints a fee the receipts do not support, and the check mark
+      # beside it claims a provenance that no longer exists. Reads two small
+      # files, no network.
+      - name: Sourced-fee asset matches data/fund-facts.json
+        run: node scripts/gen-fund-facts-asset.mjs --check
