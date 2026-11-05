@@ -87,6 +87,9 @@ const entryOf = (ack) => {
 };
 
 let cand = 0, ctrl = 0, lost = 0, gained = 0, swapped = 0, starMoved = 0, feeMoved = 0, ctrlDiff = 0;
+/* the gain priced in READERS as well as rows, plan-deduplicated — the recorded
+ * 8x error is summing a plan's participants once per ROW */
+const gainPlans = new Map(); let gainDollars = 0;
 const losses = [], swaps = [], gains = [];
 let plansSeen = 0;
 for (const row of d.rows) {
@@ -102,14 +105,24 @@ for (const row of d.rows) {
     const key = "\u0000" + (f.iss || "") + "\u0000" + (f.nameRaw || f.name || "");
     const k2 = (f.iss || "") + "\u0000" + (f.nameRaw || f.name || "");
     const isCand = moved.has(key) || moved.has(k2) || moved.has("\u0000" + (f.nameRaw || f.name || ""));
+    /* THE NARROWING MUST GATE THE RENDER, NOT ONLY THE COMPARISON. My first
+     * version rendered BOTH copies on every one of ~1.7M rows and only then
+     * asked whether the row was a candidate, which is ~50x the necessary work
+     * and printed nothing for over a minute of CPU. The recorded rule is to
+     * narrow a measurement by a property of the change; narrowing what you
+     * COUNT while still computing everything is not narrowing it. */
+    if (isCand) cand++; else { ctrl++; if (ctrl % 97 !== 0) continue; }
     const a = rOld.renderRow(p, { ...f }, "menu", total);
     const b = rNew.renderRow(p, { ...f }, "menu", total);
-    if (isCand) cand++; else { ctrl++; if (ctrl % 97 !== 0) continue; }
     const ta = a && a.tk ? String(a.tk) : null, tb = b && b.tk ? String(b.tk) : null;
     const differs = ta !== tb || (a && b && (!!a.star !== !!b.star || String(a.er) !== String(b.er)));
     if (!isCand) { if (differs) { ctrlDiff++; } continue; }
     if (ta && !tb) { lost++; if (losses.length < 10) losses.push(`${g(row, "sponsorName")} "${String(f.nameRaw || f.name).slice(0, 44)}" ${ta} -> none`); }
-    else if (!ta && tb) { gained++; if (gains.length < 6) gains.push(`${g(row, "sponsorName")} "${String(f.nameRaw || f.name).slice(0, 44)}" none -> ${tb}`); }
+    else if (!ta && tb) {
+      gained++; gainDollars += (+f.value || 0);
+      gainPlans.set(`${g(row, "ein")}|${g(row, "pn")}`, g(row, "partEOY") || g(row, "participants") || 0);
+      if (gains.length < 6) gains.push(`${g(row, "sponsorName")} "${String(f.nameRaw || f.name).slice(0, 44)}" none -> ${tb}`);
+    }
     else if (ta && tb && ta !== tb) { swapped++; if (swaps.length < 10) swaps.push(`${g(row, "sponsorName")} "${String(f.nameRaw || f.name).slice(0, 44)}" ${ta} -> ${tb}`); }
     if (a && b && !!a.star !== !!b.star) starMoved++;
     if (a && b && String(a.er) !== String(b.er)) feeMoved++;
@@ -117,7 +130,7 @@ for (const row of d.rows) {
 }
 console.log(`plans walked ${plansSeen}; candidate rows ${cand}; non-candidates sampled ${Math.floor(ctrl / 97)}\n`);
 console.log(`ticker LOST    ${lost}`);
-console.log(`ticker GAINED  ${gained}`);
+console.log(`ticker GAINED  ${gained} rows / ${gainPlans.size} plans / ${[...gainPlans.values()].reduce((a, b) => a + b, 0).toLocaleString()} ppl / $${Math.round(gainDollars).toLocaleString()}`);
 console.log(`ticker SWAPPED ${swapped}`);
 console.log(`asterisk moved ${starMoved}`);
 console.log(`fee moved      ${feeMoved}`);

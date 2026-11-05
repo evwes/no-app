@@ -62271,3 +62271,74 @@ merely formally correct but materially so. And the `genericName` figure needs th
 same qualification applied before it is quoted at a reader: Comcast is in that
 count and reaches no reader on the report.
 Instrument: `scripts/overshoot-served.mjs`.
+
+---
+
+## 2026-11-05 (03:1xZ) — THE LARGEST KEY REMOVAL `sec-tickers.js` HAS EVER TAKEN COSTS NO READER A SYMBOL, AND MY OWN HARNESS HAD TO BE FIXED TWICE BEFORE IT COULD SAY SO
+
+**Run #8 of `sec-tickers.yml` regenerated the table at ADDED 4,246 / REMOVED
+3,117 / CHANGED 0 — keys 16,964 -> 18,093.** Every prior regeneration on this
+record read REMOVED 0, so 3,117 is by a wide margin the largest removal the
+asset has ever taken, and this record's own rule is explicit: ***a removed key
+is a loss only if a reader stands behind it.*** The removals all LOOK benign —
+`(Continued) Nuveen International Equity Index R6`, `1,242 Fidelity Mid-Cap
+Stock`, `+ FID FREEDOM 2065 K` — i.e. keys written against spellings the
+leading-count and leading-punctuation strips now remove, so the page no longer
+ASKS those keys. **But "looks benign" is not a measurement**, and the table is
+keyed on `(issuer, nameRaw)` while those strips move `name`, so the reasoning
+had to be checked rather than asserted.
+
+**MEASURED AS A DIFFERENTIAL through BOTH copies of `renderRow`, one renderer
+per table version with `app.js` held FIXED so the table is the only variable:**
+
+```
+keys 16964 -> 18093; moved-key set 7363
+plans walked 62035; candidate rows 21658; non-candidates sampled 18166
+ticker LOST    0
+ticker GAINED  4808 rows / 1851 plans / 2,488,772 ppl / $12,738,131,859
+ticker SWAPPED 0
+asterisk moved 0
+fee moved      0
+CONTROL non-candidate rows differing: 0  (must be 0)
+```
+
+**So the 3,117 removals cost nothing and the regen is a 2.49M-reader gain.**
+`SWAPPED 0` is the figure that mattered most going in — a swap would mean a
+reader's symbol REPLACED rather than added, which is the serious finding — and
+`fee moved 0` is structural rather than lucky: the generator ships
+`comparable: false` only, so `star` cannot move and `er` stays name-keyed.
+The narrowing is a SUPERSET by construction (CHANGED is 0, so a key outside the
+added-or-removed set is byte-identical in the two tables), discharged by the
+sampled non-candidate control at 0 of 18,166.
+
+**TWO DEFECTS IN MY OWN HARNESS, both of which made it look stuck rather than
+wrong, and both worth the lines:**
+
+**(1) THE NARROWING MUST GATE THE RENDER, NOT ONLY THE COMPARISON.** My first
+version rendered BOTH copies on every one of ~1.7M rows and only then asked
+whether the row was a candidate — about 50x the necessary work for a
+21,658-row candidate set. This record already says to *narrow a measurement by
+a property of the change*; what it did not say is that ***narrowing what you
+COUNT while still computing everything is not narrowing it at all.*** Gating
+the two `renderRow` calls on `isCand` took the run from "no output after 71
+seconds of CPU" to under a minute.
+
+**(2) NODE'S STDOUT TO A FILE IS FULLY BUFFERED, SO A BACKGROUNDED MEASUREMENT
+SHOWS NO INTERIM PROGRESS.** Redirected to a file there is no line buffering,
+so a script that prints a header and then walks 62,035 plans produces a
+ZERO-BYTE file for the whole walk. From outside, a correct slow run and a
+hung one are indistinguishable — and this container only gives a background
+process CPU while a turn is active, so the natural reading ("it is making no
+progress") was wrong on the first diagnosis. **Read the PROCESS, not the
+output file**: `ps -eo pid,ppid,time,comm` on the real child says whether CPU
+is accumulating, which is the recorded liveness-versus-progress distinction
+met on my own instrument.
+
+**PREVENTION.** `scripts/sec-regen-diff.mjs` is tracked, takes the two refs as
+arguments, and **throws if the two renderers agree on every candidate row** —
+the recorded "a before that is silently the after reads as a clean
+no-difference" trap, which for a two-table harness is the whole failure mode.
+Both gates are green on the regenerated asset: `sec-tickers-stamp-test` (the
+fingerprint matches the committed code) and `sec-tickers-test` (the committed
+table still answers its pins).
+Instrument: `scripts/sec-regen-diff.mjs`.
