@@ -1,15 +1,30 @@
 #!/usr/bin/env node
-/* wampo — A POOLED FUND OUR OWN CODE HAS IDENTIFIED, STILL PUBLISHING A MUTUAL
- * FUND'S PATTERN FEE.
+/* wampo — A ROW TYPED `Company stock` THAT IS NOT THE SPONSOR'S STOCK: WHICH OF
+ * ITS FEES ARE WRONG, AND WHICH ARE RIGHT.
  *
  * `isMistypedStockRow` exists because a plan files a POOLED FUND under the type
  * `Company stock` -- Duke Energy's sixteen, nine target-date vintages among
  * them, $5.58B and 50.1% of its published menu, each of which `stockRow` would
  * otherwise have labelled with `DUK`. So by the time that predicate returns
- * true, THE PAGE ALREADY KNOWS the row is a pooled vehicle and not the
- * sponsor's stock.
+ * true, the page knows the row is not the sponsor's stock.
  *
- * And then it prices it from `fund-er.js`, a MUTUAL-FUND name-pattern table.
+ * AND THIS HEADER'S FIRST VERSION WENT FURTHER THAN THAT AND WAS WRONG, refuted
+ * by this script's own output. It read the predicate as meaning "pooled
+ * vehicle", because the shipped comment beside it describes Duke Energy's
+ * sixteen pooled funds -- which is the case it was WRITTEN for, not the whole
+ * population it reaches. ***A PREDICATE'S NAME TELLS YOU WHAT IT DETECTED, NOT
+ * WHAT FOLLOWS FROM IT***, and the motivating case is not the class.
+ *
+ * Withdrawing the employer-stock claim says the row is NOT the sponsor's stock.
+ * It does NOT say the fee is unknowable. Measured, the 83 priced rows split
+ * 50 / 33: fifty resolve a TICKER (H&R Block's `Vanguard Institutional Index
+ * Fund Institutional Shares` -> VIIIX at 0.02, `FID US BOND IDX` -> FXNAX,
+ * `PIMCO Inflation Response Multi-Asset` -> PIRMX) and are registered mutual
+ * funds the filer mistyped, whose fee comes from that fund and is RIGHT --
+ * blanking them would destroy a correct figure for 247,336 readers. Only the
+ * 33 rows with NO ticker are the pooled vehicles.
+ *
+ * For those 33 the fee comes from `fund-er.js`, a MUTUAL-FUND name-pattern table.
  * `noPublicPrice` is the guard that exists to stop exactly this, and it cannot
  * fire, because it reads the TYPE CELL and the type cell is the thing that is
  * wrong -- the recorded `gicRow` shape, where a mistyped or blank type defeats
@@ -160,7 +175,9 @@ console.log(`     its fee comes from that fund and is RIGHT — withdrawing it w
 console.log(`  NO ticker (a pooled vehicle, price negotiated by the plan and not public):`);
 console.log(`     ${fmt(tally.noTk)} rows · ${fmt(tally.noTkReaders)} readers · $${fmt(tally.noTkDollars)}`);
 console.log(`     this is the only withdrawable half`);
-console.log(`\nby the fee published (a pattern-table estimate on a POOLED vehicle):`);
+/* NOT "on a POOLED vehicle", which is what this line used to say: the 83 rows
+ * are MIXED, and 50 of them are registered funds whose fee is correct. */
+console.log(`\nby the fee published (MIXED — 50 of these rows are registered funds priced right):`);
 for (const [k, v] of [...tally.byEr.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12)) console.log(`   er ${k.padEnd(7)} ${String(v).padStart(6)} rows`);
 console.log(`\nby what the FILER typed (this is the cell that defeats noPublicPrice):`);
 for (const [k, v] of [...tally.byType.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8)) console.log(`   ${k.padEnd(26)} ${String(v).padStart(6)} rows`);
