@@ -71,17 +71,26 @@ R.setPlans(d);
 let sawPin = false;
 
 const tally = { rows: 0, fired: 0, priced: 0, readers: 0, dollars: 0,
+  withTk: 0, tkReaders: 0, tkDollars: 0, noTk: 0, noTkReaders: 0, noTkDollars: 0,
   plans: new Set(), byEr: new Map(), byType: new Map() };
 const ex = [];
 const dir = path.join(ROOT, "data", "lineups");
 
-/* GROUPED, because rendering all ~1.7M published rows does not finish -- this
- * project records that, and two runs here confirmed it. `isMistypedStockRow`
- * and the fee both read the ROW (name, nameRaw, type) and not the plan, so one
- * render per distinct (issuer, name, type) triple answers for every row that
- * carries it; the weights are summed separately. Verified by the predicate's
- * own signature at app.js:4353, which is passed `f` and `f.name` alone. */
+/* NARROWED BY A PROPERTY OF THE PREDICATE, which is what makes this run in
+ * minutes instead of never. `isMistypedStockRow` opens with
+ * `if (!EMPLOYER_STOCK_CLAIM.test(type)) return false` (lib-disclose:5062), so
+ * a row whose TYPE cell makes no employer-stock claim cannot possibly fire. The
+ * filter is therefore a SUPERSET BY CONSTRUCTION rather than a sample, and the
+ * narrowing is asserted below rather than trusted.
+ *
+ * Two earlier versions of this walk are recorded in the commit that added it:
+ * one nested `d.rows.find` in a loop over 65k acks (about seven billion
+ * comparisons, so it never returned), and one rendered all ~1.7M published
+ * rows, which this project already records as not finishing -- it reached
+ * 638,301 distinct groups and was still going when the container restarted. */
+const CLAIMS_STOCK = /stock|equity|employer\s+securit|\besop\b/i;
 const groups = new Map();
+let narrowed = 0;
 for (const file of readdirSync(dir).filter((x) => x.endsWith(".json"))) {
   const shard = JSON.parse(readFileSync(path.join(dir, file), "utf8"));
   for (const [ack, entry] of Object.entries(shard)) {
@@ -92,6 +101,8 @@ for (const file of readdirSync(dir).filter((x) => x.endsWith(".json"))) {
     const lead = members[0];
     for (const fund of entry.funds) {
       tally.rows++;
+      if (!CLAIMS_STOCK.test(String(fund.type || ""))) continue;   // superset
+      narrowed++;
       const k = `${fund.iss || ""}\u0000${fund.nameRaw || fund.name || ""}\u0000${fund.type || ""}`;
       let g = groups.get(k);
       if (!g) { g = { fund, total, rows: 0, ppl: 0, dollars: 0, plans: new Set(), lead, pct: 0 }; groups.set(k, g); }
@@ -102,7 +113,8 @@ for (const file of readdirSync(dir).filter((x) => x.endsWith(".json"))) {
     }
   }
 }
-console.log(`distinct (issuer, name, type) groups: ${groups.size.toLocaleString()} over ${tally.rows.toLocaleString()} rows\n`);
+console.log(`rows whose TYPE claims stock: ${narrowed.toLocaleString()} of ${tally.rows.toLocaleString()} (${groups.size.toLocaleString()} distinct groups)`);
+console.log(`that filter is a SUPERSET: lib-disclose:5062 returns false before looking at the name.\n`);
 
 const anyPlan = PLAN_BY_KEY.values().next().value;
 for (const g of groups.values()) {
@@ -116,6 +128,15 @@ for (const g of groups.values()) {
   tally.readers += g.ppl;
   tally.dollars += g.dollars;
   for (const p2 of g.plans) tally.plans.add(p2);
+  /* THE SPLIT THAT MATTERS, and it refuted this script's own first hypothesis.
+   * A row reaching here has had its employer-stock claim withdrawn, which says
+   * it is NOT the sponsor's stock -- it does NOT say the fee is unknowable. If
+   * a TICKER resolves, the row is a registered mutual fund the filer mistyped,
+   * its fee comes from that fund and is right, and withdrawing it would blank a
+   * correct figure. Only a row with NO ticker is the pooled vehicle whose price
+   * is negotiated by the plan and not public. */
+  if (r.tk) { tally.withTk += g.rows; tally.tkReaders += g.ppl; tally.tkDollars += g.dollars; }
+  else { tally.noTk += g.rows; tally.noTkReaders += g.ppl; tally.noTkDollars += g.dollars; }
   tally.byEr.set(String(r.er), (tally.byEr.get(String(r.er)) || 0) + g.rows);
   const t = String(g.fund.type || "(blank)");
   tally.byType.set(t, (tally.byType.get(t) || 0) + g.rows);
@@ -132,6 +153,13 @@ console.log(`plans                                ${fmt(tally.plans.size)}`);
 console.log(`readers (deduplicated per plan)      ${fmt(tally.readers)}`);
 console.log(`dollars on those rows                $${fmt(tally.dollars)}`);
 
+console.log(`\n--- THE SPLIT, and it is the whole decision ---`);
+console.log(`  a TICKER resolves (a registered fund the filer MISTYPED):`);
+console.log(`     ${fmt(tally.withTk)} rows · ${fmt(tally.tkReaders)} readers · $${fmt(tally.tkDollars)}`);
+console.log(`     its fee comes from that fund and is RIGHT — withdrawing it would blank a correct figure`);
+console.log(`  NO ticker (a pooled vehicle, price negotiated by the plan and not public):`);
+console.log(`     ${fmt(tally.noTk)} rows · ${fmt(tally.noTkReaders)} readers · $${fmt(tally.noTkDollars)}`);
+console.log(`     this is the only withdrawable half`);
 console.log(`\nby the fee published (a pattern-table estimate on a POOLED vehicle):`);
 for (const [k, v] of [...tally.byEr.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12)) console.log(`   er ${k.padEnd(7)} ${String(v).padStart(6)} rows`);
 console.log(`\nby what the FILER typed (this is the cell that defeats noPublicPrice):`);
