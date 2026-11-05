@@ -56,6 +56,19 @@ const EXPLAIN = has("--explain");
 const DRY = has("--dry") || EXPLAIN;      // --explain never writes
 const VERBOSE = has("--verbose") || EXPLAIN;
 const UA = "wampo-fund-facts/1.0 (+https://github.com/evwes/no-app)";
+/* --tickers VERIFIES A NAMED FUND RATHER THAN WALKING THE WORKLIST, and it
+ * exists because of a gap in my own tether: all four of its fixtures are
+ * Fidelity INDEX funds with the same page shape and tiny expense ratios. The
+ * positional anchor assumes a fixed column order, and an ACTIVE fund's page may
+ * carry an extra column (a gross ratio beside the net one), which would shift
+ * every field right and read as a plausible figure. FCNTX came back 0.74 where
+ * our pattern table says 0.39 and 0.45 -- a 2x gap on a flagship fund is worth
+ * one probe before 41,453 published cells move. */
+const ONLY = (() => {
+  const i = argv.indexOf("--tickers");
+  if (i < 0) return null;
+  return argv.slice(i + 1).filter((a) => !a.startsWith("--")).map((t) => t.toUpperCase());
+})();
 
 const reg = loadRegistry(path.join(ROOT, "sec-funds.json"));
 const work = JSON.parse(readFileSync(path.join(ROOT, "data", "fund-worklist.json"), "utf8")).work;
@@ -157,11 +170,15 @@ const rep = { names: 0, noTicker: 0, tried: 0, reached: 0, blocked: 0,
 const today = new Date().toISOString().slice(0, 10);
 const misses = [];
 
-for (const w of work.slice(0, LIMIT)) {
+const QUEUE = ONLY
+  ? ONLY.map((tk) => ({ name: `(--tickers ${tk})`, readers: 0, _tk: tk }))
+  : work.slice(0, LIMIT);
+for (const w of QUEUE) {
   rep.names++;
-  const hit = resolve(reg, w.name);
+  const hit = w._tk ? { grade: "exact", series: w.name, classes: [] } : resolve(reg, w.name);
   rep.byGrade[hit.grade || "none"] = (rep.byGrade[hit.grade || "none"] || 0) + 1;
-  const t = hit.series ? tickerFor(hit, w.name) : null;
+  const t = w._tk ? { tk: w._tk, why: "named on the command line" }
+    : hit.series ? tickerFor(hit, w.name) : null;
   if (!t) {
     rep.noTicker++;
     misses.push({ name: w.name, readers: w.readers,

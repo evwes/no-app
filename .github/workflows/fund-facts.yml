@@ -101,6 +101,17 @@ jobs:
       - name: Explain what the issuer page actually says (writes nothing)
         if: inputs.mode == 'probe'
         run: node scripts/fund-facts-issuer.mjs --limit 6 --explain
+      # VERIFY THE COLUMN ON AN ACTIVE FUND, not just an index fund. Every
+      # fixture in the tether is a Fidelity INDEX fund with the same page shape
+      # and a tiny expense ratio, so the positional anchor has only ever been
+      # checked against one layout. An active fund's page may carry a gross
+      # ratio beside the net one, which would shift every field right and still
+      # read as a plausible fee. These five are the UP-movers the impact
+      # measurement flagged -- FCNTX came back 0.74 where our own pattern table
+      # says 0.39 and 0.45. Writes nothing.
+      - name: Explain the active funds whose sourced fee moved UP
+        if: inputs.mode == 'probe'
+        run: node scripts/fund-facts-issuer.mjs --explain --tickers FCNTX FDGRX SPAXX VMFXX FXAIX
       # The ticker-keyed path measured in run #8: sec-funds.json -> ticker ->
       # schwab.wallst.com, which answered 200 with er AND ytd for three foreign
       # houses. `fetch-fund-facts.mjs` is the Yahoo path and stays unused --
