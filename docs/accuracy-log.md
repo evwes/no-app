@@ -62945,3 +62945,37 @@ top 50 reach N readers" is not derivable from this table. The honest aggregate
 is the ROW share. Instrument: `scripts/ticker-source-queue.mjs`, whose loop is
 SLICED from `ytd-render-size.mjs` so it keeps `servedLineup`, the publish gate
 and the `(issuer, RAW name, type)` memo the resolvers key on.
+
+## 2026-11-06 — the regen spends 13 of its 30 minutes cloning history it never reads
+
+**MEASURED ON RUN #10, FROM THE JOB'S OWN STEP TIMINGS.**
+`actions/checkout@v4` ran 22:12:19 → 22:25:12 — **12 minutes 53 seconds**, 43%
+of the job — before the generator started. Run #9 took 24 minutes end to end,
+so this is not a one-off outlier but the dominant cost of a workflow that was
+dispatched twice today.
+
+**THE CAUSE IS ONE LINE: `fetch-depth: 0`,** a full-history clone of a
+repository carrying 302 MB in `data/`, 42 MB in `p/`, 36 MB of
+`plans-all.json` and 13 MB of `plans-list.json` — with a data commit landing
+roughly every 3.6 hours, every one of them rewriting single-line JSON stores.
+History was squashed once to drop >100 MB blobs and has been re-accumulating
+since.
+
+**THE REPOSITORY SUPPLIES ITS OWN EVIDENCE THAT THE JOB NEEDS NONE OF IT.**
+`sec-tickers-stamp-test.mjs` asserts, as standing invariants, that *a perturbed
+`plans-all.json` leaves the fingerprint alone* and *a perturbed lineup shard
+leaves the fingerprint alone*. The generator reads `sec-funds.json`, `app.js`
+and `fund-er.js`; the data stores are not inputs, and a test already says so.
+
+**REMEDY, UNBUILT AND DELIBERATELY NOT APPLIED MID-RUN:** `fetch-depth: 1`.
+The push step already does `git fetch origin <branch> && git rebase
+origin/<branch>` inside a four-attempt loop, which deepens as needed, so full
+history buys nothing there. *Sparse-checkout is the bigger win and the riskier
+one* — `sec-tickers-test.mjs` and `stamp-assets.mjs` read other tracked files,
+so excluding paths needs its own check rather than a guess. Depth first.
+
+**AND IT IS THE THIRD SCALING SYMPTOM IN ONE DAY**, which is the part worth
+more than the minutes: Pages `syncing_files` timed out after twelve minutes on
+#1214, a deployment was rejected after 90 seconds queued on #1216, and now a
+13-minute checkout. *A repository that serves its data as static files pays for
+that data in every unrelated job.*

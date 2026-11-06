@@ -821,6 +821,19 @@ recorded ways to verify a deployment, and no scheduled job does it. It is also a
 SCALING signal: 5,287 crawlable pages plus a 12.17 MB `plans-list.json` grow
 every refresh. `docs/accuracy-log.md` 2026-11-06 (18:2xZ).
 
+**THE REGEN SPENDS 13 OF ITS 30 MINUTES CLONING HISTORY IT NEVER READS —
+measured 2026-11-06 on run #10, unbuilt.** `actions/checkout@v4` ran 12m53s of
+the job, 43% of it, because `sec-tickers.yml` asks for **`fetch-depth: 0`** on a
+repo holding 302 MB in `data/`, 42 MB in `p/` and 49 MB of top-level JSON, with
+a data commit every ~3.6 hours. **The repo proves the job needs none of it:**
+`sec-tickers-stamp-test` asserts as invariants that perturbing `plans-all.json`
+or a lineup shard leaves the fingerprint alone. Remedy is `fetch-depth: 1` — the
+push loop already fetches and rebases, which deepens as needed. Sparse-checkout
+is the bigger win and the riskier one, since `sec-tickers-test` and
+`stamp-assets` read other tracked files. *A repository that serves its data as
+static files pays for that data in every unrelated job* — third scaling symptom
+in one day, after two Pages failures. `docs/accuracy-log.md` 2026-11-06.
+
 **THE REGEN LEAVES THE TIP UNVERIFIED — found 2026-11-06, unbuilt.** A ship that
 moves app.js's fingerprinted slice reddens `sec-tickers-stamp-test`, the remedy
 is to dispatch `sec-tickers.yml`, and **that workflow commits with `[skip ci]`,
