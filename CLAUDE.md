@@ -778,6 +778,22 @@ the publish gate applied before any reader figure, and an accuracy-log entry.
   what the pipeline already reads and throws away* — this is the fourth
   instance.
 
+**THE DEPLOYMENT IS THE ONE LAYER WITH NO WATCHER — found 2026-11-06.** Every
+gate here watches the DATA (`audit-data`, loss and swap triage, `mirror-gate`)
+or the PAGE CODE (`site-test`); none watches whether what was mirrored reached
+readers. `pages build and deployment` #1214 concluded **`failure`** at 13:02Z on
+2026-11-06 — Pages' own `syncing_files` step timed out after twelve minutes, not
+our code — and the next success was 17:42Z, so the live site served a ~4.5-hour
+stale store and nothing surfaced it. **Genuine rate is 1 in 299 completed runs
+(0.3%) over 30 days**, NOT the 3.0% a conclusion-only read gives: 8 of the 9
+non-successes are `cancelled` at 1.1–1.3 minutes, which is a superseded
+deployment. *Read duration beside conclusion on that workflow, or a failure rate
+measures cancellations.* Remedy, cheap and unbuilt: after a mirror, read
+`conclusion` on the run whose `head_sha` IS main's HEAD — already one of the two
+recorded ways to verify a deployment, and no scheduled job does it. It is also a
+SCALING signal: 5,287 crawlable pages plus a 12.17 MB `plans-list.json` grow
+every refresh. `docs/accuracy-log.md` 2026-11-06 (18:2xZ).
+
 #### Owner-gated — a session must not start these unasked
 
 Each moves millions of published cells. Sizes are as last measured; **re-derive

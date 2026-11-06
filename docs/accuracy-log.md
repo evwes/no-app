@@ -62630,3 +62630,37 @@ chosen from the boot payload is not a specimen of the post-expansion state.*
 `PARSER_VERSION` stays 204; no store is written; `scripts/k2-aftertax-size.mjs`
 carries the chain transcribed from app.js with the over-count recorded in its
 own header.
+
+## 2026-11-06 (18:2xZ) — the deployment is the one layer with no watcher, and it failed today
+
+**FOUND, DIAGNOSED, NOT YET FIXED.** `pages build and deployment` run #1214
+concluded **`failure`** at 13:02Z today on data commit `e3351535`, and the next
+deployment did not succeed until **17:42Z** — so the live site served a store
+roughly 4.5 hours stale and nothing anywhere surfaced it. Every gate this
+project has watches the DATA (`audit-data`, the loss and swap triage,
+`mirror-gate`) or the PAGE CODE (`site-test`); **none watches whether what was
+mirrored actually reached readers.**
+
+**THE CAUSE IS GITHUB'S, NOT OURS, and the log says so in one line:** the deploy
+job printed `Current status: syncing_files` for twelve consecutive minutes and
+then `##[error]Timeout reached, aborting!`. Pages' own file sync timed out. That
+is worth recording rather than shrugging at, because it is a SCALING signal:
+this repo deploys 5,287 crawlable pages beside a 12.17 MB `plans-list.json` and
+64×3 shards, all of which grow with every DOL refresh.
+
+***AND MY FIRST READING OF THE RATE WAS WRONG IN THE ALARMING DIRECTION.*** Over
+the last **299 completed** Pages runs (2026-10-07 .. 2026-11-06) the failure
+count is 9, which reads as **3.0%** — but **8 of the 9 are `cancelled` at
+1.1–1.3 minutes each**, which is a superseded deployment, the same benign
+concurrency this record already documents for `build-data`. The genuine rate is
+**1 in 299, 0.3%**, and it is today's. *A conclusion field lumps "superseded" in
+with "broke", so a failure RATE over this workflow measures cancellations unless
+the durations are read too* — the 1.2-minute cluster is the tell, and it is
+visible only once duration is printed beside conclusion.
+
+**Not fixed, and the remedy is cheap but is a new watcher rather than a change
+to an existing one:** after a mirror, read `conclusion` on the
+`pages build and deployment` run whose `head_sha` IS main's HEAD — which this
+record already names as one of the only two ways to verify a deployment from
+this sandbox, and which no scheduled job currently does. A session that mirrors
+and walks away cannot tell a served change from an unserved one.
