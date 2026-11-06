@@ -3907,12 +3907,42 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
         <div class="feat-blurb">${esc(plan.autoEscalate)}</div></div>`);
     }
     const why = whyUnknown(plan);
+    /* THE SAME SCREEN WAS SAYING TWO THINGS, on 92,212 plans / 80,894,387
+     * readers — the largest display contradiction on this record.
+     *
+     * The contributions card above already states code 2K's literal meaning,
+     * in BOTH its branches (the short-form one and the full-form one): "the
+     * filing reports a 401(m) arrangement (code 2K) — employer matching
+     * contributions and/or after-tax employee contributions". Inches below it,
+     * this row rendered `plan.afterTax == null` as the generic `why`, which for
+     * a full-form filer reads "Not stated in the audited notes" and for a
+     * short-form filer "Not collected — DOL short-form filing". So the card
+     * told the reader the filing reports an arrangement that covers after-tax
+     * money and the panel told them after-tax was not verified, and nothing
+     * on the page reconciled the two.
+     *
+     * The owner's 2026-11-05 decision is to publish what 2K literally means.
+     * It is a DISJUNCTION and that disjunction IS the claim: 2K is 401(m),
+     * which covers a match AND/OR after-tax employee contributions, and no
+     * characteristic code means after-tax alone. So this must never render as
+     * "✓ Available" — only as a named reason the cell is open, which is a true
+     * statement about the filing where the old text was a true statement about
+     * US. Only the `null` branch is touched: a curated or filed `false` keeps
+     * its "✗ Not offered", because 2K does not contradict it.
+     *
+     * The LEDGER must not move for this. `contributionsCell` keeps this
+     * population `partial`, not `published`, because the reader still has no
+     * yes/no on after-tax — crediting a disjunction would inflate the one
+     * scalar by ~25M readers without answering anyone's question. */
+    const afterTaxWhy = plan.matchCode
+      ? "Not separately stated — Form 5500 code 2K covers a match, after-tax contributions, or both"
+      : why;
     rows.push(taxRow("Pre-Tax (Traditional)", plan.pretax,
       "Contributions reduce current taxable income. Taxes paid upon withdrawal in retirement.", why));
     rows.push(taxRow("Roth (After-Tax Designated)", plan.roth,
       "Contributions made with after-tax dollars. Qualified withdrawals in retirement are tax-free.", why));
     rows.push(taxRow("Voluntary After-Tax", plan.afterTax,
-      plan.megaBackdoor ? "Supports in-plan Roth conversion — the “mega backdoor Roth”." : "", why));
+      plan.megaBackdoor ? "Supports in-plan Roth conversion — the “mega backdoor Roth”." : "", afterTaxWhy));
     rows.push(`<div class="feat-row"><span>Self-Directed Brokerage</span>${plan.brokerage == null
       ? `<span class="feat-unknown">— ${esc(why)}</span>`
       : plan.brokerage !== "None"

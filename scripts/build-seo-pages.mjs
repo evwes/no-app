@@ -238,7 +238,20 @@ for (const r of d.plans.slice(0, TOP_N)) {
     ...(ff.nec ? [["Employer nonelective contribution", esc(ff.nec)]] : []),
     ["Vesting", ff.vesting ? esc(ff.vesting) : nStat()],
     ["Roth option", ff.roth ? "Yes (per the filing)" : nStat()],
-    ["After-tax contributions", ff.afterTax ? "Yes (per the filing)" : nStat()],
+    /* 2K IS NAMED HERE FOR THE SAME REASON THE REPORT NAMES IT, and the
+     * precedent is the row directly below: auto-enrollment already falls back
+     * to the characteristic code when the notes are silent. Code 2K is 401(m),
+     * covering a match AND/OR after-tax employee contributions, so this can
+     * never read "Yes" — the disjunction is the claim. Saying so is a fact
+     * about the filing where `not stated in the public filings` is a fact
+     * about us, and this surface had no 2K statement anywhere to reconcile it
+     * with (the report contradicted itself; this page merely under-reported).
+     * A rule that labels a row on one surface and not the other is worse than
+     * either answer, which is why both moved together. */
+    ["After-tax contributions", ff.afterTax ? "Yes (per the filing)"
+      : /2K/.test(g(r, "codes") || "")
+        ? `<span class="muted">not separately stated — Form 5500 code 2K covers a match, after-tax contributions, or both</span>`
+        : nStat()],
     ["Auto-enrollment", ff.autoEnroll ? esc(String(ff.autoEnroll === true ? "Yes (per the filing)" : ff.autoEnroll)) : /2S/.test(g(r, "codes") || "") ? "Yes (Form 5500 code 2S)" : nStat()],
   ];
 

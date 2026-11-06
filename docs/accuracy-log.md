@@ -62565,3 +62565,68 @@ enough to settle by READING THE FOUR FILINGS, which is what this record
 prescribes at this scale — an enumerated, filing-verified set rather than a
 predicate. The remaining ~24 rows keep their estimates, correctly: we have no
 evidence those figures are wrong.
+
+## 2026-11-06 (18:5xZ) — the 2K after-tax row: one screen said two things, on 47,607 plans
+
+**SHIPPED, display-only, both surfaces. 92,189 plans / 75,448,676 readers gain a
+true statement about their filing where the page had a statement about US.** Of
+those, **47,607 plans / 17,715,784 readers were a SELF-CONTRADICTION**: the
+contributions card already said *"the filing reports a 401(m) arrangement (code
+2K) — employer matching contributions and/or after-tax employee contributions"*
+and, inches below, the features panel said *"Voluntary After-Tax — Not stated in
+the audited notes"*. The other **44,582 plans / 57,732,892 readers** were an
+UNDER-REPORT: a real match formula is filed, so `unknownContributionCard` never
+renders and no 401(m) sentence appeared to contradict — the row simply said
+nothing. Both now read *"Not separately stated — Form 5500 code 2K covers a
+match, after-tax contributions, or both"*.
+
+***THE OWNER'S DECISION WAS ALREADY HALF-SHIPPED, which only reading the shipped
+surface could show.*** Asked whether to publish 2K's literal meaning, the answer
+was yes — and `app.js:3819` and `:3829` had been doing exactly that in both
+branches of the contributions card for weeks. Sixth queue item found partly
+closed by reading the code before writing any. What was missing was never the
+statement; it was the CONSISTENCY of a second block on the same screen.
+
+**ONLY THE `null` BRANCH MOVES, and READING THE PAGE is what forced that.** My
+first measurement read the two BOOT fields (`cf` bit 4 and index bit 32) and
+reported 92,212 plans / 80,894,387 readers with **Walmart as its single largest
+member at 1,996,659**. Walmart renders **"✗ Not offered"**: `data.js` carries a
+curated `afterTax: false`, which wins at `app.js:529` ahead of both later
+writers. ***A measurement that applies two steps of a four-step resolution chain
+measures a different population*** — the chain is curated → boot bit → the served
+lineup's features → the render, and skipping either end over-counted by 9.7M
+readers and put six of the largest plans in the wrong bucket (Walmart, Amazon,
+Home Depot, Starbucks, JPMorgan, Costco: 17 plans / 5,196,929 readers, all
+correctly untouched). 2K does not contradict a filed or curated `false`, so the
+arm leaves it alone.
+
+**THE LEDGER MUST NOT MOVE AND DOES NOT.** `contributionsCell` keeps this
+population `partial`, not `published`, because the reader still has no yes/no on
+after-tax. Crediting a disjunction would raise the one scalar by ~25M readers
+without answering anyone's question. ***A reader-facing improvement the
+scoreboard deliberately refuses to credit is the shape to expect whenever the
+honest answer is a disjunction*** — and a scalar that rose here would be the
+metric measuring itself.
+
+**BOTH SURFACES MOVED TOGETHER**, because *a rule that labels a row on one
+surface and not the other is worse than either answer*. The crawlable pages had
+no contradiction (that surface carries no 2K sentence at all) but did
+under-report, and the precedent was one row below: auto-enrollment already falls
+back to `/2S/.test(codes)`. **2,940 of 5,000 pages changed, and the check is a
+per-page SET DIFFERENCE over the facts cells rather than a grep of the diff's
+`+` side** — the whole table is one line, so a line-oriented read counts every
+label already there. Result: **2,940 of 2,940 pages moved EXACTLY ONE cell, all
+the same transition, 0 pages moved a second cell and 0 lost a label**, with the
+2,060 unchanged pages as the targeting control.
+
+**Verified by reading the rendered report on four specimens** (dashed EIN,
+zero-padded `pn`, and the synthetic click the sandbox renderer needs before any
+on-demand shard delivers): a 2K short-form plan shows the new text, Boeing
+(curated true) still reads "✓ Available", Walmart (curated false) still reads
+"✗ Not offered". **Two of my four specimen picks were invalid because they were
+chosen on BOOT bits** — Lockheed, picked as a "no 2K" control, reads "✓
+Available" because the lineup shard supplies after-tax on expand. *A specimen
+chosen from the boot payload is not a specimen of the post-expansion state.*
+`PARSER_VERSION` stays 204; no store is written; `scripts/k2-aftertax-size.mjs`
+carries the chain transcribed from app.js with the over-count recorded in its
+own header.
