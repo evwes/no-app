@@ -62765,3 +62765,40 @@ class.* Re-keyed over every `<td>`: **5 of 5 changed pages moved exactly ONE
 cell**, each gaining the label, Charter's among them. Only 5 pages for 39 plans
 because of `TOP_N` and the generator's `slice(0, 12)` — the row limit again.
 `PARSER_VERSION` stays 204; no store is written.
+
+## 2026-11-06 (22:0xZ) — the regen's `[skip ci]` leaves the tip with no verdict
+
+**FOUND BY WALKING THE SEQUENCE, FIXED BY HAND, NOT YET AUTOMATED.** A ship that
+moves app.js's fingerprinted resolver slice reddens
+`sec-tickers-stamp-test` by name — correct, and it fired on the valuation-note
+ship (`site-test` #248 and #249 both `failure`). The remedy on record is to
+dispatch `sec-tickers.yml` rather than burn 30 minutes of session CPU, and that
+worked: regen #9 committed, rebased onto the session's own commit and pushed.
+
+***But the regen commits with `[skip ci]`, so the commit that FIXES the gate
+creates no run to prove it.*** The branch tip ended with **no CI verdict at all,
+immediately after the step taken to make it green** — and every gate passed
+LOCALLY, which is the exact state this record already names as having hidden ten
+consecutive red runs. Dispatching `site-test` by hand gave #250 `success` on
+`f93db072`, and only then was the mirror legitimate.
+
+`[skip ci]` is right there: without it the regen races the session's pushes over
+one branch, which is why the workflow is dispatch-only in the first place. So the
+fix is not to drop it. **The gap is that "dispatch site-test after a regen" is a
+manual step, and this project has measured repeatedly that a manual step in a
+verification path is the step that gets skipped.** The cheap closure is for
+`sec-tickers.yml` to dispatch `site-test` on its own head after it pushes —
+unbuilt, and named here so it is not rediscovered.
+
+**AND THE DEPLOYMENT CHECK EARNED ITS KEEP ON ITS FIRST REAL USE.** `mirror.sh`
+now blocks on `deploy-check --wait`, and this mirror reported
+`DEPLOYED — pages run 1217 on f93db072 concluded success in 1.3 min (attempt 1)`
+in the same breath as the push. Twelve hours earlier the same step would have
+caught a ship that sat on `main` serving nobody for twenty minutes. *A verified
+mirror is not a served page, and now the mirror says which it got.*
+
+**The key diff was byte-identical, measured the cheap way:** `sec-tickers.js`
+shows ONE changed line and that line is `SEC_TICKERS_CODE`, so ADDED / REMOVED /
+CHANGED are all 0 — the recorded case that *a moved fingerprint does not prove a
+key would move*. A `git diff --stat` settles that more strongly than parsing the
+asset, which is not bare JSON and threw when I tried.

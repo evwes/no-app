@@ -802,6 +802,19 @@ recorded ways to verify a deployment, and no scheduled job does it. It is also a
 SCALING signal: 5,287 crawlable pages plus a 12.17 MB `plans-list.json` grow
 every refresh. `docs/accuracy-log.md` 2026-11-06 (18:2xZ).
 
+**THE REGEN LEAVES THE TIP UNVERIFIED — found 2026-11-06, unbuilt.** A ship that
+moves app.js's fingerprinted slice reddens `sec-tickers-stamp-test`, the remedy
+is to dispatch `sec-tickers.yml`, and **that workflow commits with `[skip ci]`,
+so the commit that FIXES the gate creates no run to prove it.** The tip ends with
+no CI verdict immediately after the step taken to make it green, with every gate
+passing LOCALLY — the state this record names as having hidden ten consecutive
+red runs. `[skip ci]` must stay (without it the regen races the session's pushes
+over one branch), so the closure is for `sec-tickers.yml` to dispatch
+`site-test` on its own head after pushing. Until then: **after any regen,
+dispatch `site-test` by hand and read its `conclusion` before mirroring.**
+*A manual step in a verification path is the step that gets skipped.*
+`docs/accuracy-log.md` 2026-11-06 (22:0xZ).
+
 #### Owner-gated — a session must not start these unasked
 
 Each moves millions of published cells. Sizes are as last measured; **re-derive
