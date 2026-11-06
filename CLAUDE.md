@@ -712,6 +712,55 @@ shipped 2026-11-05 and 92 funds are live.
 A ship that would newly PUBLISH a fee where the page shows none is a different
 decision and is still the owner's.
 
+**FOUR STANDING OWNER DECISIONS, 2026-11-05 — asked directly, all four answered,
+and together they unblock 96.5M readers.** Each was gated for months on a
+judgment only the owner could make; none needs asking again. **What has NOT
+changed is the evidence each ship still owes** — the differential through BOTH
+copies of `renderRow` with row membership and `star` priced, a seeded uniform
+draw read by hand with each row's filed TYPE printed, the serving condition and
+the publish gate applied before any reader figure, and an accuracy-log entry.
+
+| decision | answer | scope |
+|---|---|---|
+| **2K / after-tax** | publish the code's LITERAL meaning | 55,408 plans / **25.0M** |
+| **comparable ticker** | symbol only, **NO fee** | 35,353 plans / **49.1M** |
+| **wrong share class** | correct the symbol, WITHDRAW the fee | 1,865 plans / **9.1M** |
+| **fee pre-emption** | prefer the ISSUER-specific figure | 8,330 plans / **13.3M** |
+
+1. **2K IS PUBLISHED AS WHAT IT LITERALLY MEANS, NOT AS AN INFERENCE.** Code 2K
+   is 401(m) and covers an employer match, after-tax employee contributions, or
+   both, so it cannot settle after-tax on its own — and because we would not
+   infer, 25.0M readers saw a blank. A 2K plan now reads that it offers *a
+   match, after-tax contributions, or both*. **That is a true statement about
+   the filing and NOT a yes/no**, which is the whole point: it tells the reader
+   something checkable where the blank told them nothing. ***It must never be
+   rendered as "after-tax: yes"*** — the disjunction is the claim. Reading the
+   audited notes to resolve it to a real yes/no stays separate, parser-side, and
+   needs its own sizing.
+2. **A COMPARABLE TICKER SHIPS WITHOUT A FEE.** The 188,846 rows where the
+   registry finds an equivalent but the filing states no share class now publish
+   the asterisked SYMBOL and **no expense ratio at all**. An advisor gets the
+   identification and can price it themselves; we do not put a number on a
+   vehicle whose price we do not know. **This is a NARROWING of the shipped
+   comparable design**, where `app.js:4073`'s `star ? info.er : …` takes
+   `info.er` unconditionally — so the ship must also withdraw the fee from
+   comparables that already carry one, and that is a WITHDRAWAL on existing
+   rows, priced separately from the gain.
+3. **A WRONG SHARE CLASS IS CORRECTED AND ITS FEE WITHDRAWN**, on the
+   one-directional slice only (filing states plain Institutional, page publishes
+   a retail class; inverse direction measured 0 of 3,169). The symbol becomes the
+   one the stated class maps to; the expense ratio is **blanked**, not carried
+   over, because the right class's fee is not sourced. The both-directions
+   remainder of that family stays gated.
+4. **THE ISSUER-SPECIFIC FEE OUTRANKS THE NAME-PATTERN GUESS.** Where the filing
+   names the issuer and a fee composed from issuer + name differs from the one
+   guessed off the name alone, the composed figure wins — more specific evidence
+   beats less specific. ***It is still an ESTIMATE and still labelled "est."***:
+   this decision chooses between two guesses and creates no sourced figure, so
+   it does not touch the standing rule that *a fee is SOURCED, never derived*.
+   `issuerPricedER` already refuses to let the issuer answer alone, and that
+   guard stays.
+
 #### Paid for and not yet rendered — do these first
 
 - **The YTD RETURNS are sourced, shipped in the payload, and rendered by
