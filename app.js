@@ -1839,12 +1839,41 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
   const NON_ISSUER_FURNITURE = "(?:shares?|units?|interests?|holdings?|investments?|amounts?|balances?|participations?|value)";
   const NON_ISSUER_CELL = new RegExp("^" + NON_ISSUER_FURNITURE
     + "(?:\\s+(?:of|in)\\s+" + NON_ISSUER_FURNITURE + ")*\\s+(?:of|in)[\\s.,;:]*$", "i");
-  /* the second shape that names nothing: the sponsor's own internal fund code,
-   * `TEAF50020002 · Bgi Equity Index Fund F`. ONE token, >=8 characters, >=4
-   * digits, >=1 letter — a designation like `RET2030 I` is several tokens and a
-   * house carries no digits. An ALL-DIGIT cell is deliberately left alone: that
-   * is a security identifier, a different class with its own merge-side arm.
-   * Canonical copy and its import-time controls in lib-disclose.mjs. */
+  /* AND THE SECOND SHAPE THAT NAMES NOTHING: THE SPONSOR'S OWN INTERNAL FUND
+   * CODE, 2026-10-16.
+   *
+   * Both surfaces print `issuer · name`, so AT&T's 192,505-participant trust
+   * publishes `TEAF50020002 · Bgi Equity Index Fund F` — eleven of its twelve
+   * shown rows lead with a code from the custodian's export. Howmet files
+   * `ALCF19407002`, Alcoa `RN2F19407002`, Boehringer `BOEF13110002`, General
+   * Mills `GMTF02190002`, ITW the synthetic-GIC contract `C999502JD0`.
+   *
+   * A SEPARATE PREDICATE COMPOSED IN, not a widening of the furniture run above,
+   * because the two have nothing in common: that one is a preposition-joined run
+   * of holding words, this one is a shape. Composing it INSIDE `isNonIssuerCell`
+   * is what makes it reach both surfaces and the smoke test's cross-check without
+   * a second call site — `app.js:4578` and `build-seo-pages.mjs:300` each ask that
+   * one function.
+   *
+   * THE CONDITIONS ARE STRUCTURAL, AND THE RECORDED SCREEN THEY REPLACE WAS NOT.
+   * That one tested "no three-letter word" and so could not tell `TEAF50020002`
+   * from `RET2030 I`, which is a target-date CLASS designation — *a count keyed on
+   * a character shape measures the character shape*. These four are: ONE token (a
+   * designation is several: `RET2030 I`, `SSGA S+P 500 INDEX SER A`), at least
+   * EIGHT characters (`401K` is not a code), at least FOUR digits (`Vanguard` and
+   * `BlackRock` carry none), and at least one LETTER.
+   *
+   * THE LETTER REQUIREMENT HAS A NAMED COST AND IT IS DELIBERATE: a purely
+   * numeric cell is left alone, because an all-digit run in that column is a
+   * SECURITY identifier rather than a platform's fund code, and that class has
+   * its own merge-side arm working on the NAME.
+   *
+   * READ, NOT SAMPLED: all 96 distinct cells the screen reaches were enumerated
+   * and read, with ZERO decoys — 117 published+served rows across 18 plans and
+   * 521,345 participants. Ticker, fee, asterisk, name and type cannot move, for
+   * the same reason the furniture arm's cannot: `lookupTicker` reads `f.iss` at
+   * its own call site and this predicate is applied only where the issuer SPAN is
+   * composed. docs/accuracy-log.md 2026-10-16. */
   const OPAQUE_ID_CELL = /^(?=(?:\D*\d){4})(?=.*[A-Za-z])[\w.\-/#]{8,}$/;
   function isOpaqueIdCell(iss) {
     const t = String(iss == null ? "" : iss).trim();
@@ -2049,6 +2078,38 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
       || isContractBasisCaption(name);
   }
 
+  const VN_TRIGGER = /(fair\s*valu\w*\s+hierarch|measured\s+(at|in)\b|at\s+net\s+asset\s+valu|at\s+nav\b|\bnav\b)/i;
+  const VN_WORD = new Set(`investment investments instrument instruments asset assets
+  measured measure at in the a an of and or to net nav value values valued fair hierarchy
+  practical expedient total totals as within level levels one two three
+  cash equivalent equivalents short term interest bearing
+  stable guaranteed value fund funds common collective trust trusts commingled
+  pooled separate account accounts registered companies company mutual
+  other others plan plans participant participants directed
+  securities security equity equities bond bonds income
+  subtotal subtotals amounts amount balance held year end`.trim().split(/\s+/));
+  /* OCR splits the three-letter acronym — `Investments measured at NA V` is a
+   * real filed row. Collapsing it is deliberately narrower than putting bare `na`
+   * and `v` in VN_WORD: single letters in a closed vocabulary would excuse a
+   * share-class letter or an initial anywhere in the string, which is the
+   * widening this record has measured harmful. Applied to the TRIGGER and the
+   * RESIDUE alike so the two cannot disagree about the same string. */
+  function vnNorm(s) { return String(s || "").replace(/\bN[\s.]*A[\s.]*V\b/gi, "NAV"); }
+  function valuationNoteResidue(s) {
+    return vnNorm(s)
+      .replace(/\$[\s\d,.()-]*/g, " ")       // dollar runs welded in from the table
+      .replace(/\([^)]{0,12}\)/g, " ")       // footnote markers: (a) (b) (?) ©)
+      .replace(/[^A-Za-z]+/g, " ")
+      .trim().split(/\s+/)
+      .filter((w) => w && !VN_WORD.has(w.toLowerCase()));
+  }
+  function isValuationNoteRow(name) {
+    const s = vnNorm(String(name || "").trim());
+    if (!s) return false;
+    if (!VN_TRIGGER.test(s)) return false;
+    return valuationNoteResidue(s).length === 0;
+  }
+
   /* THE TWO COMPOSITIONS, which are part of the rule and not of the call site.
    * `isGenericName` is the ISSUER half of the row gate and the NAME half is
    * widened further — the asymmetry is deliberate and measured (the issuer
@@ -2069,6 +2130,11 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
     if (/^subtotal \(not a holding\)$/i.test(type)) return false;
     if (/brokerage window/i.test(type)) return false;
     if (/company stock|employer (security|stock)/i.test(type + " " + name)) return false;
+    /* the auditor's valuation note — see isValuationNoteRow. Placed AFTER the
+     * three early returns so employer stock, a brokerage window and a subtotal
+     * each keep their own label, and before the composed name test because this
+     * is a property of the name that `isGenericName` cannot see. */
+    if (isValuationNoteRow(name)) return true;
     /* ...or the row is a SCHEDULE H ASSET-CLASS CAPTION with no type cell to
      * describe it. Injected here rather than into the caller's `isGenericName`
      * composition because the condition is a property of the ROW and not of the

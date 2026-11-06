@@ -62688,3 +62688,80 @@ green, `mirror-gate` at 0 plans losing a menu, 600 of 600 pages accounted for on
 `origin/main` — and every one of them is about the TREE rather than the
 deployment. *A verified mirror is not a served page*, and nothing but reading
 that run's `conclusion` distinguishes them.
+
+## 2026-11-06 (19:3xZ) — the auditor's valuation note published as a holding
+
+**SHIPPED, display-only, both surfaces. 43 rows / 39 served entries / 163,213
+readers stop seeing an accounting note presented as a fund they could pick.**
+`audit-data` has raised these as `fair-value-note` — "rows in no filing" — and
+it was right: a fair-value hierarchy line says HOW holdings were valued, not
+WHAT the plan holds. One plan published `value hierarchy Investments measured
+at` as **99.6% of its entire menu**, so its whole published fund list was an
+artifact of our own parse; two more sat at 97.8% and 85.7%.
+
+**The differential through BOTH copies of `renderRow` moves `shownType` on 43
+and `er` on 2** — both of those the owner-gated fabricated **0.35** stable-value
+fee, withdrawn as a consequence of `namelessRow` already sitting in the `er`
+suppressor chain, which is one-directional and exactly what the 2026-11-05
+standing decision licenses. **ticker 0, name 0, fee GAINED 0, row membership
+21,621 -> 21,621, and 0 of 21,394 sampled non-candidates differ.** The narrowing
+is a superset by construction (the predicate opens with `VN_TRIGGER`) and gates
+the render rather than the comparison.
+
+***READING ALL 51 CANDIDATES IS WHAT MADE THIS SHIPPABLE, because the class is
+three populations and only one of them may be suppressed.*** A pure note names
+nothing; a note WELDED IN FRONT of a real fund names a real fund; welded table
+debris is the recorded `$`-run class. **Every one of the 2 tickers and 5 fees in
+the candidate set sits in the welded-real-fund half**, so a wholesale
+suppression would have destroyed five correct identifications — `…at Net Asset
+Value T. Rowe Price Retirement 2010` publishes **TRRAX at 0.49** and
+`…at net asset value Northern Trust Colle…` publishes **NOSIX at 0.05**. *A row
+that names nothing and a row whose name we welded a caption onto are two
+classes.*
+
+**THE RESIDUE IS THE PROTECTION AND IT IS MEASURED, NOT ASSERTED.** Shape is the
+shipped `isForfeitureAccountRow` one — a narrow TRIGGER plus a residue that must
+be EMPTY — and `VN_WORD` carries bookkeeping, valuation and asset-CATEGORY words
+and **no house and no product word**, so what the list OMITS does the refusing.
+Over every published+served row, 227 carry the trigger: 179 fire, 48 refuse, and
+the 4 refusals that publish a ticker or fee are precisely the ones whose residue
+names a house (`T Rowe Price Retirement`, `Northern S P`, `Reliance using`).
+
+**NOT gated on a blank type cell**, unlike `isScheduleHCaption`: a valuation
+note names no fund whatever the filer typed, and where a type IS filed it is
+usually TRUE of the row (`Collective investment trusts (NAV)` really is a
+collective trust) — the name simply does not say which.
+
+**AND IT DOES NOT FIX THE ARITHMETIC, which is worth stating because the
+temptation is to claim it.** The value stays in the menu sum, as a subtotal row's
+does. **Charter Communications publishes `Other investments measured at NAV(b)`
+at 42.6% of its menu to 117,639 readers AND is the worst `lineup-overshoot` at
+1.44x** — the same row — but only withdrawing the VALUE would relieve that, which
+is parser-side. So this ship moves the claim and leaves the overshoot HIGH
+standing, deliberately.
+
+**19 import-time pins in both directions**, each must-KEEP a measured refusal
+that publishes a real answer today, so a regression names what it would cost.
+**A pin FAILED on the first run and that is why the normalisation is narrow:**
+`Investments measured at NA V` is a real filed row where OCR split the acronym,
+leaving `NA` and `V` as residue. Putting bare `na` and `v` in the vocabulary
+would excuse a share-class letter or an initial anywhere in the string — the
+widening this record has measured harmful — so `vnNorm` collapses only
+`N A V`, applied to the trigger and the residue alike so the two cannot
+disagree, with three adversarial probes (`Nuveen All-Cap Value Fund`) asserting
+it reaches no real name.
+
+**Sliced into app.js by `gen-generic-twin` on the day it ships**, per that
+file's own header: `isNamelessFundRow` is extracted VERBATIM and now CALLS this,
+so without the slice the twin references an undefined symbol and every page
+throws. Negative control run: mutating the trigger makes `lib-disclose` throw at
+import before the generator starts.
+
+***AND MY PAGE INSTRUMENT MEASURED THE WRONG TABLE.*** The set-difference script
+from the 2K ship reads the FACTS table and reported "5 pages where more than one
+cell moved" — for pages whose facts table had not moved at all, because this
+change is in the FUND table. *An instrument built for one class measures that
+class.* Re-keyed over every `<td>`: **5 of 5 changed pages moved exactly ONE
+cell**, each gaining the label, Charter's among them. Only 5 pages for 39 plans
+because of `TOP_N` and the generator's `slice(0, 12)` — the row limit again.
+`PARSER_VERSION` stays 204; no store is written.

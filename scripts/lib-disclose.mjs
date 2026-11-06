@@ -3612,12 +3612,118 @@ for (const [nm, v, why] of [
   throw new Error(`lib-disclose: isDateHeaderRow would qualify ${JSON.stringify(nm)} @ ${v} (${why}) — fix the predicate rather than the control`);
 }
 
+/* THE AUDITOR'S VALUATION NOTE PUBLISHED AS A HOLDING — `audit-data` has been
+ * raising these as `fair-value-note`, "rows in no filing", and it is right:
+ * a fair-value hierarchy line says HOW the holdings were valued, not WHAT the
+ * plan holds. One plan published `value hierarchy Investments measured at` as
+ * 99.6% of its whole menu, so its entire fund list was an artifact of our parse.
+ *
+ * SHAPE IS THE SHIPPED `isForfeitureAccountRow` ONE: a narrow TRIGGER plus a
+ * RESIDUE that must be EMPTY. `VN_WORD` carries bookkeeping, valuation and
+ * asset-CATEGORY words and deliberately carries NO house and NO product word,
+ * so what the list OMITS does the refusing — a real fund survives because its
+ * own name is not in it.
+ *
+ * THE RESIDUE IS LOAD-BEARING AND MEASURED, NOT ASSERTED. Over every
+ * published+served row, 227 carry the trigger: the predicate fires on 179 and
+ * refuses 48, and the 4 refusals that publish a ticker or a fee are exactly the
+ * rows where a real fund is welded BEHIND the note — residue `T Rowe Price
+ * Retirement` keeps TRRAX at 0.49, `Northern S P` keeps NOSIX at 0.05,
+ * `Reliance using` keeps a stable-value row. Suppressing the class wholesale
+ * would have destroyed those identifications; *a row that names nothing and a
+ * row whose name we welded a caption onto are two classes.*
+ *
+ * It is NOT gated on a blank type cell, unlike `isScheduleHCaption`. A
+ * valuation note names no fund whatever the filer typed, and where the type IS
+ * filed it is usually TRUE of the row (`Collective investment trusts (NAV)`
+ * really is a collective trust) — the name simply does not say WHICH, which is
+ * what this label states.
+ *
+ * AND IT DOES NOT TOUCH THE MENU TOTAL. The value stays in the sum, as it does
+ * for a subtotal row, so this fixes the CLAIM and not the arithmetic: Charter
+ * Communications publishes `Other investments measured at NAV(b)` at 42.6% of
+ * its menu to 117,639 readers AND is the worst `lineup-overshoot` at 1.44x, and
+ * only withdrawing the value would relieve that — a parser change, not this. */
+const VN_TRIGGER = /(fair\s*valu\w*\s+hierarch|measured\s+(at|in)\b|at\s+net\s+asset\s+valu|at\s+nav\b|\bnav\b)/i;
+const VN_WORD = new Set(`investment investments instrument instruments asset assets
+measured measure at in the a an of and or to net nav value values valued fair hierarchy
+practical expedient total totals as within level levels one two three
+cash equivalent equivalents short term interest bearing
+stable guaranteed value fund funds common collective trust trusts commingled
+pooled separate account accounts registered companies company mutual
+other others plan plans participant participants directed
+securities security equity equities bond bonds income
+subtotal subtotals amounts amount balance held year end`.trim().split(/\s+/));
+/* OCR splits the three-letter acronym — `Investments measured at NA V` is a
+ * real filed row. Collapsing it is deliberately narrower than putting bare `na`
+ * and `v` in VN_WORD: single letters in a closed vocabulary would excuse a
+ * share-class letter or an initial anywhere in the string, which is the
+ * widening this record has measured harmful. Applied to the TRIGGER and the
+ * RESIDUE alike so the two cannot disagree about the same string. */
+function vnNorm(s) { return String(s || "").replace(/\bN[\s.]*A[\s.]*V\b/gi, "NAV"); }
+export function valuationNoteResidue(s) {
+  return vnNorm(s)
+    .replace(/\$[\s\d,.()-]*/g, " ")       // dollar runs welded in from the table
+    .replace(/\([^)]{0,12}\)/g, " ")       // footnote markers: (a) (b) (?) ©)
+    .replace(/[^A-Za-z]+/g, " ")
+    .trim().split(/\s+/)
+    .filter((w) => w && !VN_WORD.has(w.toLowerCase()));
+}
+export function isValuationNoteRow(name) {
+  const s = vnNorm(String(name || "").trim());
+  if (!s) return false;
+  if (!VN_TRIGGER.test(s)) return false;
+  return valuationNoteResidue(s).length === 0;
+}
+/* Asserted at import, both directions. Every must-SEE is a real filed string
+ * from the live store; every must-KEEP is a MEASURED refusal that publishes a
+ * ticker or a fee today, so a regression here withdraws a correct answer and
+ * the pin names what it would cost. */
+for (const [s, want, why] of [
+  ["Other investments measured at NAV(b)", true,
+    "Charter Communications, 117,639 readers — 42.6% of its menu, the largest member"],
+  ["value hierarchy Investments measured at", true,
+    "425 readers — 99.6% of the whole menu, so this plan's entire fund list was this row"],
+  ["Instruments measured at NAV", true, "1,293 readers at 97.8%, and 169 more at 83.7%"],
+  ["Investments at net asset value $ 0", true,
+    "1,262 readers at 85.7%, typed `Mutual fund` — the dollar run must not block the residue"],
+  [". Total assets in the fair value hierarchy", true, "5,640 readers; the leading period must not block it"],
+  ["Assets Measured at Net Asset Value(?)", true, "a footnote marker of `(?)` must be stripped"],
+  ["Investments measured at NA V", true, "OCR split the word; `\\bnav\\b` cannot see it, `measured at` can"],
+  ["Investments measured at net asset value ©)", true, "a mojibake footnote marker"],
+  ["Pooled separate account valued at NAV", true, "4 rows of one plan — a category and a valuation, no fund"],
+  ["Collective investment trusts (NAV)", true, "typed `Collective trust`, which is TRUE and still names no fund"],
+  ["Mutual funds $ 17,026,003 $ 17,026,003 $ - $ - Investment measured at net", true,
+    "the welded-table-row class, where the NAME half still names no fund"],
+  /* must KEEP — each publishes a real answer today */
+  ["Common Collective Trusts, at Net Asset Value T. Rowe Price Retirement 2010", false,
+    "1,725 readers — publishes TRRAX at 0.49; residue `T Rowe Price Retirement` is the ONLY protection"],
+  ["Collective investment trust funds, at net asset value Northern Trust Colle", false,
+    "627 readers — publishes NOSIX at 0.05; residue `Northern S P` is the only protection"],
+  ["Common Trust Funds (at net asset value) T. Rowe Price Retirement Blend Fun", false,
+    "3,046 readers — publishes a 0.41 fee off a real fund name"],
+  ["Reliance stable value fund using NAV as a practical expedient", false,
+    "289 readers — `Reliance` is a house the word list deliberately omits"],
+  ["Pooled separate account, at net asset value New York Life Anchor Account", false,
+    "627 readers — the insurer's own named account sits behind the note"],
+  ["Collective investment trust, at net asset value Cohen & Steers U.S. Realty", false, "a real manager and product"],
+  ["Vanguard Institutional Index Fund", false, "an ordinary fund with no trigger at all"],
+  ["Fidelity 500 Index Fund", false, "likewise — the trigger is what keeps this class narrow"],
+]) if (isValuationNoteRow(s) !== want) {
+  throw new Error(`lib-disclose: isValuationNoteRow(${JSON.stringify(s)}) should be ${want} (${why})`);
+}
+
 export function isNamelessFundRow(f, cleanedName, isGenericName) {
   const type = String((f && f.type) || "");
   const name = String(cleanedName || (f && f.name) || "");
   if (/^subtotal \(not a holding\)$/i.test(type)) return false;
   if (/brokerage window/i.test(type)) return false;
   if (/company stock|employer (security|stock)/i.test(type + " " + name)) return false;
+  /* the auditor's valuation note — see isValuationNoteRow. Placed AFTER the
+   * three early returns so employer stock, a brokerage window and a subtotal
+   * each keep their own label, and before the composed name test because this
+   * is a property of the name that `isGenericName` cannot see. */
+  if (isValuationNoteRow(name)) return true;
   /* ...or the row is a SCHEDULE H ASSET-CLASS CAPTION with no type cell to
    * describe it. Injected here rather than into the caller's `isGenericName`
    * composition because the condition is a property of the ROW and not of the

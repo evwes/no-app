@@ -35,7 +35,8 @@ import { readFileSync, writeFileSync } from "node:fs";
 import vm from "node:vm";
 import { GENERIC_TYPE_ANY, GENERIC_TYPE_DESPACED, isGenericTypeName,
   isTypoGenericTypeName, gtaLanguage, GTA_MIN_TYPO_LEN } from "./lib-4i.mjs";
-import { isNamelessFundRow, isLoanDescriptionRow, isAnnuityContractRow,
+import { isValuationNoteRow,
+  isNamelessFundRow, isLoanDescriptionRow, isAnnuityContractRow,
   annuityFeeIsGuaranteeOnly, isInvestmentContractRow, isMistypedStockRow,
   mistypedStockFeeIsGuaranteeOnly, issuerPricedER, isCollectiveTrustName,
   isLoanAnswerRow, isLoanVocabularyRow, isLoanAccountRow, isBankDepositRow,
@@ -134,6 +135,20 @@ if (nos < 0) throw new Error("gen-generic-twin: NON_ISSUER_FURNITURE moved in li
 const noe = dis.indexOf("\n}\n", dis.indexOf("export function isNonIssuerCell(")) + 3;
 if (noe < 3) throw new Error("gen-generic-twin: isNonIssuerCell moved in lib-disclose");
 const nonissuer = dis.slice(nos, noe).replace(/^export /gm, "");
+
+/* AND THE AUDITOR'S VALUATION NOTE, sliced on the day it ships (2026-11-06).
+ * `isNamelessFundRow` is extracted VERBATIM above and now CALLS this, so
+ * without the slice the twin references an undefined symbol and every page
+ * throws — the exact landmine this header was written about. The slice runs
+ * from the TRIGGER constant through `isValuationNoteRow`, carrying `VN_WORD`,
+ * `vnNorm` and `valuationNoteResidue` with it, so the vocabulary can never be
+ * retyped into app.js. */
+const vns = dis.indexOf("const VN_TRIGGER = ");
+if (vns < 0) throw new Error("gen-generic-twin: VN_TRIGGER moved in lib-disclose");
+const vne = dis.indexOf("\n}\n", dis.indexOf("export function isValuationNoteRow(")) + 3;
+if (vne < 3) throw new Error("gen-generic-twin: isValuationNoteRow moved in lib-disclose");
+if (vne <= vns) throw new Error("gen-generic-twin: valuation-note slice is inverted");
+const valnote = dis.slice(vns, vne).replace(/^export /gm, "");
 
 /* AND THE FIFTH, SLICED ON THE DAY IT SHIPS: the Schedule H asset-class
  * caption with no type cell (2026-10-04). The VOCABULARY is the rule — every
@@ -366,6 +381,7 @@ ${labelonly.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
 ${sentence.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
 ${nonissuer.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
 ${caption.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
+${valnote.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   /* THE TWO COMPOSITIONS, which are part of the rule and not of the call site.
    * \`isGenericName\` is the ISSUER half of the row gate and the NAME half is
    * widened further — the asymmetry is deliberate and measured (the issuer
@@ -498,7 +514,7 @@ vm.runInContext(block
   .replace("window.__wampoNonIssuer = isNonIssuerCell;  // read by the smoke test only", "globalThis.__ni = isNonIssuerCell;")
   .replace("window.__wampoTrustShare = trustShareBound;  // read by the smoke test only", "globalThis.__ts = 1;")
   .replace("window.__wampoCaption = isScheduleHCaption;  // read by the smoke test only", "globalThis.__cp = isScheduleHCaption;")
-  .replace("window.__wampoNamelessRow = isNamelessFundRow;  // read by the smoke test only", "globalThis.__n = isNamelessFundRow;")
+  .replace("window.__wampoNamelessRow = isNamelessFundRow;  // read by the smoke test only", "globalThis.__n = isNamelessFundRow; globalThis.__vn = isValuationNoteRow;")
   .replace("window.__wampoLoanDescRow = isLoanDescriptionRow;  // read by the smoke test only", "globalThis.__l = isLoanDescriptionRow;")
   .replace("window.__wampoAnnuityRow = isAnnuityContractRow;  // read by the smoke test only", "globalThis.__a = isAnnuityContractRow;")
   .replace("window.__wampoGuaranteeOnlyFee = (n) => annuityFeeIsGuaranteeOnly(n, fundER);  // read by the smoke test only",
@@ -1080,6 +1096,27 @@ const capNames = ["CORPORATE STOCK - COMMON", "CORPORATE STOCKS COMMON", "Govern
   "At contract value", "Investment Contract",
   "Company Investment - contract value", "Contract \u2014 shares",
   "Guaranteed Investment Contracts"];
+/* THE VALUATION NOTE, 2026-11-06 — the twin must agree with lib on every
+ * member, and the list REACHES BOTH SIDES of the residue rule: strings the
+ * trigger alone would admit, and the welded-real-fund rows whose residue is
+ * the ONLY thing keeping TRRAX and NOSIX on the page. */
+const valNames = ["Other investments measured at NAV(b)", "value hierarchy Investments measured at",
+  "Instruments measured at NAV", "Investments at net asset value $ 0",
+  ". Total assets in the fair value hierarchy", "Assets Measured at Net Asset Value(?)",
+  "Investments measured at NA V", "Pooled separate account valued at NAV",
+  "Collective investment trusts (NAV)",
+  "Mutual funds $ 17,026,003 $ 17,026,003 $ - $ - Investment measured at net",
+  /* must stay real — each publishes a ticker or a fee today */
+  "Common Collective Trusts, at Net Asset Value T. Rowe Price Retirement 2010",
+  "Collective investment trust funds, at net asset value Northern Trust Colle",
+  "Common Trust Funds (at net asset value) T. Rowe Price Retirement Blend Fun",
+  "Reliance stable value fund using NAV as a practical expedient",
+  "Pooled separate account, at net asset value New York Life Anchor Account",
+  /* and the acronym normalisation must not reach a real fund */
+  "Nuveen All-Cap Value Fund", "Vanguard Institutional Index Fund"];
+for (const n of valNames) if (ctx.__vn(n) !== isValuationNoteRow(n)) {
+  bad++; console.log(`  VALUATION-NOTE DRIFT ${JSON.stringify(n)} twin=${ctx.__vn(n)} lib=${isValuationNoteRow(n)}`);
+}
 for (const n of capNames) if (ctx.__cp(n) !== isScheduleHCaption(n)) {
   bad++; console.log(`  CAPTION DRIFT ${JSON.stringify(n)} twin=${ctx.__cp(n)} lib=${isScheduleHCaption(n)}`);
 }
