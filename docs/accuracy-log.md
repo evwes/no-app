@@ -62903,3 +62903,45 @@ all three Schedule A years downloaded in about a second each (14 MB zipped, 118
 MB of CSV). *The claim was about the DOL website; the FOIA dataset host is a
 different host and it answers.* Any prep-stage question about a DOL extract can
 now be sized before a run rather than after one.
+
+## 2026-11-06 — the sourcing queue, keyed on TICKERS: 50 funds move 33% to 60%
+
+**THE NAME-RANKED WORKLIST CANNOT SAY HOW MUCH SOURCING IS LEFT.**
+`fund-worklist.mjs` ranks fund NAMES and its top entry is
+`Self-Directed Brokerage Account` — 24.9M readers, 5,986 plans, **not a fund**,
+and incapable of carrying a ticker, a fee or a return. Its next three are
+`Fidelity 500 Index Fund` (11.9M), `Fidelity 500 Index` (6.9M) and
+`500 Index Fund` (4.2M): three spellings of **FXAIX, already sourced**. The
+name list is the right instrument for deciding what to IDENTIFY and the wrong
+one for deciding what to SOURCE.
+
+**KEYED ON TICKERS OVER PUBLISHED+SERVED ROWS, the picture inverts.** Of
+796,569 rows that resolve a ticker: 262,715 already sourced (33%), **57,325
+refused as comparables — not addressable at any amount of sourcing**, and
+**476,529 addressable across 5,746 distinct tickers**. The curve is steep
+because the holdings are concentrated:
+
+| source the top N tickers | sourced share of all tickered rows |
+|---|---|
+| 10 | 44.2% |
+| 50 | **60.1%** |
+| 100 | 67.9% |
+| 200 | 76.4% |
+
+and the head of the list is household registered funds with public figures —
+VSMAX (17.8M readers / 14,675 plans), VIMAX (16.1M), RERGX (15.9M), VBTLX,
+VTIAX, DODIX, DODGX, VINIX, VFIAX.
+
+**THIS CORRECTS THE PESSIMISTIC READING OF THE SAME MORNING'S YTD SIZING.** The
+return column fills 14.79% of rows and ~0% on Walmart and Amazon, and the
+entry above attributes that to collective trusts. True for those plans and
+permanent — but not the general case: **the column is sparse mainly because 92
+of the 5,838 tickers the page resolves are sourced.** *A measurement of what
+the page shows TODAY is not a measurement of its ceiling.*
+
+**THE READER COLUMNS DO NOT SUM, AND SAYING SO IS PART OF THE RESULT.** VSMAX's
+17.8M and VIMAX's 16.1M are largely the same people in the same plans, so "the
+top 50 reach N readers" is not derivable from this table. The honest aggregate
+is the ROW share. Instrument: `scripts/ticker-source-queue.mjs`, whose loop is
+SLICED from `ytd-render-size.mjs` so it keeps `servedLineup`, the publish gate
+and the `(issuer, RAW name, type)` memo the resolvers key on.
