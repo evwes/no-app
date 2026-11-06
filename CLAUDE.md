@@ -774,13 +774,28 @@ the publish gate applied before any reader figure, and an accuracy-log entry.
   `docs/accuracy-log.md` — and the lesson it carries forward is that *the
   largest plans hold collective trusts, so the lever is more sourced TICKERS,
   not more sourced returns*: Walmart fills 1 of 42 rows at 0.0% of value.
-- **The Schedule A CARRIER is resolved by the pipeline and discarded** —
-  `build-data` resolves `INS_CARRIER_NAME`, never reads it, and drops a
-  Schedule A with 0 commissions and 0 fees before it could be used. **9.45M
-  readers / 44,149 plans** have no custodian answer where this names one. One
-  prep-run change, no parser bump, no re-parse. *Before adding a SOURCE, ask
-  what the pipeline already reads and throws away* — this is the fourth
-  instance.
+- **CLOSED, BY MEASURING IT: the Schedule A CARRIER is worth 194,379 readers,
+  not 9.45M.** This entry read "9.45M readers / 44,149 plans have no custodian
+  answer where this names one" and ranked second among the paid-for items.
+  Measured 2026-11-06 over all three dataset years against the committed store:
+  **647 plans / 194,379 participants**, 49x smaller and below the reader floor,
+  because **30,238 of the 30,885 carrier-naming plans already publish a
+  recordkeeper**. The 9.45M was plans with no custodian answer *at all*, never
+  intersected with "Schedule A names one". The correction route is small too:
+  25 plans / 18,180 readers publish an ACCOUNTANT as recordkeeper (11 with an
+  identifiable carrier), and the 1,046 consultant/advisor plans are **not
+  established as wrong** — a TPA can be the recordkeeper while an insurer is
+  the annuity carrier, so the two fields differing witnesses nothing. *Do not
+  reopen this without a new measurement.* `docs/accuracy-log.md` 2026-11-06.
+
+- **`askebsa.dol.gov` IS REACHABLE FROM THIS SANDBOX (measured 2026-11-06), so
+  a prep-stage question can be sized BEFORE a run.** The gotchas section says
+  the DOL website is not reachable; that is about a different host. A HEAD on
+  the FOIA dataset path returns 301 and a followed GET returns 200 with real
+  bytes — all three `F_SCH_A` years downloaded in about a second each, 14 MB
+  zipped / 118 MB of CSV. The Schedule A close above was derived this way with
+  no pipeline run at all. *Probe the host before assuming a measurement needs a
+  run.*
 
 **THE DEPLOYMENT IS THE ONE LAYER WITH NO WATCHER — found 2026-11-06.** Every
 gate here watches the DATA (`audit-data`, loss and swap triage, `mirror-gate`)

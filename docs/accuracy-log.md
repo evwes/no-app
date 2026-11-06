@@ -62860,3 +62860,46 @@ Gate: `scripts/ytd-render-test.mjs`, in `site-test` with its inputs in the
 `paths` filter (`fund-facts.js`, `data/fund-facts.json` and the generator), so
 the gate can be triggered by the files it guards. Three mutations fail it by
 name.
+
+## 2026-11-06 — the Schedule A carrier is worth 194,379 readers, not 9,450,000
+
+**A QUEUED "DO THIS FIRST" ITEM, REFUTED BY MEASURING IT.** The queue read
+"**9.45M readers / 44,149 plans** have no custodian answer where this names
+one" and ranked it second among the paid-for items. Measured over the three
+dataset years against the committed store: **647 plans / 194,379 participants**
+have no recordkeeper where Schedule A names a carrier — **49x smaller** — and
+that is *below the 500,000 reader floor*.
+
+The reason is the whole lesson: **30,238 of the 30,885 carrier-naming plans in
+our universe ALREADY publish a recordkeeper.** 9.45M is the count of plans with
+no custodian answer *at all*; it was never intersected with "Schedule A names
+one". ***A count of a condition is not a measure of the gap*** — this project's
+most-repeated error, sitting unexamined at the top of its own queue.
+
+**THE "WRONG CLAIM OUTRANKS A MISSING ONE" ROUTE WAS CHECKED AND IS ALSO
+SMALL.** Screening published recordkeepers for the bad case: 25 plans / 18,180
+readers name an ACCOUNTANT (`Cbiz Cpas P.C.`, `Bonadio And Co Llp Cpas` — an
+accountant is never a recordkeeper, so those are our parser taking the
+auditor), of which 11 have an identifiable Schedule A provider. 1,046 plans /
+664,283 readers name a consultant or advisor — **but that class is NOT
+established as wrong**: a TPA can genuinely be the recordkeeper while an
+insurer is the annuity carrier, so `Qualified Plan Consultants, LLC` beside
+`VOYA RETIREMENT INSURANCE AND ANNUITY COMPANY` is very likely **two true
+facts, not a contradiction**. *A witness that two fields differ is not a
+witness that either is wrong.* Correctable-and-unarguable: ~11 plans.
+
+**SO THE WORK IS NOT DONE, AND THAT IS THE DELIVERABLE.** It saves a prep run,
+a display change and a cycle. The data itself is good — the column is
+overwhelmingly real retirement houses (Principal 5,498, Empower 4,712,
+TIAA-CREF 2,372, Voya 2,372, 1,263 distinct names) and `scanSchA`'s
+`if (!comm && !fees) continue` does discard **27,259** carrier-naming rows. The
+mechanism was exactly as described; only the value was wrong.
+
+**AND THE MEASUREMENT ITSELF IS THE REUSABLE FIND: `askebsa.dol.gov` IS
+REACHABLE FROM THIS SANDBOX.** This record says "the DOL website is NOT"
+reachable, and that has been forcing pipeline runs for questions answerable in
+session. A HEAD returns 301 and a followed GET returns 200 with real bytes:
+all three Schedule A years downloaded in about a second each (14 MB zipped, 118
+MB of CSV). *The claim was about the DOL website; the FOIA dataset host is a
+different host and it answers.* Any prep-stage question about a DOL extract can
+now be sized before a run rather than after one.
