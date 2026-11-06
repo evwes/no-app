@@ -3267,6 +3267,33 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
     return null;
   }
   window.__wampoLookupTicker = lookupTicker;  // read by the smoke test only
+  /* DELIBERATELY ON THIS SIDE OF THE LINE ABOVE. That line is the tail of the
+   * region `apppath.mjs` slices and `lib-sec-fingerprint.mjs` hashes, so a
+   * helper defined above it restales the generated ticker table and costs a
+   * 30-minute regen — for a DATE FORMATTER, which cannot change one key. The
+   * hashed region is the resolver; display helpers go below it.
+   *
+   * Why this exists at all: `new Date("2026-11-03")` parses as UTC midnight,
+   * so `toLocaleDateString` west of UTC renders it as 2 Nov — a figure read on
+   * the 3rd published under the wrong date for every reader in the Americas.
+   * The as-of date is the only part of a sourced figure a reader can check, so
+   * it is formatted by string surgery; the naive path is measured printing the
+   * wrong day in 2 of 4 timezones. A string that is not an ISO day comes back
+   * VERBATIM rather than guessed at. */
+  /* An as-of date, printed from its ISO string WITHOUT going through `Date`.
+   *
+   * `new Date("2026-11-03")` is parsed as UTC midnight, so
+   * `toLocaleDateString` in any timezone west of UTC renders it as 2 Nov — a
+   * figure read on the 3rd would be published under the wrong date for every
+   * reader in the Americas. The date is the only thing in a sourced figure a
+   * reader can check, so it is formatted by string surgery and a string that
+   * is not an ISO day is returned VERBATIM rather than guessed at. */
+  const ISO_MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  function isoDay(s) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s || ""));
+    if (!m || +m[2] < 1 || +m[2] > 12) return String(s || "");
+    return `${+m[3]} ${ISO_MON[+m[2] - 1]} ${m[1]}`;
+  }
   function cleanCostMarkers(e) {
     if (!e || !e.funds || e._nameClean) return e;
     e._nameClean = true;
@@ -4273,6 +4300,11 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
      * would leave check marks printing with nothing explaining them, which is
      * worse than either state. `fund-note-test.mjs` pins the chain. */
     let sourcedAny = false;
+    /* The DISTINCT as-of dates of the returns this table actually prints, so
+     * the note under it can state them rather than hedge. Collected from the
+     * rows rendered — not from the whole `fund-facts` file — because a date
+     * the reader cannot see a figure for is not a fact about this page. */
+    const ytdDates = new Set();
     const rows = list.map((f) => {
       // a holding Schedule D reports as a collective trust is NOT the
       // same-named mutual fund: CIT pricing is negotiated per plan and is not
@@ -4684,13 +4716,30 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
        * worse than the estimate it replaced, and NO COUNT WOULD HAVE SHOWN IT:
        * the fee value was unchanged, so the whole class sat in the AGREE bucket
        * of my own impact measurement. Opening one page showed it at once. */
-      let erSourced = null;
+      /* THE RETURN IS GATED ON `!star` FOR A STRONGER REASON THAN THE FEE WAS.
+       * A starred ticker is a COMPARABLE: the plan holds a collective trust or
+       * a separate account and the symbol shown is a registered equivalent. For
+       * a FEE the page could at least call the retail figure "a ceiling"; a
+       * RETURN has no such reading. A trust tracking the same index returns
+       * something different from the fund — different fee drag, different cash,
+       * different securities-lending credit — so printing the fund's YTD beside
+       * the trust's dollars would be a made-up number about the plan's actual
+       * money. The owner's standing decision on comparables is symbol only, NO
+       * fee; a return is further from the vehicle than a fee is, so it follows
+       * the same rule a fortiori and the note under the table says so.
+       *
+       * `ytdAsOf` is required, not optional. A return with no date cannot be
+       * rendered the way this project requires returns to be rendered, so an
+       * undated figure prints nothing rather than printing bare. */
+      let erSourced = null, ytdSourced = null;
       if (!star && tk && typeof FUND_FACTS === "object" && FUND_FACTS) {
         const sf = FUND_FACTS[String(tk).toUpperCase()];
         if (sf && sf.er != null) erSourced = sf;
+        if (sf && sf.ytd != null && sf.ytdAsOf) ytdSourced = sf;
       }
       const erShown = erSourced ? erSourced.er : er;
       if (erSourced) sourcedAny = true;
+      if (ytdSourced) ytdDates.add(ytdSourced.ytdAsOf);
       // the brokerage window is a menu choice with no holdings of its own —
       // tint it so it reads as a doorway, not a fund (owner request)
       const brokRow = /brokerage window/i.test(f.type || "")
@@ -4772,6 +4821,18 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
              * a claim. */
             + (erSourced ? "" : (star ? "*" : ""))
           : "—"}${erSourced ? `<span class="er-sourced" title="Sourced figure, as of ${esc(erSourced.erAsOf)} — not an estimate">✓</span>` : ""}</td>
+        <!-- THE SIGN CARRIES THE MEANING, the colour only reinforces it: a
+             reader who cannot distinguish the two colours still reads +12.73%
+             and −2.85%, which is why the sign is printed explicitly rather
+             than left to a minus glyph the colour duplicates. The U+2212 minus
+             from money() is reused so a negative return and a negative dollar
+             figure in the same row are punctuated the same way. NO BACKTICKS in
+             here -- this comment sits inside a template literal and one ends
+             the literal; node --check caught it, for the second time. -->
+        ${tab !== "menu" ? "" : `<td class="num">${ytdSourced
+          ? `<span class="${ytdSourced.ytd < 0 ? "ret-dn" : "ret-up"}" title="Year-to-date total return as of ${esc(isoDay(ytdSourced.ytdAsOf))}, read from the fund's own published figure">`
+            + (ytdSourced.ytd < 0 ? "−" : "+") + Math.abs(ytdSourced.ytd).toFixed(2) + "%</span>"
+          : "—"}</td>`}
         <td class="num">${money(f.value / 1e6)}</td>
         <td class="num">${total ? ((f.value / total) * 100).toFixed(1) + "%" : "—"}</td>
       </tr>`;
@@ -4901,12 +4962,22 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
              direction and still a mislabel. NOTE: no BACKTICKS in here -- this
              comment sits inside a template literal, so a backtick ends the
              literal and breaks the whole file. node --check caught it. -->
-        <thead><tr><th class="fund-name-col">Holding</th><th>Type</th><th>Expense ratio</th><th>Value</th><th>% of ${tab === "sma" ? "account" : (lu.fromTrust ? "trust" : "holdings")}</th></tr></thead>
+        <!-- "YTD return" is on every PLAN MENU, filled or not, so the column
+             means one thing everywhere: a dash is "we have not sourced this
+             fund's return", which is a different statement from the column
+             being absent. It is dropped on the brokerage / managed-account tab
+             because the ticker resolver itself is gated on tab === "menu"
+             (line 4474), so every cell there would be a dash BY CONSTRUCTION
+             -- an empty column states nothing and costs width. The table sits
+             inside .fund-scroll, so a sixth column scrolls internally and
+             cannot widen the plans table -- the detail-clamp rule. -->
+        <thead><tr><th class="fund-name-col">Holding</th><th>Type</th><th>Expense ratio</th>${tab === "menu" ? "<th>YTD return</th>" : ""}<th>Value</th><th>% of ${tab === "sma" ? "account" : (lu.fromTrust ? "trust" : "holdings")}</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
     </div>
     ${starred ? `<p class="fund-note"><strong>*Comparable fund.</strong> That holding is a collective trust or separate account — it has no ticker and no published expense ratio, because its fee is negotiated by the plan. The fund shown is its registered equivalent, so you can look up what it holds; the plan's trust class is normally <em>cheaper</em> than the retail fee shown, so read it as a ceiling, not the plan's price.</p>` : ""}
     ${classNote}
+    ${ytdDates.size ? `<p class="fund-note"><strong>YTD return.</strong> Year-to-date total return ${ytdDates.size === 1 ? `as of ${esc(isoDay([...ytdDates][0]))}` : `as of ${[...ytdDates].sort().map((d) => esc(isoDay(d))).join(" and ")}`}, read from each fund's own published figure rather than computed here — hover a figure for the date it was read. A holding shows no return when we have not sourced one, and <strong>a holding whose symbol is marked * shows none by design</strong>: that symbol is a comparable registered fund, and the plan holds a collective trust or separate account, whose return differs from the fund's. Past return is not a prediction, and a fund's return is not this plan's return — participants hold different mixes and buy at different times.</p>` : ""}
     ${sourcedAny ? `<p class="fund-note"><strong>&#10003; Sourced fee.</strong> That expense ratio was read from the fund's own published figure on the date shown when you hover it, not estimated — every other number in the column is an estimate from the fund's name, which is why the rest of the column is approximate and this one is not. The sourced figures and the page each was read from are recorded in <code>data/fund-facts.json</code>.</p>` : ""}
     ${tab === "menu" && list.filter((f) => /stable value|\bgic\b/i.test(f.type || "")).length >= 5 ? `<p class="fund-note">The many <strong>Stable value / GIC</strong> rows are one menu option, itemized: plans file each piece of the stable value fund — the insurance-company contracts that wrap it and the individual securities inside its synthetic GICs (agency pools, corporate notes, asset-backed trusts). Participants choose the stable value fund as a single option; these securities are not separate choices, which is why they carry no expense ratio or ticker.</p>` : ""}
     ${tab === "menu" && list.some((f) => !lookupTicker(f) && !/company stock|employer (security|stock)|brokerage|stable value|\bgic\b/i.test((f.type || "") + " " + f.name)) ? `<p class="fund-note">Holdings with no ticker are ones we can't identify from the filed name alone: many are pooled vehicles — collective trusts, separate accounts — that have no ticker at all, and others are registered funds our reference table doesn't yet carry. Naming one on a guess would be worse than leaving it blank.</p>` : ""}`;

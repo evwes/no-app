@@ -128,6 +128,17 @@ ${loanRowRe}
      * threw only on rows where the asterisk fired, so every asterisked row
      * would have been absent from a measurement. */
     let starred = false;
+    /* The same shape, and found by reading rather than by a failure: the row
+     * block also writes sourcedAny and ytdDates, which app.js declares OUTSIDE
+     * the slice. Today that assignment is unreachable here because FUND_FACTS
+     * is undefined in this context, so the harness survived by accident -- and
+     * the moment a caller supplied the sourced table it would have thrown a
+     * ReferenceError under "use strict" on every row that resolved a sourced
+     * symbol. Declared so the block can RUN; a caller that wants to MEASURE a
+     * sourced cell still applies the lookup itself, on this harness's tk and
+     * star. NO BACKTICKS: this sits inside the src template literal. */
+    let sourcedAny = false;
+    const ytdDates = new Set();
 ${rowBlock}
     return { name: shownName, nameClean: f.name, tk, er, star, shownType,
       value: f.value, pct: total ? (f.value / total) * 100 : null,

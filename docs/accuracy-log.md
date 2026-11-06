@@ -62802,3 +62802,61 @@ shows ONE changed line and that line is `SEC_TICKERS_CODE`, so ADDED / REMOVED /
 CHANGED are all 0 — the recorded case that *a moved fingerprint does not prove a
 key would move*. A `git diff --stat` settles that more strongly than parsing the
 asset, which is not bare JSON and threw when I tried.
+
+## 2026-11-06 — the sourced YTD returns are rendered; the comparable rule carried over
+
+**SOURCED, SHIPPED IN THE PAYLOAD, AND READ BY NOTHING.** `fund-facts.js` has
+carried `{er, erAsOf, ytd, ytdAsOf}` for 92 tickers since the fee ship — every
+visitor downloaded the returns — and `app.js` took `sf.er` and ignored
+`sf.ytd`. `build-seo-pages.mjs` had 0 references and still does: its fund table
+is `Fund | Value`, so this is an INTERACTIVE-REPORT change and the reader figure
+names that surface. *Before adding a source, ask what the pipeline already
+reads and throws away* — fifth instance, and the cheapest yet.
+
+**THE SIZING ANSWERED A DESIGN QUESTION AND THE ANSWER WAS UNCOMFORTABLE.**
+262,715 of 1,775,956 published+served rows (14.79%) would carry a return;
+41,262 plans / **66,353,294 readers** reach at least one. But within those
+plans the median menu fills 5 cells of 27 — 18% of rows, 19% of menu value —
+and the LARGEST plans are the worst: Walmart 1 of 42 rows at **0.0% of value**
+(1.97M readers), Amazon 1 of 28, Starbucks 1 of 28, Compass 1 of 27. Those
+menus are collective trusts, whose returns are not published anywhere. ***So
+66.4M is the count of a condition, not a measure of what a reader sees***, and
+both numbers belong in any claim about this ship. It is also the honest signal
+about where the next work is: more sourced TICKERS, not more sourced returns.
+
+**THE `!star` GATE IS THE WHOLE SAFETY, AND IT IS STRICTER HERE THAN FOR A
+FEE.** A starred ticker is a comparable registered fund standing in for a trust
+or separate account. For a fee the page could at least call the retail figure a
+ceiling; a RETURN has no such reading — a trust tracking the same index returns
+something else. Mutation-tested through the page: dropping `!star` makes
+Amazon print `VANGUARD TARGET 2020 VTWNX*`'s fund return on **12
+collective-trust rows**, and no count would see it, because the fee value does
+not move. The owner's standing decision on comparables is symbol only, NO fee;
+a return is further from the vehicle than a fee is, so it follows a fortiori.
+
+**THREE THINGS THE PAGE TAUGHT THAT THE STORE COULD NOT.** (1) The column is
+dropped on the brokerage / managed-account tab: the ticker resolver is gated on
+`tab === "menu"`, so every cell there is a dash BY CONSTRUCTION. (2) `isoDay`
+exists because `new Date("2026-11-03").toLocaleDateString` renders **2 Nov** in
+America/New_York and America/Los_Angeles — measured, 2 of 4 timezones — so the
+naive path would publish every sourced figure under the wrong date for most of
+this site's readers. It is defined BELOW the region
+`lib-sec-fingerprint.mjs` hashes, so a date formatter cannot restale the ticker
+table. (3) `apppath.mjs` declares `sourcedAny` and `ytdDates` in its wrapper
+now: the row block writes both, app.js declares them outside the slice, and the
+harness survived only because `FUND_FACTS` is undefined there — the moment a
+caller supplied the sourced table it would have thrown on every sourced row.
+
+**AND MY OWN INSTRUMENT WAS WRONG TWICE BEFORE THE PAGE WAS RIGHT ONCE.** The
+fund table is nested inside the plans table's own `tbody`, so an unscoped
+`table.fund-table tbody tr` welded in the provider fee table (a ten-column
+phantom header) and then matched the fund table's own `thead` row as a 0-cell
+row. Three "failures", all mine. `:scope > thead > tr > th` and
+`:scope > tbody > tr` fix both. *A page instrument that measures the wrong
+table is this project's most repeated self-inflicted wound* — recorded again
+because it happened twice in one session.
+
+Gate: `scripts/ytd-render-test.mjs`, in `site-test` with its inputs in the
+`paths` filter (`fund-facts.js`, `data/fund-facts.json` and the generator), so
+the gate can be triggered by the files it guards. Three mutations fail it by
+name.

@@ -369,6 +369,17 @@ main { max-width: 1060px; margin: 0 auto; padding: 0 20px 48px; }
    stated date, not estimated from the fund's name. Muted and small on purpose:
    it marks provenance, and should not read as a quality score or a warning. */
 .er-sourced { margin-left: 3px; font-size: 10px; color: var(--text-muted); cursor: help; }
+/* A RETURN IS SIGNED AND THE SIGN IS PRINTED, so these colours are
+   reinforcement and never the only carrier of the fact -- a reader who cannot
+   distinguish them still reads +12.73% against -2.85%. Both tones are picked
+   to clear 4.5:1 on the light and dark surfaces this table uses, which the
+   stock green/red pair does not. */
+.ret-up { color: var(--ret-up, #047857); font-variant-numeric: tabular-nums; cursor: help; }
+.ret-dn { color: var(--ret-dn, #b91c1c); font-variant-numeric: tabular-nums; cursor: help; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --ret-up: #34d399; --ret-dn: #f87171; }
+}
+:root[data-theme="dark"] { --ret-up: #34d399; --ret-dn: #f87171; }
 .fund-issuer { color: var(--text-muted); font-weight: 400; }
 /* the brokerage window row is a doorway, not a fund — tint it so it reads apart */
 .row-brokerage td { background: #fdf6dd; }

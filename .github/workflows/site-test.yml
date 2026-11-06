@@ -66,6 +66,13 @@ on:
             "scripts/lib-sec-fingerprint.mjs",
             "scripts/sec-tickers-stamp-test.mjs",
             "scripts/lead-punct-test.mjs",
+            # the sourced ticker/fee/return facts and the gate over their
+            # render. `fund-facts.js` is GENERATED from `data/fund-facts.json`,
+            # so both are listed: a figure can change in the JSON, and the
+            # asset the browser downloads can go stale against it.
+            "scripts/ytd-render-test.mjs", "fund-facts.js",
+            "data/fund-facts.json", "scripts/fund-facts-check.mjs",
+            "scripts/gen-fund-facts-asset.mjs",
             # the forfeiture/expense-account rule. Its canonical copy is in
             # `lib-disclose.mjs` and its twin is written by
             # `gen-generic-twin.mjs`, both already in this list, so the test
@@ -273,6 +280,14 @@ jobs:
           npx playwright install --with-deps chromium >/dev/null
       - name: Smoke test the site as a visitor
         run: node scripts/smoke-test.mjs
+      # The sourced YTD returns were generated, shipped in the payload and read
+      # by NOTHING for weeks. This holds the two claims the column makes: a
+      # STARRED row (a comparable registered fund standing in for a collective
+      # trust) prints NO return, and a figure never appears without its as-of
+      # date. Mutation-tested: dropping the !star gate makes Amazon print
+      # VTWNX's fund return on 12 collective-trust rows, and the gate names it.
+      - name: Sourced YTD returns render, dated, and never on a comparable
+        run: node scripts/ytd-render-test.mjs
       - name: Map view — draws, filters, and never misplaces a plan
         run: node scripts/map-test.mjs
       - name: Map zoom, pan and the dot card — marks shrink, drag slides, a dot names its plan

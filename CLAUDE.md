@@ -763,13 +763,17 @@ the publish gate applied before any reader figure, and an accuracy-log entry.
 
 #### Paid for and not yet rendered — do these first
 
-- **The YTD RETURNS are sourced, shipped in the payload, and rendered by
-  nothing.** `fund-facts.js` carries `{er, erAsOf, ytd, ytdAsOf}` for 92
-  tickers, 1,331 bytes gzipped, downloaded by every visitor;
-  `app.js:4592-4594` reads `sf.er` and ignores `sf.ytd`, and
-  `build-seo-pages.mjs` has **0** references. Every figure already has its
-  source URL and as-of date, so the render must print "as of <date>" beside it.
-  One display change, no bump, no re-parse.
+- **The TRAILING returns (1Y / 5Y / 10Y) are the owner's next emphasis and the
+  schema is now open for them.** `fund-facts-check.mjs` accepts
+  `r1y/r3y/r5y/r10y` with per-horizon plausibility bands, a required
+  `returnBasis: "annualised"` and an optional `inception` that refuses a 10-year
+  figure on a younger fund — the paste that would otherwise publish a
+  *cumulative* 10-year return (+159%) in an annualised field (+10%). **0 funds
+  carry one yet**: sourcing them is the `fund-facts` agent's work, and the
+  render is then the same shape as YTD. The YTD column SHIPPED 2026-11-06 —
+  `docs/accuracy-log.md` — and the lesson it carries forward is that *the
+  largest plans hold collective trusts, so the lever is more sourced TICKERS,
+  not more sourced returns*: Walmart fills 1 of 42 rows at 0.0% of value.
 - **The Schedule A CARRIER is resolved by the pipeline and discarded** —
   `build-data` resolves `INS_CARRIER_NAME`, never reads it, and drops a
   Schedule A with 0 commissions and 0 fees before it could be used. **9.45M
