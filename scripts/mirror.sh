@@ -203,3 +203,31 @@ if [ -n "$CHANGED" ]; then
     echo "  values with the new source sitting beside them."
   fi
 fi
+
+# ── DID IT REACH READERS? ─────────────────────────────────────────────────────
+# The mirror is not the deployment. Every other gate here watches the DATA or
+# the PAGE CODE; none watched whether what was mirrored was SERVED, and on
+# 2026-11-06 that cost twenty minutes of a verified ship reaching nobody plus a
+# ~4.5-hour stale store earlier the same day. Both cleared on a re-run, which is
+# exactly why nobody noticed.
+#
+# This BLOCKS for a few minutes on purpose. A mirror whose deployment is never
+# read is the failure mode; waiting is what closes the loop. It cannot undo the
+# mirror (that already happened), so it never fails the script — but it is loud,
+# and it prints the re-run command.
+echo
+echo "waiting for GitHub Pages to serve it (this is the step that was missing) …"
+if node "$(dirname "$0")/deploy-check.mjs" --wait --timeout 600; then
+  :
+else
+  rc=$?
+  echo
+  if [ "$rc" = "1" ]; then
+    echo "  *** THE MIRROR IS ON main AND IS NOT BEING SERVED. ***"
+    echo "  Re-run the Pages deployment with the command printed above, then"
+    echo "  re-run:  node scripts/deploy-check.mjs"
+  else
+    echo "  Deployment not settled yet (exit $rc). Re-run:"
+    echo "    node scripts/deploy-check.mjs --wait"
+  fi
+fi

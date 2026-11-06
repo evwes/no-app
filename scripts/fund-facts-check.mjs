@@ -29,7 +29,7 @@ if (!funds || typeof funds !== "object" || Array.isArray(funds)) { console.log("
 const isDate = (s) => typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s) && !Number.isNaN(Date.parse(s));
 const isUrl = (s) => typeof s === "string" && /^https?:\/\/\S+$/.test(s);
 const fails = [], warns = [];
-let n = 0, withEr = 0, withYtd = 0;
+let n = 0, withEr = 0, withYtd = 0, withTrailing = 0;
 
 for (const [ticker, f] of Object.entries(funds)) {
   n++;
@@ -59,6 +59,56 @@ for (const [ticker, f] of Object.entries(funds)) {
     }
     if (!isUrl(f.ytdSource || f.source)) bad("ytd has no source URL (ytdSource or source)");
   }
+  /* TRAILING RETURNS — 1, 3, 5 and 10 year. Added 2026-11-06 so the fund-facts
+   * agent can begin sourcing them: the owner's next feature is a return curve
+   * over these horizons, and until this field list admits them the agent could
+   * not write one, because the whitelist below rejects an unknown field. The
+   * DATA is the long pole, not the chart, so the schema opens first.
+   *
+   * THEY ARE ANNUALISED, AND THAT IS PINNED RATHER THAN ASSUMED. A fund's
+   * 10-year CUMULATIVE return and its 10-year ANNUALISED return differ by an
+   * order of magnitude (a 10% annualised decade is +159% cumulative), so a file
+   * that merely says "return" invites exactly the class of error this project
+   * exists to prevent. Every multi-year entry must therefore declare
+   * `returnBasis: "annualised"`; nothing else is accepted, so a cumulative
+   * figure cannot be written without saying so and failing.
+   *
+   * The plausibility band is per horizon and tightens with length, because
+   * annualising damps the extremes: one year of a leveraged fund can really be
+   * -70% or +120%, a decade cannot. A band that is the same at every horizon
+   * would pass a cumulative figure pasted into an annualised field, which is
+   * the specific mistake worth catching. */
+  const HORIZON = { r1y: [-95, 200], r3y: [-70, 120], r5y: [-60, 100], r10y: [-50, 80] };
+  const present = Object.keys(HORIZON).filter((k) => f[k] !== undefined);
+  for (const k of present) {
+    withTrailing++;
+    const [lo, hi] = HORIZON[k];
+    if (typeof f[k] !== "number" || !(f[k] >= lo && f[k] <= hi))
+      bad(`${k} ${f[k]} is not a number in ${lo}..${hi} (ANNUALISED percent — a cumulative figure belongs in no field here)`);
+    if (!isDate(f[`${k}AsOf`])) bad(`${k} has no ${k}AsOf date`);
+    else if (f[`${k}AsOf`] > today) bad(`${k}AsOf ${f[`${k}AsOf`]} is in the future`);
+    if (!isUrl(f[`${k}Source`] || f.source)) bad(`${k} has no source URL (${k}Source or source)`);
+  }
+  if (present.length) {
+    if (f.returnBasis !== "annualised")
+      bad(`a trailing return needs returnBasis "annualised" (got ${JSON.stringify(f.returnBasis)}) — a 10-year cumulative figure is ~2.6x its annualised one and must not be published as it`);
+    /* A CURVE MIXING AS-OF DATES IS MISLEADING even when every point is sourced:
+     * providers quote all horizons at one month-end, so two different dates in
+     * one entry means two different quotes were stitched together. A warning
+     * rather than a failure, because a partially-refreshed entry is a normal
+     * intermediate state and refusing it would block the sourcing this field
+     * list exists to allow. */
+    const dates = [...new Set(present.map((k) => f[`${k}AsOf`]).filter(isDate))];
+    if (dates.length > 1) warns.push(`${ticker}: trailing returns carry ${dates.length} different as-of dates (${dates.join(", ")}) — a curve drawn across them is not one quote`);
+    /* and a 10-year figure on a fund younger than ten years cannot exist */
+    if (f.inception && isDate(f.inception)) {
+      for (const k of present) {
+        const yrs = +k.slice(1, -1);
+        const age = (Date.parse(f[`${k}AsOf`] || today) - Date.parse(f.inception)) / 31557600000;
+        if (age + 0.1 < yrs) bad(`${k} is longer than the fund's life (inception ${f.inception}, ${age.toFixed(1)} years to ${k}AsOf)`);
+      }
+    }
+  }
   if (f.er === undefined && f.ytd === undefined && !f.status) bad("entry carries neither er nor ytd nor a status");
   if (f.status !== undefined) {
     if (!["merged", "closed", "renamed"].includes(f.status)) bad(`status ${f.status} is not merged/closed/renamed`);
@@ -82,7 +132,12 @@ for (const [ticker, f] of Object.entries(funds)) {
    * and it is also the reason `name` and `matchGrade` must record the STRONGEST
    * match rather than the last one written. */
   if (f.filedNames !== undefined && !(Number.isInteger(f.filedNames) && f.filedNames >= 1)) bad(`filedNames ${f.filedNames} is not a positive integer`);
-  for (const k of Object.keys(f)) if (!["name", "er", "erAsOf", "erSource", "ytd", "ytdAsOf", "ytdSource", "source", "updated", "status", "statusSource", "note", "matchGrade", "matchWhy", "filedNames"].includes(k)) bad(`unknown field ${k}`);
+  for (const k of Object.keys(f)) if (!["name", "er", "erAsOf", "erSource", "ytd", "ytdAsOf", "ytdSource", "source", "updated",
+    "status", "statusSource", "note", "matchGrade", "matchWhy", "filedNames",
+    /* trailing returns, 2026-11-06 — annualised, each dated and sourced */
+    "returnBasis", "inception",
+    "r1y", "r1yAsOf", "r1ySource", "r3y", "r3yAsOf", "r3ySource",
+    "r5y", "r5yAsOf", "r5ySource", "r10y", "r10yAsOf", "r10ySource"].includes(k)) bad(`unknown field ${k}`);
 }
 
 /* VEHICLES: the same receipts, for something that has no ticker to be keyed by.

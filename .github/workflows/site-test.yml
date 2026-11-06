@@ -22,6 +22,7 @@ on:
             # to the file ITSELF can trigger -- a gate the guarded file cannot
             # fire is indistinguishable from no gate.
             "data/fund-facts.json", "scripts/fund-facts-check.mjs",
+            "scripts/fund-facts-returns-test.mjs",
             "scripts/fund-facts-ingest.mjs",
             # the ISSUER-PAGE extractor and its tether. The tether's own
             # workflow (fund-facts.yml) is dispatch-only, so without these two
@@ -306,6 +307,16 @@ jobs:
       # front of the expensive one.
       - name: Sourced figures carry their receipts
         run: node scripts/fund-facts-check.mjs
+      # AND THE RULES BITE. The trailing-return fields (r1y/r3y/r5y/r10y) were
+      # opened 2026-11-06 so the agent can source the owner's return curve, and
+      # opening a field list is the moment to prove its rules refuse a bad
+      # figure -- every number that will ever pass through it arrives after.
+      # The one that matters is annualised vs cumulative: 10% annualised over a
+      # decade is +159% cumulative, so pasting one into the other's field
+      # publishes a wildly wrong number that looks perfectly plausible. No
+      # network, writes only in the OS temp dir.
+      - name: Trailing-return rules refuse a cumulative figure
+        run: node scripts/fund-facts-returns-test.mjs
       # THE FEE MUST COME FROM ITS OWN COLUMN, NOT FROM THE DAY'S QUOTE. The
       # issuer page puts every label first and every value after, so a
       # label-proximity read returns the price change: it gave FXAIX 0.37%
