@@ -784,11 +784,19 @@ or the PAGE CODE (`site-test`); none watches whether what was mirrored reached
 readers. `pages build and deployment` #1214 concluded **`failure`** at 13:02Z on
 2026-11-06 — Pages' own `syncing_files` step timed out after twelve minutes, not
 our code — and the next success was 17:42Z, so the live site served a ~4.5-hour
-stale store and nothing surfaced it. **Genuine rate is 1 in 299 completed runs
-(0.3%) over 30 days**, NOT the 3.0% a conclusion-only read gives: 8 of the 9
-non-successes are `cancelled` at 1.1–1.3 minutes, which is a superseded
-deployment. *Read duration beside conclusion on that workflow, or a failure rate
-measures cancellations.* Remedy, cheap and unbuilt: after a mirror, read
+stale store and nothing surfaced it. **CORRECTED THE SAME HOUR, BY THE NEXT
+DEPLOYMENT — IT IS 2 IN 300 (0.67%), BOTH ON 2026-11-06, WITH DIFFERENT
+CAUSES.** #1216, carrying the 2K ship itself, sat in `deployment_queued` for 90
+seconds and returned `Deployment failed, try again later.` — a transient
+server-side rejection, not #1214's twelve-minute `syncing_files` timeout.
+Cleared by `rerun_failed_jobs`, success on attempt 2. A conclusion-only read
+still over-states (8 of the 10 non-successes are `cancelled` at 1.1–1.3 minutes,
+a superseded deployment), so *read duration beside conclusion or a failure rate
+measures cancellations* — but **two failures in one day with two causes is a
+CLUSTER, which a 30-day rate is the wrong shape to describe**, and the rate I
+committed was stale within the hour. **The cost was real: for twenty minutes the
+ship was mirrored, verified on the tree, and SERVED TO NOBODY.** *A verified
+mirror is not a served page.* Remedy, cheap and unbuilt: after a mirror, read
 `conclusion` on the run whose `head_sha` IS main's HEAD — already one of the two
 recorded ways to verify a deployment, and no scheduled job does it. It is also a
 SCALING signal: 5,287 crawlable pages plus a 12.17 MB `plans-list.json` grow

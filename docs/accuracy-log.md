@@ -62664,3 +62664,27 @@ to an existing one:** after a mirror, read `conclusion` on the
 record already names as one of the only two ways to verify a deployment from
 this sandbox, and which no scheduled job currently does. A session that mirrors
 and walks away cannot tell a served change from an unserved one.
+
+**CORRECTED 2026-11-06 (18:2xZ), one hour after the entry above, by the very
+next deployment — THE ONE I WAS WATCHING.** `pages build and deployment` #1216,
+carrying the 2K ship to main, **also concluded `failure`**: it sat in
+`deployment_queued` for 90 seconds and returned
+`##[error]Deployment failed, try again later.` — a transient server-side
+rejection, a DIFFERENT mode from #1214's twelve-minute `syncing_files` timeout.
+Cleared by `rerun_failed_jobs`; success on attempt 2.
+
+So the recorded "1 in 299, 0.3%, and it is today's" was stale within the hour:
+**2 in 300, 0.67%, both on 2026-11-06, two distinct causes.** ***A rate computed
+over a 30-day window and quoted an hour later is not bad arithmetic, it is a
+sample that moved*** — and the sharper reading is that two failures in one day
+with two different failure modes is a CLUSTER, which a rate is the wrong shape
+to describe at all.
+
+**And the gap this entry names cost something within the hour of naming it,
+which is the part worth keeping: for twenty minutes the 2K ship was mirrored to
+`main`, verified on the mirrored tree with controls in both directions, and NOT
+SERVED TO ANY READER.** Every check this project runs passed — `site-test`
+green, `mirror-gate` at 0 plans losing a menu, 600 of 600 pages accounted for on
+`origin/main` — and every one of them is about the TREE rather than the
+deployment. *A verified mirror is not a served page*, and nothing but reading
+that run's `conclusion` distinguishes them.
