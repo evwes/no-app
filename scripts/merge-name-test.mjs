@@ -90,7 +90,7 @@ function make(drop) {
   /* JUNK_NAME_RE is a module import at merge-4i's top, so the sliced body needs
    * it in the context — the `!` arm reuses #536's guard and would throw without
    * it, which is how this control found it rather than by reading. */
-  const ctx = { buckets: [], SHARDS: 0, console, JUNK_NAME_RE,
+  const ctx = { buckets: [], SHARDS: 0, console, JUNK_NAME_RE, vm,
     readFileSync: (f, enc) => fs.readFileSync(path.isAbsolute(f) ? f : `${R}/${f}`, enc) };
   vm.createContext(ctx);
   let b = body;
@@ -653,7 +653,7 @@ if (issBad) process.exitCode = 1;
     const funds = [{ name: "FoodBar Growth Fund", iss: "BazzQux Trust Company", value: 1 },
       ...fill(5, { name: "Food Bar Growth Fund", iss: "Bazz Qux Trust Company" })];
     const bucket = { ACK1: { confident: true, funds } };
-    const ctx = { buckets: [bucket], SHARDS: 1, console: quietConsole, JUNK_NAME_RE,
+    const ctx = { buckets: [bucket], SHARDS: 1, console: quietConsole, vm, JUNK_NAME_RE,
       readFileSync: (f, enc) => fs.readFileSync(path.isAbsolute(f) ? f : `${R}/${f}`, enc) };
     vm.createContext(ctx);
     /* no braces: `body` and `L` are the block's two halves and the block's own
@@ -869,7 +869,7 @@ if (issBad) process.exitCode = 1;
     if (drop === "punct") b = b
       .replace("if (!/^[A-Za-z0-9]/.test(lead)) break;", "")
       .replace("if (!/^[A-Za-z0-9]/.test(rest)) continue;", "");
-    const ctx = { console: quietConsole, whole: wholeMap,
+    const ctx = { console: quietConsole, vm, whole: wholeMap,
       nk: (s) => String(s).trim().toLowerCase(),
       ck: (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim(),
       readFileSync: (f, enc) => fs.readFileSync(path.isAbsolute(f) ? f : `${R}/${f}`, enc) };
@@ -996,7 +996,7 @@ if (issBad) process.exitCode = 1;
       "if (/[\\u0000-\\u001f\\u007f]/.test(run)) {", "if (true) {");
     if (drop === "junk") b = b.replace(
       "if (JUNK_NAME_RE.test(a) && !JUNK_NAME_RE.test(b)) return null;", "");
-    const ctx = { console: quietConsole, cnt: (w) => tok.get(String(w).toLowerCase()) || 0,
+    const ctx = { console: quietConsole, vm, cnt: (w) => tok.get(String(w).toLowerCase()) || 0,
       JUNK_NAME_RE };
     vm.createContext(ctx);
     vm.runInContext(b + "\n; this.__x = cipherRepair;", ctx);
