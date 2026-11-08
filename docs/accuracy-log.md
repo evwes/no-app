@@ -7,6 +7,51 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-08 (weekly integrity, seed 20261107) — THE DRAW'S LARGEST PLAN PUBLISHES A WRONG SHARE CLASS ASSERTED, NOT HEDGED: `DODGE & COX STOCK CL X` READS DODGX, WHICH IS CLASS I, TO 77,865 READERS
+
+**WRONG, and read off the 4i schedule itself.** Securitas Security Services USA
+(77,865 participants, the heaviest plan in the seed-`20261107` draw, ack
+`20261013120534NAL0004174163001`) files at line 2052 of its filing:
+
+```
+DODGE & COX STOCK CL X        MUTUAL FUNDS      21,547,817      22,047,147
+```
+
+The page publishes **`DODGX`** with **no asterisk** — asserted, not hedged —
+`er 0.51`, `shownType "Mutual fund"`, on **$22,047,147 / 4.0% of the menu**.
+The registry holds exactly two classes of that fund: **`DODGX` = Class I** and
+**`DOXGX` = Class X**. The filing states Class X. *Both the symbol and the fee
+belong to the other class.* This is the owner-gated wrong-share-class family
+(5,929 rows / 4,837 plans / 11.1M readers), in a sub-case the measured
+one-directional slice does not cover: that slice is *filing states plain
+Institutional, page publishes a retail class*, and here the filing states an
+explicit single-letter class. **Queued, not fixed** — the symbol is correct to
+change and the fee must be WITHDRAWN under the 2026-11-05 standing decision,
+but it is a resolver-level change needing the differential through both
+`renderRow` copies and a seeded draw, which this pass did not spend.
+
+**AND THE SAME FILING ANSWERS A SECOND ROW IN ITS OWN PAGES.** Line 2016 reads
+`AMERICAN FUNDS 2025 TARGET` — no class — and the page publishes **no ticker**
+with a generic `er 0.4`. But **line 1943 of the same PDF** reads `American Funds
+2025 Target Retirement Fund R6` at the identical `26,428,778`, and R-6 is
+`RFDTX`. Every sibling row in that 4i carries `R6` and resolves (2030 R6 ->
+RFETX, 2060 R6 -> RFUTX); the filer dropped the class on one line and a
+different table in the same document restores it. ***Before adding a SOURCE,
+ask what the pipeline already reads and throws away*** — the download, the
+parse and the memory are all already paid for. Unlike the usual
+sibling-attestation routes this record has refuted, this witness is **a
+different table in the same filing**, so it is not drawn from the damaged
+region. Sized and queued, not shipped: it is a parse-stage question.
+
+**PREVENTION, for the class rather than these two rows:** neither row is visible
+to any count. The DODGX row is the documented *a symbol can be right for the
+FUND and wrong for the VEHICLE* shape one step over — right fund, wrong CLASS —
+and *only a seeded draw printing each row's filed TYPE and share-class text
+finds it*, which is how this one surfaced. It was found by reading, not by a
+check, and no check proposed here would have caught it.
+
+---
+
 ## 2026-11-08 (weekly integrity, seed 20261107) — A SITE-TEST STEP RAN `stamp-assets.mjs` WHILE THAT FILE COULD NOT START THE JOB: THE CACHE-BUSTER'S OWN GATE WAS UNTRIGGERABLE BY THE CACHE-BUSTER
 
 **WRONG.** `site-test.yml` runs 26 scripts across its steps. Checking each one
