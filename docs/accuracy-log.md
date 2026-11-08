@@ -123,6 +123,61 @@ measures the vocabulary* — met again, in the one check standing over merges.
 
 ---
 
+## 2026-11-08 (weekly integrity, seed 20261107) — THE FOUR `merge-name-test` PIN FAILURES DIAGNOSED: THREE ARE DRIFT WHERE THE NEW BEHAVIOUR IS BETTER THAN THE PIN, AND THE FOURTH TESTS A STATE PRODUCTION CANNOT PRODUCE
+
+**Not a published defect — a verdict on an instrument.** With `vm` bound
+(`e3ca445e`) `merge-name-test` runs its sec-tickers refusal over 18,093 keys and
+fails on four pins. Each was diagnosed by MEASURING the witness the arm reads,
+not by reading the arm.
+
+**THREE ARE DRIFT, AND IN ALL THREE THE ARM IS NOW MORE ACCURATE THAN ITS PIN.**
+`weldRepair`'s two disjuncts are `CNT(t) <= 2 && w >= 3` and
+`w > joined * 3 && !regSpellsJoined(t)`, read off the ISSUER column of the live
+store. Measured now against the counts the pins record:
+
+| pin | pinned | now | the arm's own rule |
+|---|---|---|---|
+| `OppenheimerFunds` | 17 -> 60 | **16 -> 44** | `44 > 48` false — the ratio crossed 3 |
+| `OppenheimerFunds, Inc.` | 2 rows, only-(1) | **1 -> 3** | `3 > 3` false |
+| `AllianceBernstien` | 2 -> 5 | **4 -> 3** | the attestation **INVERTED** |
+
+***The must-KEEP control at the same arm is intact*** — `AllianceBernstein` reads
+683 joined against 1,176 spaced, still refused, exactly as pinned — so the arm
+is working and only its EVIDENCE moved. Independently confirmed outside the
+store: `sec-funds.json` now contains **no registered name containing
+"Oppenheimer" at all** (the firm was absorbed into Invesco and the
+registrations renamed), so `oppenheimer` has left the 3,252-word witness. And
+the first two pins' own comments call the repair **WRONG** — *"`OppenheimerFunds,
+Inc.` was the firm's OFFICIAL one-word styling, so this is a wrong repair on 17
+rows"* — pinned "on the side they land rather than wished away". **So the arm
+refusing them is an improvement in published accuracy, not a regression**, and
+`AllianceBernstien` now follows the store's majority spelling, which is the
+whole of the arm's rule.
+
+**THE FOURTH IS NEITHER DRIFT NOR A PRODUCTION DEFECT.** `rot "Retirement Income
+Fund Vanguard Target"` wants `null` and rotates to `"Income Fund Vanguard Target
+Retirement"`. `Retirement` really is a registered CLASS name (Nuveen Lifecycle
+2070's `TLCOX`/`TRETX`, Hood River's `HRERX`), so the witness fires correctly.
+The rotation then survives `n >= filed * 3` — and measured, **the filed string
+has ZERO store attestations while the rotation has 11, so the test reads
+`11 >= 0` and the RATIO IS VACUOUS, degrading to the bare floor it exists to
+replace.** But `rotRepair(f.name)` is only ever called on a stored name, and
+`whole` is built from those same stored names, so **in production `filed >= 1`
+by construction and the ratio can never be vacuous.** The pin feeds a string the
+pipeline cannot hand the arm. Satisfying it needs a condition the live
+population never exercises, and *a condition unreachable by construction is
+worse than an inert one: it reads as a guard and is dead code.*
+
+**NO CHANGE MADE.** The pins are left failing rather than refreshed to green:
+this file is deliberately out of CI precisely because its verdicts are read off
+live attestations, and silently re-pinning them would destroy the only signal
+that the evidence has moved. ***The rule this earns: a tether whose fixtures
+read LIVE data does not fail — it REPORTS, and its failures must be diagnosed
+against the witness rather than cleared.*** Three of these four were the arm
+getting MORE accurate.
+
+---
+
 ## 2026-10-28 (14:3xZ) — A HOLD THAT LIVED ONLY IN PROSE: v205 WAS COMMITTED, VERSION-BUMPED AND WIRED WHILE BEING REPORTED AS HELD, AND THE CYCLE SKILL HAD DRIFTED INTO NAMING A RETIRED AGENT
 
 **Two defects, both in the project's own operating machinery rather than in a
