@@ -7,6 +7,122 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-08 (weekly integrity, seed 20261107) — `ticker-conflict` REPORTED EIGHT ROWS AND SIX WERE ITS OWN ARTIFACTS; THE TWO SURVIVORS ARE GENUINE WRONG SHARE CLASSES, AND NO SOURCED RETURN IS ATTACHED TO A WRONG FUND
+
+**WRONG.** The 2026-11-07 merge log's READ BEFORE MIRRORING block named eight
+`ticker-conflict` rows. All eight filings were opened and compared cell by cell
+through `renderRow` with `tab: "menu"`. **Six were the CHECK's errors, not the
+page's.** Five read the English word `INDEX` as the filed symbol — `INDEX` is a
+registered symbol, belonging to CYBER HORNET TRUST's `CYBER HORNET S&P 500(R)`,
+so `REGISTERED_TK` waved it through while `FILED_TK`'s leading-bare arm had no
+corroboration step; the shipped rule it stands in for, `resolveFiledTicker`,
+requires the symbol's registered entity or series to share a content word with
+the rest of the name, and `match-sec-tickers.mjs` states the reason in terms:
+*"the anchor is load-bearing: it is what stops a word that merely happens to be
+a registered symbol (`INDEX`) being read as one."* The sixth took the FIRST of
+two parentheticals in a welded name (I Am Boundless files `FEDERATED INSTL HIGH
+YIELD BOND INSTL (FIHBX)` at $96,099; the row above ends `… CLASS (CMTFX)`) while
+the page published FIHBX — which is what that row's own name states.
+
+**This mattered more than usual because the YTD column shipped 2026-11-06: a
+wrong ticker now attaches a real, SOURCED return to the wrong fund, and the fee
+value does not move, so no count can see it.** Eight of the flagged rows do
+publish a sourced return. Every one was verified against its filing and lands on
+the fund and the value the filing states — Hinge Health's FIDELITY MID CAP INDEX
+$3,213,804 and FIDELITY US BOND INDEX $2,848,025, Thorpe's FIDELITY US BOND INDEX
+$4,806,132 and FIDELITY MID CAP INDEX $216,947, Morgan Foods' `Fidelity 500 INDEX
+FD - AI` $2,586,143. **No sourced return is published under a contradicted
+symbol.**
+
+**THE TWO SURVIVORS ARE REAL, both the owner-gated wrong-share-class family.**
+St. Jude (11,230 readers, $41,881,629) files `Vanguard Total Bond Market Index
+Fund Institutional (VBITX)` and the page publishes **VBTLX**, the Admiral class;
+the filing's own symbol is wrong too — it uses `(VBITX)` for BOTH its Total Bond
+and Short-Term Bond rows — which is the transposition `resolveTrailingFiledTicker`
+already abstains on, so the abstention leaves a wrong-class symbol standing
+rather than a blank. IBEW Local 4 (759 readers, $2,096,748) files `PIMCO Total
+Return A (PTTAX)`, re-OCR'd from the scanned page to confirm, and the page
+publishes **PTTRX** with the Institutional fee 0.51 — so this error UNDERSTATES
+the cost. Cause: `FILED_TICKER_TRAIL` is anchored `\)\s*$`, and this name carries
+trailing OCR debris (`236,653 il`), so the symbol sitting in the name is unseen.
+Sized over the whole published+served store: 39 rows state an unanchored
+registered symbol — 12 agree, 26 blank, **1 wrong**. Queued, not shipped: it is a
+merge-side symbol path and the gain is one row.
+
+**THE CHANGE.** `conflictSuppressed` in `scripts/audit-data.mjs`: a leading-bare
+symbol must be corroborated by the shipped `resolveFiledTicker`, and no finding
+is raised when a parenthetical in the row's own name equals the symbol the page
+publishes. Measured over the whole store with the publish gate and serving
+condition sliced from `lineups-index` and `lib-ledger`'s `servedLineup`: 8 → 2,
+A drops exactly 5, B exactly 1, nothing new raised. Suppressions are PRINTED
+with their reason, because a suppression nobody can see is indistinguishable
+from a check that stopped working.
+
+**THE PREVENTION.** `scripts/ticker-conflict-test.mjs` slices the guard rather
+than retyping it, uses a frozen corroboration map so a registry refresh cannot
+redden it, gives every condition a case where it is the ONLY protection (which
+holds BY CONSTRUCTION — the INDEX rows carry no parenthetical, the welded row
+never fired the leading-bare arm), and asserts the FAIL-OPEN path: with no
+registry index the corroboration must suppress NOTHING, or an arm that cannot
+fire would silently empty the findings list while the log looked healthy.
+`scripts/audit-data.mjs` was added to `site-test.yml`'s `paths` — *a gate the
+file it guards cannot trigger is indistinguishable from no gate.*
+
+***AND THE RULE THIS EARNS AGAIN, FOR THE SECOND TIME IN THIS ONE CHECK:*** its
+own comment records it publishing 65% false findings once before. 6 of 8 is
+worse. **A check that stands in for a shipped resolver must ASK THE RESOLVER,
+not a weaker question that resembles it.**
+
+---
+
+## 2026-11-08 (weekly integrity, seed 20261107) — SEVEN FILED FUNDS PUBLISHED AS ONE $27.4M ROW, AND THE ONLY STANDING WATCHER CANNOT SEE IT BECAUSE THE MERGED NAME IS A BRAND
+
+**WRONG, and verified by arithmetic against the filing.** Hinge Health
+(1,694 readers, ack `20261012164636NAL0002938019001`) publishes a 27-row menu
+whose largest row reads **`FIDELITY FREEDOM` at $27,379,853 — 27.4% of the
+menu.** No such fund exists. The filing lists SEVEN Fidelity Freedom Index
+target-date vintages at $11,849,228 + $7,602,985 + $3,519,720 + $3,080,464 +
+$1,021,574 + $209,925 + $95,957, which sum to **exactly** $27,379,853. A second
+row, `AMERICAN FUNDS NEW` at $5,637,606, is exactly two filed funds
+($4,130,619 + $1,506,987).
+
+**THE MECHANISM IS NAME TRUNCATION, NOT A MIS-PAIRING.** The filing wraps each
+name over two lines (`FIDELITY FREEDOM` / `INDEX 2055 INSTL PREM`); the parser
+keeps line 1 and the continuation attaches to the NEXT row, which is why the
+same menu publishes `INDEX 2040 INSTL PREM FIDELITY MID CAP INDEX` and
+`WORLD R6 FIDELITY LARGE CAP`. Rows sharing a truncated line 1 then collapse
+into one key and their values ADD. **The values stay correct and the sum is
+preserved, so `coverageRatio` reads 1.0 and no arithmetic guard can fire** —
+the recorded shape *a check built on a sum cannot see a mis-pairing*, here with
+the sum genuinely intact.
+
+**WHY NOTHING CAUGHT IT.** `_m` (v114) was built for exactly this and reverted
+because it dropped four real holdings. The surviving watcher is the
+`fabricated-name` HIGH — 312 published lineups, whose own text says *"several
+real funds have merged onto one name"* — but it requires the merged name to be
+`isGenericTypeName` or `NOT_FUND_SHAPED`. Measured: `FIDELITY FREEDOM` and
+`AMERICAN FUNDS NEW` are **false on both**. ***The standing check catches a
+merge onto a GENERIC word and is blind to a merge onto a BRAND*** — and the
+brand case is the more common one, because every wrapped target-date family
+shares a brand on its first line.
+
+**NOT FIXED.** The repair is parser-side (`parse4i`'s row assembly) and needs a
+`PARSER_VERSION` bump, so it is written up rather than dispatched. The name
+repairs for this family are separately CLOSED/REFUTED in
+`docs/closed-classes.md` (lead-strip, tail-strip, same-menu witness, mid-name
+house) — but every one of those was priced on TICKERS and FEES. **None priced
+the merge: how many published rows are the sum of several filed funds is
+unmeasured.** Sizing route: uniform draw from the already-sized mid-name-house
+population (26,553 rows / 6,022 plans / 16.0M ppl), comparing the stored row
+count against the filing's own 4i row count.
+
+**THE PREVENTION, pending the fix:** the `fabricated-name` predicate needs a
+brand-blind arm, i.e. a merge witness keyed on the parser's own `seen` map
+rather than on what the merged row is CALLED. *A check keyed on a VOCABULARY
+measures the vocabulary* — met again, in the one check standing over merges.
+
+---
+
 ## 2026-10-28 (14:3xZ) — A HOLD THAT LIVED ONLY IN PROSE: v205 WAS COMMITTED, VERSION-BUMPED AND WIRED WHILE BEING REPORTED AS HELD, AND THE CYCLE SKILL HAD DRIFTED INTO NAMING A RETIRED AGENT
 
 **Two defects, both in the project's own operating machinery rather than in a
