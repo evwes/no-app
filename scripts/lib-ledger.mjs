@@ -89,7 +89,11 @@ export const STATES = ["published", "withheld", "partial", "absent", "impossible
 /* ---------------------------------------------------------------------------
  * the stores
  * ------------------------------------------------------------------------- */
-function loadLineups() {
+/* EXPORTED so `ledger-test` can pin the contributions value against the NOTES
+ * rather than against a `why` string. A string pin let a code-derived
+ * assertion through the "notes state the contribution types" branch, which is
+ * the branch a reintroduced code mapping would land in. */
+export function loadLineups() {
   const byAck = new Map();
   for (let s = 0; s < 64; s++) {
     const f = `${ROOT}/data/lineups/${String(s).padStart(2, "0")}.json`;
@@ -130,10 +134,17 @@ const cell = (state, why, value) => ({ state, why, value: value === undefined ? 
 /* A SHORT-FORM FILER ATTACHES NO AUDITED STATEMENTS BY LAW. That is the single
  * largest structural fact about this data set and it is a property of the FORM,
  * not of our parser. Note what it does NOT make impossible: the Form 5500's own
- * characteristic codes are on the short form too, so designated-Roth
- * availability (code 2R) is still knowable for all 44,114 of them. Treating the
- * whole plan as unknowable because its attachment is missing would write off a
- * field the form itself answers. */
+ * characteristic codes are on the short form too, so anything a code states is
+ * still knowable for all of them, and treating the whole plan as unknowable
+ * because its attachment is missing would write off a field the form answers.
+ *
+ * THIS COMMENT USED TO NAME "designated-Roth availability (code 2R)" AS THE
+ * EXAMPLE, AND THAT WAS FALSE. `docs/form5500-instructions-2025.txt:1990`:
+ * "2R Participant-directed brokerage accounts provided as an investment option
+ * under the plan." There is NO Roth code and NO after-tax code anywhere in the
+ * 8a list (the DC block is 2A-2T and was read end to end). `build-data.mjs`
+ * and `app.js` have always used 2R for the brokerage window, so the repo held
+ * one code with two incompatible meanings. See `contributionsCell`. */
 const NOTES_FIELDS = new Set(["match", "vesting", "lineup", "fees", "performance"]);
 
 function custodianCell(plan) {
@@ -170,26 +181,46 @@ function vestingCell(plan, ft) {
   return cell("absent", "attachment read, no vesting statement found");
 }
 
-/* PRETAX / ROTH / AFTER-TAX. The owner capitalised AFTER-TAX, and it is the one
- * of the three that is genuinely hard: pretax is definitional for a 401(k), and
- * designated Roth has its own characteristic code, but there is NO code that
- * means after-tax alone. Code 2K is 401(m), which covers a match AND/OR
- * after-tax contributions, so reading 2K as "after-tax" would over-claim on a
- * large majority of plans. Only the audited notes settle it, which is why this
- * cell is `partial` when the notes are absent rather than published. */
+/* PRETAX / ROTH / AFTER-TAX, and the whole difficulty of the field is that
+ * NEITHER Roth NOR after-tax has a characteristic code. Pretax is definitional
+ * for a 401(k). For the other two the audited notes are the ONLY source, and
+ * the absence of a code is not evidence of anything.
+ *
+ * THIS CELL USED TO READ `2R` AS DESIGNATED ROTH AND SCORED 2,344 PLANS /
+ * 8,549,974 PARTICIPANTS AS `published` WITH `roth: true` ON THAT BASIS.
+ * Code 2R is the PARTICIPANT-DIRECTED BROKERAGE WINDOW
+ * (`docs/form5500-instructions-2025.txt:1990`), which is what `build-data.mjs`
+ * sets `cf` bit 1 from and what `app.js:642` renders as "Self-directed
+ * brokerage". Both reader surfaces source Roth only from the notes
+ * (`app.js:646` bit 64, `build-seo-pages.mjs:240` `ff.roth`), so no reader was
+ * ever told this — the defect was confined to the scoreboard the loop steers
+ * by, which is why it survived: a wrong number here points every agent at the
+ * wrong field and is invisible to every page-level check.
+ *
+ * AND THERE IS NO DEFENSIBLE "NO" FOR EITHER SUB-FIELD. `brokerage` gets one
+ * (app.js:649) because the Schedule H 4i is an EXHAUSTIVE enumeration of
+ * investment options, so a missing SDBA row is a real absence, corroborated by
+ * 2R. Nothing in the filing enumerates CONTRIBUTION TYPES, and an audit note
+ * is under no obligation to mention Roth: Amazon's notes state match, vesting,
+ * eligibility and loans and never say "Roth". So notes-silence is not negative
+ * evidence, every unknown here stays unknown, and the cell never asserts a
+ * `false`. A wrong "no" would tell an advisor a plan has no Roth when it does,
+ * which is worse than silence. */
 function contributionsCell(plan, ft) {
   const codes = String(plan.codes || "");
-  const roth = /2R/.test(codes) || !!(ft && ft.roth);
+  const roth = !!(ft && ft.roth);
   const afterTax = !!(ft && ft.afterTax);
   const has2K = /2K/.test(codes);
   const value = { pretax: true, roth, afterTax };
-  if (ft && (ft.afterTax || ft.roth)) return cell("published", "notes state the contribution types", value);
-  if (roth && !plan.sf && ft) return cell("published", "code 2R for Roth; notes silent on after-tax", value);
-  if (roth) return cell("partial", "code 2R gives Roth; after-tax needs the notes (2K is 401(m), not after-tax)", value);
+  if (ft && (afterTax || roth)) return cell("published", "notes state the contribution types", value);
   if (has2K) return cell("partial", "code 2K is 401(m) — a match and/or after-tax, and it cannot tell them apart", value);
-  return cell(plan.sf ? "partial" : "absent",
-    plan.sf ? "short form: pretax is definitional, Roth/after-tax need codes or notes"
-            : "no Roth code and no contribution statement in the notes", value);
+  if (plan.sf) return cell("partial", "short form: pretax is definitional, and no 8a code states Roth or after-tax", value);
+  /* THE DIAGNOSED CAUSE, split two ways, because "no contribution statement in
+   * the notes" is a FALSE claim about notes we never read — 941 plans /
+   * 526,313 participants whose attachment yielded no features at all. The
+   * reason now names which of the two it is; `dx` supplies the cause. */
+  if (!ft) return cell("absent", "the attachment yielded no features, so the notes are UNREAD on contributions", value);
+  return cell("absent", "the attachment was read and states neither Roth nor after-tax, and no 8a code states either", value);
 }
 
 function lineupCell(plan, idx, haveEntry) {

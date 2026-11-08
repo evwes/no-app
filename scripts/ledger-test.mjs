@@ -9,7 +9,11 @@
  *
  *   node scripts/ledger-test.mjs
  */
-import { buildLedger, score, PLAN_LEVEL, STATES } from "./lib-ledger.mjs";
+import { buildLedger, score, PLAN_LEVEL, STATES, loadLineups } from "./lib-ledger.mjs";
+
+/* the feature shards, through the ledger's OWN loader — a re-implementation
+ * here would be a second thing to keep in step with the store */
+const LINEUPS = loadLineups();
 
 const fails = [];
 const ok = [];
@@ -58,9 +62,38 @@ check("NO short-form plan has match `absent` (it must be impossible)",
 check("NO full-form plan has match `impossible`",
   ff.every((p) => p.cells.match.state !== "impossible"),
   `${ff.filter((p) => p.cells.match.state === "impossible").length} violations`);
-check("short-form Roth is still knowable (code 2R survives the ceiling)",
-  sf.some((p) => p.cells.contributions.value && p.cells.contributions.value.roth),
-  `${sf.filter((p) => p.cells.contributions.value && p.cells.contributions.value.roth).length.toLocaleString()} SF plans with Roth`);
+/* THIS PIN REPLACES ONE THAT ASSERTED THE DEFECT. It read "short-form Roth is
+ * still knowable (code 2R survives the ceiling)" and passed because
+ * `contributionsCell` mapped the BROKERAGE code 2R to designated Roth, scoring
+ * 8,549,974 participants as `published`. 2R is "Participant-directed brokerage
+ * accounts" (`docs/form5500-instructions-2025.txt:1990`) and there is no Roth
+ * or after-tax code in the 8a list at all, so the notes are the only source.
+ *
+ * Both directions, so neither half can pass alone:
+ *   (a) NO plan may carry roth/afterTax true without its own notes saying so —
+ *       this is the pin that fails the moment a code is read as a tax type;
+ *   (b) the notes arm must still REACH, or (a) passes on an inert cell. */
+const notesOf = (p) => { const e = p.ack ? LINEUPS.get(p.ack) : null; return e && e.features ? e.features : null; };
+const cv = (p) => p.cells.contributions.value;
+const codeOnly = ledger.plans.filter((p) => {
+  const v = cv(p), ft = notesOf(p);
+  return v && ((v.roth && !(ft && ft.roth)) || (v.afterTax && !(ft && ft.afterTax)));
+});
+check("NO plan asserts Roth or after-tax from anything but its OWN audited notes",
+  codeOnly.length === 0,
+  `${codeOnly.length} assertions with no notes witness` +
+  (codeOnly.length ? `, e.g. ${codeOnly[0].ack} codes=${codeOnly[0].codes}` : ""));
+const fromNotes = ledger.plans.filter((p) => { const v = cv(p); return v && (v.roth || v.afterTax); });
+check("the notes arm still reaches Roth/after-tax (so the pin above is not inert)",
+  fromNotes.length > 10000, `${fromNotes.length.toLocaleString()} plans from the notes`);
+/* AND THE CELL NEVER ASSERTS A FALSE: there is no negative evidence for either
+ * sub-field, so a `no` must never be published. A wrong "no" is worse than
+ * silence. `roth`/`afterTax` are booleans, so the witness is the WHY string:
+ * no reason may claim the plan lacks either type. */
+check("no contributions reason asserts the ABSENCE of Roth or after-tax to a reader",
+  [...new Set(ledger.plans.map((p) => p.cells.contributions.why))]
+    .every((w) => !/\b(?:not offered|does not offer|no roth|without roth)\b/i.test(w)),
+  `${new Set(ledger.plans.map((p) => p.cells.contributions.why)).size} distinct reasons`);
 
 /* 4. THE TRUST-SERVING CONDITION, BOTH DIRECTIONS, on the documented pin. Home
  *    Depot's OWN ack is not confident (its four-row "menu" is three Form 5500

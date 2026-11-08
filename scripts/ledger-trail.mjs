@@ -22,6 +22,26 @@ import { buildLedger, score, PLAN_LEVEL } from "./lib-ledger.mjs";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const TRAIL = path.join(ROOT, "docs", "ledger-history.jsonl");
 
+/* `--print` WAS DOCUMENTED IN THE HEADER ABOVE AND READ NOWHERE, so this script
+ * had exactly one behaviour: append. An agent probing the ledger with a
+ * plausible flag — `--dry-run`, which is what I reached for — got the append
+ * anyway and silently added a second line for today to a TRACKED trail that the
+ * merge job is the sole author of. A duplicate line is worse than a missing one
+ * here: this record's own rule is that a streak of identical lines is read as a
+ * quiet window, and a hand-appended line is indistinguishable from a run.
+ * So: make the documented flag real, and refuse anything not documented rather
+ * than writing. *An unrecognised flag that still performs the side effect is an
+ * uninstrumented command.* The merge job passes no args and is unaffected. */
+const ARGS = process.argv.slice(2);
+const KNOWN = new Set(["--print", "--dry-run"]);
+const unknown = ARGS.filter((a) => !KNOWN.has(a));
+if (unknown.length) {
+  console.error(`ledger-trail: unknown argument(s) ${unknown.join(" ")}; known: ${[...KNOWN].join(" ")}`);
+  console.error("refusing to run, because the only side effect of this script is a write to the trail");
+  process.exit(2);
+}
+const READ_ONLY = ARGS.includes("--print") || ARGS.includes("--dry-run");
+
 const s = score(buildLedger());
 const r4 = (x) => (x == null ? null : Math.round(x * 10000) / 100);   // percent, 2dp
 
@@ -55,7 +75,7 @@ if (existsSync(TRAIL)) {
   if (lines.length) { try { prev = JSON.parse(lines[lines.length - 1]); } catch { /* ignore */ } }
 }
 const same = prev && key(prev) === key(line);
-if (!same) appendFileSync(TRAIL, JSON.stringify(line) + "\n");
+if (!same && !READ_ONLY) appendFileSync(TRAIL, JSON.stringify(line) + "\n");
 
 console.log(`field ledger: overall ${line.overall}% of knowable cells shown, ` +
   `${line.addressable.toLocaleString()} participant-cells addressable`);
@@ -63,6 +83,8 @@ for (const f of PLAN_LEVEL)
   console.log(`  ${f.padEnd(14)} ${String(line[`${f}_shown`]).padStart(5)}% shown   ` +
     `${line[`${f}_gap`].toLocaleString().padStart(11)} readers with no answer` +
     (line[`${f}_withheld`] ? `   (${line[`${f}_withheld`].toLocaleString()} withheld on purpose)` : ""));
-console.log(same
-  ? `trail: line is byte-identical to the previous one (date excluded) — NOT appended`
-  : `trail: line APPENDED to docs/ledger-history.jsonl`);
+console.log(READ_ONLY
+  ? `trail: READ-ONLY (${ARGS.join(" ")}) — nothing written; the line above is what a real run would append`
+  : same
+    ? `trail: line is byte-identical to the previous one (date excluded) — NOT appended`
+    : `trail: line APPENDED to docs/ledger-history.jsonl`);

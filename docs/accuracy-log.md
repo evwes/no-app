@@ -7,6 +7,70 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-08 (daily cycle, contributions) — THE FIELD LEDGER READ CODE `2R` AS DESIGNATED ROTH. IT IS THE BROKERAGE WINDOW, AND 8,549,974 PARTICIPANT-CELLS WERE SCORED `published` ON IT
+
+**WRONG, against the owner's own truth source.** `form5500-instructions-2025.txt:1990`:
+*"2R Participant-directed brokerage accounts provided as an investment option under
+the plan."* `lib-ledger.mjs`'s `contributionsCell` had `roth = /2R/.test(codes) || …`
+and an arm publishing *"code 2R for Roth"*. The DC block is **2A–2T, read end to end:
+there is no Roth code and no after-tax code at all.** The repo held one code with two
+incompatible meanings — `build-data.mjs:1328` sets `cf` bit 1 from 2R and `app.js:642`
+renders it as "Self-directed brokerage".
+
+**NO READER WAS TOLD THIS**: both surfaces source Roth only from the notes
+(`app.js:646` bit 64, `build-seo-pages.mjs:240`). The defect sat in the SCOREBOARD THE
+LOOP STEERS BY — which is why it survived, and why it cost: a wrong ledger points every
+field agent at the wrong gap and no page-level check can see it. *This cycle was sent to
+work a 4.75M "absent" class and found an 8.55M error in the instrument that sized it.*
+
+**Measured by differential** (same rows, OLD arm sliced verbatim; control: it reproduces
+the shipped block key for key): `contributions_shown` **71.92% → 64.79%**,
+`contributions_gap` **33,671,801 → 42,221,775**, ONE SCALAR **79.82% → 78.33%**. 2,344
+plans / 8,549,974 participants lose a false `roth: true`; **1,611 (69%) have an SDBA row
+parsed from their own 4i** — the independent witness that 2R meant brokerage.
+
+**Read in the filings.** Amazon (`20261008124416NAL0016118003001`, 1,428,999 ppl): its 4i
+carries a row named **`Self-Directed Brokerage Account`**; its notes state match, vesting,
+eligibility, loans and never say "Roth". AT&T (`20261001134623NAL0019006721001`): notes
+name **"Fidelity BrokerageLink"** with dollar amounts, Roth zero times. *A `pdftotext`
+grep of Amazon returned a clean zero for brokerage, Roth AND after-tax — its attachment
+is scanned. A three-way clean zero reported on the query, not the filing.*
+
+**NO DEFENSIBLE "NO" EXISTS HERE — a result, not a ship.** `brokerage` earns one because
+the 4i is an *exhaustive* enumeration of investment options, so a missing SDBA row is a
+real absence. Nothing enumerates CONTRIBUTION TYPES, and an audit note need never mention
+Roth — Amazon proves it. Notes-silence is not negative evidence; the cell asserts no
+`false`. *A wrong "no" is worse than silence.*
+
+**Change.** `roth`/`afterTax` come only from the plan's own notes. The `absent` reason,
+which claimed "no contribution statement in the notes" about notes never read, splits by
+diagnosed cause: **4,542 plans / 5,992,002 read-and-silent** vs **941 / 526,313 whose
+attachment yielded no features** (`dx` nohead 585, noregion 22, other 12, none 321). 2K's
+branch order is untouched; it grows only by absorbing plans the 2R arm was stealing.
+
+**Prevention.** `ledger-test.mjs` carried a pin that *asserted the defect* ("code 2R
+survives the ceiling"). Replaced by the INVARIANT, keyed on the notes and not a `why`
+string: **no plan may assert Roth or after-tax without its own notes saying so**, plus a
+not-inert pin (43,664 reach it from the notes) and one that no reason asserts an ABSENCE.
+`loadLineups` is now exported so the test reads the store through the ledger's own loader.
+*A string pin was tried and REJECTED — it caught 2,257 of 4,841, because a reintroduced
+code mapping lands in the branch whose `why` it exempts.* Both mutations fire by name:
+2R→roth (4,841) and 2K→afterTax (92,212, the owner-gated misreading).
+
+**TWO FOUND, NOT FIXED HERE.** (1) **`ledger-test.mjs` is run by NO workflow** — the
+project's objective function has a suite CI never executes, worse than a gate its file
+cannot trigger: it runs nowhere. `lib-ledger.mjs` IS in `site-test.yml`'s paths filter, so
+the job starts and never calls the test; one step closes it, and `site-test.yml` was left
+alone only because the same day's integrity pass had just changed it. (2)
+**`ledger-trail.mjs` ignored unknown flags and appended anyway** — a probe with
+`--dry-run` wrote a second line for today into the tracked trail the merge job solely
+authors, and this record reads an identical streak as a quiet window. Fixed here:
+`--print`/`--dry-run` are real and read-only, anything else exits 2 without writing, and
+the no-arg path was re-verified to still append. *An unrecognised flag that still performs
+the side effect is an uninstrumented command.*
+
+---
+
 ## 2026-11-08 (weekly integrity, seed 20261107) — THE DRAW'S LARGEST PLAN PUBLISHES A WRONG SHARE CLASS ASSERTED, NOT HEDGED: `DODGE & COX STOCK CL X` READS DODGX, WHICH IS CLASS I, TO 77,865 READERS
 
 **WRONG, and read off the 4i schedule itself.** Securitas Security Services USA
