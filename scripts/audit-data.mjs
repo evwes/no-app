@@ -15,6 +15,10 @@ import { JUNK_NAME_RE, isGenericTypeName, NOT_FUND_SHAPED, PARSER_VERSION } from
 import { matchQuoteOk } from "./lib-quote.mjs";
 import vm from "node:vm";
 import { cleanFiledName } from "./lib-disclose.mjs";
+/* the SHIPPED leading-symbol rule, for `ticker-conflict`'s corroboration step.
+ * Imported rather than reproduced: a check that re-implements the resolver it
+ * polices is how this very check once published 65% false findings. */
+import { buildIndex, resolveFiledTicker } from "./match-sec-tickers.mjs";
 /* THE FILING'S OWN TICKER IS A CHECK WE HAVE NEVER RUN. Some 4i schedules state
  * the symbol in the holding name — "VITSX - Vanguard Total Stock Market Index
  * Inst.", "T. Rowe Price Retirement 2050 Fund (TRJLX)". Where fund-er.js also
@@ -73,6 +77,72 @@ const fundTk = (name, type) => {
     } catch { __fundTk = false; }
   }
   return __fundTk ? __fundTk(name, type || "") : null;
+};
+
+/* ---- THE TWO SUPPRESSIONS ON `ticker-conflict`, 2026-11-08 ----
+ *
+ * The 2026-11-07 merge log's READ BEFORE MIRRORING block named EIGHT conflicts.
+ * All eight filings were opened and read. SIX are this check's own artifacts:
+ *
+ *  - FIVE take the English word INDEX as the filed symbol. `INDEX` really is a
+ *    registered symbol — it belongs to CYBER HORNET TRUST's `CYBER HORNET
+ *    S&P 500(R)` — so `REGISTERED_TK` waves it through, and FILED_TK's
+ *    LEADING-BARE arm has no corroboration step. The shipped resolver it stands
+ *    in for DOES: `resolveFiledTicker` requires the symbol's own registered
+ *    entity or series to share a content word with the rest of the name, and
+ *    `match-sec-tickers.mjs` says in terms why — "the anchor is load-bearing:
+ *    it is what stops a word that merely happens to be a registered symbol
+ *    (`INDEX`) being read as one". The check asked the weaker question.
+ *  - ONE takes the FIRST of two parentheticals in a WELDED name. I Am
+ *    Boundless files `FEDERATED INSTL HIGH YIELD BOND INSTL (FIHBX)` and the
+ *    row above it ends `… CLASS (CMTFX)`; the parser welded them, so the row
+ *    reads `CLASS (CMTFX) FEDERATED … (FIHBX)`. The page publishes FIHBX —
+ *    which is what this row's own name states. The filing contradicts nothing.
+ *
+ * *AN ERROR CODE IS A PUBLISHED CLAIM, AND SO IS A CHECK.* This check's own
+ * comment forty lines down records it publishing 65% false findings once
+ * before, and names the cost exactly: a false alarm in a watched metric
+ * teaches the operator to skip the line. 6 of 8 is worse than 65%.
+ *
+ * MEASURED over the whole published+served store before shipping: the current
+ * rule reports 8, suppression A drops exactly 5, suppression B exactly 1, and
+ * the 2 survivors are the 2 that READ AS GENUINE against their filings —
+ * St. Jude's `… Institutional (VBITX)` published as VBTLX (Admiral), and IBEW
+ * Local 4's `PIMCO Total Return A (PTTAX)` published as PTTRX. Nothing new is
+ * raised. `scripts/ticker-conflict-test.mjs` is the tether and slices this
+ * block rather than retyping it.
+ *
+ * BOTH FAIL OPEN. If the registry index cannot be built, A suppresses NOTHING
+ * and says so — an arm that cannot fire is worse than an absent one, and
+ * pointed at a check it would silently empty the list. */
+const CONFLICT_PARENS = /\(\s*([A-Z]{4}X)\s*\)/g;
+let __filedTk = null;
+const filedTkCorroborated = (name) => {
+  if (__filedTk === null) {
+    try {
+      const secPath = new URL("../sec-funds.json", import.meta.url);
+      const idx = buildIndex(secPath);
+      if (!idx || !idx.byTicker || !idx.byTicker.size) throw new Error("empty index");
+      __filedTk = (s) => resolveFiledTicker(idx, s);
+    } catch { __filedTk = false; }
+    if (__filedTk === false) console.log("ticker-conflict: sec-funds.json index unavailable — the leading-bare corroboration is OFF for this run (no finding is suppressed by it)");
+  }
+  return __filedTk ? __filedTk(name) : null;
+};
+/* the guard pair, kept as ONE named function so the tether can slice it and so
+ * the two conditions cannot drift apart in two call sites */
+const conflictSuppressed = (nm, leadBare, filed, gotTk) => {
+  if (leadBare) {
+    const corro = filedTkCorroborated(nm);
+    /* `null` from an UNAVAILABLE index must not suppress; only a built index
+     * that disagrees may. `filedTkCorroborated` returns null in both cases, so
+     * ask the availability flag directly. */
+    if (__filedTk && corro !== filed) return "uncorroborated-lead";
+  }
+  CONFLICT_PARENS.lastIndex = 0;
+  let p;
+  while ((p = CONFLICT_PARENS.exec(nm))) if (p[1] === gotTk) return "row-names-our-own-symbol";
+  return null;
 };
 
 const d = JSON.parse(readFileSync("plans-all.json", "utf8"));
@@ -483,6 +553,10 @@ try {
   let genericPlans = 0, dominantPlans = 0;
   const worstGeneric = [], worstDominant = [];
   const tickerConflicts = [];
+  /* what the two suppressions removed. PRINTED, not discarded: a suppression
+   * nobody can see is indistinguishable from a check that stopped working, and
+   * this list is how a later cycle notices the arm has gone over-broad. */
+  const tickerConflictSuppressed = [];
   {
     // entriesByAckCov already holds every lineup entry, loaded above — a second
     // pass over 64 shards would double the audit's IO for nothing
@@ -552,6 +626,9 @@ try {
           || (typeof fd.stk === "string" && fd.stk ? { tk: fd.stk } : null) || null;
         if (!got || !got.tk || got.comparable) continue;   // a labelled analogue is a different claim
         if (got.tk === filed) continue;
+        /* the two measured suppressions — see `conflictSuppressed` above */
+        const sup = conflictSuppressed(nm, !!m[1], filed, got.tk);
+        if (sup) { tickerConflictSuppressed.push(`${ack} ${filed}/${got.tk} (${sup})`); continue; }
         tickerConflicts.push(`[ticker-conflict] ${ack} publishes ${got.tk} where the filing states ${filed} — "${nm.slice(0, 48)}"`);
       }
     }
@@ -563,6 +640,11 @@ try {
    * reads is a check that does not exist. */
   for (const f of tickerConflicts) findings.warn.push(f);
   if (tickerConflicts.length) console.log(`ticker-conflict: ${tickerConflicts.length} rows publish a symbol the filing itself contradicts`);
+  if (tickerConflictSuppressed.length) {
+    console.log(`ticker-conflict: ${tickerConflictSuppressed.length} candidate(s) suppressed as this check's own artifacts`);
+    for (const s of tickerConflictSuppressed.slice(0, 40)) console.log(`  suppressed  ${s}`);
+    if (tickerConflictSuppressed.length > 40) console.log(`  … +${tickerConflictSuppressed.length - 40} more`);
+  }
 
   /* OVERSHOOT — the arithmetic witness the two shapes above lack.
    *
