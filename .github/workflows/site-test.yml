@@ -66,6 +66,16 @@ on:
             "scripts/lib-sec-fingerprint.mjs",
             "scripts/sec-tickers-stamp-test.mjs",
             "scripts/lead-punct-test.mjs",
+            # THE STAMPER ITSELF. `stamp-assets.mjs` is run by a step in this
+            # job ("Asset stamps match their content") and was NOT in this list,
+            # so a change to the script that computes the cache-buster ran no
+            # test of its own -- found 2026-11-08 by checking every step's
+            # script against this filter. The assets it hashes are all here, so
+            # the step fires when a STAMP goes stale; what it could not catch
+            # was the STAMPER going wrong, and a wrong stamper ships a change no
+            # returning browser ever sees. That is the seventeen-day staleness
+            # this record already paid for once.
+            "scripts/stamp-assets.mjs",
             # `ticker-conflict`'s two suppressions and their tether. The guard
             # lives in `audit-data.mjs`, which runs in build-data's MERGE job,
             # but the tether needs no data at all -- it slices the guard and

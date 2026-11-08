@@ -7,6 +7,40 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-08 (weekly integrity, seed 20261107) — A SITE-TEST STEP RAN `stamp-assets.mjs` WHILE THAT FILE COULD NOT START THE JOB: THE CACHE-BUSTER'S OWN GATE WAS UNTRIGGERABLE BY THE CACHE-BUSTER
+
+**WRONG.** `site-test.yml` runs 26 scripts across its steps. Checking each one
+against the workflow's own `paths` filter — mechanically, by parsing the YAML
+rather than reading it — **one was missing: `scripts/stamp-assets.mjs`**, run by
+the step *"Asset stamps match their content — a stale one ships nothing"*.
+
+The five assets it hashes (`app.js`, `styles.css`, `data.js`, `fund-er.js`,
+`sec-tickers.js`) and `index.html` are all in the filter, so the step fires
+whenever a STAMP goes stale. What it could not catch is **the STAMPER going
+wrong**: a change to the script that computes the cache-buster started no job
+and ran no test of itself. *A gate the file it guards cannot trigger is
+indistinguishable from no gate* — and this is the gate standing over the
+failure this record already paid for, when four stamps went seventeen days
+stale and the owner reported "nothing is updated in wampo". A wrong stamper
+ships a change **no returning browser ever sees**, which is the one defect
+class that leaves every other gate green.
+
+**THE CHANGE.** `scripts/stamp-assets.mjs` added to `site-test.yml`'s `paths`.
+`node scripts/stamp-assets.mjs --check` re-run: every stamp matches its asset's
+content hash, so nothing was actually stale — the gap was in reachability, not
+in the stamps.
+
+**THE PREVENTION, and it is the method rather than the line:** the check is
+four lines of YAML parsing — for every `node scripts/X.mjs` a step runs, assert
+`X` is in `paths`. It now reads NONE missing. ***A `paths` filter is a second
+place a gate can be made decorative, and reading it does not find the hole —
+parsing it does.*** This is the same audit that should be run against any
+workflow whose steps name scripts; `build-data.yml`'s prep gate has no such
+exposure only because it also runs on a schedule, so its tests are exercised
+every few hours regardless of what triggered the run.
+
+---
+
 ## 2026-11-08 (weekly integrity, seed 20261107) — `ticker-conflict` REPORTED EIGHT ROWS AND SIX WERE ITS OWN ARTIFACTS; THE TWO SURVIVORS ARE GENUINE WRONG SHARE CLASSES, AND NO SOURCED RETURN IS ATTACHED TO A WRONG FUND
 
 **WRONG.** The 2026-11-07 merge log's READ BEFORE MIRRORING block named eight
