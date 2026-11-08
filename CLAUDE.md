@@ -633,9 +633,17 @@ old-version tail. A second large `pv` cohort means a PARTIAL store
 harsher threshold because a 403 PRESERVES the stored entry and an extraction
 failure DESTROYS it.
 
-**THE HIGH BASELINE IS 4** = 3 `contrib` outliers + `fabricated-name`
-(`audit-generic-names` sits above its 230 escalation threshold, so that HIGH is
-STANDING rather than absent). **CI can report MORE than the local audit** — the
+**THE HIGH BASELINE IS 7, NOT 4 — corrected 2026-11-08 from the trail.** This
+line read **4** (`3 contrib outliers + fabricated-name`) while
+`docs/coverage-history.jsonl` has carried `high: 7` on every recent line
+(2026-11-07 x2 and 2026-11-08 all read 7). The weekly integrity pass enumerates
+the 7 as **4 `contrib` + `lineup-overshoot` + `fair-value-note` +
+`fabricated-name`** (`audit-generic-names` sits above its 230 escalation
+threshold, so that HIGH is STANDING rather than absent). ***A stale baseline is
+worse than no baseline: a session comparing CI's 7 against a remembered 4 reads
+three NEW findings that do not exist, and the file's own preamble says why — a
+contradicted number here is asserted again every time it is read.*** Derive it
+from the trail's `high` key, never from this sentence. **CI can report MORE than the local audit** — the
 extra entries are self-clearing `reparse-loss` findings raised from
 `losses-triage.txt`, a run ARTIFACT that exists only in CI. *A metric that
 differs between CI and local is a question about the inputs, not the store.*
