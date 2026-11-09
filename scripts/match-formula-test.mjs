@@ -19,7 +19,8 @@
  * because the cost of getting this wrong is a wrong number in front of them.
  */
 import { mfWidened, mfMixedFraction, mfEqualTo, mfEqualToWords, mfMisreadRateUnderCap,
-  mfMisreadCompoundCap } from "./lib-4i.mjs";
+  mfMisreadCompoundCap, mfFiniteVerb, MF_FVERB,
+  extractPlanFeatures as extractPlanFeatures205 } from "./lib-4i.mjs";
 
 const fails = [];
 const ok = (c, m) => { if (!c) fails.push(m); };
@@ -324,6 +325,185 @@ for (const [label, find, repl, probe] of V199) {
   if (!flipped) fails.push(`the control for ${label} changed NOTHING — it is decorative`);
 }
 
+/* ======================================================================
+ * v205 — MATCH AS A FINITE VERB.
+ *
+ * Every arm above and the quote fallback in extractPlanFeatures anchor on the
+ * NOUN "match(ing) contribution(s)". A filing that writes the verb instead is
+ * invisible to all of them at once, which is the `absent: attachment read, no
+ * match statement found` cell. Measured over a participant-weighted draw of
+ * 200 filings from that class: 17 of 200 gain an answer and 0 lose one.
+ *
+ * THE TWO CONDITIONS ARE TESTED SEPARATELY AND EACH WITH A CASE WHERE IT IS
+ * THE ONLY PROTECTION, found by asking the live corpus which sites each one
+ * blocks alone rather than by imagining them. A case protected twice proves
+ * neither.
+ * ====================================================================== */
+let n205 = 0;
+const is205 = (c, m) => { n205++; if (!c) fails.push(m); };
+const fv = (t) => { const m = mfFiniteVerb(t); return m ? `${W205(m[1])}/${W205(m[2])}` : null; };
+const W205 = (x) => ({ "one hundred": 100, "seventy five": 75, "twenty five": 25, fifty: 50, forty: 40, thirty: 30, twenty: 20, ten: 10, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9 }[String(x).toLowerCase().replace(/-/g, " ")] ?? +x);
+
+/* ---- MUST EXTRACT, every one a real filing ---------------------------- */
+const FV_EXTRACT = [
+  ["The Company matches 100 percent of the participant’s contribution up to three percent and 50 percent of the participant’s contribution between four and five percent, for a maximum matching contribution of four percent.",
+   "100/3", "A&K Railroad Materials — inflected verb, rate and cap both in WORDS"],
+  ["The Plan provides for discretionary Company matching contributions and for the year ended December 31, 2025, the Company matched 50 percent of the amount of compensation deferred by the participant up to four percent.",
+   "50/4", "Hixson Metal Finishing — past tense"],
+  ["For the year ended December 31, 2025, the employer matched 40% of the participant's contributions to the Plan, up to 9%, for a maximum matching contribution of 3.6%.",
+   "40/9", "North Shore Bank of Commerce"],
+  ["The Company matches 100% of the participants’ deferred amount with the match limited to 4% of the participants’ compensation for the salaried Nissan maintenance project employees.",
+   "100/4", "Yates Services, 2,699 ppl — 'limited to' as the cap connector"],
+  ["For the year ended December 31, 2025, the employer match was 100% of elective contributions up to 3 percent, plus 50 percent of employee contributions between 3 and 9 percent.",
+   "100/3", "Kihomac — the NOUN form rescued by a COPULA, which is what separates it from a line caption"],
+  ["In addition, the Company will match 100% of the participant’s pre-tax, Roth and/or after-tax contributions to the Plan up to a total of 3% of eligible compensation.",
+   "100/3", "Wabtec, 14,847 ppl — a MODAL before a bare verb"],
+];
+for (const [t, want, who] of FV_EXTRACT) is205(fv(t) === want, `mfFiniteVerb MUST read ${want} (${who}), got ${fv(t)}`);
+
+/* ---- MUST REFUSE. A cap on the MATCH is not a cap on the matched tier, and a
+ * cap with no rate has no rate to publish. Both fall through to the quote,
+ * which is the honest answer. ------------------------------------------- */
+const FV_REFUSE = [
+  ["Employees can elect to contribute 1% or 2% of their salary and the University will match 200% of employees’ voluntary contributions for a maximum University contribution of 8%, including the mandatory University contribution and the University match.",
+   "University of Chicago, 19,024 ppl — 8% caps the MATCH; '200% of the first 8%' would state a benefit twice the real one"],
+  ["The Plan Sponsor matches up to 4% of a participant's eligible contribution to the Plan on a per pay period basis.",
+   "Pinnacle Bank, 3,987 ppl — ONE percentage, and it is the cap"],
+  ["The Plan Sponsor matches up to 5% of a participating employee’s eligible compensation.",
+   "Metairie Park Country Day School — same shape"],
+  ["The Employer generally contributes between 50% and 100% of the first 6% of Plan compensation that a participant defers.",
+   "BAE Systems, 58,830 ppl — a RANGE. mfWidened needs MF_RANGE for this; MF_F refuses it by ADJACENCY, because the rate must sit immediately after the verb and 'between 50% and' cannot fit there. Measured: dropping MF_RANGE from this arm changed 0 of 54,387 live verdicts, which is why the guard is gone rather than untested"],
+  ["The Employer generally matches between 50% and 100% of the first 6% of Plan compensation that a participant defers.",
+   "the same sentence with the FINITE VERB substituted — a CONSTRUCTED case, used because the live corpus holds no range written with the verb, and the adjacency is what refuses it"],
+];
+for (const [t, why] of FV_REFUSE) is205(mfFiniteVerb(t) === null, `mfFiniteVerb MUST REFUSE: ${why}, got ${fv(t)}`);
+
+/* ---- THE VERB PREDICATE ITSELF, which is also the quote fallback's gate.
+ * Its must-NOT-fire list is drawn from the live corpus, and every member was
+ * quoted under the match heading by the first version of this arm. ------- */
+const FVRE = () => new RegExp(MF_FVERB, "i");
+const FV_FIRE = [
+  ["(2) Other eligible employment The Company matches the lesser of 50% of each employee’s deferral contribution or $500 per year.", "Costco, 279,798 ppl"],
+  ["The Plan Sponsor matches up to 4% of a participant's eligible contribution to the Plan.", "Pinnacle Bank"],
+  ["the University will match 200% of employees’ voluntary contributions", "University of Chicago — modal"],
+  ["the Credit Union matched employee contributions according to the following schedule", "State Employees' Credit Union"],
+  ["For 2025, the approved employer match was 20% of the participants’ contribution.", "Janitronics — noun plus copula"],
+  ["The Bank matches a portion of employee contributions up to a max of 5% of eligible pay.", "Flagstar Bank"],
+  ["The Companies match 100% of participant contributions on the first $3,250 per calendar year for eligible participants.", "Robert W. Baird — a PLURAL subject takes the bare verb"],
+];
+for (const [t, who] of FV_FIRE) is205(FVRE().test(t), `the verb predicate MUST fire: ${who}`);
+const FV_SILENT = [
+  ["CONTRIBUTIONS Employee 403(b) Deferral 10,609,352 Employer Match 4,230,299 Employer Nonelective 3,483,123 Employee Rollover 3,127,988",
+   "Mid-South Independent School, 5,204 ppl — a Statement of Changes LINE CAPTION. The grammatical tail is the ONLY protection here: the subject 'Employer' fires"],
+  ["2d Aggregate Account Balances Employer Contributions for the Plan Year Attributable to Participating Employer COLLEGE MATCH 93-1388375 0.00 41002",
+   "TriNet HR III, 219,334 ppl — a participating employer whose NAME is COLLEGE MATCH. Tail-only protection"],
+  ["Participants are immediately vested in their voluntary contributions and safe harbor employer match and nonelective contributions plus actual earnings thereon.",
+   "TriNet HR III — a VESTING sentence about VOLUNTARY contributions, which are vested by law. Tail-only protection"],
+  ["After-tax contributions are not eligible for the Company match. The Company match is contributed to the participants’ accounts.",
+   "an ELIGIBILITY sentence, the noun form with no copula after it"],
+  ["manage market risks and to alter the return characteristics of underlying securities to match certain fixed income fund characteristics",
+   "Tyson Foods — a DERIVATIVES note. 'securities' is not an employer, which is the subject condition doing the work"],
+  ["there are insufficient controls in place to ensure that employee data matches between the recordkeeping system and payroll system",
+   "an internal-control finding. SUBJECT-ONLY protection: 'data matches' is an inflected verb and would fire without it"],
+  ["Akron General Health System Matched Retirement Savings Plan (“Akron”) Non-union and union participants",
+   "Cleveland Clinic, 88,028 ppl — a PLAN NAME containing 'Matched'. Subject-only: 'System Matched' is inflected"],
+  ["SHANDS HEALTHCARE MATCHED SAVINGS ACCOUNT 403(B) plan number (PN) 003",
+   "Shands Teaching Hospital, 16,344 ppl — a plan name on a FORM page. Subject-only"],
+];
+for (const [t, who] of FV_SILENT) is205(!FVRE().test(t), `the verb predicate MUST STAY SILENT: ${who}`);
+
+/* ---- THE LESSER-OF DOLLAR CAP, measured through the shipped function
+ * because the arm is inline in extractPlanFeatures rather than exported. --- */
+const LESSER = [
+  ["The Company matches the lesser of 50% of each employee’s deferral contribution or $500 per year.",
+   "50% of contributions, capped at $500 per year", "Costco, 279,798 ppl"],
+  ["The Plan provides for a Company matching contribution equal to the lesser of 25% of each participant’s elective deferrals or $500.",
+   "25% of contributions, capped at $500 per year", "E & A Markets"],
+  ["The Plan Sponsor will make a matching contribution equal to the lesser of 100% of the employee’s deferral amount or $550 for actively employed participants on June 30, 2025.",
+   "100% of contributions, capped at $550 per year", "Howard Industries"],
+];
+for (const [t, want, who] of LESSER) {
+  const got = (extractPlanFeatures205(t) || {}).match || null;
+  is205(got === want, `the lesser-of arm MUST read "${want}" (${who}), got ${got}`);
+}
+/* and it must be ANCHORED on "lesser of" — a bare "or $N" elsewhere in a
+ * sentence may never supply a cap. This sentence has a rate, a deferral noun
+ * and a dollar figure joined by "or", and no lesser-of. */
+is205(((extractPlanFeatures205("The Company matches 50% of each employee’s deferral contributions, and forfeitures of $1,200 or $3,400 were applied to reduce them.") || {}).match || null) !== "50% of contributions, capped at $3,400 per year",
+  "the lesser-of arm MUST NOT take a dollar figure from an unanchored 'or $N'");
+
+/* ---- NEGATIVE CONTROLS, one per condition, each required to flip a verdict
+ * ON THE CASE WHERE IT IS THE ONLY PROTECTION. Built by slicing the shipped
+ * source, never by retyping it. ---------------------------------------- */
+const FV_SLICE = (() => {
+  const h = SRC.indexOf("const MF_FSUBJ =");
+  const e = SRC.indexOf("\n}", SRC.indexOf("export function mfFiniteVerb"));
+  if (h < 0 || e < 0) throw new Error("match-formula-test: the v205 block moved in lib-4i.mjs");
+  return SRC.slice(h, e + 2)
+    .replace(/export function mfFiniteVerb/, "function mfFiniteVerb")
+    .replace(/export const MF_FVERB/, "const MF_FVERB");
+})();
+/* the needed constants from above the slice, sliced too rather than retyped */
+const FV_DEPS = (() => {
+  const h = SRC.indexOf("const MF_RATE =");
+  const e = SRC.indexOf("\n", SRC.indexOf("const MF_ART ="));
+  if (h < 0 || e < 0) throw new Error("match-formula-test: the v198/v199 constants moved");
+  /* the region carries several exported helpers; strip the keyword generally
+   * rather than naming one, so the next export added to it cannot break this */
+  return SRC.slice(h, e).replace(/^export /gm, "");
+})();
+const fvBuild = (mutate) => {
+  const s = mutate(FV_SLICE);
+  if (s === FV_SLICE) throw new Error("v205 negative control did not land — the target string moved");
+  // eslint-disable-next-line no-new-func
+  return new Function(`${FV_DEPS}\n${s}\n return { mfFiniteVerb, MF_FVERB };`)();
+};
+/* prove the slicer works UNMUTATED first: a broken slice makes every control
+ * below pass vacuously */
+{
+  const probe = fvBuild((s) => s + "\n/* probe */");
+  if (!probe.mfFiniteVerb(FV_EXTRACT[0][0])) throw new Error("the v205 slice cannot reproduce its own first extraction — every control below would be meaningless");
+  if (!new RegExp(probe.MF_FVERB, "i").test(FV_FIRE[0][0])) throw new Error("the v205 slice's verb predicate does not fire on Costco — the slice is broken");
+}
+/* Orlando Health, 50,251 readers, verbatim from its filing. */
+const FV_GAP_PROBE = "The Organization matches 100% on the first 2% a participant contributes, and 50% of the next 6% up to 8% for those under 10 years of service or 50% of the net 8% up to 10% for those over 10 years of service.";
+is205(mfFiniteVerb(FV_GAP_PROBE) === null, "mfFiniteVerb MUST refuse Orlando Health: the nearest cap belongs to a LATER tier");
+const FV_CONTROLS = [
+  /* ANCHORED ON THE DECLARATION, not on the alternation's text: the tail is the
+   * part of this arm most likely to grow, and a mutation keyed on its body
+   * silently stops landing when it does. `build` asserts the landing either
+   * way, so a moved anchor FAILS rather than passing vacuously. */
+  ["the grammatical verb tail (bare 'match' admitted)",
+   (s) => s.replace(/const MF_FVERB_TAIL = String\.raw`[^`]*`;/,
+     "const MF_FVERB_TAIL = String.raw`match(?:es|ed)?\\b`;"),
+   (mod) => new RegExp(mod.MF_FVERB, "i").test(FV_SILENT[0][0]), "Mid-South's line caption is quoted again"],
+  ["the employer-subject requirement",
+   (s) => s.replace("${MF_FSUBJ}\\s+", "\\b\\w+\\s+"),
+   (mod) => new RegExp(mod.MF_FVERB, "i").test(FV_SILENT[5][0]), "the internal-control finding fires"],
+  /* THE GAP'S PROBE HAD TO BE MEASURED, NOT GUESSED. The first one was
+   * University of Chicago, where MF_LEAD is the protection and the gap changes
+   * nothing — a control that cannot fail is decorative. Asked of the live
+   * corpus, the gap changes 111 of 54,387 verdicts and all five read produce a
+   * WRONG pair without it: Orlando Health 100/8 for a 100%-of-first-2% match,
+   * L'Oreal 100/6 for 100%/2%, Foley & Lardner 25/1 where 1% caps the MATCH,
+   * Kohler 50/1, Teledyne 50/4 (v200's compound-cap misread). All five are
+   * answered by an EARLIER arm today, so the live cost is zero — and this guard
+   * is what keeps it zero as the chain moves. */
+  ["the no-crossing-percent gap",
+   (s) => s.replace("(?:(?!percent\\b)[^.%]){0,110}?", "[^.]{0,110}?"),
+   (mod) => { const m = mod.mfFiniteVerb(FV_GAP_PROBE); return !!m; }, "Orlando Health reads 100/8 for a 100%-of-the-first-2% match"],
+  ["the copula's number requirement",
+   (s) => s.replace("(?=(?:(?!\\. )[^.]){0,20}?[\\d$])", ""),
+   (mod) => new RegExp(mod.MF_FVERB, "i").test(FV_SILENT[3][0]), "the account-crediting sentence is quoted under the match heading"],
+];
+console.log("v205 NEGATIVE CONTROL, one per condition, on the case where it is the ONLY protection:");
+for (const [label, mutate, probe, what] of FV_CONTROLS) {
+  let flipped = false;
+  try { flipped = probe(fvBuild(mutate)); } catch (e) { fails.push(`the v205 control for ${label} THREW: ${e.message}`); }
+  console.log(`  drop ${label}: ${flipped ? `a verdict FLIPS (${what})` : "NOTHING changes"}`);
+  if (!flipped) fails.push(`the v205 control for ${label} changed NOTHING — it is decorative`);
+}
+
 if (fails.length) { for (const f of fails) console.error("FAIL " + f); process.exit(1); }
 console.log(`\nmatch-formula: ${EXTRACT.length + REFUSE.length + SILENT.length} v198 assertions `
   + `(${EXTRACT.length} extract, ${REFUSE.length} range/cap refused, ${SILENT.length} silent; both controls fire)`);
@@ -332,3 +512,7 @@ console.log(`match-formula: ${n199} v199 assertions, 0 failures `
   + `${GATE_TRUE.length} withheld, ${GATE_FALSE.length} kept; all controls fire)`);
 console.log(`match-formula: v200 — ${CAP_TRUE.length} cap-gate withheld, ${CAP_FALSE.length} kept, `
   + `2 disjointness assertions, 2 new sliced controls`);
+console.log(`match-formula: v205 — ${n205} assertions `
+  + `(${FV_EXTRACT.length} finite-verb extracted, ${FV_REFUSE.length} refused, `
+  + `${FV_FIRE.length} predicate fires, ${FV_SILENT.length} predicate silent, `
+  + `${LESSER.length + 1} lesser-of; all ${FV_CONTROLS.length} controls fire)`);

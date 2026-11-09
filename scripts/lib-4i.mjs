@@ -14,7 +14,7 @@ import { dirname, join } from "node:path";
 import { vestingQuoteOk, accelerationOnlyVesting } from "./lib-quote.mjs";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 204;
+export const PARSER_VERSION = 205;
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -6193,7 +6193,7 @@ export function mfMixedFraction(t) {
  * Information Systems) or a SECOND tier (Eight Eleven Group). 93% is not good
  * enough for a number this size. It is queued with that cause named. */
 const MF_LEAD = String.raw`(?:up to|on the first|of the first|not to exceed|not exceeding|not in excess of|that do(?:es)? not exceed|do(?:es)? not exceed|to a maximum of|limited to)`;
-const MF_ART = String.raw`(?:\s+(?:a|the|the first|an additional))?`;
+const MF_ART = String.raw`(?:\s+(?:a|the|the first|an additional|a total of|an aggregate of|a combined total of))?`;
 const MF_D = new RegExp(`match(?:ing|ed)?[^.]{0,120}?equal to\\s+${MF_RATE}\\s*[,;]?\\s*${MF_LEAD}${MF_ART}\\s+${MF_CAP}\\s+of`, "i");
 const MF_DEFNOUN = String.raw`(?:elective\s+)?(?:deferral|elective\s+contribution|salary\s+deferral|salary\s+reduction\s+contribution|pre-?tax\s+contribution|contribution)s?`;
 const MF_E = new RegExp(`match(?:ing|ed)?[^.]{0,90}?equal to\\s+(?:the\\s+|each\\s+)?(?:[A-Za-z’'()-]+\\s+){0,4}${MF_DEFNOUN}\\b([^.]{0,70}?)${MF_LEAD}${MF_ART}\\s+${MF_CAP}`, "i");
@@ -6243,6 +6243,90 @@ export function mfEqualToWords(t) {
   const out = [m[0], "100", m[2]];
   out.index = m.index;
   return out;
+}
+
+/* v205 — MATCH AS A FINITE VERB. Every arm above AND the quote fallback below
+ * anchor on the NOUN "match(ing) contribution(s)". A filing that writes the
+ * verb instead is invisible to all of them at once — no formula and no quote,
+ * which is the `absent: attachment read, no match statement found` cell:
+ *
+ *   "The Company matches the lesser of 50% of each employee's deferral
+ *    contribution or $500 per year."            Costco,     279,798 readers
+ *   "the University will match 200% of employees' voluntary contributions"
+ *                                               U. Chicago,  19,024
+ *   "The Hospital matched 16%, 33%, or 50%, based upon years of service"
+ *                                               Yakima,       3,916
+ *   "The Bank matches a portion of employee contributions up to a max of 5%"
+ *                                               Flagstar,     9,504
+ *
+ * Measured over a participant-weighted draw of 60 filings from that class
+ * (11,964 plans / 19,809,106 readers): 15 of 60 state a match for which we
+ * publish nothing, and SEVEN of those 15 are this one shape.
+ *
+ * THE SUBJECT IS REQUIRED AND IT IS WHAT MAKES THE VERB SAFE. Bare "match" is
+ * ordinary English in an audited note — Cornell's "target date intended to
+ * match the year", Tyson's "to alter the return characteristics of underlying
+ * securities to match certain fixed income fund" — and BOTH carry a percentage
+ * in the same sentence, so no rate test can separate them. An employer-ish noun
+ * immediately before the verb can: neither sentence has one. Both are pinned as
+ * must-NOT-fire cases in scripts/match-formula-test.mjs.
+ *
+ * APPENDED LAST in the mf chain, so it can never change a formula an earlier arm
+ * produces. It CAN pre-empt the !mf-gated arms below it, which is a DIFFERENT
+ * safety claim, so that one was measured rather than argued — see
+ * docs/accuracy-log.md 2026-11-09.
+ *
+ * WHAT IT DELIBERATELY REFUSES. A cap with no rate ("The Plan Sponsor matches
+ * up to 4% of a participant's eligible contribution") has one percentage and
+ * must not have it read as a rate; a cap on the MATCH stated as "for a maximum
+ * University contribution of 8%" is not a cap on the matched tier and would
+ * overstate a 200% match. Both fall through to the quote, which is the honest
+ * answer and is what the second loop below now supplies. */
+const MF_FSUBJ = String.raw`\b(?:employer|compan(?:y|ies)|bank|credit union|universit(?:y|ies)|college|hospital|organi[sz]ation|school|firm|sponsor|plan|association|corporation|cooperative|foundation|institute|clinic|district)(?:['’]s)?`;
+/* THE TAIL IS GRAMMATICAL, NOT LEXICAL, AND THE FIRST VERSION OF IT WAS NOT.
+ * `match(?:es|ed)?` accepts a bare "Match", which is a NOUN far more often than
+ * a verb in this corpus: the Statement of Changes files the line caption
+ * "Employer Match 4,230,299" (Mid-South Independent School, 5,204 readers) and
+ * TriNet's Schedule of Participating Employers lists an employer whose NAME is
+ * "COLLEGE MATCH" (219,334 readers) — both were quoted under the match heading
+ * on the first measurement, and the second is the project's own rule that *a
+ * count keyed on a vocabulary measures the vocabulary*. So bare "match" is
+ * admitted only where grammar makes it a predicate: after a MODAL, or before a
+ * COPULA ("the approved employer match WAS 20% of the participants'
+ * contribution" — Janitronics). An inflected "matches"/"matched" needs neither.
+ * A number or a conjunction after it, which is what every junk caption has,
+ * fails all three. */
+/* THE COPULA BRANCH MUST REACH A NUMBER, and the first version did not: "The
+ * Company match IS CONTRIBUTED to the participants' accounts" is a crediting
+ * sentence and "not eligible for the Company match" sits beside it, so the
+ * noun form admitted an account-mechanics paragraph under the match heading.
+ * Requiring a digit or a dollar sign within twenty characters of the copula
+ * separates "the employer match WAS 20% of the participants' contribution"
+ * from it without parsing the sentence. */
+const MF_FVERB_TAIL = String.raw`(?:match(?:es|ed)\b|(?:will|shall|may|can|could|would|must|does|did)\s+(?:also\s+)?match\b|match\s+(?:was|is|are|were|equals?|equall?ed|of)\b(?=(?:(?!\. )[^.]){0,20}?[\d$]))`;
+/* A PLURAL SUBJECT TAKES THE BARE VERB, and the tail above refuses it: "The
+ * Companies match 100% of participant contributions on the first $3,000" is a
+ * finite verb with no inflection to show for it. Kept as its OWN disjunct with
+ * the plural spelled out, rather than by relaxing the tail to bare "match" —
+ * that relaxation is exactly what admitted "Employer Match 4,230,299". */
+const MF_FPLURAL = String.raw`\b(?:compan|employer|sponsor|universit|bank|hospital|organi[sz]ation|school|firm|plan|association|corporation|foundation)(?:ies|s)\s+(?:also\s+)?match\b`;
+export const MF_FVERB = String.raw`(?:${MF_FSUBJ}\s+(?:also\s+|currently\s+|annually\s+|generally\s+)?${MF_FVERB_TAIL}|${MF_FPLURAL})`;
+/* the gap must not cross another percentage, spelled either way — a second
+ * tier's rate otherwise binds as this tier's cap, which is one of the two
+ * named failure modes of the arm this record DROPPED at 93.1% agreement */
+const MF_FGAP = String.raw`(?:(?!percent\b)[^.%]){0,110}?`;
+const MF_F = new RegExp(`${MF_FVERB}\\s+${MF_RATE}\\s+(?:of|on)\\b${MF_FGAP}${MF_LEAD}${MF_ART}\\s+${MF_CAP}`, "i");
+/* A RANGE GUARD WAS WRITTEN HERE AND REMOVED AS UNREACHABLE BY CONSTRUCTION,
+ * which is the same discipline the v199 band guard above got and for a sharper
+ * reason. mfWidened needs MF_RANGE because its rate can sit far from the word
+ * "match"; MF_F requires the rate IMMEDIATELY AFTER the verb, and "between 50%
+ * and" or "up to a" can never occupy a zero-width gap. Measured over 54,387
+ * live texts (every stored matchText plus 200 drawn filings): dropping MF_RANGE
+ * changes 0 verdicts. BAE Systems' "contributes between 50% and 100% of the
+ * first 6%" is refused by the adjacency instead, and the test asserts that
+ * refusal by name so this reasoning is checked rather than believed. */
+export function mfFiniteVerb(t) {
+  return t.match(MF_F) || null;
 }
 
 /* v199 — PUBLISHING A MISREAD FORMULA IS WORSE THAN PUBLISHING NONE.
@@ -6506,7 +6590,10 @@ export function extractPlanFeatures(text, sponsorName = "") {
     // "equal to". Validated against the shipped chain as an oracle — see the
     // comment on mfEqualTo.
     mfEqualTo(t) ||
-    mfEqualToWords(t);
+    mfEqualToWords(t) ||
+    // v205, APPENDED LAST for the same reason the two above are: the word
+    // "match" as a FINITE VERB rather than the head of a noun phrase.
+    mfFiniteVerb(t);
   // spelled-out fraction rates: "one-half of the first 8% of base
   // compensation" (Opus Inspection) — map to a percentage
   const FRAC = { "one-half": 50, "one half": 50, "one-third": 33, "one third": 33, "one-quarter": 25, "one quarter": 25, "two-thirds": 67, "two thirds": 67 };
@@ -6573,7 +6660,19 @@ export function extractPlanFeatures(text, sponsorName = "") {
   const mcond = !mf && t.match(/contribute at least (\d{1,2}) ?(?:percent|%)[^.]{0,80}?match(?:ing)? contributions? of \1 ?(?:percent|%) of compensation/i);
   let mdol = null;
   if (!mf && !df && !cents && !mtab && !minv && !mcond) {
-    mdol = t.match(/match(?:ing|ed)?[^.]{0,120}?(\d{1,3}(?:\.\d+)?|one hundred|fifty) ?(?:percent|%) of [^.]{0,120}?(?:contribution|deferral)s?[^.]{0,80}?(?:not to exceed|up to (?:a )?(?:maximum[^.]{0,50}?of )?|to ) ?\$ ?([\d,]{3,7})(?!\d)/i);
+    mdol = t.match(/match(?:ing|ed)?[^.]{0,120}?(\d{1,3}(?:\.\d+)?|one hundred|fifty) ?(?:percent|%) of [^.]{0,120}?(?:contribution|deferral)s?[^.]{0,80}?(?:not to exceed|up to (?:a )?(?:maximum[^.]{0,50}?of )?|to ) ?\$ ?([\d,]{3,7})(?!\d)/i) ||
+      /* v205 — "the LESSER OF <rate>% of <deferrals> OR $<cap>". The arm above
+       * reads only forward-looking cap connectors ("not to exceed", "up to",
+       * "to"); the lesser-of construction states the same two facts with the
+       * plain conjunction "or", and Costco (279,798 readers) is the largest
+       * plan in the whole no-match-statement class. Anchored on "lesser of" so
+       * a bare "or $N" elsewhere in a sentence can never supply the cap.
+       * THE CLAIM IS DELIBERATELY THE WEAKER ONE where a third term exists:
+       * the New York Football Giants cap the match at the lesser of 50% of
+       * deferrals, 2.5% of pay, OR $3,750, and the rendered formula states the
+       * rate and the dollar cap only. Incomplete and true beats blank, and the
+       * quote beside it carries all three terms verbatim. */
+      t.match(/match(?:ing|ed|es)?[^.]{0,100}?lesser of [^.]{0,60}?(\d{1,3}(?:\.\d+)?|one hundred|fifty) ?(?:percent|%) of [^.]{0,120}?(?:contribution|deferral)s?[^.]{0,60}? or \$ ?([\d,]{3,7})(?!\d)/i);
     if (mdol && /IRS|Internal Revenue|402\(g\)|catch[- ]up|statutory|Code limit/i.test(mdol[0])) mdol = null;
   }
   // a hedged "may contribute a discretionary match of 6% of the first 4%"
@@ -6906,6 +7005,27 @@ export function extractPlanFeatures(text, sponsorName = "") {
         if (ACCT_MECH.test(s)) continue;
         if (!HAS_RATE.test(s) && (OTHER_TOPIC.test(s) || DOLLAR_TOTAL.test(s))) continue;
         out.matchText = s; break;
+      }
+      /* v205 — A SECOND LOOP, NOT A WIDER FIRST ONE. `mre` above requires the
+       * NOUN "match(ing) contribution(s)", so a filing that writes the verb
+       * ("The Company matches the lesser of 50% …") yields no quote at all and
+       * the page says "no formula stated in the audited notes" over a filing
+       * that states one. The fix is a SEPARATE pass that runs only when the
+       * first found nothing: adding the disjunct to `mre` would RE-ORDER a
+       * first-wins chain and could change the quote on plans that already have
+       * one, which is a population this change has no business touching. Same
+       * four rejections, deliberately — they are what keep an eligibility or
+       * vesting sentence out of the match heading. */
+      if (!out.matchText) {
+        const fre = new RegExp(MF_FVERB, "gi");
+        let fm;
+        while ((fm = fre.exec(t))) {
+          const s = sentence(fm.index);
+          if (BOILER.test(s) || s.length <= 60) continue;
+          if (ACCT_MECH.test(s)) continue;
+          if (!HAS_RATE.test(s) && (OTHER_TOPIC.test(s) || DOLLAR_TOTAL.test(s))) continue;
+          out.matchText = s; break;
+        }
       }
     }
   }

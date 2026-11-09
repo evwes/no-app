@@ -134,6 +134,33 @@ const FEATURE_SPECIMENS = [
     "20250923152523NAL0006535681001", { vesting: "Immediate" }],
   ["Same-population continuation still chains", "20251219112023NAL0003370419001",
     { match: "100% of the first 3% of pay + 50% of the next 2%" }],
+  /* v205 — MATCH AS A FINITE VERB. Costco is the largest plan in the whole
+   * "attachment read, no match statement found" class (279,798 readers) and
+   * states its formula plainly: "The Company matches the lesser of 50% of each
+   * employee's deferral contribution or $500 per year." Wabtec puts the verb
+   * behind a modal and caps it with a phrase the chain did not accept: "the
+   * Company will match 100% of the participant's pre-tax, Roth and/or
+   * after-tax contributions to the Plan up to a total of 3% of eligible
+   * compensation." Pinnacle Bank states a cap and NO rate, so the honest
+   * answer is the sentence and not a fabricated rate. */
+  ["v205: Costco, 'matches the lesser of 50% … or $500 per year'",
+    "20260723165543NAL0014354289001", { match: "50% of contributions, capped at $500 per year" }],
+  ["v205: Wabtec, modal verb + 'up to a total of 3%'",
+    "20260904022209NAL0014089154001", { match: "100% of the first 3% of pay" }],
+  ["v205: Pinnacle Bank, a cap with no rate — quote, never a formula",
+    "20260727133425NAL0028212930001", { match: null, quote: true }],
+  /* …AND THE TWO COUNTER-SPECIMENS, WHICH ARE WHY THE VERB TEST IS GRAMMATICAL
+   * RATHER THAN LEXICAL. Both were quoted under the match heading by the first
+   * version of this arm, and v204 is on this record for adding the positive
+   * specimen and not the negative one. Mid-South's hit is the Statement of
+   * Changes line caption "Employer Match 4,230,299"; TriNet's is a
+   * PARTICIPATING EMPLOYER whose name is "COLLEGE MATCH" (219,334 readers),
+   * plus a vesting sentence about voluntary contributions, which are vested by
+   * law and are not an employer match at all. */
+  ["v205 control: a Statement of Changes line caption is not a match statement",
+    "20251014200056NAL0001789283001", { match: null, quote: null }],
+  ["v205 control: an employer NAMED 'COLLEGE MATCH' is not a match statement",
+    "20261015114803NAL0007909523001", { match: null, quote: null }],
   /* v83: three false-"Immediate" shapes the v81 widening let through, found
    * by self-checking all 3,907 new Immediate labels against their own quotes.
    * Each states a service condition in the SAME sentence as the immediate
@@ -607,9 +634,18 @@ for (const [label, ack, expect] of FEATURE_SPECIMENS) {
   // the same loop, a different field
   if ("match" in expect) {
     const gotM = ff.match || null;
-    const okM = gotM === expect.match && (expect.match === null || !!ff.matchText);
+    let okM = gotM === expect.match && (expect.match === null || !!ff.matchText);
+    /* v205: `quote` works here exactly as it does on the vesting branch below.
+     * It did not before, and the match branch `continue`d past it — so a
+     * specimen pinning "no formula AND no quote" asserted only the formula,
+     * which is the same shape as the two-month hole the comment below records.
+     * The v205 counter-specimens need it: their defect WAS a junk quote (a
+     * Statement of Changes line caption, and a participating employer whose
+     * name is "COLLEGE MATCH"), and no formula assertion can see one. */
+    if (okM && "quote" in expect) okM = expect.quote === null ? !ff.matchText : !!ff.matchText;
     console.log(`GATE ${okM ? "OK  " : "FAIL"} ${label}: match=${gotM === null ? "(none)" : gotM}` +
-      (okM ? "" : ` (expected ${expect.match === null ? "(none)" : expect.match}${ff.matchText ? "" : ", quote missing"})`));
+      (`quote` in expect ? ` quote=${ff.matchText ? "yes" : "(none)"}` : "") +
+      (okM ? "" : ` (expected ${expect.match === null ? "(none)" : expect.match}${ff.matchText || !("quote" in expect) ? "" : ", quote missing"})`));
     if (!okM) failed++;
     continue;
   }

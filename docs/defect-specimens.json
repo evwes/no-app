@@ -1201,6 +1201,41 @@
    "fixed": "v203",
    "sponsor": "The Kroger Co.",
    "was": "the DECOY, not a defect: 'All accounts of a participant are fully vested at all times' names no triggering event, so AV_TRIGGER refuses and the Immediate label is TRUE and must survive. Measured over all 14,878 Immediate-labelled plans, AV_TRIGGER alone protects 1,442 plans / 2,986,014 participants and this is its largest locally-reproducible member. Withdrawing a TRUE label is v203's failure mode, so the decoy carries more readers than the repair"
+  },
+  {
+   "ack": "20260723165543NAL0014354289001",
+   "class": "match-finite-verb",
+   "fixed": "v205",
+   "sponsor": "Costco Wholesale",
+   "was": "279,798 readers: 'The Company matches the lesser of 50% of each employee's deferral contribution or $500 per year' yielded NO formula and NO quote, because every match arm and the quote fallback anchor on the NOUN 'match(ing) contribution(s)'"
+  },
+  {
+   "ack": "20260904022209NAL0014089154001",
+   "class": "match-finite-verb-modal",
+   "fixed": "v205",
+   "sponsor": "Westinghouse Air Brake (Wabtec)",
+   "was": "14,847 readers: 'the Company will match 100% of ... contributions to the Plan up to a total of 3% of eligible compensation' \u2014 a modal before a bare verb, and a cap connector ('up to a total of') the chain did not accept"
+  },
+  {
+   "ack": "20260727133425NAL0028212930001",
+   "class": "match-finite-verb-cap-only",
+   "fixed": "v205",
+   "sponsor": "Pinnacle Bank",
+   "was": "3,987 readers: 'The Plan Sponsor matches up to 4% of a participant's eligible contribution' \u2014 ONE percentage and it is the cap, so the honest answer is the quote and never a fabricated rate"
+  },
+  {
+   "ack": "20251014200056NAL0001789283001",
+   "class": "match-finite-verb-COUNTER",
+   "fixed": "v205",
+   "sponsor": "Mid-South Independent School Business Officers",
+   "was": "COUNTER-SPECIMEN, 5,204 readers: the Statement of Changes line caption 'Employer Match 4,230,299' must never become a match quote. The first version of the v205 arm quoted it"
+  },
+  {
+   "ack": "20261015114803NAL0007909523001",
+   "class": "match-finite-verb-COUNTER",
+   "fixed": "v205",
+   "sponsor": "TriNet HR III",
+   "was": "COUNTER-SPECIMEN, 219,334 readers: a participating employer whose NAME is 'COLLEGE MATCH', plus a vesting sentence about VOLUNTARY contributions (vested by law, not an employer match). Both were quoted by the first version of the arm"
   }
  ]
 }

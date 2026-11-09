@@ -7,6 +7,127 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-09 (daily cycle, match) — v205: THE WORD "MATCH" AS A FINITE VERB. 30.8M readers were diagnosed and 70% of the class is HONEST; the 25% that is ours is one grammatical shape
+
+**THE CLASS WAS DIAGNOSED BEFORE IT WAS FIXED, and most of it is not a defect.**
+`absent: attachment read, no match statement found` was 11,964 plans / 19,809,106
+readers. A participant-weighted draw of 60 was downloaded, `pdftotext -layout`'d
+(what production runs) and READ: **35 of 60 carry no match vocabulary at all**
+beyond the 401(m)(2) determination-letter boilerplate every filing has, 7 more
+mention matching while stating something else, and **15 of 60 state a match we
+publish nothing for.** 80.7% of the class has a stored `vestingText` and 66.5% a
+loans quote, so the notes were read well — the absence is mostly real.
+
+**AND SEVEN OF THOSE FIFTEEN ARE ONE SHAPE.** Every match arm in
+`extractPlanFeatures` and both halves of the quote fallback `mre` anchor on the
+NOUN `match(ing) contribution(s)`. A filing that writes the verb is invisible to
+all of them at once — no formula AND no quote:
+
+| filing | readers | sentence |
+|---|---|---|
+| Costco | 279,798 | "The Company **matches** the lesser of 50% … or $500 per year" |
+| Wabtec | 14,847 | "the Company **will match** 100% of … up to a total of 3%" |
+| U. Chicago | 19,024 | "the University **will match** 200% …" |
+| SECU | 10,138 | "the Credit Union **matched** employee contributions …" |
+| Flagstar | 9,504 | "The Bank **matches** a portion … up to a max of 5%" |
+| Yakima | 3,916 | "The Hospital **matched** 16%, 33%, or 50% …" |
+| Pinnacle | 3,987 | "The Plan Sponsor **matches** up to 4% …" |
+
+**THE FIX IS THREE ADDITIONS, EACH ADDITIVE BY POSITION RATHER THAN BY ARGUMENT.**
+`mfFiniteVerb` is appended LAST in the `mf` chain; the lesser-of dollar cap is a
+second disjunct of `mdol`; and the quote fallback gets a **SECOND LOOP that runs
+only when the first found nothing** — widening `mre` itself would re-order a
+first-wins chain and could change the quote on plans that already have one.
+Measured: **0 of 54,187 stored quotes change or lose one.**
+
+***THE VERB TEST HAD TO BECOME GRAMMATICAL, AND THE FIRST VERSION COST 224,538
+READERS A JUNK QUOTE.*** `match(?:es|ed)?` admits a bare "Match", which in this
+corpus is a NOUN far more often than a verb: Mid-South's Statement of Changes
+line caption **"Employer Match 4,230,299"** (5,204 readers) and TriNet's
+Schedule of Participating Employers, which lists an employer whose NAME is
+**"COLLEGE MATCH"** (219,334). Both were quoted under the match heading on the
+first measurement — *a count keyed on a vocabulary measures the vocabulary*, met
+here on the project's own newest arm. Bare "match" is now admitted only where
+grammar makes it a predicate: after a MODAL, or before a COPULA THAT REACHES A
+NUMBER ("the approved employer match **was 20%** of …"), the number being what
+separates it from "The Company match **is contributed** to the participants'
+accounts". A PLURAL subject keeps the bare verb as its own disjunct.
+
+**AND A GUARD WAS REMOVED AS UNREACHABLE BY CONSTRUCTION** rather than left to
+read as protection: `MF_RANGE` cannot fire in this arm, because `MF_F` requires
+the rate IMMEDIATELY after the verb and "between 50% and" cannot occupy a
+zero-width gap. Measured over 54,387 live texts: dropping it changes 0 verdicts.
+The no-crossing-percent gap is the opposite — it changes **111**, and all five
+read produce a WRONG pair without it (Orlando Health 100/8 for a 100%-of-2%
+match, Foley & Lardner 25/1 where 1% caps the MATCH). *My first probe for it was
+University of Chicago, where `MF_LEAD` is the protection and the gap changes
+nothing — a control that cannot fail is decorative, and the live corpus is what
+named the case where each condition stands alone.*
+
+**WHAT IT REFUSES ON PURPOSE.** A cap with no rate (Pinnacle's single 4%) and a
+cap on the MATCH rather than the matched tier (U. Chicago's "for a maximum
+University contribution of 8%", where "200% of the first 8%" would promise twice
+the real benefit) both fall through to the quote. 12 of the 14 newly quoted plans
+publish the sentence through `matchQuoteOk`; the 2 that do not are a table with
+no rate in match position and a genuinely vague sentence, and the guard is right
+about both.
+
+**EVIDENCE.** `parser-gate` 80+ specimens green, with 3 positive and **2
+counter-specimens** added (v204 added the former and not the latter and took 21
+real funds off a page); the gate's `match` branch now honours `quote:` the way
+its `vesting` branch does, because no formula assertion can see a junk quote.
+`match-formula-test` +31 assertions, 4 controls each firing on the case where it
+is the ONLY protection. `parse-replay --vs HEAD` over 200 acks that provably
+CONTAIN the targets: 0 menus lost, 0 rows moved, 8 must-keep + 2 must-reach held,
+control 191/191. Feature-level diff over 340 filings: only `match` and
+`matchText` move — **0 vesting changes, 0 losses anywhere.**
+
+**NOT DONE, AND NAMED.** Tyson Foods (122,939) files a complete two-tier formula
+as "allows 100% **Sponsor matching contributions on** participant deferrals up to
+3%" — the rate BEFORE a noun-form match with a word between, which is this
+record's DROPPED ARM (93.1% oracle agreement, needs an NEC-adjacency test). Yale
+(26,186) writes "dollar for dollar up to **five percent**" and `df`'s cap group is
+digits-only. The passive ("contributions … **are matched 100% by** the Company")
+is refused by the subject requirement. All three are left withheld or quoted.
+
+### PRE-REGISTERED for the run that merges v205
+
+Baseline reproduced by running `audit-data.mjs` itself: `match` **44,933**,
+`matchQuote` **5,346**, `matchQuoteShown` **1,861**. *My first harness read
+`matchQuote` 6,064 — the metric's `else if` chain hangs off `if (zeroEmp)`, not
+off `if (zeroEmp && f.match)`, so 718 $0-employer plans with a quote are counted
+in neither bucket. A prediction must apply exactly the conditions the metric
+applies, no more and no fewer.*
+
+| key | from | to | derivation |
+|---|---|---|---|
+| `match` | 44,933 | **44,942 – 45,180** | +6 EXACT (all 54,187 stored quotes re-run) + 3 named + a tail bounded by Rule of Three on 0 of 101 |
+| `matchQuote` | 5,346 | **5,500 – 6,303** | −6 (they gain a formula and leave the bucket) + 160–963 |
+| `matchQuoteShown` | 1,861 | **2,015 – 2,818** | same, and every drawn gain publishes |
+| `matchAny` | 48,123 | **+9 – +247** | `match` + `matchInZeroEmp` |
+| `pv` | 204 | **205**, `pvTopShare` ≥ 97 | |
+
+**NAMED SET, every one must move:** formula — Costco, Wabtec, Yates Services,
+Howard Industries, A&K Railroad Materials, E & A Markets, New York Football
+Giants, North Shore Bank of Commerce, Hixson Metal Finishing. Formula made MORE
+COMPLETE with no key moving — Transamerica 14,085, Coloplast 2,418, Trinseo 754,
+Equix 587, Kihomac 572, PK Management 543, Restaurant Management 540, Opus Water
+81. **MUST NOT MOVE:** Mid-South `20251014200056NAL0001789283001`, TriNet HR III
+`20261015114803NAL0007909523001` — both pinned in the gate.
+
+**AND EXPLICITLY NOTHING ELSE MOVES:** `vesting` 54,829, `vestQuote` 5,507,
+`roth` 42,212, `aftertax` 4,324, `menu` 154, `confident` 61,897, `lineups`
+61,584, `rk` 66,641, `cust` 10,916, `overshoot` 764, `aggRow` 102, `fvNote` 70,
+`tkShare`/`tkExact`/`tkComparable`, `feeCodesPct`, `high` 7. `entries`,
+`plans` and `dl` move with new filings and S3 availability, not with this.
+
+Reader-facing, from the participant-weighted draw (n=200 over 18,391,545
+non-OCR class readers): **~275,873 readers gain a parsed formula and ~1,287,408
+gain the filing's own sentence**, so `match` absent 22,256,719 → ~20.7M and
+`match` shown 68.0% → ~68.2%. **`vesting` does not move at all.**
+
+---
+
 ## 2026-11-08 (daily cycle, contributions) — THE FIELD LEDGER READ CODE `2R` AS DESIGNATED ROTH. IT IS THE BROKERAGE WINDOW, AND 8,549,974 PARTICIPANT-CELLS WERE SCORED `published` ON IT
 
 **WRONG, against the owner's own truth source.** `form5500-instructions-2025.txt:1990`:
