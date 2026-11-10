@@ -633,12 +633,15 @@ old-version tail. A second large `pv` cohort means a PARTIAL store
 harsher threshold because a 403 PRESERVES the stored entry and an extraction
 failure DESTROYS it.
 
-**THE HIGH BASELINE IS 7, NOT 4 — corrected 2026-11-08 from the trail.** This
+**THE HIGH BASELINE IS 6 — and it was 4, then 7, inside three days.** This
 line read **4** (`3 contrib outliers + fabricated-name`) while
 `docs/coverage-history.jsonl` has carried `high: 7` on every recent line
-(2026-11-07 x2 and 2026-11-08 all read 7). The weekly integrity pass enumerates
-the 7 as **4 `contrib` + `lineup-overshoot` + `fair-value-note` +
-`fabricated-name`** (`audit-generic-names` sits above its 230 escalation
+(2026-11-07 x2 and 2026-11-08 all read 7), so it was corrected to 7 — and by
+2026-11-10, after v205, the trail read **6**. ***A hand-corrected number goes
+stale exactly as fast as the one it replaced***, which is why
+`scripts/record-check.mjs` now derives this one and three others from the
+store on every frontend push. The 7 enumerated as **4 `contrib` +
+`lineup-overshoot` + `fair-value-note` + `fabricated-name`** (`audit-generic-names` sits above its 230 escalation
 threshold, so that HIGH is STANDING rather than absent). ***A stale baseline is
 worse than no baseline: a session comparing CI's 7 against a remembered 4 reads
 three NEW findings that do not exist, and the file's own preamble says why — a
@@ -680,16 +683,23 @@ estimate: it refutes itself the moment a new import appears.
 
 **THE LEDGER IS THE QUEUE.** `node scripts/ledger-report.mjs` prints the one
 participant-weighted scalar and the addressable gap per field; it is DERIVED and
-must never be copied forward. Re-derived 2026-11-05: **115,641 plans /
-119,907,098 participants / overall 79.82%**, with addressable gaps
+must never be copied forward. Re-derived 2026-11-10: **115,641 plans /
+119,907,098 participants / overall 78.87%**, with addressable gaps
 
 | field | readers with no answer | owner agent |
 |---|---|---|
-| contributions (pre-tax / Roth / after-tax / brokerage) | **33.7M** | `tier-a-contributions` |
-| match | **22.3M** | `tier-a-plan-terms` |
-| vesting | **14.9M** | `tier-a-plan-terms` |
-| custodian / recordkeeper | **11.7M** | `tier-a-custodian` |
-| fund menu | **1.2M** | `tier-a-lineup` |
+| contributions (pre-tax / Roth / after-tax / brokerage) | **41.76M** | `tier-a-contributions` |
+| match | **20.86M** | `tier-a-plan-terms` |
+| vesting | **14.58M** | `tier-a-plan-terms` |
+| custodian / recordkeeper | **11.72M** | `tier-a-custodian` |
+| fund menu | **0.91M** | `tier-a-lineup` |
+
+**THE SCALAR WENT DOWN AND THAT WAS ACCURACY, TWICE.** 79.82% -> 78.33% when
+`lib-ledger` stopped reading code **2R** as designated Roth (2R is the
+brokerage window; **no 8a code names Roth or after-tax at all**), which
+withdrew a false `roth: true` from 2,344 plans / 8,549,974 readers. Then
+78.33% -> 78.87% when v205 shipped. *A number that only ever rises is not
+measuring anything.*
 
 Row-level fields (per-fund ticker, fee, return) are deliberately NOT in that
 scalar — they are rows, not plans — and are `tier-a-fees`'s.
@@ -900,11 +910,16 @@ because most carry a refuted route that must not be rebuilt.
   consultant, advisor or broker as the recordkeeper, of which ~36 are
   unarguable (an accountant is never a recordkeeper). The fix needs no new
   source and moves up to ~2,200 published names.
-- **`overshoot` 366 -> 764 is a DOL refresh, not a regression** (attributed
-  2026-11-05, `PARSER_VERSION` unmoved at 204). 513 plans / 789,209 readers
-  newly publish a wrong menu total, 99.2% reader-facing. Remedy — judge a
-  prior-year fallback against the FALLBACK YEAR's assets — is in `fetch-4i`, so
-  it needs a bump and a full re-parse.
+- **`overshoot` 366 -> 764 -> 679 is a DOL refresh, not a regression** (764
+  attributed 2026-11-05 at `PARSER_VERSION` 204; **v205's re-parse took it to
+  679 / 762,169 readers**, withdrawing junk rather than fixing the cause).
+  Remedy — judge a prior-year fallback against the FALLBACK YEAR's assets — is
+  in `fetch-4i`, so it needs a bump and a full re-parse. **It now has a second
+  motivating case, read against the filing:** Albertsons (239,818 readers)
+  published ten rows from its **2023** filing via that fallback, three of them
+  OCR debris — `le 0 0 1f` at $7,433,253,025, `1g 0) 0 th 0 0 1i 0 0 qj`, and
+  `ALBERTSONS COMPANIES, INC.` at $5,579,477 against EIN 475579477 — while its
+  2025 filing's 4i is a trust pointer. `docs/accuracy-log.md` 2026-11-10.
 - **Crawlable pages no run can repair** — `p/` holds 5,118 files against
   `TOP_N = 5000` and the generator does not sort, so a page for a plan that
   drops out stays committed, frozen: 118 pages / 324,028 readers at last

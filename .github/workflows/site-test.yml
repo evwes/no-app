@@ -96,6 +96,8 @@ on:
             # itself can start the job. scripts/gate-coverage.mjs is what
             # found them and is listed so it polices itself.
             "scripts/gate-coverage.mjs",
+            "scripts/record-check.mjs", "CLAUDE.md",
+            "docs/coverage-history.jsonl", "docs/ledger-history.jsonl",
             "scripts/ledger-test.mjs", "scripts/generic-typo-test.mjs",
             "scripts/match-formula-test.mjs", "scripts/wrap-repair-test.mjs",
             "scripts/schc-item1-test.mjs", "scripts/schd-name-test.mjs",
@@ -323,6 +325,13 @@ jobs:
       # three conditions and is itself in the paths list.
       - name: Every gate runs somewhere, and its own file can start that job
         run: node scripts/gate-coverage.mjs
+      # IS THE RECORD STILL TRUE? CLAUDE.md is re-injected verbatim at the
+      # start of every turn, so a stale number in it is asserted again every
+      # cycle. The HIGH baseline read 4 for days, was corrected to 7, and was
+      # 6 two days later -- a hand-corrected number goes stale exactly as fast
+      # as the one it replaced. Four claims now derive from the store.
+      - name: The record's pinned claims still match the store
+        run: node scripts/record-check.mjs --verbose
       # The prep gates from build-data.yml. That workflow's filter is
       # deliberately narrow -- a test edit must not fire a re-parse -- so
       # these ran in no job their own source could trigger. 8s together.
