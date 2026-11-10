@@ -63414,3 +63414,59 @@ more than the minutes: Pages `syncing_files` timed out after twelve minutes on
 #1214, a deployment was rejected after 90 seconds queued on #1216, and now a
 13-minute checkout. *A repository that serves its data as static files pays for
 that data in every unrelated job.*
+
+## 2026-11-10 — Albertsons published OCR debris as a fund menu to 239,818 readers
+
+**FOUND BY A GATE REFUSING A MIRROR, WHICH IS THE GATE WORKING.** v205's
+re-parse withdrew two plans' menus, so `mirror-gate` refused: *2 plan(s) /
+240,270 participants actually stop being served* — Albertsons Companies
+(239,818) and The Vons Companies (452). The rule is to read them against their
+filings before accepting, and the reading reversed the question: **the menu
+being withdrawn was never real.**
+
+What v204 published as Albertsons' fund lineup, 10 rows, from the plan's
+**2023** filing via the prior-year fallback, ratio unrecorded:
+
+| value | "fund" |
+|---|---|
+| $7,433,253,025 | `le 0 0 1f` |
+| $18,456,874 | `1g 0) 0 th 0 0 1i 0 0 qj` |
+| $5,579,477 | `ALBERTSONS COMPANIES, INC.` |
+| $6,402,235 | `Investments — Plan's` |
+
+Three of ten rows are **OCR debris** — form line labels, not holdings. One is
+the sponsor's own name, and $5,579,477 against EIN **475579477** is that number
+read as money. Two more are master-trust pointers. v205 reads the **2025**
+filing instead and returns two honest trust-pointer rows ($7.84B + $1.23B
+against $8.92B of plan assets, hence `rt=102`), then refuses them `dx=trust` —
+*a page that points AT a lineup is not one.* **So the withdrawal is correct and
+the force was earned.**
+
+**THE SHARED CAUSE OF ALL 13 `reparse-loss` FINDINGS IS OCR, NOT v205.** Every
+one carries `ov=8`, and their refusal causes are band violations — ratios of
+0.00, 0.05, 0.10 and 2.16, 2.31, 3.57, 3.87, 5.72, 6.19, 6.31. A menu summing
+to 631% of plan assets is not a menu. v205 touched only match extraction
+(`mfFiniteVerb`, `mdol`, the quote fallback, `MF_ART`), none of which is
+reachable from `isConfident`, which keys on funds, ratio, `stmt` and
+`trustPtr`. ***A match change cannot cost a lineup its confidence***, so the
+losses are OCR text differing between runs on filings whose parse was never
+stable. It is the same population `overshoot` 764 -> 679 and `fvNote` 70 -> 65
+came out of: the re-parse is withdrawing junk, and 13 lineups losing confidence
+is the system refusing what it should always have refused.
+
+**TWO OF MY OWN MEASUREMENTS REPORTED ON THE QUERY, both caught by a control
+rather than by care.** `lineups-status.json` read as *2 entries* and
+`loadStatus()` as *3* — the ack map is under `.plans` (71,995), and a
+`< 1000` shape assertion threw instead of handing me "all 13 absent from the
+store" as a finding. Then `plans-all.json`'s rows turned out to be under
+`.plans`, not `.rows`. *This record already carries the `loadStatus()` case
+verbatim; I met it anyway, and only the assertion stopped it becoming a false
+report.* **A shape control is worth writing even when the loader is the
+project's own.**
+
+**And `rt` is not recoverable for a confident ack**: `diagnose()` writes `rw`
+and `rt` only for acks that fail to yield a publishable lineup, so a
+before/after table of ratios reads `-` on every v204 side. My first attempt
+scored that as "0 of 13 were inside the band", which is an artifact of the
+field's absence, not evidence about the parses. The stored LINEUP, not the
+status entry, is where a withdrawn menu can be read.
