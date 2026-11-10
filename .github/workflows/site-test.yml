@@ -88,6 +88,18 @@ on:
             # so both are listed: a figure can change in the JSON, and the
             # asset the browser downloads can go stale against it.
             "scripts/ytd-render-test.mjs", "fund-facts.js",
+            # GATES THAT RAN IN NO JOB A CHANGE TO THEM COULD START.
+            # Each of these is run by build-data.yml, whose paths filter is
+            # deliberately the six files that justify a 1.5-to-4-hour re-parse
+            # -- so editing any of them verified nothing, anywhere. They cost
+            # 8 seconds together, so they run here as well, where the file
+            # itself can start the job. scripts/gate-coverage.mjs is what
+            # found them and is listed so it polices itself.
+            "scripts/gate-coverage.mjs",
+            "scripts/ledger-test.mjs", "scripts/generic-typo-test.mjs",
+            "scripts/match-formula-test.mjs", "scripts/wrap-repair-test.mjs",
+            "scripts/schc-item1-test.mjs", "scripts/schd-name-test.mjs",
+            "scripts/lib-disclose.mjs", "scripts/lib-quote.mjs",
             "data/fund-facts.json", "scripts/fund-facts-check.mjs",
             "scripts/gen-fund-facts-asset.mjs",
             # the forfeiture/expense-account rule. Its canonical copy is in
@@ -301,6 +313,29 @@ jobs:
       # it worth anything: a frontend push with a stale stamp fails here instead
       # of shipping invisibly. Runs before the five-minute Playwright install,
       # for the same reason the matcher gate does.
+      # EVERY GATE RUNS SOMEWHERE, AND CAN BE STARTED BY WHAT IT GUARDS.
+      # Three defects of that shape turned up in one week: ledger-test (the
+      # suite over the project's single objective function) ran in no
+      # workflow while a pin inside it ASSERTED the 2R defect that overstated
+      # one field by 8,549,974 readers; stamp-assets was absent from the paths
+      # filter above; and merge-name-test, correctly excluded, had a guard
+      # over 18,093 keys go inert with nothing to notice. This audits the
+      # three conditions and is itself in the paths list.
+      - name: Every gate runs somewhere, and its own file can start that job
+        run: node scripts/gate-coverage.mjs
+      # The prep gates from build-data.yml. That workflow's filter is
+      # deliberately narrow -- a test edit must not fire a re-parse -- so
+      # these ran in no job their own source could trigger. 8s together.
+      - name: Prep gates (ingest, name-repair, match formula) — triggerable here
+        run: |
+          node scripts/schc-item1-test.mjs
+          node scripts/schd-name-test.mjs
+          node scripts/match-formula-test.mjs
+          node scripts/wrap-repair-test.mjs
+      - name: The field ledger's own suite — the one number the loop steers by
+        run: node scripts/ledger-test.mjs
+      - name: Generic-typo gate
+        run: node scripts/generic-typo-test.mjs
       - name: Asset stamps match their content — a stale one ships nothing
         run: node scripts/stamp-assets.mjs --check
       - name: Install Playwright
