@@ -63470,3 +63470,55 @@ before/after table of ratios reads `-` on every v204 side. My first attempt
 scored that as "0 of 13 were inside the band", which is an artifact of the
 field's absence, not evidence about the parses. The stored LINEUP, not the
 status entry, is where a withdrawn menu can be read.
+
+## 2026-11-11 — the prior-year fallback class is 88,427 readers, not 498,193
+
+**BUILT TO SIZE A QUEUED FIX AND THE ANSWER IS: DO NOT SHIP IT YET.**
+`scripts/fallback-quality.mjs` measures the 1,963 published+served menus that
+come from a plan's prior-year filing (2,331,356 readers, 52,223 rows). The
+queued remedy — judge a fallback against the FALLBACK YEAR's assets, in
+`fetch-4i`, needing a `PARSER_VERSION` bump and a full re-parse — now has a
+number against it:
+
+| signal | menus | readers |
+|---|---|---|
+| DEBRIS — a row with no 3-letter word | 14 | 8,103 |
+| POINTER — a row that is an interest in a trust | 1 | 12,203 |
+| SPONSOR — the sponsor's own name as a holding | 73 | 80,324 |
+| **any defect signal** | **87** | **88,427** |
+
+**That is below the 500,000 reader floor**, and the Albertsons case that
+motivated it was already fixed by v205 withdrawing the menu. So the bump waits.
+
+**TWO OF MY OWN READINGS WERE WRONG AND READING FIXED BOTH.**
+
+*First*, a STALE signal (the fallback year two or more years behind the plan
+year displayed) found 264 menus / **436,889** readers, and I wrote it up as a
+wrong claim — "a menu from 2010 published as a plan's current lineup". Then I
+read what the page tells the reader. The entry's own source string is
+`Schedule H line 4i attachment from the plan's 2023 filing — the newest
+filing's public copy has no readable schedule`, and `app.js:537` carries it
+into the report. ***Old data that says it is old is honest.*** Reporting 436,889
+disclosed readers as a defect would have been this script's own wrong answer —
+*a check is a published claim too*. It is now reported apart, as age worth
+knowing (the oldest is eight years back, 146 readers).
+
+*Second*, the SPONSOR signal first took any 6+ letter sponsor word not on a
+stoplist I wrote. Its top hits were Topgolf **International** matching `PIMCO
+International Bond` and Berry **Global** matching `Morgan Stanley Global Fixed
+Income` — 140 menus of mostly noise. *A hand-built control table tests the
+cases its author already imagined.* Replaced by a frequency guard over the live
+corpus (11,847 distinct 6+ letter words across all confident menus; a token in
+25+ menus is a fund word, not a sponsor marker), with a control asserting
+`international` and `global` are blocked. 140 -> 73 menus. **Precision is still
+only about half** — of the top four read, Graphic Packaging and Americantcs are
+genuine, Auto-Owners' own deposit-administration contract and `Steamfitters
+Trustee Fund` are plausibly real — so it ranks what to READ and licenses
+nothing.
+
+**THE FIXTURE IS THE PART THAT MAKES ANY OF THIS BELIEVABLE.** Albertsons'
+v204 rows are pinned verbatim, carried out of shard 27 before v205 removed
+them, and the run refuses to report unless they trip DEBRIS, POINTER and
+SPONSOR. They trip 2, 2 and 3. Pinned as literal text rather than a git ref
+because the entry is GONE from the live store — *which is exactly why a
+present-tense scan of this class can read clean and mean nothing.*
