@@ -149,12 +149,25 @@ const NOTES_FIELDS = new Set(["match", "vesting", "lineup", "fees", "performance
 
 function custodianCell(plan) {
   if (plan.recordkeeper) return cell("published", "named in the filing", plan.recordkeeper);
-  /* Deliberately ABSENT rather than impossible even for a short-form filer: the
-   * recorded queue item is that `build-data` resolves INS_CARRIER_NAME from
-   * Schedule A and never reads it, and a Schedule A is not an audited
-   * attachment. So this is reachable work, not a ceiling. */
+  /* ABSENT rather than impossible, but the REASON STRING USED TO OVER-PROMISE
+   * AND THIS IS WHERE THE 9.45M CAME FROM.
+   *
+   * It read "short form: no Schedule C, but Schedule A's carrier is unread
+   * (queued)", which told every reader of this ledger that the whole 9,452,487
+   * were addressable by reading one discarded field. **Measured 2026-11-06
+   * over all three dataset years: 647 plans / 194,379 participants have no
+   * recordkeeper where Schedule A names a carrier**, because 30,238 of the
+   * 30,885 carrier-naming plans in the universe ALREADY publish one. 49x
+   * smaller, and below the reader floor.
+   *
+   * The gap is real; the promise attached to it was not. That sentence is also
+   * where the daily Routine's stored prompt got the figure, so a refuted
+   * number propagated from a code comment into the loop's own instructions and
+   * kept resurfacing after the measurement closed it. ***`record-check.mjs`
+   * cannot catch this: it derives NUMBERS in CLAUDE.md, and this was a
+   * SENTENCE in code.*** `docs/accuracy-log.md` 2026-11-06, 2026-11-11. */
   return cell("absent", plan.sf
-    ? "short form: no Schedule C, but Schedule A's carrier is unread (queued)"
+    ? "short form: no Schedule C; Schedule A names a carrier for only ~647 of these plans (measured 2026-11-06)"
     : "no provider resolved from Schedule C");
 }
 

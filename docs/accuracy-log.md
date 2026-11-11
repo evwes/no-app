@@ -63522,3 +63522,45 @@ them, and the run refuses to report unless they trip DEBRIS, POINTER and
 SPONSOR. They trip 2, 2 and 3. Pinned as literal text rather than a git ref
 because the entry is GONE from the live store — *which is exactly why a
 present-tense scan of this class can read clean and mean nothing.*
+
+## 2026-11-11 — the refuted 9.45M lived in the ledger's own reason string
+
+**THE ROOT, FOUND SIX DAYS AFTER THE MEASUREMENT CLOSED THE CLASS.**
+`lib-ledger.mjs:157` rendered the short-form custodian gap as
+`short form: no Schedule C, but Schedule A's carrier is unread (queued)` —
+telling every reader of the ledger that all **9,452,487** of those readers
+were addressable by reading one field `build-data` resolves and discards.
+Measured 2026-11-06 over all three dataset years: **647 plans / 194,379
+participants** have no recordkeeper where Schedule A names a carrier, because
+30,238 of the 30,885 carrier-naming plans already publish one. 49x smaller and
+below the reader floor. *The gap is real; the promise attached to it was not.*
+
+**IT PROPAGATED FROM CODE INTO THE LOOP'S OWN INSTRUCTIONS.** The daily
+Routine's stored prompt carries "custodian 11.7M (9.5M of it short-form plans
+whose Schedule A carrier the pipeline already resolves and discards — one
+prep-run change)". That is this sentence, copied. So the figure kept
+resurfacing after the measurement closed it, and I corrected it in CLAUDE.md
+and reported it to the owner twice while the source of it sat in the
+derivation. ***A refuted number removed from the record but left in the code
+that computes the record is not removed.***
+
+**AND IT EXPOSES A LIMIT IN THE LOOP I SHIPPED THE DAY BEFORE.**
+`record-check.mjs` derives the record's NUMBERS from the store on every
+frontend push, and could never have caught this: the claim is a SENTENCE in
+code, inside the very derivation the checker trusts. Deriving a number from an
+instrument does nothing about a false claim the instrument makes.
+
+Reason string now states the measurement. `ledger-test` and `record-check`
+pass; the figure the ledger prints is unchanged (9,452,487 is the real gap) and
+only the clause about what would fix it is corrected.
+
+**THE FOURTH REGEN IN FOUR DAYS, FORCED BY 17 COMMENT LINES.**
+`lib-ledger.mjs` is in `lib-sec-fingerprint.mjs`'s `CODE_INPUTS`, hashed WHOLE,
+so a comment reddens `sec-tickers-stamp-test` and costs a ~30-minute
+dispatch-regen-dispatch-site-test cycle that provably moves 0 ticker keys —
+measured on regens #9, #10, #11 and now #12. **The same file hashes `app.js` by
+SLICE** (`composeSource`'s resolver region) rather than whole, and
+`gen-sec-tickers.mjs` imports exactly one symbol from `lib-ledger` —
+`servedLineup`. Narrowing this input to that slice would be consistent with the
+treatment app.js already gets, not a loosening. Noted, not done in this commit:
+it is a change to a correctness gate and needs its own controls.
