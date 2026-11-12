@@ -150,6 +150,30 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   One composite PDF per filing; ~9k filings render form pages only (no audit
   attachment) — verified: no public attachment endpoint exists, documented
   limitation in methodology.
+- **WHAT THIS SANDBOX CAN REACH IS A MEASUREMENT, AND THE ALLOWLIST IS
+  EDITABLE (2026-11-12).** The egress proxy enforces the environment's host
+  allowlist, and the two failure shapes are DIFFERENT and must not be
+  conflated: `CONNECT tunnel failed, response 403` is **the proxy refusing**
+  (the host is not allowed), while an HTTP status with real bytes means the
+  tunnel worked and the answer came from the SITE. `getaddrinfo ENOTFOUND` is
+  a third thing — a client resolving DNS outside the proxy — and reads like a
+  dead host when the host is fine. Probe with
+  `curl -sS -o /dev/null -L -w "http=%{http_code} bytes=%{size_download}"`,
+  never a bare grep: *a clean zero reports on the query.*
+  Measured today: `*.gov` is allowed by wildcard (so `askebsa.dol.gov` 200 and
+  `www.sec.gov` tunnels), `efast2-filings-public.s3.amazonaws.com` is allowed,
+  and `api.github.com` answers without being on the list. **`www.sec.gov`
+  tunnels but returns `Request Rate Threshold Exceeded` from a SHARED egress
+  IP** — a rate limit no User-Agent fixes, so SEC is not a dependable source
+  here. Seven fund-issuer hosts were ADDED to the Default environment this day
+  (Vanguard, Capital Group, PIMCO, Lord Abbett, Baird, Nuveen, Franklin
+  Templeton) and all verified 200, which is what unblocked fund-facts
+  sourcing. **`update_environment` is additive and needs the owner's approval;
+  prefer it to `create_environment` here, because a new environment cannot
+  carry a WILDCARD — `*.gov` and the S3 bucket would be silently dropped and
+  the parser's own PDF source with them.** *A blocked host is not a blocked
+  goal, but neither is it a fact about the site: diagnose which of the three
+  shapes you have before reporting any of them.*
 - **4i layout traps** (all handled in lib-4i, keep regression cases green):
   leading `*` = party-in-interest (not footnote); "(thousands)" scaling only
   when region says so; multi-page heading clusters merged; description column
