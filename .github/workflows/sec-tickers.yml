@@ -205,7 +205,14 @@ jobs:
           echo "could not push after four attempts" >&2
           exit 1
 
-      # THE TIP THIS JOB JUST CREATED CARRIES `[skip ci]`, so without this step
+      # NAMING CONVENTION, EARNED THE HARD WAY ON THE COMMIT THAT ADDED THIS
+      # STEP: write the CI-skip token as `skip-ci` in prose, never in its
+      # literal bracketed form. GitHub scans the whole commit message for the
+      # bracketed token, so a commit message EXPLAINING the mechanism suppresses
+      # its own run — which is how the commit introducing this very step shipped
+      # with no CI verdict, the exact failure the step exists to close.
+      #
+      # THE TIP THIS JOB JUST CREATED CARRIES a skip-ci token, so without this step
       # it ends with NO CI verdict immediately after the step taken to make a
       # gate green — the state this record names as having hidden ten
       # consecutive red runs. `[skip ci]` stays (it is what stops the regen
