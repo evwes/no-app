@@ -1196,6 +1196,143 @@
    "ytd": 0.94,
    "ytdAsOf": "2026-11-03",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FMDGX"
+  },
+  "VIMAX": {
+   "name": "Vanguard Morningstar Mid-Cap Index Fund Admiral Shares",
+   "updated": "2026-11-12",
+   "er": 0.05,
+   "erAsOf": "2026-04-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VIMAX/profile",
+   "ytd": 15.02,
+   "ytdAsOf": "2026-11-11",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VIMAX/performance"
+  },
+  "VFIAX": {
+   "name": "Vanguard 500 Index Fund Admiral Shares",
+   "updated": "2026-11-12",
+   "er": 0.04,
+   "erAsOf": "2026-04-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VFIAX/profile",
+   "ytd": 12.33,
+   "ytdAsOf": "2026-11-11",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VFIAX/performance"
+  },
+  "VGWAX": {
+   "name": "Vanguard Global Wellington Fund Admiral Shares",
+   "updated": "2026-11-12",
+   "er": 0.3,
+   "erAsOf": "2025-12-19",
+   "erSource": "https://investor.vanguard.com/vmf/api/VGWAX/profile",
+   "ytd": 13.71,
+   "ytdAsOf": "2026-11-11",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VGWAX/performance"
+  },
+  "VTMGX": {
+   "name": "Vanguard Developed Markets Index Fund Admiral Shares",
+   "updated": "2026-11-12",
+   "er": 0.05,
+   "erAsOf": "2026-04-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VTMGX/profile",
+   "ytd": 12.95,
+   "ytdAsOf": "2026-11-11",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VTMGX/performance"
+  },
+  "VSIAX": {
+   "name": "Vanguard Morningstar Small-Cap Value Index Fund Admiral Shares",
+   "updated": "2026-11-12",
+   "er": 0.07,
+   "erAsOf": "2026-04-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VSIAX/profile",
+   "ytd": 19.1,
+   "ytdAsOf": "2026-11-11",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VSIAX/performance"
+  },
+  "VTMSX": {
+   "name": "Vanguard Tax-Managed Small-Cap Fund Admiral Shares",
+   "updated": "2026-11-12",
+   "er": 0.05,
+   "erAsOf": "2026-04-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VTMSX/profile",
+   "ytd": 19.6,
+   "ytdAsOf": "2026-11-11",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VTMSX/performance"
+  },
+  "VMVAX": {
+   "name": "Vanguard Morningstar Mid-Cap Value Index Fund Admiral Shares",
+   "updated": "2026-11-12",
+   "er": 0.07,
+   "erAsOf": "2026-04-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VMVAX/profile",
+   "ytd": 21.92,
+   "ytdAsOf": "2026-11-11",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VMVAX/performance"
+  },
+  "RERGX": {
+   "name": "EUPAC Fund R-6",
+   "updated": "2026-11-12",
+   "er": 0.47,
+   "erAsOf": "2026-06-01",
+   "erSource": "https://www.capitalgroup.com/individual/investments/fund/rergx",
+   "ytd": 6.15,
+   "ytdAsOf": "2026-11-11",
+   "ytdSource": "https://www.capitalgroup.com/individual/investments/fund/rergx"
+  },
+  "RGAGX": {
+   "name": "The Growth Fund of America R-6",
+   "updated": "2026-11-12",
+   "er": 0.29,
+   "erAsOf": "2026-11-01",
+   "erSource": "https://www.capitalgroup.com/individual/investments/fund/rgagx",
+   "ytd": 6.76,
+   "ytdAsOf": "2026-11-11",
+   "ytdSource": "https://www.capitalgroup.com/individual/investments/fund/rgagx"
+  },
+  "LADVX": {
+   "name": "Lord Abbett Developing Growth Fund Class R6",
+   "updated": "2026-11-12",
+   "er": 0.6,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.lordabbett.com/en-us/financial-advisor/investments-and-performance/mutual-funds/us-equity/developing-growth-fund.class-r6.html",
+   "ytd": 8.16,
+   "ytdAsOf": "2026-11-11",
+   "ytdSource": "https://www.lordabbett.com/en-us/financial-advisor/investments-and-performance/mutual-funds/us-equity/developing-growth-fund.class-r6.html"
+  },
+  "BCOIX": {
+   "name": "Baird Core Plus Bond Fund Institutional Class",
+   "updated": "2026-11-12",
+   "er": 0.3,
+   "erAsOf": "2026-09-30",
+   "erSource": "https://www.bairdassetmanagement.com/siteassets/pdfs/fact-sheets/bond-core-plus-fact-sheet.pdf",
+   "ytd": -2.49,
+   "ytdAsOf": "2026-09-30",
+   "ytdSource": "https://www.bairdassetmanagement.com/siteassets/pdfs/fact-sheets/bond-core-plus-fact-sheet.pdf"
+  },
+  "FMGGX": {
+   "name": "Franklin Small-Mid Cap Growth Fund Class R6",
+   "updated": "2026-11-12",
+   "er": 0.51,
+   "erAsOf": "2026-09-30",
+   "erSource": "https://www.franklintempleton.com/forms-literature/download/698-FF",
+   "ytd": 4.94,
+   "ytdAsOf": "2026-09-30",
+   "ytdSource": "https://www.franklintempleton.com/forms-literature/download/698-FF"
+  },
+  "PIMIX": {
+   "name": "PIMCO Income Fund Institutional Class",
+   "updated": "2026-11-12",
+   "er": 0.51,
+   "erAsOf": "2026-08-01",
+   "erSource": "https://www.sec.gov/Archives/edgar/data/0000810893/000119312526321564/d133330d497k.htm",
+   "ytd": 1.53,
+   "ytdAsOf": "2026-06-30",
+   "ytdSource": "https://www.sec.gov/Archives/edgar/data/0000810893/000119312526321564/d133330d497k.htm"
+  },
+  "TIREX": {
+   "name": "Nuveen Real Estate Securities Select Fund Class R6",
+   "updated": "2026-11-12",
+   "er": 0.49,
+   "erAsOf": "2026-05-01",
+   "erSource": "https://www.sec.gov/Archives/edgar/data/0001084380/000093041326001428/c116210_497k.htm"
   }
  },
  "vehicles": {},
