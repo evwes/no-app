@@ -63564,3 +63564,42 @@ SLICE** (`composeSource`'s resolver region) rather than whole, and
 `servedLineup`. Narrowing this input to that slice would be consistent with the
 treatment app.js already gets, not a loosening. Noted, not done in this commit:
 it is a change to a correctness gate and needs its own controls.
+
+## 2026-11-12 — CORRECTION: regen #12 moved 459 keys, and my proposed "fix" would have suppressed it
+
+**I CLAIMED THE WRONG THING AND THE NEXT RUN REFUTED IT.** Yesterday's commit
+and log entry said `sec-tickers.yml` had been forced four times in four days by
+changes that "provably move 0 ticker keys — measured on regens #9, #10, #11 and
+now #12". **#12 was not measured; it was assumed.** It moved **459 keys added,
+434 removed**, 18,093 -> 18,118, and the generator's own header records coverage
+rising 68,405 -> 68,987 published rows / 17,478 -> 17,618 plans / 21,537,624 ->
+21,653,363 participants. #9, #10 and #11 really were stamps-only
+(`sec-tickers.js | 2 +-`); I carried that pattern forward onto a run I had not
+looked at, and my shell line even echoed "(2 = stamps only)" as a hardcoded
+string beside a diff that said 903.
+
+**THE PROPOSED NARROWING WAS THEREFORE HARMFUL, NOT MERELY UNBUILT.** I argued
+`lib-ledger.mjs` should be hashed by SLICE — `gen-sec-tickers` imports only
+`servedLineup`, five lines of a ~700-line file — so a comment could not force a
+30-minute regen. Had that shipped, **#12 would never have been triggered**, the
+table would have stayed at 18,093 keys against a store that needs 18,118, and
+582 published rows / ~116,000 participants would have silently under-resolved.
+*A fix to a correctness gate, refuted by measurement before being built, which
+is the only reason the measurement was worth demanding.*
+
+**AND THE REAL DEFECT IS THE OPPOSITE OF THE ONE I DIAGNOSED.** The table is a
+function of the STORE — it is keyed on `issuer\u0000name` pairs drawn from live
+fund names — and `sec-tickers-stamp-test` asserts as a standing invariant that
+*perturbing `plans-all.json` or a lineup shard leaves the fingerprint alone*,
+deliberately, so a DOL refresh cannot redden it. So the fingerprint is
+code-only by design and **nothing watches the table for drift against the
+data.** v205 shipped 2026-11-09/10 and changed fund names; the table needed 459
+new keys; and the only reason it got them is that an unrelated comment in
+`lib-ledger` happened to redden a code fingerprint three days later. ***The
+four "wasteful" regens were the only thing keeping the table fresh.***
+
+So the queue item is not "narrow the fingerprint". It is: **after any
+`PARSER_VERSION` bump that changes fund names, the ticker table is stale and no
+gate says so** — dispatch `sec-tickers.yml` as part of the post-bump sequence,
+beside the mirror and the hand-dispatched `site-test`. Cheap, and it needs no
+change to a gate.

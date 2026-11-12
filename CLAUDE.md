@@ -839,6 +839,23 @@ recorded ways to verify a deployment, and no scheduled job does it. It is also a
 SCALING signal: 5,287 crawlable pages plus a 12.17 MB `plans-list.json` grow
 every refresh. `docs/accuracy-log.md` 2026-11-06 (18:2xZ).
 
+**THE TICKER TABLE DRIFTS WITH THE STORE AND NO GATE SEES IT — found
+2026-11-12 by getting the opposite wrong first.** `sec-tickers.js` is keyed on
+`issuer\u0000name` pairs drawn from LIVE fund names, and
+`sec-tickers-stamp-test` asserts as an invariant that perturbing
+`plans-all.json` or a lineup shard leaves the fingerprint alone — deliberately,
+so a DOL refresh cannot redden it. **So the fingerprint is code-only by design
+and nothing watches the table against the data.** Regen #12 moved **459 keys
+added, 434 removed** (18,093 -> 18,118; coverage 68,405 -> 68,987 published rows
+/ 21.54M -> 21.65M readers) because v205 changed fund names — and it only ran
+because an unrelated comment in `lib-ledger` reddened a CODE fingerprint three
+days later. ***The regens I had written up as wasteful were the only thing
+keeping the table fresh, and the narrowing I proposed would have suppressed
+this one.*** **So: after any `PARSER_VERSION` bump that changes fund names,
+dispatch `sec-tickers.yml` as part of the post-bump sequence** — beside the
+mirror and the hand-dispatched `site-test`. No gate change needed.
+`docs/accuracy-log.md` 2026-11-12.
+
 **THE REGEN SPENDS 13 OF ITS 30 MINUTES CLONING HISTORY IT NEVER READS —
 measured 2026-11-06 on run #10, unbuilt.** `actions/checkout@v4` ran 12m53s of
 the job, 43% of it, because `sec-tickers.yml` asks for **`fetch-depth: 0`** on a
