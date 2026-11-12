@@ -851,10 +851,15 @@ added, 434 removed** (18,093 -> 18,118; coverage 68,405 -> 68,987 published rows
 because an unrelated comment in `lib-ledger` reddened a CODE fingerprint three
 days later. ***The regens I had written up as wasteful were the only thing
 keeping the table fresh, and the narrowing I proposed would have suppressed
-this one.*** **So: after any `PARSER_VERSION` bump that changes fund names,
-dispatch `sec-tickers.yml` as part of the post-bump sequence** — beside the
-mirror and the hand-dispatched `site-test`. No gate change needed.
-`docs/accuracy-log.md` 2026-11-12.
+this one.*** **CLOSED THE SAME DAY, AND NOT BY A GATE.** The first remedy
+written here was "after any `PARSER_VERSION` bump, dispatch `sec-tickers.yml`" —
+a manual step in a verification path, which this record's own rule says is the
+step that gets skipped. So `sec-tickers.yml` now carries a **weekly schedule**
+(Sun 07:11 ET) and **dispatches `site-test` on the ref it just pushed**, which
+also retires the other hand-dispatch this file used to prescribe after every
+regen. A data-keyed FINGERPRINT stays refused, on `lib-sec-fingerprint.mjs`'s own
+measurement: it would redden on every hourly data commit with nothing wrong.
+*The watcher a gate cannot be is a schedule.* `docs/accuracy-log.md` 2026-11-12.
 
 **THE REGEN SPENDS 13 OF ITS 30 MINUTES CLONING HISTORY IT NEVER READS —
 measured 2026-11-06 on run #10, unbuilt.** `actions/checkout@v4` ran 12m53s of
@@ -1319,6 +1324,15 @@ reason the queue was — it is re-read at the start of every turn.
   alternation branch costs a repair** — alternation is FIRST-match, not
   longest-match. **And a greedy quantifier is how a repair licenses a wrong
   claim**: prefer the narrowest run the mechanism allows.
+- **A TOKEN QUOTED AS AN EXAMPLE IS INDISTINGUISHABLE FROM ONE MEANT AS AN
+  INSTRUCTION, wherever something downstream reads for it.** Spell the CI-skip
+  token `skip-ci` in prose and reserve the bracketed form for a real directive:
+  GitHub scans the WHOLE commit message, so a commit EXPLAINING the mechanism
+  suppresses its own run — and it fails silently in the direction that looks
+  like success (no run, no red, nothing to notice). This project writes long
+  commit messages about CI mechanics constantly, so the trap is live on every
+  one. Same shape as a character class written for a concept, and as the form's
+  own printed questions defeating a text-level screen.
 - **Write scripts to a FILE, never inline in `node -e` or a heredoc** — backticks
   and parens trigger shell command substitution. **A Python heredoc needs a RAW
   string**, or every `\b` becomes a backspace and the arm silently matches
