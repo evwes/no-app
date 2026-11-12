@@ -63644,3 +63644,36 @@ blind spot, found while editing a file that was in no workflow's paths at all.
 invariants prove it reads none of that history. Left alone deliberately — the
 push loop rebases and a shallow clone does not deepen itself on fetch, so
 narrowing it risks the one step that must not fail.
+
+## 2026-11-12 — a commit message EXPLAINING the CI-skip token suppressed its own run
+
+**WHAT WAS WRONG.** `b7e5283f` added `.github/workflows/*.yml` to site-test's
+`paths` so that workflow edits would finally be checked — and produced no run at
+all, none across 2,381 runs in the repository. Its message explains the CI-skip
+mechanism twice and therefore spells the bracketed token twice. GitHub scans the
+WHOLE commit message, not just the subject line, so the commit that explained
+the mechanism triggered it. The irony is load-bearing rather than decorative:
+that commit's own purpose was to stop this workflow leaving a tip with no CI
+verdict, and it left one.
+
+**SETTLED BY A DISENTANGLING TEST, BECAUSE THE FIRST EVIDENCE WAS CONFOUNDED.**
+`e4b36751` fired and `b7e5283f` did not, but those two differ in TWO ways — the
+token, AND whether the changed paths were in the filter at all. So the next
+commit (`560644d9`) touched ONLY a workflow file and carried no bracketed token,
+pre-registering both readings: a run means the glob works and the token was the
+cause; no run means the glob is wrong and the token is exonerated. **Run #259
+fired.** The glob works; the token did it. *An A/B on two differences answers
+neither question, and the fix is one more commit rather than a better argument.*
+
+**THE CONVENTION, written into the file at the line that caused it:** spell it
+`skip-ci` in prose and reserve the bracketed form for when it is meant as a
+directive. This project writes long commit messages about CI mechanics
+constantly — `[skip ci]` appears in dozens of them, deliberately — so the trap
+is live on every such message, and it fails SILENTLY in the one direction that
+looks like success: no run, no red, nothing to notice.
+
+**AND IT GENERALISES PAST COMMIT MESSAGES.** This is the same shape as a
+character class written for a concept picking up everything that shares its
+shape, and as the form's own printed questions being matched by a text-level
+screen: *a token quoted as an EXAMPLE is indistinguishable from the same token
+meant as an INSTRUCTION, wherever something downstream reads for it.*
