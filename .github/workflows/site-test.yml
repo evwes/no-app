@@ -96,6 +96,14 @@ on:
             # itself can start the job. scripts/gate-coverage.mjs is what
             # found them and is listed so it polices itself.
             "scripts/gate-coverage.mjs",
+            # ...AND gate-coverage's OWN INPUTS ARE THE WORKFLOW FILES, which
+            # was its one blind spot: it reads every workflow to decide which
+            # gates can be started by what they guard, and no workflow edit
+            # started it. So an edit that made this very paths list wrong — or
+            # that broke another workflow's triggers — was checked by nothing.
+            # Found 2026-11-12 while editing sec-tickers.yml, which is in no
+            # workflow's paths at all. The glob covers files not yet written.
+            ".github/workflows/*.yml",
             "scripts/record-check.mjs", "CLAUDE.md",
             "docs/coverage-history.jsonl", "docs/ledger-history.jsonl",
             "scripts/ledger-test.mjs", "scripts/generic-typo-test.mjs",

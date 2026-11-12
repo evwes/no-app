@@ -10,13 +10,33 @@ name: Regenerate the SEC ticker table
 # because the repository is public. So the expensive half of a name or resolver
 # ship belongs on a runner.
 #
-# IT IS `workflow_dispatch` ONLY, DELIBERATELY. A push trigger on the
-# fingerprint inputs would fire on every frontend commit and race the session's
-# own pushes over the same branch; the session already knows when a
-# regeneration is owed, because `sec-tickers-stamp-test.mjs` goes RED by name
-# the moment the committed table stops matching the committed code. Dispatch is
-# therefore the honest trigger: the gate says when, a human or the session says
-# go.
+# NO PUSH TRIGGER, DELIBERATELY. One on the fingerprint inputs would fire on
+# every frontend commit and race the session's own pushes over the same branch.
+#
+# BUT "THE GATE SAYS WHEN" WAS ONLY HALF TRUE, AND THE OTHER HALF COST A REGEN'S
+# WORTH OF STALENESS (measured 2026-11-12). `sec-tickers-stamp-test.mjs` goes RED
+# by name when the committed table stops matching the committed CODE — and this
+# table is keyed on `issuer\0name` pairs drawn from LIVE FUND NAMES, so it also
+# stales when the DATA moves. That half has no gate at all, and by design: the
+# stamp test asserts as an invariant that perturbing `plans-all.json` or a lineup
+# shard leaves the fingerprint alone, precisely so a DOL refresh cannot redden it
+# (`lib-sec-fingerprint.mjs` carries the measurement for that choice, and it is
+# the right choice — a gate that reddens when nothing is wrong is worse than no
+# gate). Regen #12 moved 459 keys in and 434 out because v205 changed fund names,
+# and it only ran because an unrelated comment reddened a CODE fingerprint three
+# days later. So the regens that looked wasteful were the only thing keeping the
+# table fresh.
+#
+# A WEEKLY SCHEDULE IS THEREFORE THE WATCHER THE GATE CANNOT BE. It is cheap
+# (runners bill zero on a public repo), it cannot be forgotten, and it replaces
+# the alternative that was written down first — "after any PARSER_VERSION bump,
+# remember to dispatch this" — which is a manual step in a verification path, and
+# this record's own rule is that such a step is the step that gets skipped.
+#
+# IT ALSO VERIFIES ITS OWN TIP NOW. This job commits with `[skip ci]`, so the
+# commit that FIXES the stamp gate used to create no run to prove it: the tip
+# ended with no CI verdict immediately after the step taken to make it green.
+# The last step dispatches `site-test` on the ref it just pushed.
 #
 # WHAT IT DOES NOT DO: it never touches a data store, never bumps
 # PARSER_VERSION, and cannot cancel a `build-data` run -- different workflow,
@@ -30,6 +50,15 @@ on:
         description: "branch to regenerate on"
         required: false
         default: "claude/wampo-401k-live-nx1t4o"
+  # Sunday 07:11 ET. GitHub cron speaks UTC only and this repository's schedules
+  # are defined in Eastern, so the hour is deliberately one a DST shift cannot
+  # make wrong for anything: a weekly refresh does not care which side of the
+  # transition it lands on, which is why no CRON_TZ correction lives here.
+  # Scheduled runs fire on the DEFAULT branch, where `inputs.branch` does not
+  # exist — hence the literal fallback in TARGET_REF below rather than
+  # `github.ref_name`, which on a schedule would be `main`.
+  schedule:
+    - cron: "11 12 * * 0"
 
 # WITHOUT THIS THE JOB DOES EVERY EXPENSIVE THING AND CANNOT WRITE: run 3
 # regenerated the table, re-derived the stamp, passed both gates, committed
@@ -42,21 +71,47 @@ on:
 # only on a no-op has not had its writing step tested at all.
 permissions:
   contents: write
+  # for the site-test dispatch in the last step: without it the regen leaves a
+  # tip with no CI verdict, which is the failure that step exists to close.
+  actions: write
 
 concurrency:
   # one regeneration at a time per ref: two would race over the same asset and
   # the loser's commit would be a table built by code the other had replaced
-  group: sec-tickers-${{ github.event.inputs.branch || github.ref }}
+  group: sec-tickers-${{ github.event.inputs.branch || 'claude/wampo-401k-live-nx1t4o' }}
   cancel-in-progress: false
 
 jobs:
   regenerate:
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    env:
+      # ONE REF, NAMED ONCE, FOR CHECKOUT AND FOR PUSH — AND THEY USED TO
+      # DIFFER, WHICH WAS AN UNGUARDED PATH TO main (found 2026-11-12).
+      # Checkout took `inputs.branch || github.ref_name` while the commit step
+      # fetched, rebased and pushed `GITHUB_REF_NAME`. The input carries a
+      # DEFAULT, so `github.event.inputs.branch` is populated even when nobody
+      # supplies it: a dispatch from main — which CLAUDE.md names as the normal
+      # place to dispatch from — checked out the DEV BRANCH, rebased it onto
+      # main and pushed `HEAD:main`. That is a fast-forward, so it SUCCEEDS,
+      # and it moves every data file on the branch to main while bypassing
+      # `scripts/mirror.sh`: the data gate, the in-flight-run refusal and the
+      # record of what a force push would destroy, none of them consulted.
+      # Run #1 is the proof it is reachable rather than theoretical — it was
+      # dispatched from main and survived only because its key diff was 0/0/0,
+      # so the step exited at "nothing to commit" and never reached the push,
+      # and because `contents: write` was still missing at the time. Both of
+      # those have since changed.
+      TARGET_REF: ${{ github.event.inputs.branch || 'claude/wampo-401k-live-nx1t4o' }}
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+          ref: ${{ env.TARGET_REF }}
+          # 13 of this job's 30 minutes, measured on run #10, and the job's own
+          # invariants prove it reads none of that history. Left as it is on
+          # purpose: the push loop below rebases, and a shallow clone does not
+          # deepen itself on fetch, so narrowing this risks the one step that
+          # must not fail. Recorded as open in docs/accuracy-log.md.
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
@@ -112,7 +167,19 @@ jobs:
         run: node scripts/sec-tickers-test.mjs
 
       - name: Commit, if anything moved
+        id: commit
         run: |
+          # THIS JOB MAY NOT WRITE TO main. Pushing to main is `mirror.sh`'s
+          # job and nothing else's — it owns the data gate, the in-flight-run
+          # refusal and the record of what a force push would destroy. The ref
+          # mismatch this guard backstops is fixed above; the guard stays
+          # because a single wrong dispatch input must not be able to
+          # re-create the hazard, and because a guard is cheaper than the
+          # force push that would undo it.
+          if [ "${TARGET_REF}" = "main" ] || [ "${TARGET_REF}" = "refs/heads/main" ]; then
+            echo "refusing to regenerate onto main: mirror it with scripts/mirror.sh instead" >&2
+            exit 1
+          fi
           git config user.name "wampo-data-bot"
           git config user.email "noreply@anthropic.com"
           if git diff --quiet -- sec-tickers.js index.html; then
@@ -128,9 +195,36 @@ jobs:
           # rebase rather than force: the session and the data bot both push
           # this branch, and a regeneration must never discard a data commit
           for i in 1 2 3 4; do
-            git fetch origin "${GITHUB_REF_NAME}" && git rebase "origin/${GITHUB_REF_NAME}" || git rebase --abort
-            if git push origin "HEAD:${GITHUB_REF_NAME}"; then exit 0; fi
+            git fetch origin "${TARGET_REF}" && git rebase "origin/${TARGET_REF}" || git rebase --abort
+            if git push origin "HEAD:${TARGET_REF}"; then
+              echo "pushed=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
             sleep $((i * 5))
           done
           echo "could not push after four attempts" >&2
           exit 1
+
+      # THE TIP THIS JOB JUST CREATED CARRIES `[skip ci]`, so without this step
+      # it ends with NO CI verdict immediately after the step taken to make a
+      # gate green — the state this record names as having hidden ten
+      # consecutive red runs. `[skip ci]` stays (it is what stops the regen
+      # racing the session over one branch); the verdict is asked for
+      # explicitly instead, which also retires the hand-dispatch CLAUDE.md
+      # used to prescribe after every regen.
+      - name: Ask site-test for a verdict on it
+        if: steps.commit.outputs.pushed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          code=$(curl -sS -o /dev/null -w "%{http_code}" -X POST \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/site-test.yml/dispatches" \
+            -d "{\"ref\":\"${TARGET_REF}\"}")
+          echo "site-test dispatch on ${TARGET_REF}: HTTP ${code}"
+          # 204 is the documented success. Anything else is reported and FAILS,
+          # because a dispatch that silently did not happen leaves exactly the
+          # unverified tip this step exists to prevent.
+          [ "${code}" = "204" ]

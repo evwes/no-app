@@ -63603,3 +63603,44 @@ So the queue item is not "narrow the fingerprint". It is: **after any
 gate says so** — dispatch `sec-tickers.yml` as part of the post-bump sequence,
 beside the mirror and the hand-dispatched `site-test`. Cheap, and it needs no
 change to a gate.
+
+## 2026-11-12 — sec-tickers.yml could push the dev branch to main, bypassing mirror.sh
+
+**WHAT WAS WRONG.** The job checked out `${{ inputs.branch || github.ref_name }}`
+and then fetched, rebased and pushed `GITHUB_REF_NAME`. The `branch` input
+carries a DEFAULT, so it is populated even when nobody supplies it: dispatched
+from `main` — which CLAUDE.md names as a normal place to dispatch from — the job
+checked out the DEV BRANCH, rebased it onto main and pushed `HEAD:main`. A
+rebase makes that a fast-forward, so it SUCCEEDS, moving every data file on the
+branch to main while consulting none of `scripts/mirror.sh`: not the plan-keyed
+data gate, not the in-flight-run refusal, not the record of what a force push
+would destroy.
+
+**IT IS REACHABLE, AND THE REPO'S OWN LOG PROVES IT RATHER THAN MY READING OF
+GitHub's SEMANTICS.** Run #1 was dispatched on `main` (`head_branch: main`) and
+its checkout step logs `Switched to a new branch 'claude/wampo-401k-live-nx1t4o'`.
+It did no harm for two reasons that have both since expired: its key diff was
+0/0/0 so the step exited at "nothing to commit" before the push, and
+`contents: write` was still missing (added in run #4). *A hazard that survived
+on a coincidence is not a guarded hazard.*
+
+**THE CHANGE.** One `TARGET_REF` at job level, used by checkout, fetch, rebase
+and push, so the two cannot differ by construction; plus an explicit refusal to
+target main, kept as a backstop because one wrong dispatch input must not be
+able to re-create this. The guard is sliced from the YAML and exercised in both
+directions — refuses `main` and `refs/heads/main` by name, passes the dev branch
+and an arbitrary branch.
+
+**AND TWO WATCHERS THAT WERE MISSING, BOTH OF THE SAME SHAPE.** A weekly
+schedule, because the stamp gate is code-only by design and nothing watched the
+table against the DATA (the 459-key entry above). A `site-test` dispatch after
+the push, because this job commits `[skip ci]` and left its own tip with no CI
+verdict. And `.github/workflows/*.yml` is now in site-test's `paths`:
+`gate-coverage.mjs` reads every workflow to decide which gates can be started by
+what they guard, and no workflow edit started it — its own inputs were its one
+blind spot, found while editing a file that was in no workflow's paths at all.
+
+**STILL OPEN:** `fetch-depth: 0` costs 13 of the job's 30 minutes and the job's
+invariants prove it reads none of that history. Left alone deliberately — the
+push loop rebases and a shallow clone does not deepen itself on fetch, so
+narrowing it risks the one step that must not fail.
