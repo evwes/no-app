@@ -1,122 +1,87 @@
-# wampo morning brief — 2026-10-16
+# wampo morning brief — 2026-11-12
 
-## What shipped overnight, in numbers
+Overwritten each cycle. Decision-shaped: what shipped and what it moved, what
+was found wrong, what reached readers, what is waiting on the owner.
 
-**A fabricated expense ratio withdrawn from 683,649 participants, because the
-filing writes "contract" as an acronym.** `annuityFeeIsGuaranteeOnly`'s gate is
-the filing's own word `contract`; a **GIC is a Guaranteed Investment CONTRACT**
-and a **SAGIC is a Separate Account GIC**, so `SAGIC Diversified Bond II` states
-the designation exactly as the spelled-out caption does and only the spelled-out
-one was being asked. One disjunct.
+## Found wrong, and fixed
 
-| | |
+**I published a false claim about my own work yesterday, and the next run
+refuted it.** The commit and log entry for regen #12 said it "provably moves 0
+ticker keys". It moved **459 keys in and 434 out** (18,093 → 18,118), raising
+coverage 68,405 → 68,987 published rows / 21.54M → 21.65M readers. #9, #10 and
+#11 really were stamps-only and I carried that pattern onto a run I had not
+looked at — beside a shell line that printed "(0 keys moved)" as a hardcoded
+string regardless of the diff. Corrected in `CLAUDE.md` and
+`docs/accuracy-log.md`.
+
+Two things followed, and the second is worth more than the correction:
+
+- **The fingerprint narrowing I had proposed would have SUPPRESSED that regen**,
+  leaving the table at 18,093 keys against a store needing 18,118. A proposed
+  change to a correctness gate, refuted by measurement before being built.
+- **Nothing was watching the ticker table against the DATA.** It is keyed on
+  live fund names, and the stamp gate is code-only *by design* (a data-keyed
+  fingerprint would redden on every hourly data commit with nothing wrong).
+  v205 changed fund names; the table needed 459 new keys; the only reason it got
+  them is an unrelated comment reddening a CODE fingerprint three days later.
+  **The regens I had written up as wasteful were the only thing keeping the
+  table fresh.**
+
+## Shipped
+
+**`sec-tickers.yml` could push the dev branch to main, bypassing `mirror.sh`.**
+The job checked out `inputs.branch || github.ref_name` and pushed
+`GITHUB_REF_NAME`. The input carries a default, so dispatched from `main` — a
+normal place to dispatch from — it checked out the DEV branch, rebased onto main
+and pushed `HEAD:main`. A rebase makes that a fast-forward, so it **succeeds**,
+moving every data file on the branch to main with none of `mirror.sh` consulted:
+not the plan-keyed data gate, not the in-flight-run refusal, not the record of
+what a force push would destroy. **Reachable, proved by the repo's own log** —
+run #1 was dispatched on main and its checkout logs `Switched to a new branch
+'claude/wampo-401k-live-nx1t4o'`. It did no harm only because its key diff was
+0/0/0 (so it exited before the push) and `contents: write` was then missing.
+Both have since expired. Fixed with one `TARGET_REF` for checkout, fetch, rebase
+and push, plus an explicit refusal to target main — guard sliced from the YAML
+and exercised in both directions.
+
+**Three watchers that did not exist:**
+
+| watcher | what it closes |
 |---|---|
-| fee WITHDRAWN | **223 rows / 216 plans / 683,649 ppl / $2,959,846,571** |
-| fee gained · changed | 0 · 0 |
-| ticker · asterisk · shown type · name | 0 · 0 · 0 · 0 |
-| rows at >=10% of their own menu | 103 |
-| non-candidate control | 20,737 sampled, 0 differing |
+| weekly `sec-tickers.yml` schedule (Sun 07:11 ET) | the table drifting with the data, which no gate can see |
+| `site-test` dispatch after the regen pushes | the regen's own tip ending with no CI verdict |
+| `.github/workflows/*.yml` in site-test's `paths` | `gate-coverage` reads every workflow and no workflow edit started it |
 
-Largest by readers: Coadvantage Corporation 81,703; Local One I.A.T.S.E. at
-**13.26% of its menu / $154,331,440**; Werner Enterprises 18.25%. Display-side,
-`PARSER_VERSION` stays 203, no store written.
+The first replaces "remember to dispatch after a bump" — *a manual step in a
+verification path is the step that gets skipped.*
 
-**The witness is internal and needed no registry.** One product family is filed
-304 ways: the 118 rows whose filer TYPED the vehicle already published no fee,
-the 186 whose type cell was BLANK published 0.35. One product, two answers, and
-the only thing varying is a cell a filer may leave empty — the eighth time a
-blank type cell has defeated a type-reading suppressor.
+**And a self-inflicted one worth keeping.** The commit adding that workflow glob
+produced **no run at all**, because its message *explains* the CI-skip mechanism
+and so spells the bracketed token twice; GitHub scans the whole message. The
+commit whose purpose was to stop this workflow leaving an unverified tip left
+one. Settled by a disentangling test rather than argument — the first pair of
+observations differed in two ways at once, so one more commit varied exactly one
+of them and run #259 fired. Convention now in `CLAUDE.md`: spell it `skip-ci` in
+prose. **It fails silently in the direction that looks like success.**
 
-## What was found WRONG and is now refused
+## Reaching readers
 
-**My own queue item from two hours earlier was refuted by its own
-differential — and it would have published two false claims.** The caption-weld
-STRIP (408 rows / 730,427 ppl / $2.3B) was prescribed from its member list,
-which showed every remainder naming a real stable-value product. True, and the
-inference does not follow: priced through `renderRow`, the strip gains **0**
-tickers and moves `er` on **77 rows, every one `null -> 0.35`**, and
-`shownType` on **103, every one `Investment contract` -> `Mutual fund``.
-`isInvestmentContractRow` reads the FILED NAME, so **the caption is the witness**
-that earns the correct vehicle label and withholds the fabricated fee.
+The mirror ships the regenerated table: **68,405 → 68,987 published rows** carry
+an identified symbol, 21.54M → 21.65M readers. `mirror-gate` replayed clean —
+pv 205 over 99.9% of 71,995 acks, **0 lineups lost, 0 plans stop being served**.
 
-So the 408 rows are honest as published and the item CLOSES. Both the welded
-form and its other caption spelling are now must-KEEP pins, so a future
-widening throws by name.
+## Where the work is — derived, not copied
 
-**The rule it earned:** a legibility strip must be priced against every cell
-that READS the name, because a true caption can be load-bearing — removing text
-that is correct can publish a claim that is false.
-
-## What was CLOSED by asking a question we could already answer
-
-The register carried `VGINX` on `JPMorgan US Value R6` as **UNVERIFIED** on 466
-rows, saying it needed a new source. **It did not: `sec-funds.json` registers
-VGINX as `JPMorgan Trust I :: JPMorgan U.S. Value Fund`, Class R6** — exactly
-what all 73 filed spellings state. The symbol is right on all 466 rows / 539,168
-ppl / $729,754,910. One query, and it exonerates the code rather than convicting
-it. (The participant figure corrects 576,600 -> 539,168, plan-deduplicated.)
-
-## Verdict
-
-**#674 `success`: the acronym ship's coverage line is BYTE-IDENTICAL on all 35
-keys with the date included** — fourth consecutive registration derived from the
-import graph and fourth to hold exactly. `pv` 203 at 99.9%, HIGH at the baseline
-4, `dl` 93.
-
-**And the acronym class is CLOSED by measurement.** Asked whether other
-abbreviated contract designations hide behind the same gate, over all 1,721,920
-rows with the candidate set a superset by construction: the gate's whole
-remaining residue is **6,567 rows / 6,367 plans / 10,083,769 ppl /
-$36,129,478,831**, every one a stable-value or guaranteed-option product with no
-designation in any form. So there is no sibling acronym, and the owner's
-fabricated-fee decision now has its size under the definition that matches the
-one gate which would implement it — **with 4 of 6,567 rows publishing a ticker,
-so a withdrawal costs essentially no identification.**
-
-## Mirrored to the live site
-
-Both the refutation and the acronym ship, via `scripts/mirror.sh`, gate-clean.
+`node scripts/ledger-report.mjs`: **115,641 plans / 119,907,098 participants**.
+Largest addressable gaps: contributions, then match (18.73M with an attachment
+read and no match statement), vesting (12.44M likewise), custodian. The single
+biggest cross-cutting item remains **2K: 31.78M readers across 58,681 plans**
+where 401(m) cannot distinguish a match from after-tax.
 
 ## Waiting on the owner
 
-Unchanged and not started: the wrong-share-class symbol+fee (11.1M ppl), the
-store-vs-page contradiction (8.2M), fee pre-emption (13.3M), the remaining
-fabricated stable-value ERs (7.4M), CREF and TIAA Access fee/type halves,
-American Funds with no share class (10.5M), one-ticker-two-fees, the whole-table
-generic test, and the SEC comparable half (49.1M).
-
-## Shipped later in the morning
-
-**A security identifier welded in front of the holding's name** —
-`06739T663 Equity Index Fund F` at $6.23B, AT&T's trust and 18 other plans.
-`cusipRepair` in `merge-4i.mjs`: **651 stored rows / 225 published+served / 19
-plans / 509,902 participants / $62,908,343,338, and the NAME is the only
-published cell that moves** (ticker, fee, asterisk, shown type and row
-membership all 0). #676 verdicted: coverage line identical on all 35 keys.
-
-Three refusals, each a measured population, and two of them are why the arm
-could not live in the display cleaner: a remainder that **collides with a
-sibling row** (82 rows — four `US TREASURY NOTE` rows in one menu, where the
-identifier IS the identity), the **sponsor's own stock** (2 rows), and a row
-**`sec-tickers.js` is already keyed on** (4 published symbols, found by the
-differential rather than reasoned out).
-
-**A new gap in a shipped guard came with it**, and it applies to all six repair
-arms above this one, not just the new one: `sec-tickers-stamp-test`
-fingerprints the display slice and `merge-4i.mjs` is not in it, so a merge-side
-name repair invalidates ticker-table keys with nothing going red. Queued with
-two candidate remedies.
-
-My own first screen was refuted by its first output: `^[0-9A-Z]{9}\s` also
-matches `BLACKROCK`, `ALLSPRING` and `NEUBERGER`, read 12,765 rows instead of
-263, and would have deleted the house from 3,894 of them. All four of my
-controls passed it — the one written for that exact hazard was `VANGUARD 500
-INDEX`, and `VANGUARD` is eight letters.
-
-## What continues today
-
-The hourly cycle. Next non-gated items: the AT&T leading-CUSIP legibility class
-(264 rows / 515,346 ppl, zero priced yield, needs a full differential for
-`ID_ONLY` risk), the opaque-issuer-code class (166 rows / 597,335 ppl, screen
-contaminated), and the ~$4.4B contract-caption residue
-(`guaranteed`/`annuity`/`insurance`/`traditional`).
+Unchanged and not started unasked: the comparable half of the SEC matcher
+(49.1M), the wrong-share-class fee families, the CREF accounts, the frozen
+crawlable pages, and the held 33-row fee ship. The four standing decisions of
+2026-11-05 still gate each ship on the differential, the seeded draw and a log
+entry.
