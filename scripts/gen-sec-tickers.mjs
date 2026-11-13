@@ -679,13 +679,68 @@ const FID_FAMILY_N = assertFamily(FID_INDEX);
     ["FIT Balanced Portfolio Class C", null],
     ["Fidelity Freedom 2050", null],               // no class stated: a comparable is the owner's
     ["Fidelity 500 Index Fund K6", null],          // outside the family's series
+    /* THE SOURCED FORMER NAME (2026-11-13). `Fidelity Freedom Index Income
+     * Fund` was renamed `Fidelity Freedom Index Retirement Fund` effective
+     * 2025-09-09 (the issuer's own 497: sec.gov/Archives/edgar/data/880195/
+     * 000088019525001032/filing11000.htm), and filings written before the
+     * rename state the old name the registry no longer carries. */
+    ["Fidelity Freedom Index Income Fund Institutional Premium Class", "FFGZX"],
+    ["Fidelity Freedom Index Inc Instl Prem", "FFGZX"],
+    ["Fidelity Freedom Index Income Premier", "FAPIX"],
+    ["Fidelity Freedom Income Fund Class K", "FNSHX"],
+    /* …and the alias must NOT invent a name no filing ever stated: a generic
+     * `Retirement -> Income` rewrite would reach 13 series of this family. */
+    ["Fidelity Managed Income 2015 Fund Class K", null],
+    ["Fidelity Sustainable Target Date Income Fund Class K", null],
+    /* AND THE SERIES MUST STAY SETTLED BY THE REGISTRY. `INSTL` is not a
+     * registered Fidelity class designation and no ACTIVE Freedom series
+     * registers an institutional class at all, so these abstain — read against
+     * the filings, MasTec's own statements call the aggregate `Fidelity Freedom
+     * INDEX Target Date Series` while Aristocrat's expand the same spelling as
+     * `Freedom 2050 INSTITUTIONAL Fund` with no `Index` anywhere, and one key
+     * serves both. `docs/accuracy-log.md` 2026-11-13. */
+    ["FIDELITY FREEDOM 2050 INSTL", null],
+    ["FIDELITY FREEDOM INCOME INSTL", null],
+    /* and a run that could be the FORMER NAME's own word states no class: the
+     * same position `classStated` already takes on `… Index Retirement Inc` */
+    ["Fidelity Freedom Index Income Inc", null],
+    ["Fidelity Advisor Freedom Income Fund Class I", "FIAFX"],   // equality still answers
   ];
   for (const [n, want] of must) {
     const got = afAbbrevAsk(FID_INDEX, n);
     if ((got ? got.ticker : null) !== want)
       throw new Error(`gen-sec-tickers: FID-ABBREV CONTROL — ${JSON.stringify(n)} should answer ${want || "nothing"}, got ${got ? got.ticker : "nothing"}`);
   }
-  console.error(`fid-abbrev controls OK  (family ${FID_FAMILY_N} registrants, ${FID_INDEX.series.size} series)`);
+  /* ---------- THE ISSUER-CELL ROUTE, asked exactly as `secAsk` asks it -------
+   * Must-fire cases are real filed (issuer, name) pairs from the store; the
+   * must-abstain list is what bounds the route, and every one of them is a
+   * shape that EXISTS in the store rather than an invention: a multi-word
+   * custodian cell, a second Fidelity cell that is not the house alone, a
+   * foreign issuer, a foreign house welded into the name behind a Fidelity
+   * issuer, no class stated, and the ambiguous `IN` truncation. */
+  const issMust = [
+    [["Fidelity", "Freedom Index 2030 IPR"], "FFEGX"],
+    [["Fidelity", "Freedom Index 2050 Instl Prem"], "FFOPX"],
+    [["Fidelity", "Freedom Index Income Fund Institutional Premium Class"], "FFGZX"],
+    [["FIDELITY", "FREEDOM INDEX 2030 FUND IPR"], "FFEGX"],
+    [["Fidelty", "Freedom Index 2030 IPR"], "FFEGX"],          // the filer's typo
+    [["Fidelity Advisor", "Freedom 2045 Fund Class I"], "FFFIX"],
+    /* must NOT fire */
+    [["Fidelity Management Trust Company", "Freedom Index 2030 IPR"], null],
+    [["Fidelity Investments", "Freedom Index 2030 IPR"], null],
+    [["Vanguard", "Freedom Index 2030 IPR"], null],
+    [["State Street", "Freedom Index 2030 IPR"], null],
+    [["Fidelity", "Vanguard Freedom Index 2030 IPR"], null],
+    [["Fidelity", "Vanguard 500 Index Fund Admiral"], null],
+    [["Fidelity", "Freedom Index 2030"], null],
+    [["Fidelity", "Freedom Index 2030 IN"], null],
+  ];
+  for (const [[iss, n], want] of issMust) {
+    const got = afAbbrevAsk(FID_INDEX, `${iss} ${n}`);
+    if ((got ? got.ticker : null) !== want)
+      throw new Error(`gen-sec-tickers: FID-ABBREV ISSUER CONTROL — iss=${JSON.stringify(iss)} ${JSON.stringify(n)} should answer ${want || "nothing"}, got ${got ? got.ticker : "nothing"}`);
+  }
+  console.error(`fid-abbrev controls OK  (family ${FID_FAMILY_N} registrants, ${FID_INDEX.series.size} series, ${must.length} name + ${issMust.length} issuer-cell cases)`);
 }
 
 const secCache = new Map();
@@ -1342,6 +1397,45 @@ function secAsk(nameRaw, nameClean, iss) {
     const a = afAbbrevAsk(FID_INDEX, nameRaw) || afAbbrevAsk(FID_INDEX, nameClean);
     if (a) out = a;
   }
+  /* ---------- THE HOUSE CAN BE IN THE ISSUER CELL AND NOT IN THE NAME --------
+   * 2026-11-13. `afAbbrevAsk` requires the filed name to OPEN with a run
+   * abbreviating the house, and that anchor is the arm's decoy guard. But the
+   * 4i has TWO cells and plenty of filers put the house in column (a) and the
+   * product in column (c): issuer `Fidelity`, name `Freedom Index 2030 IPR`.
+   * Measured on the live store: 117 plans / 114,953 readers publish that shape
+   * with no ticker, because the arm is asked a string whose first token is
+   * `freedom`.
+   *
+   * SO THIS IS NOT A WIDENING OF THE RELATION — IT IS THE ARGUMENT THE PAGE
+   * ITSELF COMPOSES. `lookupTicker` asks `fundTickerInfo(iss + name, type)`,
+   * and this record's own rule is to measure through the function the page calls
+   * WITH THE ARGUMENT THE PAGE PASSES. Every guard the arm has still runs, on
+   * the combined string: the leading run must abbreviate `fidelity`, every
+   * remaining issuer token must be CONSUMED BY THE MATCHED SERIES NAME, the
+   * destination must be in the registry-derived Fidelity family, the product
+   * must abbreviate exactly ONE of its series and the class must be one that
+   * series registers. A wrong answer can therefore still only ever be the wrong
+   * FIDELITY fund.
+   *
+   * THE ISSUER CELL IS WHAT BOUNDS IT, AND THAT IS A MEASUREMENT: over all
+   * 559,870 distinct (iss, name) pairs in the store, the pairs this ask answers
+   * carry exactly TEN distinct issuer cells and every one of them is a Fidelity
+   * spelling — `Fidelity`, `FIDELITY`, `Fidelity Advisor`, `Fidelity Freedom`,
+   * `Fidelty`, `Fidelity®`, `Fidelity Advisor®`, `Fidelity:`, `Fidelity :`,
+   * `Fidelity –`. A multi-word custodian cell cannot reach an answer, because
+   * its own words must be absorbed by the series name: `Fidelity Management
+   * Trust Company` + anything abstains on `management`. The keys it adds are
+   * ENUMERATED AND PRINTED below rather than argued, because a widening is
+   * licensed only when every newly reached name has been READ.
+   *
+   * It is asked LAST and only on `!out`, so it is additive by construction and
+   * can fill a blank but never change an answer. Tagged `+iss` so the report
+   * can attribute it without a second regeneration. */
+  if (!out && String(iss || "").trim()) {
+    const a = afAbbrevAsk(FID_INDEX, `${iss} ${nameRaw}`)
+      || afAbbrevAsk(FID_INDEX, `${iss} ${nameClean}`);
+    if (a) out = { ...a, why: `${a.why}+iss` };
+  }
   /* ---------- AND A HEDGED REGISTRY ANSWER DOES NOT OUTRANK AN ARM THAT NAMES
    * THE STATED CLASS (2026-10-16) ----------
    *
@@ -1474,6 +1568,14 @@ const admKeys = new Set(), admAcks = new Set(), admPlans = new Map();
 let afRows = 0, afDollars = 0;
 const afKeys = new Set(), afAcks = new Set(), afPlans = new Map();
 let fidRows = 0, fidDollars = 0;
+/* the ISSUER-CELL route of the Fidelity arm, tallied apart from the name route
+ * and with EVERY key retained so the report can print it for reading */
+let fidIssRows = 0, fidIssDollars = 0;
+const fidIssKeys = new Map(), fidIssPlans = new Map();
+/* and the SOURCED FORMER-NAME route, tagged `+former` in the arm's `how`,
+ * tallied and printed for the same reason */
+let fidFormerRows = 0, fidFormerDollars = 0;
+const fidFormerKeys = new Map(), fidFormerPlans = new Map();
 const fidKeys = new Set(), fidAcks = new Set(), fidPlans = new Map();
 const fidClass = new Map();
 let admUnattested = 0; const admUnattestedKeys = new Set();
@@ -1572,7 +1674,13 @@ for (let s = 0; s < 64; s++) {
        * removed and the guard runs, which is strictly safer and one fewer
        * special case. Proven equivalent rather than argued: the two
        * generations differ by ADDED 0 / REMOVED 0 / CHANGED 0 keys. */
-      const viaFid = (sec.why || "") === "fid-abbrev";
+      /* `startsWith`, not equality, because the ISSUER-CELL ask tags its
+       * answers `fid-abbrev+iss` — and a tally keyed on equality would have
+       * dropped the whole new route out of the report while every figure above
+       * it still moved. The two routes are also counted SEPARATELY below, so
+       * the ship's claim is attributable without a second regeneration. */
+      const viaFid = (sec.why || "").startsWith("fid-abbrev");
+      const viaFidIss = (sec.why || "") === "fid-abbrev+iss";
       /* `attestedAnySpelling`, not `registrantAttested`: the guard is asked of
        * the filing as written AND of the destination-blind typo repair, which
        * is the only one of the four candidate spellings that is both
@@ -1603,6 +1711,20 @@ for (let s = 0; s < 64; s++) {
         afKeys.add(key);
         afAcks.add(ack);
         for (const m of mem) afPlans.set(`${m.ein}|${m.pn}`, m.ppl);
+      }
+      if (viaFid && String(sec.how || "").includes("+former")) {
+        fidFormerRows++;
+        fidFormerDollars += +f.value || 0;
+        fidFormerKeys.set(key, { tk: sec.ticker, iss: f.iss || "", name: f.nameRaw,
+          series: sec.series || "", cls: sec.className || "", how: sec.how || "" });
+        for (const m of mem) fidFormerPlans.set(`${m.ein}|${m.pn}`, m.ppl);
+      }
+      if (viaFidIss) {
+        fidIssRows++;
+        fidIssDollars += +f.value || 0;
+        fidIssKeys.set(key, { tk: sec.ticker, iss: f.iss || "", name: f.nameRaw,
+          series: sec.series || "", cls: sec.className || "", how: sec.how || "" });
+        for (const m of mem) fidIssPlans.set(`${m.ein}|${m.pn}`, m.ppl);
       }
       if (viaFid) {
         fidRows++;
@@ -1678,6 +1800,15 @@ console.error([
   `  registry-derived family                 ${FID_FAMILY_N} registrants / ${FID_INDEX.series.size} series`,
   `  by class and route:                     ${[...fidClass].sort((a, b) => b[1] - a[1]).map(([k, n]) => `${k} x${n}`).join(" · ") || "(none)"}`,
   ``,
+  `  OF THOSE, the ISSUER-CELL route (+iss): the house is in column (a) and the`,
+  `  product in column (c), so the arm is asked the string the PAGE composes:`,
+  `    GAIN an ASSERTED symbol               ${fidIssRows.toLocaleString()} rows / ${fidIssKeys.size.toLocaleString()} keys -> ${fidIssPlans.size.toLocaleString()} plans / ${sum(fidIssPlans).toLocaleString()} ppl / $${fidIssDollars.toLocaleString()}`,
+  `    distinct ISSUER cells reached         ${[...new Set([...fidIssKeys.values()].map((v) => v.iss))].map((x) => JSON.stringify(x)).join(" · ") || "(none)"}`,
+  ``,
+  `  AND the SOURCED FORMER-NAME route (+former): the filing states the name the`,
+  `  fund carried before the issuer renamed it, which the registry does not hold:`,
+  `    GAIN an ASSERTED symbol               ${fidFormerRows.toLocaleString()} rows / ${fidFormerKeys.size.toLocaleString()} keys -> ${fidFormerPlans.size.toLocaleString()} plans / ${sum(fidFormerPlans).toLocaleString()} ppl / $${fidFormerDollars.toLocaleString()}`,
+  ``,
   `PRECEDENCE: a hedged registry answer replaced by an arm naming the STATED class`,
   `  spellings overridden                    ${compOverridden.toLocaleString()}  (distinct (iss, raw, clean) triples — \`secAsk\` is cached, so this is not a row count)`,
 ].join("\n"));
@@ -1685,6 +1816,19 @@ if (admForeignKeys.size) {
   console.error(`\nEVERY key the Admiral arm refused for a foreign house in the NAME:`);
   for (const [, a] of admForeignKeys)
     console.error(`  [${a.house}] filed=${JSON.stringify(a.name)}  iss=${JSON.stringify(a.iss)}  would have published ${a.tk} ("${a.series}")`);
+}
+if (fidFormerKeys.size) {
+  console.error(`\nEVERY KEY THE FORMER-NAME ROUTE (+former) ADDS, so every newly reached name is READ:`);
+  for (const [, v] of [...fidFormerKeys].sort((a, b) => (a[1].iss + a[1].name).localeCompare(b[1].iss + b[1].name)))
+    console.error(`  ${v.tk}  iss=${JSON.stringify(v.iss)}  filed=${JSON.stringify(v.name)}  -> "${v.series}" / ${v.cls} / ${v.how}`);
+}
+if (fidIssKeys.size) {
+  /* EVERY KEY THE ISSUER-CELL ROUTE ADDS, PRINTED FOR READING. A widening is
+   * licensed only when every newly reached name has been read, and this is the
+   * list that discharges it — not a count, and not a sample. */
+  console.error(`\nEVERY KEY THE ISSUER-CELL ROUTE (+iss) ADDS, so every newly reached name is READ:`);
+  for (const [, v] of [...fidIssKeys].sort((a, b) => (a[1].iss + a[1].name).localeCompare(b[1].iss + b[1].name)))
+    console.error(`  ${v.tk}  iss=${JSON.stringify(v.iss)}  filed=${JSON.stringify(v.name)}  -> "${v.series}" / ${v.cls} / ${v.how}`);
 }
 if (unattestedKeys.size) {
   console.error(`\nEVERY REFUSED KEY, so the class is read and not merely counted:`);

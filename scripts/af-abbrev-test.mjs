@@ -168,16 +168,21 @@ const MUTATIONS = [
      * answers RFKTX, and is exactly as load-bearing either way */
     expect: [["American Funds Trgt Date Ret 2055 R6", null]] },
   { name: "the vintage lift runs only AFTER the ordered match fails",
-    from: "      if (!abbreviates(head, s.toks, 3, fam.skip)\n        && !abbreviatesVintageLifted(head, s.toks, fam.skip)) continue;",
-    to: "      if (!abbreviates(head, s.toks, 3, fam.skip)) continue;",
+    /* RE-DERIVED 2026-11-13: the series match now loops over the registered
+     * name plus any sourced former name, so the anchor is the loop body and no
+     * longer a two-line `if`. Dropping the lifted call is still the mutation. */
+    from: "        if (abbreviates(head, S, 3, fam.skip) || abbreviatesVintageLifted(head, S, fam.skip)) {",
+    to: "        if (abbreviates(head, S, 3, fam.skip)) {",
     expect: [["American Funds Trgt Date Ret 2055 R6", null]] },
   { name: "the registry-derived family restriction",
     from: "    if (!family.has(reg)) continue;",
     to: "    if (false) continue;",
     expect: [["American Funds MFS Value R6", "MEIKX"]] },
   { name: "the stated class must be one the series registers",
-    from: "      if (s.classes.has(ck)) { hits.push({ ticker: s.classes.get(ck), series: s.name, reg: s.reg, ck, how: \"equal\" }); continue; }",
-    to: "      { hits.push({ ticker: s.classes.get(ck) || [...s.classes.values()][0], series: s.name, reg: s.reg, ck, how: \"equal\" }); continue; }",
+    /* RE-DERIVED 2026-11-13: the pushed answer now carries the `+former` route
+     * tag, so the anchor gained ` + via`. */
+    from: "      if (s.classes.has(ck)) { hits.push({ ticker: s.classes.get(ck), series: s.name, reg: s.reg, ck, how: \"equal\" + via }); continue; }",
+    to: "      { hits.push({ ticker: s.classes.get(ck) || [...s.classes.values()][0], series: s.name, reg: s.reg, ck, how: \"equal\" + via }); continue; }",
     expect: [["AMERFUNDS 2055 TARG DATERET Z9", "RFKTX"]] },
 ];
 for (const mut of MUTATIONS) {
@@ -274,6 +279,31 @@ const FID_FIXTURE = [
    * here to be measured rather than to be refused */
   ...R("FIDELITY ABERDEEN STREET TRUST", "Fidelity Freedom Blend 2050 Fund",
     [["FHWDX", "Class K"], ["FHEDX", "Class K6"], ["FFBWX", "Premier Class"]]),
+  /* the INDEX ladder's income-stage fund, whose REGISTERED name is
+   * `… Index Retirement Fund` and whose FORMER name — sourced from the issuer's
+   * own 497, effective 2025-09-09 — is `… Index Income Fund`. The alias exists
+   * for filings written before the rename. */
+  ...R("FIDELITY ABERDEEN STREET TRUST", "Fidelity Freedom Index Retirement Fund",
+    [["FIKFX", "Investor Class"], ["FFGZX", "Institutional Premium Class"],
+      ["FAPIX", "Premier Class"], ["FATQX", "Premier II Class"]]),
+  /* A SERIES A GENERIC `Retirement -> Income` REWRITE WOULD REACH AND THE
+   * SOURCED MAP DOES NOT. Live: 13 series of this family carry `Retirement`
+   * and five have a sourced former name, so this is the shape that prices the
+   * difference rather than a constructed one. */
+  ...R("FIDELITY ABERDEEN STREET TRUST", "Fidelity Managed Retirement 2015 Fund",
+    [["FIRKX", "Class K"], ["FMRTX", "Class K6"]]),
+  /* THE OTHER FOUR LADDERS RENAMED ON THE SAME DATE, so the fixture carries
+   * every series the live former-name map names and `assertFamily`'s liveness
+   * check can be asserted against it rather than skipped. Each is sourced in
+   * `lib-af-abbrev.mjs` beside its entry. */
+  ...R("FIDELITY ABERDEEN STREET TRUST", "Fidelity Freedom Retirement Fund",
+    [["FFFAX", "Fidelity Freedom Retirement Fund"], ["FNSHX", "Class K"], ["FYTKX", "Class K6"]]),
+  ...R("FIDELITY ABERDEEN STREET TRUST", "Fidelity Advisor Freedom Retirement Fund",
+    [["FIAFX", "Class I"], ["FEGLX", "Class K6"]]),
+  ...R("FIDELITY ABERDEEN STREET TRUST", "Fidelity Freedom Blend Retirement Fund",
+    [["FHHEX", "Class K"], ["FHRDX", "Class K6"]]),
+  ...R("FIDELITY ABERDEEN STREET TRUST", "Fidelity Flex Freedom Blend Retirement Fund",
+    [["FTLSX", "Fidelity Flex Freedom Blend Retirement Fund"], ["FTLKX", "Class K6"]]),
   ...R("FIDELITY SALEM STREET TRUST", "Fidelity Strategic Real Return Fund",
     [["FSRKX", "Class K6"], ["FSRRX", "Fidelity Strategic Real Return Fund"]]),
   ...R("FIDELITY SALEM STREET TRUST", "Fidelity 500 Index Fund", [["FXAIX", "Fidelity 500 Index Fund"]]),
@@ -316,6 +346,16 @@ const FID_MUST_FIRE = [
   ["Fidelity Freedom 2050 K", "FNSBX", "the class by EQUALITY, in a series that registers it"],
   ["FID FREEDOM 2050 K6", "FZTKX", "a code class, unchanged by any of this"],
   ["FID FRDM IDX 2050 Instl Premium", "FFOPX", "the class spelled out in two tokens"],
+  /* the SOURCED FORMER NAME (2026-11-13): a filing written before the rename
+   * states a name the registry no longer carries */
+  ["Fidelity Freedom Index Income Fund Institutional Premium Class", "FFGZX",
+    "the pre-2025-09-09 name of the Index Retirement fund, sourced from the issuer's 497"],
+  ["Fidelity Freedom Index Inc Instl Prem", "FFGZX", "the same, contracted on BOTH sides"],
+  ["Fidelity Freedom Index Income Premier", "FAPIX", "the former name with a different class"],
+  ["Fidelity Freedom Index Retirement Fund Institutional Premium Class", "FFGZX",
+    "the REGISTERED name still answers — the alias is additive, never a substitution"],
+  ["Fidelity Advisor Freedom Income Fund Class I", "FIAFX",
+    "`I` is a designation the Advisor ladder REGISTERS, so equality answers it — the double-product refusal must not reach the equality branch"],
 ];
 for (const [n, want, why] of FID_MUST_FIRE) {
   const got = ask(M, FIDX, n);
@@ -338,6 +378,13 @@ const FID_MUST_NOT = [
   ["Fidelity Vanguard Freedom Index 2050 Premier", "a foreign house welded in behind a stated house"],
   ["Freedom Index 2050 Premier", "no leading house at all"],
   ["FID FDM IDX 2099 PRM", "the constructed series: `prm` matches Premier AND Premium, so the arm abstains"],
+  ["Fidelity Managed Income 2015 Fund Class K",
+    "a name NO filing has ever stated: the former-name map is ENUMERATED and sourced per fund, so a generic `Retirement -> Income` rewrite is not available to it"],
+  ["FIDELITY FREEDOM 2050 INSTL",
+    "`INSTL` is not a registered Fidelity designation and no ACTIVE Freedom series registers an institutional class, so the SERIES is unsettled — read against the filings, MasTec's statements say `Index` and Aristocrat's say only `Institutional`, and one key serves both"],
+  ["FIDELITY FREEDOM INCOME INSTL", "the same spelling at the income stage"],
+  ["Fidelity Freedom Index Income Inc",
+    "the filer wrote the PRODUCT twice: `Inc` abbreviates `investor` under the relation and equally abbreviates `income`, so no class is stated — the position this project already took on `Fidelity Freedom Index Retirement Inc`"],
 ];
 for (const [n, why] of FID_MUST_NOT) {
   const got = ask(M, FIDX, n);
@@ -377,6 +424,31 @@ const FID_MUTATIONS = [
     from: "  skip: new Set([...BASE_SKIP, \"fidelity\"]), classRelation: true,",
     to: "  skip: new Set([...BASE_SKIP]), classRelation: true,",
     expect: [["FID FDM IDX 2050 IPR", null], ["Fidelity Freedom 2050 K", null]] },
+  { name: "the SOURCED former-name ENTRY for the Index Retirement fund",
+    from: '  "Fidelity Freedom Index Retirement Fund": "Fidelity Freedom Index Income Fund",',
+    to: "",
+    /* the DATA half: with the entry gone the readers of the pre-rename spelling
+     * are back to a blank, which is what the entry buys */
+    expect: [["Fidelity Freedom Index Income Fund Institutional Premium Class", null],
+      ["Fidelity Freedom Index Inc Instl Prem", null]] },
+  { name: "the alias token sets are TRIED at the series match",
+    from: "      for (const S of [s.toks, ...(s.altToks || [])]) {",
+    to: "      for (const S of [s.toks]) {",
+    /* the CODE half: the map can be right and the loop still not read it */
+    expect: [["Fidelity Freedom Index Income Fund Institutional Premium Class", null]] },
+  { name: "a class run that could be the FORMER NAME's own word (the product typed twice)",
+    from: "      if (s.formerOnly && s.formerOnly.length && absorbs(ck, s.formerOnly)) continue;",
+    to: "      if (false) continue;",
+    /* the LIVE case, and the only one over the whole family: `Inc` reaching
+     * FIKFX's Investor Class on a name that already says `Income` */
+    expect: [["Fidelity Freedom Index Income Inc", "FIKFX"]] },
+  { name: "the former-name map is ENUMERATED, not a generic Retirement->Income rule",
+    from: "      const former = fam.formerNames && fam.formerNames[name];",
+    to: "      const former = fam.formerNames && (fam.formerNames[name] || (/\\bRetirement\\b/.test(name) ? name.replace(/\\bRetirement\\b/, \"Income\") : null));",
+    /* THE ENUMERATION IS THE PROTECTION: the generic rule invents
+     * `Fidelity Managed Income 2015 Fund`, a name no filing has ever stated,
+     * and publishes a symbol on it as fact. */
+    expect: [["Fidelity Managed Income 2015 Fund Class K", "FIRKX"]] },
   { name: "the class relation is OPT-IN per family (Capital Group must not take it)",
     from: "  markers: FAMILY_CLASSES, house: HOUSE_PHRASES, skip: SKIP, classRelation: false,",
     to: "  markers: FAMILY_CLASSES, house: HOUSE_PHRASES, skip: SKIP, classRelation: true,",
@@ -423,6 +495,22 @@ for (const mut of FID_MUTATIONS) {
     bad("INVARIANT (6): buildAfIndex and buildFamilyIndex(.., AF_FAMILY) disagree");
   for (const [n] of MUST_FIRE) if (ask(M, viaCfg, n) !== ask(M, IDX, n))
     bad(`INVARIANT (6): the wrapper and the generalised builder disagree on ${JSON.stringify(n)}`);
+  /* (7a) A SOURCED FORMER NAME THAT NAMES NO LIVE SERIES MUST THROW, not go
+   *      quietly inert. The registry refreshes from the SEC; an alias whose key
+   *      has been renamed again reaches no series and reads exactly like an
+   *      alias that was never needed. */
+  {
+    const deadKey = { ...M.FID_FAMILY,
+      formerNames: { "Fidelity Freedom Index Nonexistent Fund": "Fidelity Freedom Index Income Fund" } };
+    let threw = false;
+    try { M.assertFamily(M.buildFamilyIndex(FID_FIXTURE, deadKey)); } catch { threw = true; }
+    if (!threw) bad("INVARIANT (7a): assertFamily did NOT throw on a former-name entry naming a series the registry does not carry — the alias can go inert unreported");
+    /* and the SHIPPED map must pass it: the fixture carries all five renamed
+     * series, so every entry is required to reach one */
+    M.assertFamily(FIDX);
+    if (Object.keys(M.FID_SERIES_FORMER_NAMES).length !== 5)
+      bad(`INVARIANT (7a): the former-name map holds ${Object.keys(M.FID_SERIES_FORMER_NAMES).length} entries, not the 5 sourced renames the fixture pins`);
+  }
   /* (7) the contractions stay DISTINCT — the conflation hazard, asserted rather
    *     than argued, in both directions. */
   if (ask(M, FIDX, "FID FDM IDX 2050 IPR") === ask(M, FIDX, "FID FDM IDX 2050 PRM"))

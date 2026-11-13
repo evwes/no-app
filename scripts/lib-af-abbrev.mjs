@@ -329,12 +329,50 @@ export const AF_FAMILY = {
   must: ["EUPAC FUND", "NEW PERSPECTIVE FUND", "AMERICAN BALANCED FUND",
     "SMALLCAP WORLD FUND INC", "American Funds Target Date Retirement Series"],
 };
+/* ---------- A SERIES' FORMER NAME, TAKEN FROM THE ISSUER'S OWN FILING -------
+ * 2026-11-13. A filing dated BEFORE a fund is renamed states the OLD name, and
+ * the registry carries only the NEW one, so the product match fails on a name
+ * that is perfectly correct as filed. Measured on the live store: 283 plans /
+ * 318,936 readers publish `Fidelity Freedom Index Income Fund Institutional
+ * Premium Class` and its contractions with NO ticker, because the registry
+ * registers that fund as `Fidelity Freedom Index RETIREMENT Fund` (FFGZX).
+ *
+ * ***A RENAME IS A FACT AND IS SOURCED, NEVER INFERRED.*** This record's rule,
+ * and the reason this is an ENUMERATED map keyed on the WHOLE registered series
+ * name rather than a token rule. A generic `Retirement -> Income` rewrite would
+ * reach 13 series of this family, inventing `Fidelity Managed Income 2015 Fund`
+ * and `Fidelity Sustainable Target Date Income Fund` — names no filing has ever
+ * stated — and *a token added to a closed whole-string vocabulary multiplies
+ * with every token already in it*. Each line below is one fund, with the
+ * issuer's own 497 supplement and its effective date; the blast radius of an
+ * entry is the series it names.
+ *
+ * Every one of these says, verbatim: "Effective September 9, 2025, <OLD> will
+ * be renamed <NEW>. All references to the former name are replaced with the new
+ * name as appropriate." FIDELITY ABERDEEN STREET TRUST, CIK 0000880195.
+ *
+ * `assertFamily` requires every KEY to be a series the registry still carries,
+ * so a registry refresh that renames one of these again fails a gate instead of
+ * silently making the entry inert. */
+export const FID_SERIES_FORMER_NAMES = {
+  /* https://www.sec.gov/Archives/edgar/data/880195/000088019525001032/filing11000.htm */
+  "Fidelity Freedom Index Retirement Fund": "Fidelity Freedom Index Income Fund",
+  /* https://www.sec.gov/Archives/edgar/data/880195/000088019525000868/filing9663.htm */
+  "Fidelity Freedom Retirement Fund": "Fidelity Freedom Income Fund",
+  /* https://www.sec.gov/Archives/edgar/data/880195/000088019525000865/filing9662.htm */
+  "Fidelity Advisor Freedom Retirement Fund": "Fidelity Advisor Freedom Income Fund",
+  /* https://www.sec.gov/Archives/edgar/data/880195/000088019525000898/filing9664.htm */
+  "Fidelity Freedom Blend Retirement Fund": "Fidelity Freedom Blend Income Fund",
+  /* https://www.sec.gov/Archives/edgar/data/880195/000088019525000865/filing9662.htm */
+  "Fidelity Flex Freedom Blend Retirement Fund": "Fidelity Flex Freedom Blend Income Fund",
+};
 export const FID_FAMILY = {
   key: "fid", label: "Fidelity", why: "fid-abbrev",
   markers: new Set(["class k6"]), house: [["fidelity"]],
   skip: new Set([...BASE_SKIP, "fidelity"]), classRelation: true,
   band: [2, 10], nameTest: /fidelity/i,
   must: ["FIDELITY SALEM STREET TRUST", "FIDELITY ABERDEEN STREET TRUST"],
+  formerNames: FID_SERIES_FORMER_NAMES,
 };
 const CLASS_SKIP = new Set(["class", "shares", "share"]);
 
@@ -353,7 +391,21 @@ export function buildFamilyIndex(funds, fam) {
     if (!family.has(reg)) continue;
     const name = (parts[1] || parts[0]).trim();
     const id = `${reg}\u0000${name}`;
-    if (!series.has(id)) series.set(id, { name, reg, toks: afToks(name), classes: new Map(), classList: [] });
+    /* `altToks` holds the SAME series under a sourced former name, so a filing
+     * written before the rename matches the fund it names. One token set per
+     * alias and they are tried as alternatives for ONE series, which is why an
+     * alias can never turn a unique hit into an ambiguous one by itself. */
+    if (!series.has(id)) {
+      const former = fam.formerNames && fam.formerNames[name];
+      const toks = afToks(name);
+      const altToks = former ? [afToks(former)] : [];
+      /* the word(s) the FORMER name has and the registered one does not —
+       * `income` for every entry on today's map. Carried per series because the
+       * class run must not be read as one of them; see `afAbbrevAsk`. */
+      const formerOnly = former ? afToks(former).filter((t) => !toks.includes(t)) : [];
+      series.set(id, { name, reg, toks, altToks, formerOnly, former: former || "",
+        classes: new Map(), classList: [] });
+    }
     const ck = classKey(r[3]);
     if (!ck) continue;
     series.get(id).classes.set(ck, r[1]);
@@ -387,6 +439,19 @@ export function assertFamily(idx) {
   for (const must of fam.must)
     if (!idx.family.has(must))
       throw new Error(`lib-af-abbrev: ${must} is no longer in the derived ${fam.label} family (${n} registrants) — the class-ladder witness has moved`);
+  /* EVERY SOURCED FORMER NAME MUST STILL NAME A LIVE SERIES. Without this the
+   * map goes inert on a registry refresh — the quiet failure this record names
+   * as worse than a loud one, because an entry that reaches no series reads
+   * exactly like an entry that was never needed. */
+  if (fam.formerNames) {
+    const live = new Set([...idx.series.values()].map((s) => s.name));
+    const gone = Object.keys(fam.formerNames).filter((k) => !live.has(k));
+    if (gone.length)
+      throw new Error(`lib-af-abbrev: ${gone.length} sourced former-name entr(ies) name a series the registry no longer carries, so the alias is INERT and its readers are silently back to a blank:\n  ${gone.join("\n  ")}`);
+    const aliased = [...idx.series.values()].filter((s) => s.altToks && s.altToks.length).length;
+    if (aliased !== Object.keys(fam.formerNames).length)
+      throw new Error(`lib-af-abbrev: ${aliased} series carry an alias against ${Object.keys(fam.formerNames).length} sourced entries`);
+  }
   return n;
 }
 export const assertAfFamily = (idx) => assertFamily(idx);
@@ -420,10 +485,34 @@ export function afAbbrevAsk(idx, filedName) {
     const stated = idx.famClassKeys ? idx.famClassKeys.has(ck) : true;
     const hits = [];
     for (const s of idx.series.values()) {
-      if (!abbreviates(head, s.toks, 3, fam.skip)
-        && !abbreviatesVintageLifted(head, s.toks, fam.skip)) continue;
-      if (s.classes.has(ck)) { hits.push({ ticker: s.classes.get(ck), series: s.name, reg: s.reg, ck, how: "equal" }); continue; }
+      /* the registered name, then any SOURCED former name of the SAME series */
+      let prodOk = false, via = "";
+      for (const S of [s.toks, ...(s.altToks || [])]) {
+        if (abbreviates(head, S, 3, fam.skip) || abbreviatesVintageLifted(head, S, fam.skip)) {
+          prodOk = true; via = S === s.toks ? "" : "+former"; break;
+        }
+      }
+      if (!prodOk) continue;
+      if (s.classes.has(ck)) { hits.push({ ticker: s.classes.get(ck), series: s.name, reg: s.reg, ck, how: "equal" + via }); continue; }
       if (!fam.classRelation || stated || ck.length < 2) continue;
+      /* ---------- A NAME THAT STATES THE PRODUCT TWICE STATES NO CLASS ------
+       * 2026-11-13. `Fidelity Freedom Index Income Inc` reaches the Investor
+       * class, because `inc` abbreviates `investor`'s designation under the
+       * relation — and it equally abbreviates `INCOME`, the word the former
+       * name supplies, so the run is as likely to be the filer writing the
+       * PRODUCT twice. This project's own position on that exact shape is
+       * already on the record: `gen-sec-tickers.mjs` refuses
+       * `Fidelity Freedom Index Retirement Inc` -> FIKFX through `classStated`
+       * because "the filing almost certainly means INCOME".
+       *
+       * So where a run could be the former name's own word, the arm abstains.
+       * It is confined to the RELATION branch: an EQUALITY match means the
+       * filer typed a designation the series really registers, which is the
+       * strong case — `Fidelity Advisor Freedom Income I` is Class I and the
+       * Advisor ladder registers no Investor class at all, and the rule would
+       * cost that answer if it ran there. Measured over the whole live family:
+       * this refuses ONE key, and that key is the reason to have it. */
+      if (s.formerOnly && s.formerOnly.length && absorbs(ck, s.formerOnly)) continue;
       const cm = s.classList.filter((c) => abbreviates(tail, c.toks, 3, CLASS_SKIP));
       if (cm.length !== 1) continue;             // ambiguous within the series: abstain
       /* A TRUNCATION IS A PREFIX AND AN ABBREVIATION NEED NOT BE. The relation
@@ -448,7 +537,7 @@ export function afAbbrevAsk(idx, filedName) {
        * thick enough and still ambiguous (`PREMIE`, 275 rows, is six characters).
        * Each has its own live case in `af-abbrev-test.mjs`. */
       if (s.classList.some((c) => c.ck !== cm[0].ck && c.ck.startsWith(ck))) continue;
-      hits.push({ ticker: cm[0].ticker, series: s.name, reg: s.reg, ck: cm[0].ck, how: "relation" });
+      hits.push({ ticker: cm[0].ticker, series: s.name, reg: s.reg, ck: cm[0].ck, how: "relation" + via });
     }
     if (hits.length !== 1) continue;             // ambiguous or nothing: abstain
     const hit = hits[0];
