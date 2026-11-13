@@ -1916,3 +1916,87 @@ function fundTicker(name) {
   const info = fundTickerInfo(name, "");
   return info && !info.comparable ? info.tk : null;
 }
+
+/* ---- SOURCED VEHICLES: a collective trust that DOES have a public price ----
+ *
+ * The premise this file has worked under, and the one app.js states in prose,
+ * is that a collective trust has no public ticker, fee or return of its own
+ * because its class is negotiated per plan. For a negotiated separate account
+ * that is right. For Vanguard's Target Retirement Trusts it is WRONG, and the
+ * refutation is the issuer's own API: it serves a profile PER UNIT CLASS, each
+ * with its own CUSIP, its own dated expense ratio and its own dated returns.
+ * Target Retirement 2020 Trust I is CUSIP 92202V591 at 0.065%.
+ *
+ * The filings NAME the class — "... Fund TR I", "... Trust Plus" — so where
+ * they do, the published class figure is that plan's actual price. Where they
+ * do not, this returns null and nothing is published, which is the behaviour
+ * the comparable asterisk already gives.
+ *
+ * THIS RESOLVES AN IDENTITY ONLY. It returns a key into
+ * data/fund-facts.json's `vehicles`; it carries no figure and asserts no
+ * price. Whether a key's figures may be printed is decided downstream, by
+ * freshness and by `erBasis` — Vanguard also serves DORMANT classes (every
+ * Trust III vintage reads 0.4000 as of 2014-03-31 with no current return at
+ * all), and those must never reach a page.
+ *
+ * THE VINTAGE AND CLASS ARE READ FROM THE FUND NAME, NEVER FROM THE ISSUER
+ * CELL, and that is not fastidiousness. `lookupTicker` is asked
+ * `fundTickerInfo(iss + name, type)`, and a great many of these rows carry
+ * `The Vanguard Group, Inc.` as the issuer: an `\binc\b` arm reading the
+ * combined string turns every classless "Vanguard Target Retirement Trust
+ * Plus" into the INCOME vintage. So the house may come from either cell and
+ * the facts may come only from the name. The income token is additionally
+ * anchored to the family phrase (`retirement income`, `retire inc`) rather
+ * than floating free, because `Inc` is a corporate suffix before it is a
+ * vintage.
+ */
+const VG_TRUST_FAMILY = /vanguard/i;
+const VG_TRUST_TARGET = /\btarget\s*(?:date|retirement|retire|ret\b|rmt\b)/i;
+/* ALTERNATION IS FIRST-MATCH, NOT LONGEST-MATCH, so `iii` must precede `ii`
+ * and `ii` precede `i` or every Trust III is silently filed as a Trust I.
+ * The trailing \b is what keeps `TR 2060` from reading its `2` as a class:
+ * there is no word boundary inside `2060`. */
+const VG_TRUST_CLASS = /\b(?:trust|tr)\.?\s*(iii|ii|i|plus|select|[123])\b/i;
+const VG_TRUST_VINTAGE = /\b(20(?:0[05]|[1-6][05]|70))\b/;
+const VG_TRUST_INCOME = /\b(?:retirement|retire|ret|rmt)\.?\s*(?:income|inc)\b/i;
+/* `Target Retirement INCOME AND GROWTH Trust` is a DIFFERENT PRODUCT from
+ * `Target Retirement Income Trust`, and "Retirement Income" is a proper prefix
+ * of it, so 17 filed rows of Income and Growth resolved to the Income trust's
+ * key and would have published another fund's fee and return. *A fragment of a
+ * longer name is not thereby that name*, met again.
+ *
+ * THE FIRST FIX WAS A LOOKAHEAD AFTER `income`, AND THE DATA REFUTED IT: a
+ * residue scan — strip every token the resolver accounts for and read what is
+ * left — turned up `Target retirement income growth trust II` with no
+ * connector at all, and `Vanguard Target Retirement Income Trust II and Growth
+ * Trust II` with the phrase AFTER the class. One positional guard cannot see
+ * both. *A fix for one phrasing of a class is not a fix for the class.*
+ *
+ * So the test is positional only in that it applies to the INCOME vintage: if
+ * the name says growth anywhere, this is not the Income trust. Nothing is
+ * sourced for Income and Growth, so null and a blank cell is the right answer
+ * — and the real Income trust's name never contains the word. */
+const VG_TRUST_GROWTH = /\bgro?w?th\b/i;
+/* FLEX is a real Vanguard trust class and is deliberately NOT resolved: the
+ * issuer publishes no expense ratio for it, so a key would point at nothing.
+ * Named here so the refusal is visible rather than accidental. */
+const VG_TRUST_UNPRICED = /\bfle?x\b/i;
+const VG_CLASS_SLUG = { i: "i", ii: "ii", iii: "iii", 1: "i", 2: "ii", 3: "iii", plus: "plus", select: "select" };
+
+// eslint-disable-next-line no-unused-vars
+function vehicleKeyFor(name, iss) {
+  const n = String(name || "");
+  const house = `${iss || ""} ${n}`;
+  if (!VG_TRUST_FAMILY.test(house)) return null;
+  if (!VG_TRUST_TARGET.test(n)) return null;
+  if (VG_TRUST_UNPRICED.test(n)) return null;
+  const cls = n.match(VG_TRUST_CLASS);
+  if (!cls) return null;
+  const slug = VG_CLASS_SLUG[cls[1].toLowerCase()];
+  if (!slug) return null;
+  const yr = n.match(VG_TRUST_VINTAGE);
+  const vintage = yr ? yr[1] : (VG_TRUST_INCOME.test(n) ? "income" : null);
+  if (!vintage) return null;
+  if (vintage === "income" && VG_TRUST_GROWTH.test(n)) return null;
+  return `vanguard::target-retirement-${vintage}-trust-${slug}`;
+}

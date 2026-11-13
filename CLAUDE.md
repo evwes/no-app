@@ -1236,6 +1236,34 @@ reason the queue was — it is re-read at the start of every turn.
   called.** `sec-funds.json`'s class field holds the SERIES name for several
   registrants. **And a screen that finds its own conclusion in every member it
   reads has not been shown the members that would refute it.**
+- **SOURCING A FIGURE MAKES A MIS-RESOLVED IDENTITY WORSE, AND NO SOURCING CHECK
+  CAN SEE IT.** Black Hills' $143.5M top holding is filed as `Vanguard
+  Institutional Index **Plus** Fund`; the page asserted VINIX (the
+  Institutional class) while the pattern FEE arm read the name as Plus and
+  returned Plus's 0.020% — our two tables contradicting each other on one row,
+  with the displayed number RIGHT. Sourcing VINIX made the sourced figure
+  outrank the estimate and the cell became **0.035% under a ✓** on a fund that
+  charges 0.020%. Every receipt was valid: the fee is correct *for the symbol
+  it was asked about*. *A ship that makes every cell more trustworthy makes a
+  mis-resolved row more wrong, and the defect is upstream of everything the
+  sourcing gates inspect.* So before sourcing a family, diff the pattern
+  estimate against the sourced figure: **a disagreement is a ticker question,
+  not a fee question.**
+- **AN ISSUER MAY PUBLISH A COLLECTIVE TRUST'S OWN PRICE, AND ASSUMING
+  OTHERWISE COST 10.7M READERS A BLANK CELL.** `app.js`'s comparable note
+  states a trust "has no public ticker, expense ratio or return of its own,
+  because its class is negotiated by the plan". True of a negotiated separate
+  account; FALSE of Vanguard's Target Retirement Trusts, which
+  `investor.vanguard.com/vmf/api/<fundId>/{profile,performance}` serves PER UNIT
+  CLASS with a CUSIP, a dated fee and dated returns (1464 = 2020 Trust I,
+  92202V591, 0.065%). The filings name the class, so that figure is the plan's
+  real price. **But the same API serves DORMANT classes**: every Trust III
+  vintage reads `0.4000` as of **2014-03-31** — a round number 6x the live band,
+  identical across twelve vintages — with a YTD block containing no value. The
+  two witnesses partition the set EXACTLY (44/44 fresh-with-YTD, 23/23
+  stale-without), so freshness is the publish gate and it belongs in
+  `gen-fund-facts-asset.mjs`, which already re-applies the checker's refusals
+  rather than trusting its input.
 - **A rename, a ticker, a fee and a return are FACTS that must be SOURCED, never
   inferred** — `data/fund-facts.json` via the `fund-facts` agent, with a source
   URL and an as-of date.
