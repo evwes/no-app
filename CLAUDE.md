@@ -174,6 +174,34 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   the parser's own PDF source with them.** *A blocked host is not a blocked
   goal, but neither is it a fact about the site: diagnose which of the three
   shapes you have before reporting any of them.*
+- **SOURCING A FUND FACT: THE ROUTE, AND WHAT IT IS NOT (2026-11-13).** The
+  issuer's own site is preferred and is the ONLY place a real PROSPECTUS date
+  for an expense ratio comes from — `investor.vanguard.com/vmf/api/<T>/profile`
+  returns `expenseRatio` with its own `expenseRatioAsOfDate`, and
+  `/vmf/api/<T>/performance` carries a dedicated **`/YTD` block** whose
+  `regular` is the DAILY figure. ***Do not take `calendarYTDPct`***: it is the
+  month-end series under a different field name, and a screen keyed on it
+  reports a correct figure MISSING (it nearly had me call a right answer
+  wrong). **Fidelity cannot be read at all** — its fund pages are JS-only
+  shells with no data endpoint, and headless Chromium gets
+  `net::ERR_EMPTY_RESPONSE` on that host while curl gets 200; passing the proxy
+  to Chromium explicitly makes it WORSE, breaking hosts that work, so Chromium
+  already routes fine. **`www.schwab.wallst.com/schwab/Prospect/research/
+  mutualfunds/summary.asp?symbol=<T>` serves ANY mutual-fund ticker as static
+  HTML** and was already the cited source for the FXAIX entry. Its page carries
+  **TWO YTD figures** — the header one is an older month-end number, the DETAIL
+  block states its own date beside the value — and it does **not date its
+  expense ratio at all**, so an `erAsOf` taken from it is the QUOTE date. Use
+  the NET expense ratio. *Treating this as Fidelity-only is what kept 4,754
+  tickers / 304M reader-slots looking unreachable for half a day.*
+- **AN EMPLOYER-STOCK TICKER IS NOT A FUND, AND A WORK LIST BUILT FROM FILED
+  NAMES WILL CONTAIN THEM.** `IBM`, `WMT` and `CVS` all reached a sourcing work
+  list on 2026-11-13, every one because the HOLDING's name carries a
+  custodian's name — `International Business Machines Corporation - Managed by
+  Independent Fiduciary - State Str`. A stock has no expense ratio and no fund
+  YTD, so sourcing one publishes a category error. Exclude by hand and say so.
+  *A classifier keyed on a name inside a name measures the name, not the
+  vehicle.*
 - **4i layout traps** (all handled in lib-4i, keep regression cases green):
   leading `*` = party-in-interest (not footnote); "(thousands)" scaling only
   when region says so; multi-page heading clusters merged; description column
