@@ -1850,7 +1850,7 @@
    "er": 0.13,
    "erAsOf": "2026-11-12",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSAQX",
-   "ytd": 9.0,
+   "ytd": 9,
    "ytdAsOf": "2026-11-12",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSAQX"
   },
@@ -2020,7 +2020,7 @@
    "er": 0.45,
    "erAsOf": "2026-11-12",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FJTKX",
-   "ytd": 12.0,
+   "ytd": 12,
    "ytdAsOf": "2026-11-12",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FJTKX"
   },
@@ -2463,6 +2463,456 @@
    "ytd": 7.68,
    "ytdAsOf": "2026-11-12",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FNIPX"
+  },
+  "VASIX": {
+   "name": "Vanguard LifeStrategy 20/80 Fund",
+   "updated": "2026-11-13",
+   "er": 0.1,
+   "erAsOf": "2026-02-27",
+   "erSource": "https://investor.vanguard.com/vmf/api/VASIX/profile",
+   "ytd": 1.64,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VASIX/performance"
+  },
+  "VBIRX": {
+   "name": "Vanguard Short-Term Bond Index Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.06,
+   "erAsOf": "2026-04-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VBIRX/profile",
+   "ytd": 0.28,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VBIRX/performance"
+  },
+  "VCOBX": {
+   "name": "Vanguard Core Bond Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.1,
+   "erAsOf": "2026-01-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VCOBX/profile",
+   "ytd": -1.31,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VCOBX/performance"
+  },
+  "VCSAX": {
+   "name": "Vanguard Consumer Staples Index Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.09,
+   "erAsOf": "2025-12-19",
+   "erSource": "https://investor.vanguard.com/vmf/api/VCSAX/profile",
+   "ytd": 19.6,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VCSAX/performance"
+  },
+  "VEMPX": {
+   "name": "Vanguard Extended Market Index Fund Institutional Plus Shares",
+   "updated": "2026-11-13",
+   "er": 0.035,
+   "erAsOf": "2026-04-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VEMPX/profile",
+   "ytd": 11.26,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VEMPX/performance"
+  },
+  "VENAX": {
+   "name": "Vanguard Energy Index Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.09,
+   "erAsOf": "2025-12-19",
+   "erSource": "https://investor.vanguard.com/vmf/api/VENAX/profile",
+   "ytd": 44.75,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VENAX/performance"
+  },
+  "VMCPX": {
+   "name": "Vanguard Morningstar Mid-Cap Index Fund Institutional Plus Shares",
+   "updated": "2026-11-13",
+   "er": 0.02,
+   "erAsOf": "2026-04-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VMCPX/profile",
+   "ytd": 14.02,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VMCPX/performance"
+  },
+  "VSGDX": {
+   "name": "Vanguard Short-Term Government Securities Active Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.1,
+   "erAsOf": "2026-05-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VSGDX/profile",
+   "ytd": 0.39,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VSGDX/performance"
+  },
+  "VSGIX": {
+   "name": "Vanguard Morningstar Small-Cap Growth Index Fund Institutional Shares",
+   "updated": "2026-11-13",
+   "er": 0.05,
+   "erAsOf": "2026-04-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VSGIX/profile",
+   "ytd": 9.28,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VSGIX/performance"
+  },
+  "VTAPX": {
+   "name": "Vanguard Short-Term Inflation-Protected Securities Index Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.06,
+   "erAsOf": "2026-01-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VTAPX/profile",
+   "ytd": 1.39,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VTAPX/performance"
+  },
+  "VTPSX": {
+   "name": "Vanguard Total International Stock Index Fund Institutional Plus Shares",
+   "updated": "2026-11-13",
+   "er": 0.05,
+   "erAsOf": "2026-02-27",
+   "erSource": "https://investor.vanguard.com/vmf/api/VTPSX/profile",
+   "ytd": 10.3,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VTPSX/performance"
+  },
+  "VTWAX": {
+   "name": "Vanguard Total World Stock Index Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.09,
+   "erAsOf": "2026-02-27",
+   "erSource": "https://investor.vanguard.com/vmf/api/VTWAX/profile",
+   "ytd": 11.29,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VTWAX/performance"
+  },
+  "VUIAX": {
+   "name": "Vanguard Utilities Index Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.09,
+   "erAsOf": "2025-12-19",
+   "erSource": "https://investor.vanguard.com/vmf/api/VUIAX/profile",
+   "ytd": 4.54,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VUIAX/performance"
+  },
+  "FAPCX": {
+   "name": "Fidelity International Capital Appreciation K6 Fund",
+   "updated": "2026-11-13",
+   "er": 0.65,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FAPCX",
+   "ytd": 0.29,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FAPCX"
+  },
+  "FATYX": {
+   "name": "Fidelity Freedom Index 2020 Fund - Premier II Class",
+   "updated": "2026-11-13",
+   "er": 0.04,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FATYX",
+   "ytd": 5,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FATYX"
+  },
+  "FATZX": {
+   "name": "Fidelity Freedom Index 2025 Fund - Premier II Class",
+   "updated": "2026-11-13",
+   "er": 0.04,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FATZX",
+   "ytd": 5.78,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FATZX"
+  },
+  "FAUYX": {
+   "name": "Fidelity Freedom Index 2030 Fund - Premier II Class",
+   "updated": "2026-11-13",
+   "er": 0.04,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FAUYX",
+   "ytd": 6.6,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FAUYX"
+  },
+  "FAVNX": {
+   "name": "Fidelity Freedom Index 2035 Fund - Premier II Class",
+   "updated": "2026-11-13",
+   "er": 0.04,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FAVNX",
+   "ytd": 7.69,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FAVNX"
+  },
+  "FAVOX": {
+   "name": "Fidelity Freedom Index 2040 Fund - Premier II Class",
+   "updated": "2026-11-13",
+   "er": 0.04,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FAVOX",
+   "ytd": 9.7,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FAVOX"
+  },
+  "FAVPX": {
+   "name": "Fidelity Freedom Index 2045 Fund - Premier II Class",
+   "updated": "2026-11-13",
+   "er": 0.04,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FAVPX",
+   "ytd": 10.97,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FAVPX"
+  },
+  "FAVQX": {
+   "name": "Fidelity Freedom Index 2050 Fund - Premier II Class",
+   "updated": "2026-11-13",
+   "er": 0.04,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FAVQX",
+   "ytd": 11.16,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FAVQX"
+  },
+  "FAVRX": {
+   "name": "Fidelity Freedom Index 2055 Fund - Premier II Class",
+   "updated": "2026-11-13",
+   "er": 0.04,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FAVRX",
+   "ytd": 11.38,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FAVRX"
+  },
+  "FAVUX": {
+   "name": "Fidelity Freedom Index 2060 Fund - Premier II Class",
+   "updated": "2026-11-13",
+   "er": 0.04,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FAVUX",
+   "ytd": 11.4,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FAVUX"
+  },
+  "FBIIX": {
+   "name": "Fidelity International Bond Index Fund",
+   "updated": "2026-11-13",
+   "er": 0.06,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FBIIX",
+   "ytd": 0.43,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FBIIX"
+  },
+  "FBNDX": {
+   "name": "Fidelity Investment Grade Bond Fund",
+   "updated": "2026-11-13",
+   "er": 0.45,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FBNDX",
+   "ytd": -1.06,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FBNDX"
+  },
+  "FCYPX": {
+   "name": "Fidelity Freedom Index 2010 Fund - Premier Class",
+   "updated": "2026-11-13",
+   "er": 0.05,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FCYPX",
+   "ytd": 3.61,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FCYPX"
+  },
+  "FECGX": {
+   "name": "Fidelity Small Cap Growth Index Fund",
+   "updated": "2026-11-13",
+   "er": 0.05,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FECGX",
+   "ytd": 11.5,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FECGX"
+  },
+  "FEMKX": {
+   "name": "Fidelity Emerging Markets Fund",
+   "updated": "2026-11-13",
+   "er": 0.86,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FEMKX",
+   "ytd": 9.3,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FEMKX"
+  },
+  "FEQIX": {
+   "name": "Fidelity Equity-Income Fund",
+   "updated": "2026-11-13",
+   "er": 0.52,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FEQIX",
+   "ytd": 18.06,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FEQIX"
+  },
+  "FFGZX": {
+   "name": "Fidelity Freedom Index Retirement Fund - Institutional Premium Class",
+   "updated": "2026-11-13",
+   "er": 0.08,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFGZX",
+   "ytd": 3.33,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFGZX"
+  },
+  "FFYPX": {
+   "name": "Fidelity Freedom Index 2015 Fund - Premier Class",
+   "updated": "2026-11-13",
+   "er": 0.05,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFYPX",
+   "ytd": 4.28,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFYPX"
+  },
+  "FGKFX": {
+   "name": "Fidelity Growth Company K6 Fund",
+   "updated": "2026-11-13",
+   "er": 0.45,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FGKFX",
+   "ytd": 18.7,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FGKFX"
+  },
+  "FGOVX": {
+   "name": "Fidelity Government Income Fund",
+   "updated": "2026-11-13",
+   "er": 0.45,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FGOVX",
+   "ytd": -0.76,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FGOVX"
+  },
+  "FIGRX": {
+   "name": "Fidelity International Discovery Fund",
+   "updated": "2026-11-13",
+   "er": 0.66,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FIGRX",
+   "ytd": 7.56,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FIGRX"
+  },
+  "FIMVX": {
+   "name": "Fidelity Mid Cap Value Index Fund",
+   "updated": "2026-11-13",
+   "er": 0.05,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FIMVX",
+   "ytd": 24.29,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FIMVX"
+  },
+  "FISVX": {
+   "name": "Fidelity Small Cap Value Index Fund",
+   "updated": "2026-11-13",
+   "er": 0.05,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FISVX",
+   "ytd": 20.5,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FISVX"
+  },
+  "FKIPX": {
+   "name": "Fidelity Freedom Index 2020 Fund - Premier Class",
+   "updated": "2026-11-13",
+   "er": 0.05,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FKIPX",
+   "ytd": 4.99,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FKIPX"
+  },
+  "FLIPX": {
+   "name": "Fidelity Freedom Index 2025 Fund - Premier Class",
+   "updated": "2026-11-13",
+   "er": 0.05,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FLIPX",
+   "ytd": 5.82,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FLIPX"
+  },
+  "FMCSX": {
+   "name": "Fidelity Mid-Cap Stock Fund",
+   "updated": "2026-11-13",
+   "er": 0.62,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FMCSX",
+   "ytd": 15.26,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FMCSX"
+  },
+  "FMKPX": {
+   "name": "Fidelity Freedom Index 2030 Fund - Premier Class",
+   "updated": "2026-11-13",
+   "er": 0.05,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FMKPX",
+   "ytd": 6.63,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FMKPX"
+  },
+  "FNCMX": {
+   "name": "Fidelity Nasdaq Composite Index Fund",
+   "updated": "2026-11-13",
+   "er": 0.29,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FNCMX",
+   "ytd": 10.04,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FNCMX"
+  },
+  "FNKFX": {
+   "name": "Fidelity Mid-Cap Stock K6 Fund",
+   "updated": "2026-11-13",
+   "er": 0.45,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FNKFX",
+   "ytd": 14.47,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FNKFX"
+  },
+  "FNSHX": {
+   "name": "Fidelity Freedom Retirement Fund - Class K",
+   "updated": "2026-11-13",
+   "er": 0.42,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FNSHX",
+   "ytd": 3.62,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FNSHX"
+  },
+  "FRBEX": {
+   "name": "Fidelity Freedom 2070 Fund Class K",
+   "updated": "2026-11-13",
+   "er": 0.65,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FRBEX",
+   "ytd": 12.19,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FRBEX"
+  },
+  "FWWFX": {
+   "name": "Fidelity Worldwide Fund",
+   "updated": "2026-11-13",
+   "er": 0.77,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FWWFX",
+   "ytd": 10.22,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FWWFX"
   }
  },
  "vehicles": {},
