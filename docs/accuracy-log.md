@@ -63677,3 +63677,46 @@ character class written for a concept picking up everything that shares its
 shape, and as the form's own printed questions being matched by a text-level
 screen: *a token quoted as an EXAMPLE is indistinguishable from the same token
 meant as an INSTRUCTION, wherever something downstream reads for it.*
+
+## 2026-11-13 — a comparable published the fund's fee: 56,100 rows / 39,749,121 readers
+
+**WHAT WAS WRONG.** A starred row is a COMPARABLE: the filing names a collective
+trust, a pooled separate account, or a fund whose share class it never states,
+and the symbol shown is a REGISTERED EQUIVALENT so a reader can look up what the
+thing holds. `app.js` refused that equivalent's RETURN on such a row (`!star`)
+and published its EXPENSE RATIO — the same asterisk, the same vehicle mismatch,
+opposite answers. The note beneath the table made it worse by telling the reader
+the holding "has no ticker and no published expense ratio" **while the page
+published one**, then calling that figure "a ceiling". The owner's standing
+decision of 2026-11-05 is symbol only, NO fee; the asterisked-symbol half
+shipped and the fee half did not. *Found by the owner asking why a row with a
+ticker and a fee had no return.*
+
+**MEASURED by differential through `renderRow`**, one line sliced from the
+shipped file and asserted unique, over all **1,790,374** published+served rows
+with the serving condition applied: **56,100 fee cells withdrawn / 9,412 plans /
+39,749,121 readers**. Non-starred rows moved: **0** — the narrowing discharged,
+not assumed. Ticker cells moved 0; type cells moved 0; row membership unchanged.
+By filed TYPE: 35,959 `Collective trust`, 12,503 `Pooled separate account`,
+4,168 `Mutual fund`, 2,793 none stated, 528 `Separate account`, 120 ETF.
+
+**READ BY HAND, seeded uniform draw across 108 plans**: `T Rowe Price Rtm 2045
+Tr Cl A` — a trust, Class A — publishing TRRKX's 0.6%; `Fidelity Growth Company
+Fund` typed `Collective trust` publishing FDGRX's 0.61%; `PIMCO Total Return`
+CIT at PTTRX's 0.46%.
+
+**WHAT IT COSTS, stated because it is not free:** the 4,168 `Mutual fund` and
+120 ETF rows lose a fee that may have been RIGHT — the State Street Equity 500
+family resolves SSSYX at 0.02 and Class K really does cost about that. The page
+cannot separate them, because a comparable exists precisely where the filing
+stated no class. *A blank is honest; a fee for the wrong vehicle reads as
+knowledge.*
+
+**THE GUARD AND THE CLAIM ARE ONE CHANGE, IN THREE PLACES.** The note was
+rewritten (it now says no fee or return is published); `fund-note-test`'s
+`epistemic-status` check was REPLACED rather than re-pointed, because the claim
+inverted — there is no printed figure left to call a bound; and `smoke-test`'s
+three wording greps became a **row-level assertion on the page**: every starred
+row's expense-ratio cell must be empty. That is the check nobody had written,
+and it cannot be satisfied by prose. Negative control run: restoring the one
+line fails smoke-test by name on `NT COLLECTIVE S&P500 … NOSIX*` at `0.050%*`.

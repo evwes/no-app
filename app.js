@@ -4679,7 +4679,37 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
          * the whole-store differential confirms it: 579 rows move `star`, 0
          * move the fee. A starred row is untouched — it already read
          * `info.er`. */
-        : star ? info.er
+        /* A COMPARABLE PUBLISHES NO FEE — owner's standing decision,
+         * 2026-11-05: symbol only, NO expense ratio. Shipped 2026-11-13.
+         *
+         * A starred row means the filing names a vehicle with no public
+         * price — a collective trust, a pooled separate account — or names a
+         * fund without stating its share class. The symbol beside it is a
+         * REGISTERED EQUIVALENT, shown so a reader can look up what the thing
+         * holds. Its expense ratio belongs to that equivalent and not to the
+         * vehicle the plan actually owns, and the two differ in the direction
+         * the reader cannot guess: a trust class is normally CHEAPER than the
+         * retail fund. Measured through this function over all 1,790,374
+         * published+served rows: 56,100 rows / 9,412 plans / 39,749,121
+         * readers were carrying a fee that is not their vehicle's, 35,959 of
+         * them typed `Collective trust` and 12,503 `Pooled separate account`.
+         * A seeded uniform draw across 108 plans read `T Rowe Price Rtm 2045
+         * Tr Cl A` — a trust, Class A — publishing TRRKX's 0.6%, and
+         * `Fidelity Growth Company Fund` typed `Collective trust` publishing
+         * FDGRX's 0.61%.
+         *
+         * WHAT THIS COSTS, because it is not free: 4,168 of the withdrawn
+         * rows are typed `Mutual fund` and 120 `Exchange-traded fund`, where
+         * the comparable fee may well have been RIGHT — the State Street
+         * Equity 500 family resolves SSSYX at 0.02 and Class K really does
+         * cost about that. The page cannot tell those apart, because a
+         * comparable exists precisely where the filing did not state a class.
+         * A blank is honest; a fee for the wrong vehicle reads as knowledge.
+         *
+         * The asterisk note below is part of this change, not separate from
+         * it: it used to tell the reader to read the printed fee "as a
+         * ceiling", and there is no longer a printed fee to read. */
+        : star ? null
         : info && info.er != null ? info.er
         : (noPublicPrice ? null : fundERRow(f));
       /* A SOURCED FEE OUTRANKS EVERY ESTIMATE ABOVE, and it is applied HERE
@@ -4975,7 +5005,7 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
         <tbody>${rows}</tbody>
       </table>
     </div>
-    ${starred ? `<p class="fund-note"><strong>*Comparable fund.</strong> That holding is a collective trust or separate account — it has no ticker and no published expense ratio, because its fee is negotiated by the plan. The fund shown is its registered equivalent, so you can look up what it holds; the plan's trust class is normally <em>cheaper</em> than the retail fee shown, so read it as a ceiling, not the plan's price.</p>` : ""}
+    ${starred ? `<p class="fund-note"><strong>*Comparable fund.</strong> That holding is a collective trust, a separate account, or a fund whose share class the filing does not state — so it has no public ticker, expense ratio or return of its own, because its class is negotiated by the plan. The fund shown is its registered equivalent, so you can look up what it holds. We publish no fee or return beside it: those belong to the equivalent, not to the vehicle your plan actually owns, and a plan's trust class is normally <em>cheaper</em> than the retail fund.</p>` : ""}
     ${classNote}
     ${ytdDates.size ? `<p class="fund-note"><strong>YTD return.</strong> Year-to-date total return ${ytdDates.size === 1 ? `as of ${esc(isoDay([...ytdDates][0]))}` : `as of ${[...ytdDates].sort().map((d) => esc(isoDay(d))).join(" and ")}`}, read from each fund's own published figure rather than computed here — hover a figure for the date it was read. A holding shows no return when we have not sourced one, and <strong>a holding whose symbol is marked * shows none by design</strong>: that symbol is a comparable registered fund, and the plan holds a collective trust or separate account, whose return differs from the fund's. Past return is not a prediction, and a fund's return is not this plan's return — participants hold different mixes and buy at different times.</p>` : ""}
     ${sourcedAny ? `<p class="fund-note"><strong>&#10003; Sourced fee.</strong> That expense ratio was read from the fund's own published figure on the date shown when you hover it, not estimated — every other number in the column is an estimate from the fund's name, which is why the rest of the column is approximate and this one is not. The sourced figures and the page each was read from are recorded in <code>data/fund-facts.json</code>.</p>` : ""}

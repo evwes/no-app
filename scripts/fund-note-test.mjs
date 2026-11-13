@@ -80,18 +80,25 @@ function noteOf(src) {
 const CLAIMS = [
   ["asterisk-explained", /\*\s*Comparable fund/i,
     "the mark itself is explained — without it the asterisk has no referent"],
-  ["vehicle-named", /collective trust or separate account/i,
+  ["vehicle-named", /collective trust, a separate account/i,
     "says WHAT the holding is, which is why it has no symbol of its own"],
-  ["no-ticker-no-er", /no ticker and no published expense ratio/i,
-    "states the absence the number is standing in for"],
+  ["no-ticker-no-er", /no public ticker, expense ratio or return/i,
+    "states the absence — and it now covers the RETURN too, not just the fee"],
   ["fee-provenance", /negotiated by the plan/i,
     "says why no public figure exists — the claim's foundation"],
   ["equivalent-not-holding", /registered equivalent/i,
     "the fund shown is NOT the holding; this is the identification caveat"],
   ["direction", /\bcheaper\b/i,
     "the DIRECTION of the error, which is what makes a ceiling reading safe"],
-  ["epistemic-status", /\bceiling\b/i,
-    "names the number as a bound and not as the plan's price"],
+  /* WAS `ceiling`, UNTIL THE FEE WENT AWAY (2026-11-13). This check used to
+   * assert the note called the printed figure "a ceiling, not the plan's
+   * price". The owner's standing decision is symbol only, NO fee, so there is
+   * no printed figure left to bound — and a check that still demanded the word
+   * would have forced the note to describe a number the page no longer shows.
+   * It is REPLACED rather than re-pointed, because the claim itself inverted:
+   * the note's job is now to say that nothing is published. */
+  ["nothing-published", /publish no fee or return/i,
+    "states that NO figure is published — the claim the withdrawal makes"],
 ];
 
 /* ---- (2) the chain, three links plus eagerness ---- */

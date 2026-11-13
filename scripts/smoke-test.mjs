@@ -254,13 +254,32 @@ try {
     .map((x) => x.innerText.trim()).filter((s) => s.endsWith("*")));
   if (!starCells.length)
     fail("comparable-ceiling: specimen rendered no asterisked ticker — the specimen no longer exercises the comparable branch");
+  /* THE FEE IS WITHDRAWN FROM A COMPARABLE (2026-11-13), so the check that
+   * mattered is no longer about WORDING at all: assert on the PAGE that a
+   * starred row's expense-ratio cell is empty. The three greps this replaces
+   * all described the old claim — that the printed figure was "a ceiling, not
+   * the plan's price" — and a grep for that sentence would now force the note
+   * to describe a number the page does not show. The row-level assertion
+   * below cannot be satisfied by prose, which is the whole point: the earlier
+   * version passed for weeks while the cell beside the asterisk carried a
+   * registered fund's fee on a collective trust. */
+  const starFees = await page.evaluate(() => [...document.querySelectorAll("tr")]
+    .filter((tr) => [...tr.querySelectorAll(".fund-ticker")].some((x) => x.innerText.trim().endsWith("*")))
+    .map((tr) => {
+      const td = [...tr.querySelectorAll("td")].map((x) => x.innerText.replace(/\s+/g, " ").trim());
+      return { name: td[0], er: td[2] };
+    }));
+  if (!starFees.length)
+    fail("comparable-ceiling: no starred ROW was readable — the row-level assertion is unexercised");
+  for (const c of starFees) {
+    if (c.er !== "\u2014" && c.er !== "")
+      fail(`comparable-ceiling: starred row ${JSON.stringify(c.name)} still publishes an expense ratio (${JSON.stringify(c.er)}) — a comparable is symbol only`);
+  }
   const cFlat = tC.replace(/\s+/g, " ");
-  if (!/no published expense ratio/i.test(cFlat))
-    fail("comparable-ceiling: page publishes a comparable fee without saying the holding has no published expense ratio");
+  if (!/publish no fee or return/i.test(cFlat))
+    fail("comparable-ceiling: the note no longer states that NO fee or return is published for a comparable");
   if (!/normally\s*cheaper/i.test(cFlat))
     fail("comparable-ceiling: the comparable note no longer states the DIRECTION (the trust class is normally cheaper)");
-  if (!/ceiling, not the plan's price/i.test(cFlat))
-    fail("comparable-ceiling: the comparable note no longer calls the retail fee a CEILING rather than the plan's price");
 
   const t4 = await openPlan(aggPlan, "filed-in-aggregate");
   if (!/in aggregate/i.test(t4))
