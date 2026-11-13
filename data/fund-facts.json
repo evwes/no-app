@@ -1333,6 +1333,316 @@
    "er": 0.49,
    "erAsOf": "2026-05-01",
    "erSource": "https://www.sec.gov/Archives/edgar/data/0001084380/000093041326001428/c116210_497k.htm"
+  },
+  "VAIPX": {
+   "name": "Vanguard Inflation-Protected Securities Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.1,
+   "erAsOf": "2026-04-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VAIPX/profile",
+   "ytd": -1.29,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VAIPX/performance"
+  },
+  "VASGX": {
+   "name": "Vanguard LifeStrategy 80/20 Fund",
+   "updated": "2026-11-13",
+   "er": 0.1,
+   "erAsOf": "2026-02-27",
+   "erSource": "https://investor.vanguard.com/vmf/api/VASGX/profile",
+   "ytd": 8.99,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VASGX/performance"
+  },
+  "VBIAX": {
+   "name": "Vanguard Balanced Index Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.07,
+   "erAsOf": "2026-04-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VBIAX/profile",
+   "ytd": 6.72,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VBIAX/performance"
+  },
+  "VBTLX": {
+   "name": "Vanguard Total Bond Market Index Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.04,
+   "erAsOf": "2026-04-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VBTLX/profile",
+   "ytd": -1.37,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VBTLX/performance"
+  },
+  "VEIRX": {
+   "name": "Vanguard Equity Income Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.17,
+   "erAsOf": "2026-01-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VEIRX/profile",
+   "ytd": 15.74,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VEIRX/performance"
+  },
+  "VEMAX": {
+   "name": "Vanguard Emerging Markets Stock Index Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.13,
+   "erAsOf": "2026-02-27",
+   "erSource": "https://investor.vanguard.com/vmf/api/VEMAX/profile",
+   "ytd": 5.42,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VEMAX/performance"
+  },
+  "VEXAX": {
+   "name": "Vanguard Extended Market Index Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.05,
+   "erAsOf": "2026-04-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VEXAX/profile",
+   "ytd": 11.25,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VEXAX/performance"
+  },
+  "VEXRX": {
+   "name": "Vanguard Explorer Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.28,
+   "erAsOf": "2026-02-27",
+   "erSource": "https://investor.vanguard.com/vmf/api/VEXRX/profile",
+   "ytd": 12.35,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VEXRX/performance"
+  },
+  "VFTAX": {
+   "name": "Vanguard FTSE Social Index Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.11,
+   "erAsOf": "2026-02-02",
+   "erSource": "https://investor.vanguard.com/vmf/api/VFTAX/profile",
+   "ytd": 10.74,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VFTAX/performance"
+  },
+  "VFTNX": {
+   "name": "Vanguard FTSE Social Index Fund Institutional Shares",
+   "updated": "2026-11-13",
+   "er": 0.03,
+   "erAsOf": "2026-02-02",
+   "erSource": "https://investor.vanguard.com/vmf/api/VFTNX/profile",
+   "ytd": 10.81,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VFTNX/performance"
+  },
+  "VGSLX": {
+   "name": "Vanguard Real Estate Index Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.13,
+   "erAsOf": "2026-05-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VGSLX/profile",
+   "ytd": 12.12,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VGSLX/performance"
+  },
+  "VIGAX": {
+   "name": "Vanguard Morningstar Growth Index Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.05,
+   "erAsOf": "2026-04-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VIGAX/profile",
+   "ytd": 4.86,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VIGAX/performance"
+  },
+  "VIGIX": {
+   "name": "Vanguard Morningstar Growth Index Fund Institutional Shares",
+   "updated": "2026-11-13",
+   "er": 0.03,
+   "erAsOf": "2026-04-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VIGIX/profile",
+   "ytd": 4.88,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VIGIX/performance"
+  },
+  "VIIIX": {
+   "name": "Vanguard Institutional Index Fund Institutional Plus Shares",
+   "updated": "2026-11-13",
+   "er": 0.02,
+   "erAsOf": "2026-04-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VIIIX/profile",
+   "ytd": 11.97,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VIIIX/performance"
+  },
+  "VINIX": {
+   "name": "Vanguard Institutional Index Fund Institutional Shares",
+   "updated": "2026-11-13",
+   "er": 0.035,
+   "erAsOf": "2026-04-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VINIX/profile",
+   "ytd": 11.95,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VINIX/performance"
+  },
+  "VIPIX": {
+   "name": "Vanguard Inflation-Protected Securities Fund Institutional Shares",
+   "updated": "2026-11-13",
+   "er": 0.07,
+   "erAsOf": "2026-04-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VIPIX/profile",
+   "ytd": -1.28,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VIPIX/performance"
+  },
+  "VIVIX": {
+   "name": "Vanguard Morningstar Value Index Fund Institutional Shares",
+   "updated": "2026-11-13",
+   "er": 0.03,
+   "erAsOf": "2026-04-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VIVIX/profile",
+   "ytd": 21.71,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VIVIX/performance"
+  },
+  "VMGMX": {
+   "name": "Vanguard Morningstar Mid-Cap Growth Index Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.07,
+   "erAsOf": "2026-04-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VMGMX/profile",
+   "ytd": 4.39,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VMGMX/performance"
+  },
+  "VPMAX": {
+   "name": "Vanguard PRIMECAP Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.27,
+   "erAsOf": "2026-01-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VPMAX/profile",
+   "ytd": 20.73,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VPMAX/performance"
+  },
+  "VSGAX": {
+   "name": "Vanguard Morningstar Small-Cap Growth Index Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.07,
+   "erAsOf": "2026-04-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VSGAX/profile",
+   "ytd": 9.26,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VSGAX/performance"
+  },
+  "VSMAX": {
+   "name": "Vanguard Morningstar Small-Cap Index Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.05,
+   "erAsOf": "2026-04-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VSMAX/profile",
+   "ytd": 14.12,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VSMAX/performance"
+  },
+  "VTIAX": {
+   "name": "Vanguard Total International Stock Index Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.09,
+   "erAsOf": "2026-02-27",
+   "erSource": "https://investor.vanguard.com/vmf/api/VTIAX/profile",
+   "ytd": 10.27,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VTIAX/performance"
+  },
+  "VTSAX": {
+   "name": "Vanguard Morningstar Total Stock Market Index Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.04,
+   "erAsOf": "2026-04-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VTSAX/profile",
+   "ytd": 12.06,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VTSAX/performance"
+  },
+  "VVIAX": {
+   "name": "Vanguard Morningstar Value Index Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.05,
+   "erAsOf": "2026-04-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VVIAX/profile",
+   "ytd": 21.7,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VVIAX/performance"
+  },
+  "VWEAX": {
+   "name": "Vanguard High-Yield Corporate Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.12,
+   "erAsOf": "2026-05-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VWEAX/profile",
+   "ytd": 0.59,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VWEAX/performance"
+  },
+  "VWENX": {
+   "name": "Vanguard Wellington Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.16,
+   "erAsOf": "2026-03-27",
+   "erSource": "https://investor.vanguard.com/vmf/api/VWENX/profile",
+   "ytd": 6.48,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VWENX/performance"
+  },
+  "VWIAX": {
+   "name": "Vanguard Wellesley Income Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.15,
+   "erAsOf": "2026-01-28",
+   "erSource": "https://investor.vanguard.com/vmf/api/VWIAX/profile",
+   "ytd": 4.08,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VWIAX/performance"
+  },
+  "VWILX": {
+   "name": "Vanguard International Growth Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.26,
+   "erAsOf": "2025-12-19",
+   "erSource": "https://investor.vanguard.com/vmf/api/VWILX/profile",
+   "ytd": 4.82,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VWILX/performance"
+  },
+  "VWNAX": {
+   "name": "Vanguard Windsor II Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.24,
+   "erAsOf": "2026-02-27",
+   "erSource": "https://investor.vanguard.com/vmf/api/VWNAX/profile",
+   "ytd": 15.75,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VWNAX/performance"
+  },
+  "VWNEX": {
+   "name": "Vanguard Windsor Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.18,
+   "erAsOf": "2026-02-27",
+   "erSource": "https://investor.vanguard.com/vmf/api/VWNEX/profile",
+   "ytd": 18.31,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VWNEX/performance"
+  },
+  "VWUAX": {
+   "name": "Vanguard U.S. Growth Fund Admiral Shares",
+   "updated": "2026-11-13",
+   "er": 0.25,
+   "erAsOf": "2025-12-19",
+   "erSource": "https://investor.vanguard.com/vmf/api/VWUAX/profile",
+   "ytd": -1.95,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://investor.vanguard.com/vmf/api/VWUAX/performance"
   }
  },
  "vehicles": {},
