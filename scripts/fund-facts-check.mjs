@@ -177,7 +177,11 @@ const VEHICLE_KINDS = ["collective-trust", "separate-account", "guaranteed-optio
  * nothing is published — which is the behaviour `vehicle-stated` was protecting
  * and still protects. */
 const ER_BASIS = ["vehicle-stated", "plan-specific", "class-published"];
-let nv = 0, vEr = 0;
+let nv = 0, vEr = 0, vYtd = 0, vTrailing = 0;
+/* A vehicle fee older than this is a dormant record rather than a price.
+ * Two years, because a provider restates a CIT's fee annually, so one
+ * missed restatement is normal and two is a record nobody is maintaining. */
+const VEHICLE_ER_STALE_YEARS = 2;
 
 for (const [key, f] of Object.entries(vehicles)) {
   nv++;
@@ -204,7 +208,36 @@ for (const [key, f] of Object.entries(vehicles)) {
   /* the SAME return rules as a ticker entry, not a weaker set — see
    * checkReturns. A trust's YTD is dated, sourced and band-checked exactly as a
    * fund's, and a trailing figure still has to declare itself annualised. */
-  { const c = checkReturns(key, f, bad); withYtd += c.ytd; withTrailing += c.trailing; }
+  /* COUNTED SEPARATELY FROM THE TICKER TOTALS. Sharing the counters made the
+   * summary line read "503 ticker entries (503 with an expense ratio, 546 with
+   * a YTD return)" the first time vehicles carried returns — more YTDs than
+   * entries, which is impossible, and it was MY refactor that did it. A gate's
+   * own summary is a published claim about the data; a number in it that
+   * cannot be true is a defect even though no reader sees it. */
+  { const c = checkReturns(key, f, bad); vYtd += c.ytd; vTrailing += c.trailing; }
+  /* A FEE IS A CURRENT PRICE, AND A TWELVE-YEAR-OLD ONE IS NOT ONE.
+   *
+   * Vanguard's API serves its dormant trust classes with an orphaned figure:
+   * every Target Retirement Trust III vintage returns er 0.4000 as of
+   * 2014-03-31 — six times the 0.045–0.13 band its live classes sit in, the
+   * same round number across all twelve — and a YTD block containing NO VALUE.
+   * Recording that is correct, because it is what the source says. PUBLISHING
+   * it as the plan's price would be badly wrong.
+   *
+   * The two witnesses partition the set EXACTLY and that is measured, not
+   * assumed: of 67 Vanguard vehicles, all 44 whose erAsOf is current carry a
+   * YTD and all 23 whose erAsOf is stale carry none. 44/44 and 23/23.
+   *
+   * A WARNING, NOT A FAILURE, and the distinction is the point: the entry is
+   * honestly sourced and belongs in the file. What must not happen is the
+   * figure reaching a page. Any renderer that publishes a vehicle fee is
+   * required to gate on this same freshness — a warning here makes the
+   * population visible and countable; it cannot stop a publish by itself. */
+  if (isDate(f.erAsOf)) {
+    const yrs = (Date.parse(today) - Date.parse(f.erAsOf)) / 31557600000;
+    if (yrs > VEHICLE_ER_STALE_YEARS)
+      warns.push(`${key}: er as of ${f.erAsOf} is ${yrs.toFixed(1)} years old — a dormant record, not a current price; it must not be published as the plan's fee`);
+  }
   /* A CUSIP IS THE ONLY STABLE IDENTIFIER THESE VEHICLES HAVE. `funds` is keyed
    * by ticker and needs none; a trust has no ticker, so without this the entry
    * records a name and a price with nothing a reader could look the thing up
@@ -231,5 +264,5 @@ for (const [key, f] of Object.entries(vehicles)) {
 
 for (const w of warns) console.log(`WARN ${w}`);
 for (const f of fails) console.log(`FAIL ${f}`);
-console.log(`fund-facts: ${n} ticker entries (${withEr} with an expense ratio, ${withYtd} with a YTD return), ${nv} vehicle entries (${vEr} with an expense ratio), ${fails.length} failures, ${warns.length} warnings`);
+console.log(`fund-facts: ${n} ticker entries (${withEr} with an expense ratio, ${withYtd} with a YTD return, ${withTrailing} trailing figures), ${nv} vehicle entries (${vEr} with an expense ratio, ${vYtd} with a YTD return, ${vTrailing} trailing figures), ${fails.length} failures, ${warns.length} warnings`);
 process.exit(fails.length ? 1 : 0);

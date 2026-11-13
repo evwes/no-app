@@ -119,6 +119,58 @@ for (const [label, entry, wantExit, key] of CASES) {
   }
 }
 
+/* A DORMANT FEE WARNS AND IS NOT REFUSED, and both halves are the point.
+ *
+ * Vanguard's API serves every Target Retirement Trust III vintage at er 0.4000
+ * as of 2014-03-31 — six times the band its live classes sit in, the same round
+ * number across all twelve — together with a YTD block holding no value. Those
+ * records are dormant. Recording one is CORRECT (it is what the source says);
+ * publishing it as a plan's price would be badly wrong. So the checker must let
+ * it into the file and say so loudly, and the two expectations below pin
+ * exactly that: exit 0, and a warning naming the entry.
+ *
+ * The fresh case is not decoration — without it a rule that warned on EVERY
+ * vehicle would pass the stale case and nobody would notice. */
+{
+  const cases = [
+    ["a twelve-year-old fee warns", base({ erAsOf: "2014-03-31", er: 0.4 }), 0, true],
+    ["a current fee does not", base({}), 0, false],
+  ];
+  for (const [label, entry, wantExit, wantWarn] of cases) {
+    const f = path.join(dir, "s.json");
+    writeFileSync(f, JSON.stringify({ _schema: "test", funds: {}, vehicles: { "vanguard::x": entry } }));
+    let code = 0, out = "";
+    try { out = execFileSync("node", [CHECK, f], { encoding: "utf8" }); }
+    catch (e) { code = e.status ?? 1; out = String(e.stdout || "") + String(e.stderr || ""); }
+    const warned = /dormant record/.test(out);
+    if (code === wantExit && warned === wantWarn) console.log(`  ok    ${label}`);
+    else { bad++; console.log(`  FAIL  ${label}: exit ${code} (want ${wantExit}), warned ${warned} (want ${wantWarn})`); }
+  }
+}
+
+/* THE TWO SECTIONS' COUNTERS MUST NOT BE THE SAME COUNTER. When the return
+ * rules were factored out to be shared, both call sites accumulated into the
+ * TICKER totals, and the first file to hold a vehicle return reported "503
+ * ticker entries (503 with an expense ratio, 546 with a YTD return)" — more
+ * YTDs than entries, which cannot be true. A gate's own summary is a claim
+ * about the data, and a number in it that cannot be true is a defect even
+ * though no reader sees it. One ticker and one vehicle, each with one YTD:
+ * both halves must read 1. */
+{
+  const f = path.join(dir, "c.json");
+  writeFileSync(f, JSON.stringify({
+    _schema: "test",
+    funds: { TEST: { name: "Test Fund", updated: TODAY, er: 0.04, erAsOf: TODAY, erSource: SRC,
+      ytd: 1.1, ytdAsOf: TODAY, ytdSource: SRC } },
+    vehicles: { "vanguard::x": base({ ytd: 2.2, ytdAsOf: TODAY, ytdSource: SRC }) },
+  }));
+  const out = execFileSync("node", [CHECK, f], { encoding: "utf8" });
+  const ok = /1 ticker entries \(1 with an expense ratio, 1 with a YTD return/.test(out)
+    && /1 vehicle entries \(1 with an expense ratio, 1 with a YTD return/.test(out);
+  if (ok) console.log("  ok    ticker and vehicle totals are counted apart");
+  else { bad++; console.log(`  FAIL  the two sections share a counter: ${out.trim().split("\n").pop()}`); }
+}
+
 /* THE BRANCH MUST ACTUALLY BE REACHED. Every case above could pass against a
  * checker that ignores `vehicles` entirely except for the few it refuses, so
  * assert the count it reports — a silent skip reads exactly like a clean pass. */
@@ -127,7 +179,7 @@ for (const [label, entry, wantExit, key] of CASES) {
   writeFileSync(f, JSON.stringify({ _schema: "test", funds: {},
     vehicles: { "vanguard::a": base({}), "vanguard::b": base({}) } }));
   const out = execFileSync("node", [CHECK, f], { encoding: "utf8" });
-  if (/2 vehicle entries \(2 with an expense ratio\)/.test(out)) console.log("  ok    the checker counts the vehicles it read");
+  if (/2 vehicle entries \(2 with an expense ratio[,)]/.test(out)) console.log("  ok    the checker counts the vehicles it read");
   else { bad++; console.log(`  FAIL  the checker did not report 2 vehicle entries: ${out.trim().slice(-160)}`); }
 }
 
@@ -142,5 +194,5 @@ try {
   console.log(`        ${String(e.stdout || e.message).trim().slice(0, 200)}`);
 }
 
-console.log(bad ? `\nfund-facts-vehicle-test: ${bad} FAILURE(S)` : `\nfund-facts-vehicle-test: ${CASES.length + 2} checks, all pass`);
+console.log(bad ? `\nfund-facts-vehicle-test: ${bad} FAILURE(S)` : `\nfund-facts-vehicle-test: ${CASES.length + 5} checks, all pass`);
 process.exit(bad ? 1 : 0);
