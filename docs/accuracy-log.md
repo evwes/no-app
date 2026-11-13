@@ -63720,3 +63720,41 @@ three wording greps became a **row-level assertion on the page**: every starred
 row's expense-ratio cell must be empty. That is the check nobody had written,
 and it cannot be satisfied by prose. Negative control run: restoring the one
 line fails smoke-test by name on `NT COLLECTIVE S&P500 … NOSIX*` at `0.050%*`.
+
+## 2026-11-13 — `erAsOf` holds two different meanings, and the page publishes it
+
+**FOUND while checking an agent's work, and it is NOT the agent's.** The
+fund-facts agent stamped `erAsOf: 2026-11-12` on 37 new entries sourced from the
+Schwab summary page, saying it followed "the FXAIX convention". I went to the
+page to check whether an expense ratio really carries that date. It does not:
+the page reads `… 6.58% as of 11/12/2026 Gross Expense Ratio 0.08% Net Expense
+Ratio 0.08%`, so **the date belongs to the YTD figure beside it**, and the
+header's `Quote data as of close 11/12/2026` belongs to the NAV. The expense
+ratio is printed with no date of its own.
+
+**THE CONVENTION PREDATES TODAY AND COVERS 129 ENTRIES.** Measured over
+`data/fund-facts.json`: 129 entries cite Schwab for the expense ratio and **all
+129 have `erAsOf == ytdAsOf`** — 91 of them from the original 2026-11-03 batch,
+37 from today, 1 from 2026-11-04. So the agent inherited it rather than invented
+it, and checking its report is what surfaced a field-level defect nobody had
+looked at.
+
+**WHY IT MATTERS: THE FIELD IS PUBLISHED.** `app.js:4853` renders it as the
+tooltip on the sourced-fee tick — `title="Sourced figure, as of <erAsOf> — not
+an estimate"`. On a Vanguard entry that date is the fee's own effective date,
+read from the issuer's `expenseRatioAsOfDate` (e.g. 2026-04-28). On a
+Schwab-sourced entry it is the day we read the page. *One field, two meanings,
+and the reader cannot tell which they are being shown.* Neither is a false
+statement about something; together they are not a statement about anything in
+particular.
+
+**NOT "FIXED" BY REWRITING THE DATES**, because the right date is not available
+from that source — inventing a prospectus date would be exactly the inference
+this file exists to refuse. Recorded instead, with the remedy named: the checker
+already allows an `erBasis` field on VEHICLE entries (`fund-facts-check.mjs:192`)
+and not on ticker entries (`:135`), so the schema precedent exists. The
+distinction to carry is `prospectus` versus `as-published-on`, and the tooltip
+should say which. Sizing and the render are a separate ship.
+
+*A figure can be right while its provenance claim is wrong, and only reading the
+source catches it — the count of entries is identical either way.*
