@@ -1643,6 +1643,376 @@
    "ytd": -1.95,
    "ytdAsOf": "2026-11-12",
    "ytdSource": "https://investor.vanguard.com/vmf/api/VWUAX/performance"
+  },
+  "BDSKX": {
+   "name": "BlackRock Advantage Small Cap Core Fund Class K",
+   "updated": "2026-11-13",
+   "er": 0.45,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=BDSKX",
+   "ytd": 15.99,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=BDSKX"
+  },
+  "BMGKX": {
+   "name": "BlackRock Mid-Cap Growth Equity Portfolio Class K",
+   "updated": "2026-11-13",
+   "er": 0.71,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=BMGKX",
+   "ytd": -5.18,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=BMGKX"
+  },
+  "CMGIX": {
+   "name": "BlackRock Mid-Cap Growth Equity Portfolio Institutional Shares",
+   "updated": "2026-11-13",
+   "er": 0.8,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=CMGIX",
+   "ytd": -5.23,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=CMGIX"
+  },
+  "FCTKX": {
+   "name": "Fidelity Freedom 2055 Fund - Class K6",
+   "updated": "2026-11-13",
+   "er": 0.45,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FCTKX",
+   "ytd": 12.36,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FCTKX"
+  },
+  "FFEDX": {
+   "name": "Fidelity Freedom Index 2025 Fund - Institutional Premium Class",
+   "updated": "2026-11-13",
+   "er": 0.08,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFEDX",
+   "ytd": 5.71,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFEDX"
+  },
+  "FFEGX": {
+   "name": "Fidelity Freedom Index 2030 Fund - Institutional Premium Class",
+   "updated": "2026-11-13",
+   "er": 0.08,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFEGX",
+   "ytd": 6.58,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFEGX"
+  },
+  "FFEZX": {
+   "name": "Fidelity Freedom Index 2035 Fund - Institutional Premium Class",
+   "updated": "2026-11-13",
+   "er": 0.08,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFEZX",
+   "ytd": 7.67,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFEZX"
+  },
+  "FFIKX": {
+   "name": "Fidelity Freedom Index 2065 Fund - Institutional Premium Class",
+   "updated": "2026-11-13",
+   "er": 0.08,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFIKX",
+   "ytd": 11.29,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFIKX"
+  },
+  "FFIZX": {
+   "name": "Fidelity Freedom Index 2040 Fund - Institutional Premium Class",
+   "updated": "2026-11-13",
+   "er": 0.08,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFIZX",
+   "ytd": 9.65,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFIZX"
+  },
+  "FFLDX": {
+   "name": "Fidelity Freedom Index 2055 Fund - Institutional Premium Class",
+   "updated": "2026-11-13",
+   "er": 0.08,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFLDX",
+   "ytd": 11.32,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFLDX"
+  },
+  "FFLEX": {
+   "name": "Fidelity Freedom Index 2060 Fund - Institutional Premium Class",
+   "updated": "2026-11-13",
+   "er": 0.08,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFLEX",
+   "ytd": 11.33,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFLEX"
+  },
+  "FFOLX": {
+   "name": "Fidelity Freedom Index 2045 Fund - Institutional Premium Class",
+   "updated": "2026-11-13",
+   "er": 0.08,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFOLX",
+   "ytd": 10.91,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFOLX"
+  },
+  "FFOPX": {
+   "name": "Fidelity Freedom Index 2050 Fund - Institutional Premium Class",
+   "updated": "2026-11-13",
+   "er": 0.08,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFOPX",
+   "ytd": 11.14,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FFOPX"
+  },
+  "FGTKX": {
+   "name": "Fidelity Freedom 2030 Fund - Class K6",
+   "updated": "2026-11-13",
+   "er": 0.35,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FGTKX",
+   "ytd": 7.42,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FGTKX"
+  },
+  "FHTKX": {
+   "name": "Fidelity Freedom 2040 Fund - Class K6",
+   "updated": "2026-11-13",
+   "er": 0.42,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FHTKX",
+   "ytd": 10.68,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FHTKX"
+  },
+  "FIWTX": {
+   "name": "Fidelity Freedom Index 2020 Fund - Institutional Premium Class",
+   "updated": "2026-11-13",
+   "er": 0.08,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FIWTX",
+   "ytd": 4.98,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FIWTX"
+  },
+  "FVTKX": {
+   "name": "Fidelity Freedom 2060 Fund - Class K6",
+   "updated": "2026-11-13",
+   "er": 0.45,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FVTKX",
+   "ytd": 12.39,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FVTKX"
+  },
+  "FWTKX": {
+   "name": "Fidelity Freedom 2035 Fund - Class K6",
+   "updated": "2026-11-13",
+   "er": 0.38,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FWTKX",
+   "ytd": 8.54,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FWTKX"
+  },
+  "FZTKX": {
+   "name": "Fidelity Freedom 2050 Fund - Class K6",
+   "updated": "2026-11-13",
+   "er": 0.45,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FZTKX",
+   "ytd": 12.17,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FZTKX"
+  },
+  "SHSSX": {
+   "name": "BlackRock Health Sciences Opportunities Portfolio Institutional Shares",
+   "updated": "2026-11-13",
+   "er": 0.86,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SHSSX",
+   "ytd": 18.89,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SHSSX"
+  },
+  "SSAQX": {
+   "name": "State Street U.S. Core Equity Fund",
+   "updated": "2026-11-13",
+   "er": 0.13,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSAQX",
+   "ytd": 9.0,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSAQX"
+  },
+  "SSBSX": {
+   "name": "State Street Target Retirement 2025 Fund Class K",
+   "updated": "2026-11-13",
+   "er": 0.09,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSBSX",
+   "ytd": 5.8,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSBSX"
+  },
+  "SSBYX": {
+   "name": "State Street Target Retirement 2030 Fund Class K",
+   "updated": "2026-11-13",
+   "er": 0.09,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSBYX",
+   "ytd": 6.33,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSBYX"
+  },
+  "SSCKX": {
+   "name": "State Street Target Retirement 2035 Fund Class K",
+   "updated": "2026-11-13",
+   "er": 0.09,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSCKX",
+   "ytd": 7.26,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSCKX"
+  },
+  "SSCQX": {
+   "name": "State Street Target Retirement 2040 Fund Class K",
+   "updated": "2026-11-13",
+   "er": 0.09,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSCQX",
+   "ytd": 8.05,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSCQX"
+  },
+  "SSDEX": {
+   "name": "State Street Target Retirement 2045 Fund Class K",
+   "updated": "2026-11-13",
+   "er": 0.09,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSDEX",
+   "ytd": 8.79,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSDEX"
+  },
+  "SSDLX": {
+   "name": "State Street Target Retirement 2050 Fund Class K",
+   "updated": "2026-11-13",
+   "er": 0.09,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSDLX",
+   "ytd": 9.46,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSDLX"
+  },
+  "SSDQX": {
+   "name": "State Street Target Retirement 2055 Fund Class K",
+   "updated": "2026-11-13",
+   "er": 0.09,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSDQX",
+   "ytd": 9.87,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSDQX"
+  },
+  "SSDYX": {
+   "name": "State Street Target Retirement 2060 Fund Class K",
+   "updated": "2026-11-13",
+   "er": 0.09,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSDYX",
+   "ytd": 9.83,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSDYX"
+  },
+  "SSFEX": {
+   "name": "State Street Aggregate Bond Index Fund Class K",
+   "updated": "2026-11-13",
+   "er": 0.025,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSFEX",
+   "ytd": -1.41,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSFEX"
+  },
+  "SSFKX": {
+   "name": "State Street Target Retirement 2065 Fund Class K",
+   "updated": "2026-11-13",
+   "er": 0.09,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSFKX",
+   "ytd": 9.9,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSFKX"
+  },
+  "SSFOX": {
+   "name": "State Street Target Retirement Fund Class K",
+   "updated": "2026-11-13",
+   "er": 0.09,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSFOX",
+   "ytd": 4.83,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSFOX"
+  },
+  "SSGLX": {
+   "name": "State Street Global All Cap Equity ex-U.S. Index Fund Class K",
+   "updated": "2026-11-13",
+   "er": 0.065,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSGLX",
+   "ytd": 10.66,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSGLX"
+  },
+  "SSGNX": {
+   "name": "State Street Target Retirement 2070 Fund Class K",
+   "updated": "2026-11-13",
+   "er": 0.09,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSGNX",
+   "ytd": 9.84,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSGNX"
+  },
+  "SSSYX": {
+   "name": "State Street Equity 500 Index Fund Class K",
+   "updated": "2026-11-13",
+   "er": 0.02,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSSYX",
+   "ytd": 11.96,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SSSYX"
+  },
+  "WFBIX": {
+   "name": "iShares U.S. Aggregate Bond Index Fund Class K",
+   "updated": "2026-11-13",
+   "er": 0.05,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=WFBIX",
+   "ytd": -1.42,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=WFBIX"
+  },
+  "WFSPX": {
+   "name": "iShares S&P 500 Index Fund Class K",
+   "updated": "2026-11-13",
+   "er": 0.03,
+   "erAsOf": "2026-11-12",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=WFSPX",
+   "ytd": 11.92,
+   "ytdAsOf": "2026-11-12",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=WFSPX"
   }
  },
  "vehicles": {},
