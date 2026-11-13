@@ -865,6 +865,27 @@ const FUND_TICKER = [
   [vgIPlus(String.raw`extended market i(?:nde|d)x`), "VEMPX"],
   [vgIPlus(String.raw`small[- ]?cap index`), "VSCPX"],
   [vgIPlus(String.raw`mid[- ]?cap index`), "VMCPX"],
+  /* THE CLASS MARKER IS NOT ALWAYS ADJACENT, AND THE BARE ARM BELOW IS WHAT
+   * CATCHES WHAT FALLS THROUGH. VG_IPLUS demands `institutional` and `plus`
+   * touching; these filers put the fund between them — "Vanguard Institutional
+   * Index Plus Fund", "… Index Fund Plus Shares", "… Index Fund, Plus" — or
+   * quote the word, or spell `Inst’l` with a CURLY apostrophe that
+   * `inst'?l?` cannot match. All of them then fell to /vanguard institutional
+   * index/ and were answered VINIX, the INSTITUTIONAL class, where the filing
+   * states INSTITUTIONAL PLUS: VIIIX. Since both classes are now sourced in
+   * data/fund-facts.json the page printed 0.035% with a VERIFIED TICK on a
+   * fund that charges 0.020%, so this is a wrong published claim, not a gap.
+   * Found on Black Hills Corporation's $143.5M top holding.
+   *
+   * A DEDICATED DISJUNCT, not a relaxation of VG_IPLUS: its blast radius is
+   * this one series' phrase, so it cannot compose with the six arms above.
+   * Licensed by READING every name it reaches — 62 groups store-wide, 26 of
+   * them new, enumerated by scripts/vg-plus-names.mjs. Twenty-five are
+   * unmistakably this class. The twenty-sixth, "VANGUARD TARGET INSTITUTIONAL
+   * INDEX PLUS" (136,132 readers, $658M), is refused BY NAME here: `target`
+   * leaves the vehicle unsettled, and it carries no symbol today, so refusing
+   * it publishes nothing rather than guessing. */
+  [/^(?!.*\b(?:admiral|investor)\b)(?!.*\btarget\b)(?=.*\bvanguard\b)(?=.*institutional\s+index)(?=.*\bplus\b)/i, "VIIIX"],
   [/vanguard institutional index/i, "VINIX"],
   [/vanguard total stock market index/i, "VTSAX"],
   [/vanguard total international stock (index|market)/i, "VTIAX"],

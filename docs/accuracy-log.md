@@ -7,6 +7,53 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-13 (owner-reported, Black Hills) — THE SOURCED FEE MADE A WRONG SHARE CLASS WORSE: VINIX published on a filing naming INSTITUTIONAL PLUS, under a verified tick
+
+**WHAT WAS WRONG.** Black Hills Corporation's top holding is filed as `Vanguard
+Institutional Index **Plus** Fund` — $143.5M, 15.7% of the plan. The page
+published **VINIX**, which the SEC registry and Vanguard's own API both call
+*Institutional Shares* (0.035%). The filing names *Institutional Plus Shares*:
+**VIIIX, 0.020%**. `fund-er.js`'s `VG_IPLUS` requires `institutional` and `plus`
+to be ADJACENT; these filers put the fund name between them, quote the word, or
+spell `Inst’l` with a CURLY apostrophe that `inst'?l?` cannot match. All of them
+fell past the seven class-explicit arms to the bare `/vanguard institutional
+index/` arm. **The eleventh instance of: *a fix for one phrasing of a class is
+not a fix for the class — the class also has an INTERVENING WORD.***
+
+**AND OUR OWN TWO TABLES CONTRADICTED EACH OTHER ON THE SAME ROW.** The pattern
+FEE arm read the name as Plus and returned 0.020; the TICKER arm returned VINIX.
+That disagreement was invisible while the fee was an estimate — the displayed
+0.020% was right. **Sourcing VINIX on 2026-11-13 is what turned a cosmetic
+mismatch into a wrong published number**, because a sourced figure outranks the
+estimate: the cell went 0.020% → **0.035% with a ✓**, and the YTD followed. *A
+ship that makes every cell more trustworthy makes a mis-resolved row more
+wrong, and nothing in the sourcing pipeline can see it — the defect is in the
+resolver, and the fee was correct for the symbol it was asked about.*
+
+**THE CHANGE.** A DEDICATED DISJUNCT above the bare arm, blast radius one
+series' phrase, licensed by READING every name it reaches rather than by
+argument: `scripts/vg-plus-names.mjs` enumerated all 62 live groups, 26 of them
+new, and 25 are unmistakably this class. The 26th — `VANGUARD TARGET
+INSTITUTIONAL INDEX PLUS`, 136,132 readers, $658M — is refused BY NAME, because
+`target` leaves the vehicle unsettled and it carries no symbol today, so
+refusing it publishes nothing. Differential through the real `renderRow` with
+the sourced override composed: **61 rows / 61 plans / 581,379 readers /
+$10.03B**, every one `VINIX→VIIIX`, `0.035✓→0.020✓`, `+11.95%→+11.97%`; **0
+rows move outside the class**; row membership identical on both sides. One
+surface — `build-seo-pages.mjs` imports no `fund-er` and its table is
+`<th>Fund</th><th>Value</th>`.
+
+**PREVENTION.** Eight fixtures in `fund-er-test.mjs`, one per live spelling,
+plus two controls (no class stated; INSTITUTIONAL stated) that a version
+matching on `institutional index` alone would fail. Three leave-one-out
+mutations in a `PLUS_MUTATIONS` block, each with a case where it is the only
+protection — and the third is recorded honestly as **blocking zero rows in
+today's store**, which is a fact about the data, not a claim it is doing work.
+Negative control: the suite run against a copy with the arm deleted fails on
+exactly the eight new pins.
+
+---
+
 ## 2026-11-09 (daily cycle, match) — v205: THE WORD "MATCH" AS A FINITE VERB. 30.8M readers were diagnosed and 70% of the class is HONEST; the 25% that is ours is one grammatical shape
 
 **THE CLASS WAS DIAGNOSED BEFORE IT WAS FIXED, and most of it is not a defect.**

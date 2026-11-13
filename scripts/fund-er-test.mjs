@@ -156,6 +156,31 @@ const MUST = [
   ["VANGUARD MID CAP INDEX-INST+", "VMCPX"],        // "+" is the Plus class
   ["Institutional Plus Shares Vanguard Mid Cap Index", "VMCPX"],  // marker LEADS
   ["Vanguard Mid-Cap Ind Inst Plus", "VMCPX"],       // IND -> Index
+  /* THE MARKER SPLIT BY THE FUND NAME (2026-11-13). Every case above states
+   * the class with its two words TOUCHING, which is all VG_IPLUS can match.
+   * These filers put the fund between them, quote the word, or spell `Inst’l`
+   * with a CURLY apostrophe `inst'?l?` cannot see — so all of them fell past
+   * the seven arms to the bare /vanguard institutional index/ and were
+   * answered VINIX, the INSTITUTIONAL class, on a filing naming INSTITUTIONAL
+   * PLUS. With both classes sourced in data/fund-facts.json that printed
+   * 0.035% under a VERIFIED TICK on a 0.020% fund. The first is Black Hills
+   * Corporation's $143.5M top holding; the rest are the distinct live
+   * spellings the widening reaches, each read before being pinned
+   * (scripts/vg-plus-names.mjs). 61 rows / 581,379 reader-slots / $10.0B. */
+  ["Vanguard Institutional Index Plus Fund", "VIIIX"],
+  ["Vanguard Institutional Index Fund Plus Shares", "VIIIX"],
+  ["Vanguard Institutional Index Plus", "VIIIX"],
+  ["Vanguard Institutional Index Fund, Plus", "VIIIX"],
+  ["Vanguard Institutional Index Fund Inst’l Plus Shares", "VIIIX"],
+  ["Vanguard Institutional Index Fund Institutional \"Plus\" Shares", "VIIIX"],
+  ["Vanguard Institutional Index (Plus)", "VIIIX"],
+  ["Vanguard Institutional Index Fund — Plus Shares", "VIIIX"],
+  /* CONTROLS THE NEW ARM MUST NOT MOVE: a name stating no class at all, and
+   * one stating INSTITUTIONAL, both of which the bare arm answers correctly.
+   * Without these a version matching on `institutional index` alone would
+   * pass every pin above. */
+  ["Vanguard Institutional Index Fund", "VINIX"],
+  ["Vanguard Institutional Index Fund Institutional Shares", "VINIX"],
   /* MUST NOT BE REPAIRED, and each of these can actually fail rather than being
    * refused by an earlier condition — the point of pinning them.
    * (1) two different classes stated: the contradicting-class lookahead is the
@@ -631,6 +656,43 @@ const MUTATIONS = [
       "const SS_TRUST_NAME = /$^/;"),
     "State Street S&P 500 Index Non-Lending Series Fund Class K", "SSSYX*"],
 ];
+/* THE INSTITUTIONAL-PLUS SPLIT-MARKER ARM, priced the same way and kept in its
+ * own list because MUTATIONS above is about `classStatedAndRegistered` and a
+ * list whose header stops describing it is worse than two lists.
+ *
+ * Each entry neuters ONE piece of the arm and names a case that must change
+ * verdict. All three verdicts below were PROBED against the shipped source
+ * before being written here, and the third is recorded honestly: the
+ * admiral/investor lookahead is load-bearing on the constructed case and
+ * blocks ZERO rows in today's store, which is a fact about the data, not a
+ * reason to carry it as though it were doing work. It stays because it mirrors
+ * the idiom of the seven vgIPlus arms directly above it in fund-er.js. */
+const PLUS_MUTATIONS = [
+  ["split-marker arm",
+    (t) => t.replace(/\n  \[\/\^\(\?!\.\*\\b\(\?:admiral\|investor\)\\b\)\(\?!\.\*\\btarget\\b\)[^\n]*"VIIIX"\],/, ""),
+    "Vanguard Institutional Index Plus Fund", "VIIIX"],
+  ["target exclusion",
+    (t) => t.replace(String.raw`(?!.*\btarget\b)(?=.*\bvanguard\b)(?=.*institutional\s+index)`,
+      String.raw`(?=.*\bvanguard\b)(?=.*institutional\s+index)`),
+    "VANGUARD TARGET INSTITUTIONAL INDEX PLUS", ""],
+  ["admiral/investor exclusion",
+    (t) => t.replace(String.raw`[/^(?!.*\b(?:admiral|investor)\b)(?!.*\btarget\b)`,
+      String.raw`[/^(?!.*\btarget\b)`),
+    "Vanguard Institutional Index Admiral Plus", "VINIX"],
+];
+for (const [label, mutate, name, want] of PLUS_MUTATIONS) {
+  const mutated = mutate(src);
+  if (mutated === src) { console.log(`FAIL mutation "${label}" did not change the source — it is malformed`); fail++; continue; }
+  const mctx = { console: { log() {}, warn() {}, error() {} } };
+  vm.createContext(mctx);
+  try { vm.runInContext(mutated + "\nglobalThis.__t = fundTickerInfo;", mctx); }
+  catch (e) { console.log(`FAIL mutation "${label}" would not load: ${e.message}`); fail++; continue; }
+  const r = mctx.__t(name, "");
+  const got = r ? r.tk + (r.comparable ? "*" : "") : "";
+  if (got === want) { console.log(`FAIL mutation "${label}" still answers ${JSON.stringify(want)} for ${JSON.stringify(name)} — the condition protects nothing`); fail++; }
+}
+console.log(`fund-er Institutional Plus mutations: ${PLUS_MUTATIONS.length} conditions, each with a case where it is the only protection`);
+
 for (const [label, mutate, name, want] of MUTATIONS) {
   const mutated = mutate(src);
   if (mutated === src) { console.log(`FAIL mutation "${label}" did not change the source — it is malformed`); fail++; continue; }
