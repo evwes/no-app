@@ -23,6 +23,10 @@ on:
             # fire is indistinguishable from no gate.
             "data/fund-facts.json", "scripts/fund-facts-check.mjs",
             "scripts/fund-facts-returns-test.mjs",
+            # and the VEHICLE branch's own test. `vehicles` is where every
+            # collective trust has to live and it held zero entries for its
+            # whole life, so its rules were machinery nobody had ever run.
+            "scripts/fund-facts-vehicle-test.mjs",
             "scripts/fund-facts-ingest.mjs",
             # the ISSUER-PAGE extractor and its tether. The tether's own
             # workflow (fund-facts.yml) is dispatch-only, so without these two
@@ -414,6 +418,20 @@ jobs:
       # network, writes only in the OS temp dir.
       - name: Trailing-return rules refuse a cumulative figure
         run: node scripts/fund-facts-returns-test.mjs
+      # AND THE SAME, FOR THE SECTION THAT HAS NEVER HELD AN ENTRY. `vehicles`
+      # is where every collective trust must live, because `funds` is keyed by
+      # ticker and a trust has none. It has been validated and EMPTY, so its
+      # whole branch was read-only machinery -- it could not even carry a
+      # `ytd`, the closed whitelist rejected it as unknown. Opened 2026-11-13
+      # because Vanguard publishes a profile per Target Retirement Trust CLASS,
+      # with its own CUSIP, dated fee and dated returns, which refutes the
+      # premise that a trust has no public figures for 15,046 published rows.
+      # The test proves the returns run through the SHARED checkReturns at this
+      # call site, and that `class-published` -- the narrower erBasis saying the
+      # provider prices a NAMED class the filing states -- cannot be written
+      # without naming that class. No network, writes only in the OS temp dir.
+      - name: Vehicle entries are held to the same receipts as tickers
+        run: node scripts/fund-facts-vehicle-test.mjs
       # THE FEE MUST COME FROM ITS OWN COLUMN, NOT FROM THE DAY'S QUOTE. The
       # issuer page puts every label first and every value after, so a
       # label-proximity read returns the price change: it gave FXAIX 0.37%

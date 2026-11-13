@@ -31,6 +31,64 @@ const isUrl = (s) => typeof s === "string" && /^https?:\/\/\S+$/.test(s);
 const fails = [], warns = [];
 let n = 0, withEr = 0, withYtd = 0, withTrailing = 0;
 
+/* THE RETURN RULES, SHARED BY BOTH SECTIONS (2026-11-13).
+ *
+ * They were written for `funds` and lived inside its loop, so `vehicles` —
+ * which is where every collective trust lives — could not carry a return at
+ * all: the field whitelist rejected `ytd` as unknown. That was invisible while
+ * `vehicles` held zero entries, and it stops being invisible the moment a
+ * provider that publishes its trusts is sourced. Vanguard publishes a profile
+ * per TARGET RETIREMENT TRUST CLASS, with its own CUSIP, its own dated expense
+ * ratio and its own dated returns, so the premise that a trust has no public
+ * figures is false for 15,046 published rows / 10.7M readers.
+ *
+ * MOVED, NOT RETYPED. This body is the shipped text with `ticker` renamed to
+ * `key`; the bands, the staleness warning, the annualised requirement, the
+ * mixed-as-of-date warning and the inception check are the same rules, so a
+ * vehicle's return cannot be held to a weaker standard than a fund's. A
+ * re-implementation here would be a second set of rules wearing the first
+ * one's name. */
+function checkReturns(key, f, bad) {
+  let ytd = 0, trailing = 0;
+  if (f.ytd !== undefined) {
+    ytd++;
+    if (typeof f.ytd !== "number" || !(f.ytd >= -100 && f.ytd <= 500)) bad(`ytd ${f.ytd} is not a number in -100..500 (percent)`);
+    if (!isDate(f.ytdAsOf)) bad("ytd has no ytdAsOf date");
+    else {
+      if (f.ytdAsOf > today) bad(`ytdAsOf ${f.ytdAsOf} is in the future`);
+      const age = (Date.parse(today) - Date.parse(f.ytdAsOf)) / 86400000;
+      if (age > STALE_DAYS) warns.push(`${key}: ytd as of ${f.ytdAsOf} is ${Math.round(age)} days old (stale for display)`);
+      if (!f.ytdAsOf.startsWith(today.slice(0, 4))) warns.push(`${key}: ytdAsOf ${f.ytdAsOf} is not this calendar year — a YTD figure from a past year is not "year to date"`);
+    }
+    if (!isUrl(f.ytdSource || f.source)) bad("ytd has no source URL (ytdSource or source)");
+  }
+  const HORIZON = { r1y: [-95, 200], r3y: [-70, 120], r5y: [-60, 100], r10y: [-50, 80] };
+  const present = Object.keys(HORIZON).filter((k) => f[k] !== undefined);
+  for (const k of present) {
+    trailing++;
+    const [lo, hi] = HORIZON[k];
+    if (typeof f[k] !== "number" || !(f[k] >= lo && f[k] <= hi))
+      bad(`${k} ${f[k]} is not a number in ${lo}..${hi} (ANNUALISED percent — a cumulative figure belongs in no field here)`);
+    if (!isDate(f[`${k}AsOf`])) bad(`${k} has no ${k}AsOf date`);
+    else if (f[`${k}AsOf`] > today) bad(`${k}AsOf ${f[`${k}AsOf`]} is in the future`);
+    if (!isUrl(f[`${k}Source`] || f.source)) bad(`${k} has no source URL (${k}Source or source)`);
+  }
+  if (present.length) {
+    if (f.returnBasis !== "annualised")
+      bad(`a trailing return needs returnBasis "annualised" (got ${JSON.stringify(f.returnBasis)}) — a 10-year cumulative figure is ~2.6x its annualised one and must not be published as it`);
+    const dates = [...new Set(present.map((k) => f[`${k}AsOf`]).filter(isDate))];
+    if (dates.length > 1) warns.push(`${key}: trailing returns carry ${dates.length} different as-of dates (${dates.join(", ")}) — a curve drawn across them is not one quote`);
+    if (f.inception && isDate(f.inception)) {
+      for (const k of present) {
+        const yrs = +k.slice(1, -1);
+        const age = (Date.parse(f[`${k}AsOf`] || today) - Date.parse(f.inception)) / 31557600000;
+        if (age + 0.1 < yrs) bad(`${k} is longer than the fund's life (inception ${f.inception}, ${age.toFixed(1)} years to ${k}AsOf)`);
+      }
+    }
+  }
+  return { ytd, trailing };
+}
+
 for (const [ticker, f] of Object.entries(funds)) {
   n++;
   const bad = (m) => fails.push(`${ticker}: ${m}`);
@@ -47,68 +105,9 @@ for (const [ticker, f] of Object.entries(funds)) {
     else if (f.erAsOf > today) bad(`erAsOf ${f.erAsOf} is in the future`);
     if (!isUrl(f.erSource || f.source)) bad("er has no source URL (erSource or source)");
   }
-  if (f.ytd !== undefined) {
-    withYtd++;
-    if (typeof f.ytd !== "number" || !(f.ytd >= -100 && f.ytd <= 500)) bad(`ytd ${f.ytd} is not a number in -100..500 (percent)`);
-    if (!isDate(f.ytdAsOf)) bad("ytd has no ytdAsOf date");
-    else {
-      if (f.ytdAsOf > today) bad(`ytdAsOf ${f.ytdAsOf} is in the future`);
-      const age = (Date.parse(today) - Date.parse(f.ytdAsOf)) / 86400000;
-      if (age > STALE_DAYS) warns.push(`${ticker}: ytd as of ${f.ytdAsOf} is ${Math.round(age)} days old (stale for display)`);
-      if (!f.ytdAsOf.startsWith(today.slice(0, 4))) warns.push(`${ticker}: ytdAsOf ${f.ytdAsOf} is not this calendar year — a YTD figure from a past year is not "year to date"`);
-    }
-    if (!isUrl(f.ytdSource || f.source)) bad("ytd has no source URL (ytdSource or source)");
-  }
-  /* TRAILING RETURNS — 1, 3, 5 and 10 year. Added 2026-11-06 so the fund-facts
-   * agent can begin sourcing them: the owner's next feature is a return curve
-   * over these horizons, and until this field list admits them the agent could
-   * not write one, because the whitelist below rejects an unknown field. The
-   * DATA is the long pole, not the chart, so the schema opens first.
-   *
-   * THEY ARE ANNUALISED, AND THAT IS PINNED RATHER THAN ASSUMED. A fund's
-   * 10-year CUMULATIVE return and its 10-year ANNUALISED return differ by an
-   * order of magnitude (a 10% annualised decade is +159% cumulative), so a file
-   * that merely says "return" invites exactly the class of error this project
-   * exists to prevent. Every multi-year entry must therefore declare
-   * `returnBasis: "annualised"`; nothing else is accepted, so a cumulative
-   * figure cannot be written without saying so and failing.
-   *
-   * The plausibility band is per horizon and tightens with length, because
-   * annualising damps the extremes: one year of a leveraged fund can really be
-   * -70% or +120%, a decade cannot. A band that is the same at every horizon
-   * would pass a cumulative figure pasted into an annualised field, which is
-   * the specific mistake worth catching. */
-  const HORIZON = { r1y: [-95, 200], r3y: [-70, 120], r5y: [-60, 100], r10y: [-50, 80] };
-  const present = Object.keys(HORIZON).filter((k) => f[k] !== undefined);
-  for (const k of present) {
-    withTrailing++;
-    const [lo, hi] = HORIZON[k];
-    if (typeof f[k] !== "number" || !(f[k] >= lo && f[k] <= hi))
-      bad(`${k} ${f[k]} is not a number in ${lo}..${hi} (ANNUALISED percent — a cumulative figure belongs in no field here)`);
-    if (!isDate(f[`${k}AsOf`])) bad(`${k} has no ${k}AsOf date`);
-    else if (f[`${k}AsOf`] > today) bad(`${k}AsOf ${f[`${k}AsOf`]} is in the future`);
-    if (!isUrl(f[`${k}Source`] || f.source)) bad(`${k} has no source URL (${k}Source or source)`);
-  }
-  if (present.length) {
-    if (f.returnBasis !== "annualised")
-      bad(`a trailing return needs returnBasis "annualised" (got ${JSON.stringify(f.returnBasis)}) — a 10-year cumulative figure is ~2.6x its annualised one and must not be published as it`);
-    /* A CURVE MIXING AS-OF DATES IS MISLEADING even when every point is sourced:
-     * providers quote all horizons at one month-end, so two different dates in
-     * one entry means two different quotes were stitched together. A warning
-     * rather than a failure, because a partially-refreshed entry is a normal
-     * intermediate state and refusing it would block the sourcing this field
-     * list exists to allow. */
-    const dates = [...new Set(present.map((k) => f[`${k}AsOf`]).filter(isDate))];
-    if (dates.length > 1) warns.push(`${ticker}: trailing returns carry ${dates.length} different as-of dates (${dates.join(", ")}) — a curve drawn across them is not one quote`);
-    /* and a 10-year figure on a fund younger than ten years cannot exist */
-    if (f.inception && isDate(f.inception)) {
-      for (const k of present) {
-        const yrs = +k.slice(1, -1);
-        const age = (Date.parse(f[`${k}AsOf`] || today) - Date.parse(f.inception)) / 31557600000;
-        if (age + 0.1 < yrs) bad(`${k} is longer than the fund's life (inception ${f.inception}, ${age.toFixed(1)} years to ${k}AsOf)`);
-      }
-    }
-  }
+  /* the ytd + trailing rules now live in checkReturns above, shared with
+   * `vehicles` so a trust's return is held to the same standard. */
+  { const c = checkReturns(ticker, f, bad); withYtd += c.ytd; withTrailing += c.trailing; }
   if (f.er === undefined && f.ytd === undefined && !f.status) bad("entry carries neither er nor ytd nor a status");
   if (f.status !== undefined) {
     if (!["merged", "closed", "renamed"].includes(f.status)) bad(`status ${f.status} is not merged/closed/renamed`);
@@ -159,7 +158,25 @@ for (const [ticker, f] of Object.entries(funds)) {
 const vehicles = (doc && doc.vehicles) || {};
 if (typeof vehicles !== "object" || Array.isArray(vehicles)) { console.log("FAIL \"vehicles\" is not an object"); process.exit(1); }
 const VEHICLE_KINDS = ["collective-trust", "separate-account", "guaranteed-option", "stable-value", "other"];
-const ER_BASIS = ["vehicle-stated", "plan-specific"];
+/* `class-published` ADDED 2026-11-13, and it is a narrower claim than either of
+ * the other two rather than a loosening of them.
+ *
+ * `vehicle-stated` exists because a CIT's price is usually negotiated per plan,
+ * so the provider's headline figure is not the plan's and must never be printed
+ * as it. That reasoning holds for a trust with ONE price and many plans. It does
+ * NOT hold where the provider publishes a fee PER UNIT CLASS and the filing
+ * NAMES the class: Vanguard publishes Target Retirement 2020 Trust I at 0.065%
+ * under its own CUSIP (92202V591), and a filing reading "... 2020 Fund TR I"
+ * has told us which class it holds. There the published figure IS that plan's
+ * price, and blanking it is not caution, it is withholding a sourced fact.
+ *
+ * So the value asserts BOTH halves: the provider published a per-class figure,
+ * AND the filed name states that class. An entry may only carry it when the
+ * class in `shareClass` is the one the source document prices. Where the filing
+ * states no class, the row does not reach a `class-published` entry at all and
+ * nothing is published — which is the behaviour `vehicle-stated` was protecting
+ * and still protects. */
+const ER_BASIS = ["vehicle-stated", "plan-specific", "class-published"];
 let nv = 0, vEr = 0;
 
 for (const [key, f] of Object.entries(vehicles)) {
@@ -184,12 +201,32 @@ for (const [key, f] of Object.entries(vehicles)) {
     /* the one field `funds` does not need: whose price this is */
     if (!ER_BASIS.includes(f.erBasis)) bad(`er has no erBasis (${ER_BASIS.join("/")}) — a vehicle's stated fee must never be printed as the plan's`);
   }
-  if (f.er === undefined && !f.status) bad("entry carries neither er nor a status");
+  /* the SAME return rules as a ticker entry, not a weaker set — see
+   * checkReturns. A trust's YTD is dated, sourced and band-checked exactly as a
+   * fund's, and a trailing figure still has to declare itself annualised. */
+  { const c = checkReturns(key, f, bad); withYtd += c.ytd; withTrailing += c.trailing; }
+  /* A CUSIP IS THE ONLY STABLE IDENTIFIER THESE VEHICLES HAVE. `funds` is keyed
+   * by ticker and needs none; a trust has no ticker, so without this the entry
+   * records a name and a price with nothing a reader could look the thing up
+   * by. Checked for shape, which is all we can check: 9 characters, the last a
+   * check digit, alphanumeric. */
+  if (f.cusip !== undefined && !/^[A-Z0-9]{9}$/.test(f.cusip)) bad(`cusip ${JSON.stringify(f.cusip)} is not 9 alphanumeric characters`);
+  if (f.erBasis === "class-published" && (typeof f.shareClass !== "string" || !f.shareClass.trim()))
+    bad("erBasis \"class-published\" asserts the SOURCE prices a named unit class, so shareClass is required — without it nothing records which class the figure belongs to");
+  if (f.er === undefined && f.ytd === undefined && !f.status) bad("entry carries neither er nor ytd nor a status");
   if (f.status !== undefined) {
     if (!["merged", "closed", "renamed"].includes(f.status)) bad(`status ${f.status} is not merged/closed/renamed`);
     if (!isUrl(f.statusSource)) bad("status has no statusSource URL");
   }
-  for (const k of Object.keys(f)) if (!["name", "provider", "kind", "er", "erAsOf", "erSource", "erBasis", "source", "updated", "status", "statusSource", "shareClass", "note"].includes(k)) bad(`unknown field ${k}`);
+  for (const k of Object.keys(f)) if (!["name", "provider", "kind", "er", "erAsOf", "erSource", "erBasis",
+    "source", "updated", "status", "statusSource", "shareClass", "note",
+    /* the identifier a tickerless vehicle is looked up by */
+    "cusip",
+    /* returns, opened for vehicles 2026-11-13 — same rules as a ticker
+     * entry, enforced by the shared checkReturns, not by a copy */
+    "ytd", "ytdAsOf", "ytdSource", "returnBasis", "inception",
+    "r1y", "r1yAsOf", "r1ySource", "r3y", "r3yAsOf", "r3ySource",
+    "r5y", "r5yAsOf", "r5ySource", "r10y", "r10yAsOf", "r10ySource"].includes(k)) bad(`unknown field ${k}`);
 }
 
 for (const w of warns) console.log(`WARN ${w}`);
