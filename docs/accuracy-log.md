@@ -63758,3 +63758,39 @@ should say which. Sizing and the render are a separate ship.
 
 *A figure can be right while its provenance claim is wrong, and only reading the
 source catches it — the count of entries is identical either way.*
+
+## 2026-11-13 — I told the owner a live ship was not live
+
+**WHAT WAS WRONG, and it was mine, not the code's.** Asked "are these live in
+wampo", I checked `main` (at `3dcd4e8c`, carrying all 503 sourced funds and the
+comparable-fee withdrawal), queried the Pages runs, saw the newest deployment
+was on the PREVIOUS commit, and reported that Pages "never created a build for
+that commit — not queued, not in progress, simply never fired." I then wrote a
+commit to force a rebuild and told the owner the last 49 funds were not being
+served.
+
+**They were.** `pages build and deployment` run 1262 on `3dcd4e8c` concluded
+`success` at 17:27Z, from the push that already existed. My two API reads were
+at ~17:0x and ~17:1x; the build started at 17:25:41.
+
+**THE READING ERROR: ABSENCE OF A RUN IS "NOT YET", NOT "NEVER".** A run list
+is a snapshot of the moment you ask. `deploy-check` had already said the right
+thing — `UNSETTLED … Not a failure yet` — and `mirror.sh`'s own comment says
+waiting is the point. I treated a timeout as a verdict. *This record's own rule
+is that a clean zero reports on the QUERY; here the query was simply early.*
+
+**WHY THE TIMEOUT MADE IT LIKELY, measured.** Pages latency is not stable. Four
+deployments that day started within ~2 minutes of the push and concluded in
+1.8–2.2 minutes; the fifth did not START for about 25 minutes and then also
+concluded in 1.8 minutes. `mirror.sh` waited `--timeout 600`, calibrated to the
+fast case, so the slow case always exits as UNSETTLED. Raised to **1500**, with
+the measurement in the file so the next session does not re-derive it.
+
+**WHAT IS NOT FIXED BY THAT, and must not be forgotten:** UNSETTLED is still a
+real state and the script still exits 0 on it, because the mirror itself
+succeeded and cannot be undone. The honest reading of UNSETTLED is "the push
+landed, the deployment has not been observed yet" — never "it failed" and never
+"it is live". **Say which of the three you have.** The cost here was one wrong
+answer to the owner and one unnecessary commit; the cost of the inverse error —
+reading UNSETTLED as live — is the 2026-11-06 case where a ship was mirrored,
+verified on the tree, and served to nobody for twenty minutes.

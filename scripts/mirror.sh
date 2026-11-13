@@ -217,7 +217,19 @@ fi
 # and it prints the re-run command.
 echo
 echo "waiting for GitHub Pages to serve it (this is the step that was missing) …"
-if node "$(dirname "$0")/deploy-check.mjs" --wait --timeout 600; then
+# TIMEOUT RAISED 600 -> 1500 ON 2026-11-13, BY MEASUREMENT. Pages latency is
+# not stable: four deployments that day started within ~2 minutes of the push
+# and concluded in 1.8-2.2 min, and the fifth (run 1262 on 3dcd4e8c) did not
+# START for about 25 minutes, then also concluded in 1.8 min. A 600s budget is
+# calibrated to the fast case, so the slow case times out and prints UNSETTLED
+# -- which is correct, and is NOT a failure, but reads like one.
+#
+# IT MISLED A SESSION THE DAY IT WAS RAISED: I read UNSETTLED, queried the API,
+# saw no run for that SHA, and told the owner the ship was not live. It was
+# live twenty minutes later from the push they already had. *Absence of a run
+# is "not yet", not "never"* -- a run list is a snapshot, and a clean zero
+# reports on when you asked.
+if node "$(dirname "$0")/deploy-check.mjs" --wait --timeout 1500; then
   :
 else
   rc=$?
