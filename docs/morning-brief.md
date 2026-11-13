@@ -1,87 +1,80 @@
-# wampo morning brief — 2026-11-12
+# wampo morning brief — 2026-11-13
 
 Overwritten each cycle. Decision-shaped: what shipped and what it moved, what
 was found wrong, what reached readers, what is waiting on the owner.
 
-## Found wrong, and fixed
+## Found wrong, and fixed — the owner's question was the find
 
-**I published a false claim about my own work yesterday, and the next run
-refuted it.** The commit and log entry for regen #12 said it "provably moves 0
-ticker keys". It moved **459 keys in and 434 out** (18,093 → 18,118), raising
-coverage 68,405 → 68,987 published rows / 21.54M → 21.65M readers. #9, #10 and
-#11 really were stamps-only and I carried that pattern onto a run I had not
-looked at — beside a shell line that printed "(0 keys moved)" as a hardcoded
-string regardless of the diff. Corrected in `CLAUDE.md` and
-`docs/accuracy-log.md`.
+**A comparable row refused the fund's RETURN and published the fund's FEE.**
+Asked why a row showing a ticker and an expense ratio had no YTD, the answer
+was that `!star` correctly refuses a return on a comparable — a collective
+trust or separate account standing behind a registered equivalent's symbol —
+while the same row took that equivalent's expense ratio as fact. The note
+beneath the table made it worse, telling the reader the holding *"has no
+ticker and no published expense ratio"* **while the page published one**, then
+calling that figure "a ceiling".
 
-Two things followed, and the second is worth more than the correction:
+The owner's standing decision of 2026-11-05 was already *symbol only, NO fee*.
+The asterisked-symbol half had shipped; this was the other half.
 
-- **The fingerprint narrowing I had proposed would have SUPPRESSED that regen**,
-  leaving the table at 18,093 keys against a store needing 18,118. A proposed
-  change to a correctness gate, refuted by measurement before being built.
-- **Nothing was watching the ticker table against the DATA.** It is keyed on
-  live fund names, and the stamp gate is code-only *by design* (a data-keyed
-  fingerprint would redden on every hourly data commit with nothing wrong).
-  v205 changed fund names; the table needed 459 new keys; the only reason it got
-  them is an unrelated comment reddening a CODE fingerprint three days later.
-  **The regens I had written up as wasteful were the only thing keeping the
-  table fresh.**
+**Measured by differential through `renderRow`**, one line sliced from the
+shipped file and asserted unique, over all 1,790,374 published+served rows:
+
+| | |
+|---|---|
+| fee cells withdrawn | **56,100** |
+| plans / readers | **9,412 / 39,749,121** |
+| non-starred rows moved | **0** — narrowing discharged |
+| ticker / type cells moved | **0 / 0** |
+
+By filed TYPE: 35,959 `Collective trust`, 12,503 `Pooled separate account`,
+4,168 `Mutual fund`, 2,793 none stated, 528 `Separate account`, 120 ETF.
+A seeded uniform draw across 108 plans read `T Rowe Price Rtm 2045 Tr Cl A` —
+a trust, Class A — publishing TRRKX's 0.6%.
+
+**What it costs, stated because it is not free:** the 4,168 `Mutual fund` rows
+and 120 ETF rows lose a fee that may have been RIGHT. The page cannot separate
+them, because a comparable exists precisely where the filing stated no class.
 
 ## Shipped
 
-**`sec-tickers.yml` could push the dev branch to main, bypassing `mirror.sh`.**
-The job checked out `inputs.branch || github.ref_name` and pushed
-`GITHUB_REF_NAME`. The input carries a default, so dispatched from `main` — a
-normal place to dispatch from — it checked out the DEV branch, rebased onto main
-and pushed `HEAD:main`. A rebase makes that a fast-forward, so it **succeeds**,
-moving every data file on the branch to main with none of `mirror.sh` consulted:
-not the plan-keyed data gate, not the in-flight-run refusal, not the record of
-what a force push would destroy. **Reachable, proved by the repo's own log** —
-run #1 was dispatched on main and its checkout logs `Switched to a new branch
-'claude/wampo-401k-live-nx1t4o'`. It did no harm only because its key diff was
-0/0/0 (so it exited before the push) and `contents: write` was then missing.
-Both have since expired. Fixed with one `TARGET_REF` for checkout, fetch, rebase
-and push, plus an explicit refusal to target main — guard sliced from the YAML
-and exercised in both directions.
+**503 sourced funds, up from 92.** Nine agent batches across Vanguard, Fidelity,
+State Street, BlackRock/iShares — about 93% of those houses' unsourced
+reader-slots — then Dodge & Cox, JPMorgan, American Funds, T. Rowe Price, MFS,
+DFA, Nuveen and PIMCO once the route generalised.
 
-**Three watchers that did not exist:**
+**The route was the unlock and it was mis-scoped at first.** Fidelity's pages
+are JS-only shells unreachable by headless Chromium; the Schwab research page
+serves ANY mutual-fund ticker as static HTML and was already the cited source
+for the FXAIX entry. Treating it as Fidelity-only kept 4,754 tickers / 304M
+reader-slots looking unreachable for half a day.
 
-| watcher | what it closes |
-|---|---|
-| weekly `sec-tickers.yml` schedule (Sun 07:11 ET) | the table drifting with the data, which no gate can see |
-| `site-test` dispatch after the regen pushes | the regen's own tip ending with no CI verdict |
-| `.github/workflows/*.yml` in site-test's `paths` | `gate-coverage` reads every workflow and no workflow edit started it |
-
-The first replaces "remember to dispatch after a bump" — *a manual step in a
-verification path is the step that gets skipped.*
-
-**And a self-inflicted one worth keeping.** The commit adding that workflow glob
-produced **no run at all**, because its message *explains* the CI-skip mechanism
-and so spells the bracketed token twice; GitHub scans the whole message. The
-commit whose purpose was to stop this workflow leaving an unverified tip left
-one. Settled by a disentangling test rather than argument — the first pair of
-observations differed in two ways at once, so one more commit varied exactly one
-of them and run #259 fired. Convention now in `CLAUDE.md`: spell it `skip-ci` in
-prose. **It fails silently in the direction that looks like success.**
+**Fourteen figures hand-verified at source**, outliers chosen deliberately:
+VENAX 44.75% is Vanguard Energy in an energy year, FLCOX 26.86% and FIMVX
+24.29% are value funds in a value year, FDRXX 2.85% is a total return with the
+7-day yield absent. All exact including dates.
 
 ## Reaching readers
 
-The mirror ships the regenerated table: **68,405 → 68,987 published rows** carry
-an identified symbol, 21.54M → 21.65M readers. `mirror-gate` replayed clean —
-pv 205 over 99.9% of 71,995 acks, **0 lineups lost, 0 plans stop being served**.
+Mirrored and deployed: the withdrawal and 454 funds. **The final 49 are on
+main at `3dcd4e8c` and NOT deployed** — Pages created no build for that SHA.
+Being re-triggered by this commit.
 
-## Where the work is — derived, not copied
+## Found and recorded, not patched
 
-`node scripts/ledger-report.mjs`: **115,641 plans / 119,907,098 participants**.
-Largest addressable gaps: contributions, then match (18.73M with an attachment
-read and no match statement), vesting (12.44M likewise), custodian. The single
-biggest cross-cutting item remains **2K: 31.78M readers across 58,681 plans**
-where 401(m) cannot distinguish a match from after-tax.
+- **`erAsOf` holds two meanings** — a prospectus date on Vanguard entries, the
+  day we read the page on every Schwab-sourced one — and it IS published, as
+  the tooltip on the sourced-fee tick. 129+ entries. Remedy (`erBasis`) has a
+  schema precedent; not fixed by inventing dates the source does not give.
+- **Three employer stocks** (`IBM`, `WMT`, `CVS`) reached sourcing work lists,
+  each because the holding's name carries a custodian's name.
+- **Three returns stale for display** (BCOIX, FMGGX, PIMIX); checker warns.
+- **Nuveen class labels unverified** in storage — reaches no reader, because
+  `name` is never shipped to the browser.
 
 ## Waiting on the owner
 
-Unchanged and not started unasked: the comparable half of the SEC matcher
-(49.1M), the wrong-share-class fee families, the CREF accounts, the frozen
-crawlable pages, and the held 33-row fee ship. The four standing decisions of
-2026-11-05 still gate each ship on the differential, the seeded draw and a log
-entry.
+Unchanged: the comparable-ticker GAIN half (49.1M), the wrong-share-class fee
+families, the CREF accounts, the frozen crawlable pages, the held 33-row fee
+ship. The remaining 5,352 unsourced tickers have a median reach of ~3,000
+readers, far below the 500,000 floor, so sourcing stopped at 503 by design.
