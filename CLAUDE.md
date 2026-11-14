@@ -214,6 +214,21 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   document host resets the connection. *Putting the registered fund's fee on the
   trust rows would launder one vehicle's price onto another*, so those 3.0M
   readers stay blank. **Do not reopen State Street without a new source.**
+  **T. ROWE PRICE PUBLISHES and shipped** (440 vehicles, 1,258 rows / 578K
+  readers): its quarterly fact sheets state a Trustee Fee per named class,
+  footnoted *on the sheet itself* as "equivalent to the annual operating
+  expense ratio", and its CIT brochure agrees on all 247 fact-sheet classes
+  with 0 mismatches. **BLACKROCK DOES NOT** — blackrock.com carries only the
+  LifePath MUTUAL funds (LIKKX, LIKIX, LIKAX, LIKPX, LIRKX, none yet sourced),
+  and the per-class trust sheets sit on opers.org and ecap.voya.com, both
+  proxy-refused.
+  **SO ACROSS FOUR FAMILIES IT IS 2 AND 2, AND THE TWO FAILURES FAIL THE SAME
+  WAY:** the index-CIT houses do not publish per-class fees on their own sites;
+  those sheets circulate through RECORDKEEPERS. That is ONE owner question, not
+  one per family — *is a plan-provider-hosted copy of the issuer's sheet an
+  acceptable source, and is one plan's stated figure the price a different plan
+  pays?* Until it is answered, **never put a LifePath or SSGA MUTUAL FUND's fee
+  on a trust row**: that is the laundering both runs correctly refused.
   `scripts/trust-vehicle-size.mjs` ranks the ten families the owner named; it
   keys on `erShown`, never `er`, because the estimate column once made it count
   rows that already publish.
