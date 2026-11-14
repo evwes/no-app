@@ -57,6 +57,8 @@ const ALLOW_ORPHAN = {
     "not a CI gate — invoked by scripts/mirror.sh (line 92) as the mirror's own refusal. Running it on a push would compare a branch against itself.",
   "mirror-gate-test.mjs":
     "needs commits absent from a shallow CI clone; exits 99 as a self-declared SKIP. NOT benign — it means the mirror gate's negative controls are exercised nowhere, and that is a real hole, recorded rather than hidden.",
+  "sitetest-gate.mjs":
+    "not a CI gate — invoked by scripts/mirror.sh before the push, to refuse a mirror whose site-test verdict is red or unknown. It reads the GitHub API for the branch's runs, so on a push it would be asking about the very run that is asking. UNLIKE mirror-gate-test, its negative controls are NOT orphaned: `--selftest` is pure, takes a literal runs array, and IS a step in site-test.yml, so all nine refusals and allowances are exercised on every frontend push.",
 };
 
 /* Workflows whose narrow trigger is a DELIBERATE cost decision. Their findings

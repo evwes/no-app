@@ -134,6 +134,27 @@ if [ -n "$CHANGED" ]; then
   fi
 fi
 
+# ---- SITE-TEST'S VERDICT ON WHAT IS ABOUT TO BE PUBLISHED -------------------
+#
+# THE THIRD LAYER, AND IT WAS THE UNWATCHED ONE. This script checks the DATA
+# (mirror-gate.mjs) and, after the push, the DEPLOYMENT (deploy-check.mjs).
+# Nothing in it read the verdict of the suite that tests the PAGE CODE.
+#
+# MEASURED 2026-11-14: db0c7cc2 was mirrored, verified two ways, and reported
+# live. Site-test #291 on that exact SHA had concluded FAILURE, and #290 on the
+# commit before it as well. The cause was benign -- one step of thirty-seven,
+# the sec-tickers CODE fingerprint, reddened by a changed hashed input -- but
+# that was established afterwards by reading the log, and the same red covers
+# the smoke test, the YTD render, the ledger and the map.
+#
+# This file's own record says a manual step in a verification path is the step
+# that gets skipped. So it is a step here instead.
+node "$(dirname "$0")/sitetest-gate.mjs" --branch="$BRANCH" ${FORCE_GIT:+--force} || {
+  echo
+  echo "  Nothing was pushed. (scripts/mirror.sh --force overrides.)"
+  exit 1
+}
+
 BEFORE=$(git rev-parse --short origin/main)
 git push --force-with-lease=main origin "$BRANCH:main" || { echo "push failed"; exit 1; }
 git fetch -q origin main
