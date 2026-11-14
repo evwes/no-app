@@ -53,8 +53,46 @@ for (const row of d.rows) {
   members.get(s.ack).push(p);
 }
 
+/* THE TEN FUND HOUSES THE OWNER NAMED, in the order he listed them.
+ *
+ * HE NAMED THEM AS TARGET-DATE FAMILIES AND THE FIRST VERSION OF THIS LABELLED
+ * THEM THAT WAY, WHICH WAS WRONG BY A FACTOR OF SIX. The regexes key on the
+ * HOUSE, so under "Vanguard Target Retirement" the names it actually reached
+ * were European Stock Index Admiral and Dividend Appreciation, and under
+ * "BlackRock LifePath" they were iShares ETFs -- a house's whole lineup, not
+ * its target-date ladder. Nothing counted it wrong; the label claimed something
+ * the count does not support, which is the same defect as a published cell
+ * claiming more than its filing. Found by READING the names the classifier
+ * reached, which is why that print exists and why it stays.
+ *
+ * So both are measured now: `house` is the whole lineup (the right unit for a
+ * SOURCING batch, since one house is one issuer site), and `td` is the
+ * target-date ladder inside it (the thing the owner asked after). A count keyed
+ * on a vocabulary measures the vocabulary, so `--families` still prints the
+ * names reached and the unmatched residue. */
+const FAMILIES = [
+  ["Vanguard",            /\bvanguard\b/i,                                 /\btarget\s*ret/i],
+  ["Fidelity",            /\bfidelity\b|\bfid\b|\bffidx?\b/i,              /\bfreedom\b/i],
+  ["BlackRock",           /\bblackrock\b|\bblk\b|\blifepath\b|\bishares\b/i, /\blifepath\b/i],
+  ["T. Rowe Price",       /\bt\.?\s*rowe\b|\btrp\b|\btroweprice\b/i,       /\bretirement\b|\bret\.?\s*(?:20|19)\d\d\b|\bblend\b/i],
+  ["American Funds",      /\bamerican funds\b|\bcapital group\b|\bamcap\b/i, /\btarget\s*date\b|\b20[2-7]\d\s*trgt\b/i],
+  ["State Street",        /\bstate street\b|\bssga\b|\bssg[ab]?\b/i,       /\btarget\s*ret/i],
+  ["J.P. Morgan",         /\bj\.?\s*p\.?\s*morgan\b|\bjpmorgan\b|\bjpm\b/i, /\bsmart\s*ret/i],
+  ["Principal",           /\bprincipal\b/i,                                 /\blife\s*time\b/i],
+  ["Nuveen / TIAA",       /\bnuveen\b|\btiaa\b|\bcref\b/i,                 /\blife\s*cycle\b/i],
+  ["Schwab / Am.Century", /\bschwab\b|\bamerican century\b/i,              /\btarget\b|\bone\s*choice\b/i],
+];
+const famOf = (nameRaw, iss) => {
+  const hay = `${iss || ""} ${nameRaw || ""}`;
+  for (const [label, re, td] of FAMILIES) if (re.test(hay)) return { label, td: td.test(hay) };
+  return null;
+};
+
 const VERDICT = new Map();
 const QUEUE = new Map();
+const FAM = new Map();            // family label -> {tickers:Set, rows, plans:Set, ppl, names:Map}
+let stockRows = 0;                // the page's OWN flag, not a name rule
+const STOCK_TK = new Set();
 let rows = 0, priced = 0, tkRows = 0, ytdRows = 0, starBlocked = 0;
 const menus = [];
 for (const sh of readdirSync(`${ROOT}/data/lineups`).sort()) {
@@ -89,6 +127,29 @@ for (const sh of readdirSync(`${ROOT}/data/lineups`).sort()) {
       q.rows++; q.val += +raw.value || 0;
       if (!q.plans.has(ack)) { q.plans.add(ack); q.ppl += mem.reduce((a, m) => a + m.participants, 0); }
       q.names.set(f.nameRaw, (q.names.get(f.nameRaw) || 0) + 1);
+
+      /* EMPLOYER STOCK IS NOT A FUND. A work list built from filed names
+       * contains them, because the HOLDING's name carries a custodian's name,
+       * and a stock has no expense ratio and no fund YTD. Keyed on the page's
+       * OWN row flag rather than on a ticker list of mine. */
+      if (r.flags && r.flags.stockRow) { stockRows++; STOCK_TK.add(key2); }
+
+      /* the owner's families, deduplicated per family so a plan holding five
+       * unsourced Nuveen funds counts its readers once */
+      const fam = famOf(f.nameRaw, f.iss);
+      if (fam) {
+        let g = FAM.get(fam.label);
+        if (!g) FAM.set(fam.label, g = { tickers: new Set(), rows: 0, plans: new Set(), ppl: 0, names: new Map(),
+          tdTickers: new Set(), tdRows: 0, tdPlans: new Set(), tdPpl: 0, tdNames: new Map() });
+        g.tickers.add(key2); g.rows++;
+        if (!g.plans.has(ack)) { g.plans.add(ack); g.ppl += mem.reduce((a, m) => a + m.participants, 0); }
+        g.names.set(f.nameRaw, (g.names.get(f.nameRaw) || 0) + 1);
+        if (fam.td) {
+          g.tdTickers.add(key2); g.tdRows++;
+          if (!g.tdPlans.has(ack)) { g.tdPlans.add(ack); g.tdPpl += mem.reduce((a, m) => a + m.participants, 0); }
+          g.tdNames.set(f.nameRaw, (g.tdNames.get(f.nameRaw) || 0) + 1);
+        }
+      }
     }
     if (n) menus.push({ name: mem[0].sponsorName, ppl: mem.reduce((a, m) => a + m.participants, 0),
       n, of: e.funds.length, share: total ? val / total : 0 });
@@ -124,3 +185,48 @@ for (const x of q.slice(0, top)) {
   console.log(`  ${x.tk.padEnd(8)}${x.ppl.toLocaleString().padStart(11)}${x.plans.toLocaleString().padStart(8)}${x.rows.toLocaleString().padStart(8)}   ${x.name.slice(0, 44)}`);
 }
 console.log(`\n  (readers are PLAN-DEDUPLICATED per ticker but a reader holding two unsourced funds counts in both — these columns do not sum)`);
+
+if (stockRows) {
+  console.log(`\nOF THE ADDRESSABLE ROWS, ${stockRows.toLocaleString()} across ${STOCK_TK.size} ticker(s) are flagged EMPLOYER STOCK by the page itself`);
+  console.log(`  ${[...STOCK_TK].sort().join(" ")}`);
+  console.log(`  A stock has no expense ratio and no fund YTD. Sourcing one publishes a category error — exclude by hand.`);
+}
+
+/* ---- the owner's ten families ---- */
+if (process.argv.includes("--families")) {
+  const order = new Map(FAMILIES.map(([l], i) => [l, i]));
+  const fams = [...FAM.entries()].sort((a, b) => order.get(a[0]) - order.get(b[0]));
+  const famRows = fams.reduce((a, [, g]) => a + g.rows, 0);
+  const tdRows = fams.reduce((a, [, g]) => a + g.tdRows, 0);
+  console.log(`\nTHE TEN HOUSES THE OWNER NAMED, over the ADDRESSABLE rows only.`);
+  console.log(`  "house" is the whole lineup; "target-date" is the ladder inside it. The owner`);
+  console.log(`  named the ladders, and the house columns are SIX TIMES larger — so a figure`);
+  console.log(`  taken from the wrong pair of columns answers a question he did not ask.`);
+  console.log(`  ${"house".padEnd(22)}${"tickers".padStart(8)}${"rows".padStart(8)}${"readers".padStart(11)}  |${"td tk".padStart(7)}${"td rows".padStart(9)}${"td readers".padStart(12)}`);
+  for (const [label, g] of fams) {
+    console.log(`  ${label.padEnd(22)}${g.tickers.size.toLocaleString().padStart(8)}${g.rows.toLocaleString().padStart(8)}${g.ppl.toLocaleString().padStart(11)}  |${g.tdTickers.size.toLocaleString().padStart(7)}${g.tdRows.toLocaleString().padStart(9)}${g.tdPpl.toLocaleString().padStart(12)}`);
+  }
+  console.log(`  ${"TOTAL rows".padEnd(22)}${"".padStart(8)}${famRows.toLocaleString().padStart(8)}${"".padStart(11)}  |${"".padStart(7)}${tdRows.toLocaleString().padStart(9)}`);
+  console.log(`  ${famRows.toLocaleString()} of ${addressable.toLocaleString()} addressable rows (${(100 * famRows / addressable).toFixed(1)}%) are in one of those HOUSES;`);
+  console.log(`  ${tdRows.toLocaleString()} (${(100 * tdRows / addressable).toFixed(1)}%) are in their TARGET-DATE ladders.`);
+  console.log(`  the other ${(addressable - famRows).toLocaleString()} are everything else a plan can hold.`);
+  console.log(`  VANGUARD'S LADDER READS NEAR-ZERO HERE AND THAT IS CORRECT, NOT A BUG: plans hold`);
+  console.log(`  it as COLLECTIVE TRUSTS, which carry no ticker and are served by the vehicles`);
+  console.log(`  path instead. A ticker queue cannot see them and must not be read as denying them.`);
+
+  /* READ IT, do not only count it: the top names each family reaches, and the
+   * residue it does not. This is the print that caught the label claiming
+   * "target-date families" over a house's entire lineup. */
+  console.log(`\n  the names each house REACHES (top 3), then its TARGET-DATE slice (top 3) — read these:`);
+  for (const [label, g] of fams) {
+    const t3 = (m) => [...m].sort((a, b) => b[1] - a[1]).slice(0, 3);
+    console.log(`    ${label}`);
+    for (const [nm, c] of t3(g.names)) console.log(`      house ${String(c).padStart(4)}x  ${nm.slice(0, 66)}${nm.length > 66 ? `…+${nm.length - 66}` : ""}`);
+    const td = t3(g.tdNames);
+    if (!td.length) console.log(`      td    (none reached — if this house's ladder IS in the data, the td pattern is wrong)`);
+    for (const [nm, c] of td) console.log(`      td    ${String(c).padStart(4)}x  ${nm.slice(0, 66)}${nm.length > 66 ? `…+${nm.length - 66}` : ""}`);
+  }
+  const unmatched = q.filter((x) => !famOf(x.name, "")).slice(0, 10);
+  console.log(`\n  UNMATCHED residue — the ten biggest addressable tickers in NO named family:`);
+  for (const x of unmatched) console.log(`    ${x.tk.padEnd(8)}${x.ppl.toLocaleString().padStart(11)}  ${x.name.slice(0, 54)}`);
+}
