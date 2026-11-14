@@ -74,7 +74,7 @@ const FAMILIES = [
   ["Vanguard",            /\bvanguard\b/i,                                 /\btarget\s*ret/i],
   ["Fidelity",            /\bfidelity\b|\bfid\b|\bffidx?\b/i,              /\bfreedom\b/i],
   ["BlackRock",           /\bblackrock\b|\bblk\b|\blifepath\b|\bishares\b/i, /\blifepath\b/i],
-  ["T. Rowe Price",       /\bt\.?\s*rowe\b|\btrp\b|\btroweprice\b/i,       /\bretirement\b|\bret\.?\s*(?:20|19)\d\d\b|\bblend\b/i],
+  ["T. Rowe Price",       /\bt\.?\s*rowe\b|\btrp\b|\btroweprice\b/i,       /\bret(?:irement)?\.?\s*(?:blend|balanced|income|hybrid|(?:19|20)\d\d)\b|\bblend\s*(?:19|20)\d\d\b/i],
   ["American Funds",      /\bamerican funds\b|\bcapital group\b|\bamcap\b/i, /\btarget\s*date\b|\b20[2-7]\d\s*trgt\b/i],
   ["State Street",        /\bstate street\b|\bssga\b|\bssg[ab]?\b/i,       /\btarget\s*ret/i],
   ["J.P. Morgan",         /\bj\.?\s*p\.?\s*morgan\b|\bjpmorgan\b|\bjpm\b/i, /\bsmart\s*ret/i],
@@ -82,15 +82,27 @@ const FAMILIES = [
   ["Nuveen / TIAA",       /\bnuveen\b|\btiaa\b|\bcref\b/i,                 /\blife\s*cycle\b/i],
   ["Schwab / Am.Century", /\bschwab\b|\bamerican century\b/i,              /\btarget\b|\bone\s*choice\b/i],
 ];
+/* THE HOUSE TEST READS THE ISSUER CELL AND THE LADDER TEST MUST NOT, and that
+ * distinction cost five false positives before it was written down. "Which
+ * house is this" is legitimately answered by the issuer column; "is this the
+ * target-date ladder" is a question about the PRODUCT and only the fund's own
+ * name can answer it. Keyed on both, T. Rowe's ladder pattern matched the
+ * RECORDKEEPER -- the issuer cell reads "T. Rowe Price Retirement Plan
+ * Services", so Growth Stock Fund, Value Fund, New Horizons and Balanced Fund
+ * all entered the ladder list, PRGFX at 302,008 readers among them, and
+ * Vanguard's single ladder row was an Intermediate Bond Fund. A classifier
+ * keyed on a name inside a name measures the name, not the vehicle. */
 const famOf = (nameRaw, iss) => {
-  const hay = `${iss || ""} ${nameRaw || ""}`;
-  for (const [label, re, td] of FAMILIES) if (re.test(hay)) return { label, td: td.test(hay) };
+  const house = `${iss || ""} ${nameRaw || ""}`;
+  const product = String(nameRaw || "");
+  for (const [label, re, td] of FAMILIES) if (re.test(house)) return { label, td: td.test(product) };
   return null;
 };
 
 const VERDICT = new Map();
 const QUEUE = new Map();
 const FAM = new Map();            // family label -> {tickers:Set, rows, plans:Set, ppl, names:Map}
+const TD_NAMES = new Map();       // ticker -> Map(filed name -> rows), TD ROWS ONLY
 let stockRows = 0;                // the page's OWN flag, not a name rule
 const STOCK_TK = new Set();
 let rows = 0, priced = 0, tkRows = 0, ytdRows = 0, starBlocked = 0;
@@ -146,6 +158,9 @@ for (const sh of readdirSync(`${ROOT}/data/lineups`).sort()) {
         g.names.set(f.nameRaw, (g.names.get(f.nameRaw) || 0) + 1);
         if (fam.td) {
           g.tdTickers.add(key2); g.tdRows++;
+          let tn = TD_NAMES.get(key2);
+          if (!tn) TD_NAMES.set(key2, tn = new Map());
+          tn.set(f.nameRaw, (tn.get(f.nameRaw) || 0) + 1);
           if (!g.tdPlans.has(ack)) { g.tdPlans.add(ack); g.tdPpl += mem.reduce((a, m) => a + m.participants, 0); }
           g.tdNames.set(f.nameRaw, (g.tdNames.get(f.nameRaw) || 0) + 1);
         }
@@ -226,6 +241,52 @@ if (process.argv.includes("--families")) {
     if (!td.length) console.log(`      td    (none reached — if this house's ladder IS in the data, the td pattern is wrong)`);
     for (const [nm, c] of td) console.log(`      td    ${String(c).padStart(4)}x  ${nm.slice(0, 66)}${nm.length > 66 ? `…+${nm.length - 66}` : ""}`);
   }
+  /* THE WORK LIST ITSELF: every addressable TARGET-DATE ticker, by house,
+   * ranked by readers. This is what the fund-facts agent is handed, so it
+   * prints the filed name beside the symbol — the agent must be able to see
+   * that the name and the symbol are the same fund before sourcing a figure
+   * for it, because sourcing a figure makes a mis-resolved identity worse. */
+  if (process.argv.includes("--td-list")) {
+    const want = (() => { const i = process.argv.indexOf("--td-list"); const v = +process.argv[i + 1]; return v > 0 ? v : 60; })();
+    /* THE NAME PRINTED MUST BE THE NAME THAT MATCHED, not the ticker's most
+     * common name overall. The first version printed the latter and PRGFX
+     * showed as "T. Rowe Price Growth Stock Fund" -- a name no ladder pattern
+     * can match -- because ONE of its 440 rows carries a ladder-shaped name
+     * and that row is what put the ticker in the set. A summary name can hide
+     * the reason a membership happened, which makes a wrong membership
+     * unreadable and a right one look wrong. `tdRowsOf` also prints HOW MANY
+     * of the ticker's rows are ladder-shaped, so a 1-of-440 membership
+     * announces itself instead of reading like the other 439. */
+    const tdTk = new Map();   // ticker -> {house, ppl, rows, name, tdRows}
+    for (const [label, g] of fams) {
+      for (const tk of g.tdTickers) {
+        const x = q.find((y) => y.tk === tk);
+        if (!x) continue;
+        const names = TD_NAMES.get(tk);
+        const best = names ? [...names].sort((a, b) => b[1] - a[1])[0] : null;
+        const tdRows = names ? [...names.values()].reduce((a, b) => a + b, 0) : 0;
+        const prev = tdTk.get(tk);
+        if (!prev || x.ppl > prev.ppl) tdTk.set(tk, { house: label, ppl: x.ppl, rows: x.rows,
+          tdRows, name: best ? best[0] : `(?) ${x.name}` });
+      }
+    }
+    const list = [...tdTk].sort((a, b) => b[1].ppl - a[1].ppl).slice(0, want);
+    console.log(`\nTARGET-DATE WORK LIST — top ${list.length} of ${tdTk.size} addressable ladder tickers, by readers:`);
+    for (const [tk, v] of list) {
+      /* A RATIO, NOT "not all". The first version flagged any ticker whose rows
+       * were not ALL ladder-shaped and fired on 34 of 50 -- because one ticker
+       * is filed under many spellings and only some are ladder-shaped, which is
+       * spelling variance and not a defect. A flag that fires on everything is
+       * not a flag. A MINORITY is the real signal: PRGFX reads 2 of 440, and
+       * its matching name is "T. Rowe Price Growth Stock Retirement Account" --
+       * the Growth Stock Fund in a retirement WRAPPER, caught by a bare
+       * `retirement`. That is a wrong membership; 244 of 334 is not. */
+      const frac = v.tdRows * 2 >= v.rows ? "" : `   <<< ONLY ${v.tdRows} of ${v.rows} rows are ladder-shaped — a MINORITY, read this before sourcing it`;
+      console.log(`  ${tk.padEnd(7)}${v.ppl.toLocaleString().padStart(10)}${String(v.rows).padStart(6)}r  ${v.house.padEnd(20)}  ${v.name.slice(0, 52)}${frac}`);
+    }
+    console.log(`\n  symbols only, for a batch: ${list.map(([tk]) => tk).join(" ")}`);
+  }
+
   const unmatched = q.filter((x) => !famOf(x.name, "")).slice(0, 10);
   console.log(`\n  UNMATCHED residue — the ten biggest addressable tickers in NO named family:`);
   for (const x of unmatched) console.log(`    ${x.tk.padEnd(8)}${x.ppl.toLocaleString().padStart(11)}  ${x.name.slice(0, 54)}`);
