@@ -51,12 +51,23 @@ for (const row of d.rows) {
  * are counted as CANDIDATES so the scale of the rest is visible, not as a
  * claim that their issuers publish anything. */
 const FAMILY = [
-  ["vanguard-target-trust", /vanguard.*target\s*(date|retirement|retire)/i],
-  ["trp-retirement-trust", /\b(t\.?\s*rowe|trp)\b.*(retirement|retire)/i],
-  ["fidelity-index-trust", /fidelity.*(freedom|index).*(trust|comm(ingled)?|cl(ass)?\s*[a-z0-9]+)/i],
-  ["ssga-target-trust", /(state\s*st|ssga|ssgA).*(target|index|retirement)/i],
-  ["blackrock-lifepath", /blackrock.*lifepath|lifepath/i],
-  ["jpm-smartretirement", /j\.?p\.?\s*morgan.*smart\s*retire|smartretirement/i],
+  /* THE OWNER'S TOP-TEN TARGET-DATE LIST (2026-11-14), which is the work queue
+   * for this mechanism: every one of these should carry a ticker, an expense
+   * ratio and a YTD return on every filing that holds it. Vanguard SHIPPED
+   * today; the rest are sized here so the order of work is readers, not
+   * market-share press figures. A family is a filed-name shape, NOT a claim
+   * that the issuer publishes anything — that has to be probed per issuer. */
+  ["vanguard-target", /vanguard.*target\s*(date|retirement|retire)|target\s*retirement.*trust/i],
+  ["fidelity-freedom", /fidelity.*(freedom|target)|freedom\s*(index|blend)?\s*\d{4}/i],
+  ["blackrock-lifepath", /blackrock.*lifepath|\blifepath\b/i],
+  ["trowe-retirement", /\b(t\.?\s*rowe|trp)\b.*(retirement|retire|target)/i],
+  ["americanfunds-targetdate", /(american funds|capital group).*(target|retirement)|\bAFTD\b/i],
+  ["statestreet-target", /(state\s*st|ssga|ssg a)\w*.*(target|retirement)/i],
+  ["jpmorgan-smartretirement", /j\.?p\.?\s*morgan.*smart\s*retire|smartretirement|smart retirement/i],
+  ["principal-lifetime", /principal.*life\s*time|principal.*lifetime/i],
+  ["nuveen-tiaa-lifecycle", /(nuveen|tiaa).*lifecycle|lifecycle\s*(index\s*)?\d{4}/i],
+  ["schwab-target", /schwab.*target/i],
+  ["amcentury-onechoice", /american century.*one\s*choice|one\s*choice.*\d{4}/i],
 ];
 
 const VERDICT = new Map();
