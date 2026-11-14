@@ -99,6 +99,22 @@ const CLAIMS = [
    * the note's job is now to say that nothing is published. */
   ["nothing-published", /publish no fee or return/i,
     "states that NO figure is published — the claim the withdrawal makes"],
+  /* AND THE EXCEPTION THAT IS NOW TRUE (2026-11-14). Some providers publish a
+   * fee and a return for each UNIT CLASS of the trust itself, and where the
+   * filing names the class the page prints that class's own figure with a tick.
+   * The clause above is then true only of the rows that resolve to nothing, so
+   * the note must carry the exception or it tells a reader the page publishes
+   * nothing while a figure sits beside the sentence.
+   *
+   * *A guard and the claim it licenses are one change* — this is the guard for
+   * the clause, so that removing the sentence while leaving the render fails
+   * here rather than on a reader's screen. It is keyed on the DISTINCTION the
+   * sentence has to draw (the class the filing names, versus the comparable),
+   * not on any one wording of it. */
+  ["vehicle-exception", /trust publishes its own/i,
+    "names the exception: a trust whose provider publishes a figure for the unit class"],
+  ["vehicle-is-not-the-comparable", /unit class[\s\S]{0,400}not the fund marked/i,
+    "says WHOSE figure the tick is — the unit class held, not the asterisked comparable"],
 ];
 
 /* ---- (2) the chain, three links plus eagerness ---- */

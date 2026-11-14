@@ -74,6 +74,25 @@ export function composeSource(opts = {}) {
   const appPath = opts.appjs || process.env.APPJS_PATH || (ROOT + "app.js");
   const app = readFileSync(appPath, "utf8");
   const fundEr = readFileSync(opts.funder || process.env.FUNDER_PATH || (ROOT + "fund-er.js"), "utf8");
+  /* THE SOURCED TABLES, ADDED 2026-11-14 BECAUSE WITHOUT THEM THIS HARNESS
+   * CANNOT SEE A SOURCED CELL AT ALL.
+   *
+   * `renderRow` has always returned the PRE-override estimate, so every caller
+   * measuring a published fee had to re-apply the lookup by hand -- and that
+   * hand-composition is a re-implementation of a shipped expression, which is
+   * the thing this file exists to stop. It cost a wrong reading today: a whole
+   * fund family was measured as publishing 0.5 against a sourced 0.08 when the
+   * page was in fact correct.
+   *
+   * It matters more now that FUND_VEHICLES exists, because the vehicle path is
+   * reached THROUGH the row block rather than after it: a caller cannot
+   * compose it from the outside at all. Loading the real asset is the only way
+   * the before/after can differ. `fundfacts: false` keeps the old behaviour
+   * for a caller that deliberately wants the estimate alone. */
+  const wantFacts = opts.fundfacts !== false && process.env.FUND_FACTS_PATH !== "none";
+  const fundFacts = wantFacts
+    ? readFileSync(opts.fundfacts || process.env.FUND_FACTS_PATH || (ROOT + "fund-facts.js"), "utf8")
+    : "const FUND_FACTS = undefined; const FUND_VEHICLES = undefined;";
   /* `sec-tickers.js` IS ONE OF THE PAGE'S SCRIPTS (index.html loads it before
    * app.js), so the default must load it: a harness missing one of the page's
    * globals measures a page that does not exist — `lookupTicker`'s last arm
@@ -112,6 +131,7 @@ export function composeSource(opts = {}) {
 
   const src = `
 ${fundEr}
+${fundFacts}
 ${secTickers}
 const window = {};
 const document = { getElementById: () => null };
@@ -138,9 +158,25 @@ ${loanRowRe}
      * sourced cell still applies the lookup itself, on this harness's tk and
      * star. NO BACKTICKS: this sits inside the src template literal. */
     let sourcedAny = false;
+    let vehicleAny = false;
     const ytdDates = new Set();
 ${rowBlock}
+    /* NO BACKTICKS -- this comment sits inside the src template literal and
+     * one ends it. (The file says so already; I did it anyway.)
+     * er stays the pre-override ESTIMATE, because callers depend on it and
+     * changing its meaning silently would be worse than adding a field.
+     * erShown is what the page actually prints, and erSourced / ytdSourced say
+     * WHERE it came from -- a ticker's own page, or the trust unit class named
+     * by vehicleCls. */
     return { name: shownName, nameClean: f.name, tk, er, star, shownType,
+      erShown, erSourced, ytdSourced, sourcedAny, vehicleAny,
+      /* typeof, NOT a declaration: the row block declares vehicleCls ITSELF in
+       * this same scope, so a let here is a duplicate-declaration SyntaxError
+       * on the current file -- while an older app.js does not declare it at
+       * all and a bare reference is a ReferenceError. typeof is the one form
+       * that reads both. This is what a BEFORE side made of an older app.js
+       * costs, and it is the point of having one. */
+      vehicleCls: (typeof vehicleCls === "undefined" ? null : vehicleCls),
       value: f.value, pct: total ? (f.value / total) * 100 : null,
       iss: f.iss || "", type: f.type || "",
       flags: { loanRow, descLoanRow, namelessRow, stockRow, mistypedStock,

@@ -73,6 +73,14 @@ const SPECS = [
     why: "1.97M readers and almost no sourced coverage — the column must still be honest, not hidden" },
   { key: "820544687|001", label: "Amazon", minFilled: 1, maxFilled: 4, starred: 10,
     why: "a collective-trust menu with starred comparables — the rows that must print NO return" },
+  /* THE VEHICLE PATH'S OWN SPECIMEN, 2026-11-14. Amazon above is the control
+   * for it rather than a duplicate: its twelve trust rows are filed as
+   * "VANGUARD TARGET <year>" and state NO unit class, so they must stay blank
+   * however many figures exist. FedEx files the same family WITH the class
+   * ("... Trust II"), so the same menu shape resolves and must print. Two
+   * specimens, one difference: whether the filing names the class. */
+  { key: "621721435|004", label: "FedEx", minFilled: 12, maxFilled: 20, starred: 12, vehicles: 12,
+    why: "a Vanguard target-date trust menu that STATES its unit class — the rows that must print the trust's own figure" },
 ];
 
 const TABLE = `[...document.querySelectorAll("table.fund-table")].find((x) => {
@@ -105,13 +113,36 @@ try {
           [...tr.querySelectorAll("td")].map((td) => td.innerText.replace(/\\s+/g, " ").trim())),
         starred: [...t.querySelectorAll(":scope > tbody > tr")].filter((tr) =>
           /\\*/.test((tr.querySelector("td") || {}).innerText || "")).length,
+        /* A STARRED ROW MAY NOW PRINT A RETURN, BUT ONLY ITS OWN.
+         * The asterisk says the SYMBOL is a comparable. Where the provider
+         * publishes a figure for the very unit class the filing names, the
+         * return shown is the TRUST's, not the comparable fund's, and the
+         * cell's title says so. These are two different claims sharing one
+         * row, so the test has to tell them apart by reading the title rather
+         * than by the asterisk alone -- keying on the asterisk would make a
+         * correct page look wrong. */
         starredWithReturn: [...t.querySelectorAll(":scope > tbody > tr")].filter((tr) => {
           const td = [...tr.querySelectorAll("td")];
           const i = [...t.querySelectorAll(":scope > thead > tr > th")]
             .findIndex((e) => e.textContent.trim() === "YTD return");
-          return i >= 0 && td[0] && /\\*/.test(td[0].innerText) && td[i]
-            && td[i].innerText.trim() && td[i].innerText.trim() !== "\\u2014";
+          if (!(i >= 0 && td[0] && /\\*/.test(td[0].innerText) && td[i]
+            && td[i].innerText.trim() && td[i].innerText.trim() !== "\\u2014")) return false;
+          const sp = td[i].querySelector("span[title]");
+          return !(sp && /unit class/.test(sp.getAttribute("title") || ""));
         }).map((tr) => tr.querySelector("td").innerText.replace(/\\s+/g, " ").slice(0, 60)),
+        vehicleReturns: [...t.querySelectorAll(":scope > tbody > tr")].filter((tr) => {
+          const td = [...tr.querySelectorAll("td")];
+          const i = [...t.querySelectorAll(":scope > thead > tr > th")]
+            .findIndex((e) => e.textContent.trim() === "YTD return");
+          if (i < 0 || !td[i]) return false;
+          const sp = td[i].querySelector("span[title]");
+          return !!(sp && /unit class/.test(sp.getAttribute("title") || ""));
+        }).map((tr) => { const td = [...tr.querySelectorAll("td")];
+          const i = [...t.querySelectorAll(":scope > thead > tr > th")]
+            .findIndex((e) => e.textContent.trim() === "YTD return");
+          return { name: td[0].innerText.replace(/\\s+/g, " ").slice(0, 52),
+                   er: td[2] ? td[2].innerText.trim() : "", ytd: td[i].innerText.trim(),
+                   title: (td[i].querySelector("span[title]").getAttribute("title") || "").slice(0, 80) }; }),
         note: [...document.querySelectorAll("p.fund-note")]
           .map((p) => p.innerText.replace(/\\s+/g, " ").trim())
           .find((n) => /^YTD return\\./.test(n)) || null,
@@ -146,14 +177,37 @@ try {
     if (got.starred < s.starred) fail(`${s.label}: only ${got.starred} starred rows, expected at least ${s.starred} — the comparable rule is untested here`);
     else if (s.starred) ok(`${s.label}: ${got.starred} starred (comparable) rows present, so the rule below is actually exercised`);
     if (got.starredWithReturn.length) fail(`${s.label}: ${got.starredWithReturn.length} starred row(s) print a return — a comparable's return is not this plan's: ${got.starredWithReturn[0]}`);
-    else ok(`${s.label}: no starred row prints a return`);
+    else ok(`${s.label}: no starred row prints a COMPARABLE's return`);
+
+    /* AND THE NEW PATH MUST ACTUALLY BE REACHED SOMEWHERE. A broken arm and an
+     * inert one read the same zero, so a specimen is pinned at the number of
+     * unit-class figures it must show, not merely "some". */
+    const wantVeh = s.vehicles || 0;
+    if (got.vehicleReturns.length !== wantVeh) {
+      fail(`${s.label}: ${got.vehicleReturns.length} rows print a trust's own return, expected ${wantVeh}`);
+    } else if (wantVeh) {
+      ok(`${s.label}: ${wantVeh} rows print the trust's OWN figure, e.g. ${JSON.stringify(got.vehicleReturns[0].name)} ${got.vehicleReturns[0].er} / ${got.vehicleReturns[0].ytd}`);
+      const noCls = got.vehicleReturns.filter((v) => !/unit class/.test(v.title));
+      if (noCls.length) fail(`${s.label}: ${noCls.length} unit-class figure(s) carry no class in the tooltip`);
+      else ok(`${s.label}: every one names its unit class on hover — "${got.vehicleReturns[0].title.slice(0, 44)}…"`);
+    }
 
     if (filled.length && !got.note) fail(`${s.label}: returns printed with no note stating their as-of date`);
     else if (!filled.length && got.note) fail(`${s.label}: the note is printed with no figures to explain`);
     else if (got.note) {
       if (!/as of \d{1,2} [A-Z][a-z]{2} \d{4}/.test(got.note)) fail(`${s.label}: the note states no as-of date — "${got.note.slice(0, 90)}"`);
       else ok(`${s.label}: note carries the date — "${got.note.match(/as of [^,]+/)[0]}"`);
-      if (!/marked \* shows none/.test(got.note)) fail(`${s.label}: the note does not say a comparable shows no return`);
+      /* THE CLAIM BECAME CONDITIONAL ON 2026-11-14 and the pin moved with it.
+       * It used to read "marked * shows none"; some starred rows now show the
+       * TRUST's own return, so the unconditional sentence would be false on
+       * exactly the pages that gained figures. The note must still tell a
+       * reader that an asterisk usually means no return -- and, where any
+       * vehicle figure is on the page, must name the exception. */
+      if (!/marked \* usually shows none/.test(got.note)) fail(`${s.label}: the note does not say a comparable usually shows no return`);
+      else ok(`${s.label}: the note still states the comparable rule`);
+      if (got.vehicleReturns.length && !/unit class the filing names/.test(got.note))
+        fail(`${s.label}: ${got.vehicleReturns.length} row(s) show a trust's own return and the note does not explain the exception`);
+      else if (got.vehicleReturns.length) ok(`${s.label}: the note explains the unit-class exception`);
     }
   }
 

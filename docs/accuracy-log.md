@@ -7,6 +7,61 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-14 (owner-reported, Michels + Black Hills) — A COLLECTIVE TRUST CAN HAVE A PUBLISHED PRICE, AND ASSUMING IT COULD NOT COST 7.5M READERS A BLANK CELL
+
+**WHAT WAS WRONG.** `app.js`'s comparable note told readers a trust holding
+"has no public ticker, expense ratio or return of its own, because its class is
+negotiated by the plan." That is true of a negotiated separate account and
+**false** of Vanguard's Target Retirement Trusts: the issuer publishes a profile
+**per unit class**, each with its own CUSIP, dated expense ratio and dated
+returns (fund 1464 = 2020 Trust I, CUSIP 92202V591, 0.065%). The filings name
+the class — "... Fund TR I", "... Trust Plus" — so that figure is the plan's
+actual price. The owner refuted the premise by sending the URL.
+
+**THE BLOCKER WAS STRUCTURAL, NOT EDITORIAL.** `data/fund-facts.json`'s
+`vehicles` section — the only place a tickerless vehicle can live — had been
+validated and **empty for its entire life**, and could not carry a `ytd` at all:
+the return rules lived inside the `funds` loop and the closed whitelist rejected
+the field as unknown. So the fix was schema first, render second.
+
+**THE CHANGE.** Returns moved into a shared `checkReturns` used by both
+sections (same bands, same annualised requirement — a re-implementation would be
+a second set of rules wearing the first one's name). `erBasis` gained
+`class-published`, a **narrower** claim than the two it joins: the provider
+prices a NAMED unit class *and* the filing states that class, so it requires
+`shareClass`. 84 vehicles sourced. `vehicleKeyFor` in `fund-er.js` resolves a
+filed name to a key — vintage and class read from the NAME only, never the
+issuer cell, because `The Vanguard Group, **Inc.**` would file every classless
+row under the INCOME vintage.
+
+**THREE THINGS THE DATA REFUTED, EACH FOUND BY AN INSTRUMENT RATHER THAN A
+HUNCH.** (1) `Target Retirement **Income and Growth** Trust` is a different
+product and 17 rows resolved to the Income trust's key; my first fix was a
+lookahead, and a **residue scan** — strip every token the resolver accounts for,
+read what remains — found two spellings it could not see. (2) Vanguard serves
+**dormant** classes: every Trust III vintage reads `0.4000` as of **2014-03-31**
+with no current return. The two witnesses partition the set exactly (44/44
+fresh-with-YTD, 23/23 stale-without), so freshness gates at
+`gen-fund-facts-asset.mjs`, where no later call site can bypass it: **61 ship,
+23 are withheld.** (3) A type census over the whole population found **54 rows
+whose name states a trust class while the filed TYPE says "Mutual fund"** — and
+a real Target Retirement 2050 *Fund* (VFIFX, 0.08%) sits beside the 2050 Trust I
+(0.065%). *A witness that a row is damaged is not a witness to which side the
+damage is on*, so those keep their blank.
+
+**DELIVERED.** 7,527 rows / 689 plans / **7,544,702 readers** / $361.4B gain a
+sourced fee and a dated return. **0 fee values changed** (the path only fills an
+empty cell), 0 tickers, 0 asterisks, 0 types, row membership identical.
+
+**PREVENTION.** The harness now loads the sourced tables — it could not observe
+a sourced cell before, which is why a caller had to re-compose the lookup by
+hand and why a whole fund family was misread this week. `ytd-render-test` gains
+FedEx (12 unit-class figures, each naming its class on hover) with **Amazon as
+its control**: the same menu shape filed WITHOUT a class, which must stay blank.
+Two tethers on the note, both failing by name when their clause is removed.
+
+---
+
 ## 2026-11-13 (owner-reported, Black Hills) — THE SOURCED FEE MADE A WRONG SHARE CLASS WORSE: VINIX published on a filing naming INSTITUTIONAL PLUS, under a verified tick
 
 **WHAT WAS WRONG.** Black Hills Corporation's top holding is filed as `Vanguard
