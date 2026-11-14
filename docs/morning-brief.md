@@ -1,80 +1,97 @@
-# wampo morning brief — 2026-11-13
+# Morning brief — 2026-11-14
 
-Overwritten each cycle. Decision-shaped: what shipped and what it moved, what
-was found wrong, what reached readers, what is waiting on the owner.
+## What shipped, and what it changed in numbers
 
-## Found wrong, and fixed — the owner's question was the find
+Four ships, all gated, **none mirrored yet** (see HELD below).
 
-**A comparable row refused the fund's RETURN and published the fund's FEE.**
-Asked why a row showing a ticker and an expense ratio had no YTD, the answer
-was that `!star` correctly refuses a return on a comparable — a collective
-trust or separate account standing behind a registered equivalent's symbol —
-while the same row took that equivalent's expense ratio as fact. The note
-beneath the table made it worse, telling the reader the holding *"has no
-ticker and no published expense ratio"* **while the page published one**, then
-calling that figure "a ceiling".
+| ship | rows | plans | readers | value |
+|---|---|---|---|---|
+| Vanguard trusts publish their own fee + return | 7,527 | 689 | **7,544,702** | $361.4B |
+| T. Rowe Price trusts, same mechanism | 1,258 | 110 | **578,208** | $33.7B |
+| Wrong share class corrected (VINIX → VIIIX) | 61 | 61 | **581,379** | $10.0B |
+| Fidelity rename resolved (+1,104 ticker keys, 0 removed) | — | — | — | — |
 
-The owner's standing decision of 2026-11-05 was already *symbol only, NO fee*.
-The asterisked-symbol half had shipped; this was the other half.
+**The mechanism is new and is the day's real output.** `data/fund-facts.json`'s
+`vehicles` section had existed, validated and EMPTY, for its whole life, and
+could not carry a `ytd` at all — the return rules lived inside the `funds` loop
+and the closed whitelist rejected the field. It now holds **524 vehicles**, and
+a collective trust whose filing names its unit class publishes that class's own
+fee and dated return, with a tooltip naming the class. The ticker keeps its
+comparable asterisk: that claim has not changed, only the fee and return now
+describe the vehicle the plan actually owns.
 
-**Measured by differential through `renderRow`**, one line sliced from the
-shipped file and asserted unique, over all 1,790,374 published+served rows:
+## What was found wrong
 
-| | |
-|---|---|
-| fee cells withdrawn | **56,100** |
-| plans / readers | **9,412 / 39,749,121** |
-| non-starred rows moved | **0** — narrowing discharged |
-| ticker / type cells moved | **0 / 0** |
+- **Sourcing a figure makes a mis-resolved identity WORSE, and no sourcing
+  check can see it.** Black Hills' $143.5M top holding is filed as *Vanguard
+  Institutional Index **Plus** Fund*; the page asserted VINIX (the Institutional
+  class) while the pattern fee arm read the name as Plus and returned Plus's
+  0.020% — two of our tables contradicting each other with the displayed number
+  RIGHT. Sourcing VINIX made the sourced figure outrank the estimate and the
+  cell became **0.035% under a ✓** on a fund that charges 0.020%. Fixed, 61 rows.
+- **The T. Rowe arm nearly priced their mutual funds as trusts.** T. Rowe sells
+  a registered *Retirement 2040 Fund* beside the *Retirement 2040 Trust*. Found
+  by reading the names the arm reaches; measured after the fix, the one word
+  "Trust" refuses **567 filed names / 874 rows**, one carrying the mutual fund's
+  own ticker `TRVQX`.
+- **35 welded rows published a coin flip.** *"Vanguard Target Retirement 2025
+  Income Trust II Fund"* states two vintages; these are two adjacent menu rows
+  glued together by the parser, so the row's value belongs to one of them and
+  nothing says which. Refused. **My first guard for it was inert and read as
+  protection** — it reused the marker that ASSIGNS the income vintage, which
+  requires "Retirement" immediately before "Income"; in these welds the
+  preceding word is the year.
+- **Two of my own instruments were wrong in the same way.** The differential's
+  narrowing and the draw's filter both read `/vanguard/ && /target/`. Against a
+  T. Rowe batch the differential reported **0 rows moved** — a clean-looking
+  zero — and the draw would have sampled nothing. Both now narrow on the
+  resolvers themselves, as a union of before and after so a LOSS stays
+  expressible.
+- **A counter bug in a gate's own summary**: "503 ticker entries … 546 with a
+  YTD return". More YTDs than entries, caused by my own refactor sharing a
+  counter. A number in a gate's summary that cannot be true is a defect even
+  though no reader sees it.
 
-By filed TYPE: 35,959 `Collective trust`, 12,503 `Pooled separate account`,
-4,168 `Mutual fund`, 2,793 none stated, 528 `Separate account`, 120 ETF.
-A seeded uniform draw across 108 plans read `T Rowe Price Rtm 2045 Tr Cl A` —
-a trust, Class A — publishing TRRKX's 0.6%.
+## What was HELD, and why
 
-**What it costs, stated because it is not free:** the 4,168 `Mutual fund` rows
-and 120 ETF rows lose a fee that may have been RIGHT. The page cannot separate
-them, because a comparable exists precisely where the filing stated no class.
-
-## Shipped
-
-**503 sourced funds, up from 92.** Nine agent batches across Vanguard, Fidelity,
-State Street, BlackRock/iShares — about 93% of those houses' unsourced
-reader-slots — then Dodge & Cox, JPMorgan, American Funds, T. Rowe Price, MFS,
-DFA, Nuveen and PIMCO once the route generalised.
-
-**The route was the unlock and it was mis-scoped at first.** Fidelity's pages
-are JS-only shells unreachable by headless Chromium; the Schwab research page
-serves ANY mutual-fund ticker as static HTML and was already the cited source
-for the FXAIX entry. Treating it as Fidelity-only kept 4,754 tickers / 304M
-reader-slots looking unreachable for half a day.
-
-**Fourteen figures hand-verified at source**, outliers chosen deliberately:
-VENAX 44.75% is Vanguard Energy in an energy year, FLCOX 26.86% and FIMVX
-24.29% are value funds in a value year, FDRXX 2.85% is a total return with the
-7-day yield absent. All exact including dates.
-
-## Reaching readers
-
-Mirrored and deployed: the withdrawal and 454 funds. **The final 49 are on
-main at `3dcd4e8c` and NOT deployed** — Pages created no build for that SHA.
-Being re-triggered by this commit.
-
-## Found and recorded, not patched
-
-- **`erAsOf` holds two meanings** — a prospectus date on Vanguard entries, the
-  day we read the page on every Schwab-sourced one — and it IS published, as
-  the tooltip on the sourced-fee tick. 129+ entries. Remedy (`erBasis`) has a
-  schema precedent; not fixed by inventing dates the source does not give.
-- **Three employer stocks** (`IBM`, `WMT`, `CVS`) reached sourcing work lists,
-  each because the holding's name carries a custodian's name.
-- **Three returns stale for display** (BCOIX, FMGGX, PIMIX); checker warns.
-- **Nuveen class labels unverified** in storage — reaches no reader, because
-  `name` is never shipped to the browser.
+- **Retirement Hybrid, 150 entries.** Its fee is in T. Rowe's brochure but no
+  Hybrid fact sheet is reachable, so the "trustee fee = expense ratio"
+  equivalence is carried from a *sibling* product rather than stated for it. The
+  keys exist, carry a note saying so, and the resolver refuses them.
+- **23 dormant Vanguard records.** Every Target Retirement Trust III vintage
+  reads `0.4000` as of **2014-03-31** with no current return. Withheld at
+  `gen-fund-facts-asset.mjs`, where no later call site can bypass it.
+- **54 self-contradicting rows** whose name states a trust class while the filed
+  TYPE says "Mutual fund" — a real Target Retirement 2050 *Fund* (0.08%) sits
+  beside the 2050 Trust I (0.065%). They keep their blank: 21,141 readers
+  deliberately without a figure.
 
 ## Waiting on the owner
 
-Unchanged: the comparable-ticker GAIN half (49.1M), the wrong-share-class fee
-families, the CREF accounts, the frozen crawlable pages, the held 33-row fee
-ship. The remaining 5,352 unsourced tickers have a median reach of ~3,000
-readers, far below the 500,000 floor, so sourcing stopped at 503 by design.
+- **State Street core index CITs — 3,774 rows / 1,964 plans / 9.59M readers /
+  $173B.** The owner supplied State Street's own collective-trust product
+  listing, which prices each fund per share class. **I had reported this family
+  as impossible an hour earlier and was wrong**: what I had established was that
+  I could not find the data, not that it does not exist. The open question is
+  their own footnote — *"Pricing assumes $10M aggregate mapping minimum"* —
+  which makes it a rate card rather than necessarily the price a given plan
+  pays. **Their TARGET RETIREMENT trusts remain unsourceable**: ssga.com
+  publishes only the registered mutual funds, and their own document host
+  resets the connection.
+- **Vanguard's classless rows — 521 rows / 2.75M readers.** Their sibling rows
+  in the same menu state exactly one class. Plans rarely hold two unit classes
+  of one ladder, but that is an inference from neighbours, not a filing.
+
+## What continues today
+
+1. **Mirror.** Main holds one pipeline data commit (`bb484683`) and all six
+   stores differ from the branch, so it carries fresh filings and must be
+   rebased in first — a mirror without it would discard them. Then the regen's
+   `site-test` verdict, then `scripts/mirror.sh`.
+2. **BlackRock LifePath** (5,052 rows / 4.16M readers) — sourcing in flight.
+   Then Fidelity Freedom (2.84M) and Principal LifeTime (2.13M).
+3. **The daily YTD refresh now exists** — `fund-facts.yml` at `0 8 * * *`
+   (03:00 ET under EST, re-check at the 2026-03-08 transition). Tickers through
+   schwab.wallst.com, CITs through each vehicle's own recorded issuer URL. It
+   refreshes and never discovers; it exits 1 when it reached nothing, because a
+   silent no-op reads exactly like "nothing needed refreshing".
