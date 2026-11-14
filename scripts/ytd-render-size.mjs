@@ -25,7 +25,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildRenderer } from "./apppath.mjs";
-import { loadPlans } from "./lib-schema.mjs";
+import { loadPlans, loadFundFactsAsset } from "./lib-schema.mjs";
 import { servedLineup } from "./lib-ledger.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -34,9 +34,10 @@ const lidx = JSON.parse(readFileSync(`${ROOT}/lineups-index.json`, "utf8")).plan
 const d = loadPlans();
 R.setPlans(d.rows.map((r) => ({ sponsorName: d.get(r, "sponsorName"), ticker: d.get(r, "ticker") })));
 
-/* FUND_FACTS exactly as the page parses it */
-const ffSrc = readFileSync(`${ROOT}/fund-facts.js`, "utf8");
-const FF = JSON.parse(ffSrc.slice(ffSrc.indexOf("{"), ffSrc.lastIndexOf("}") + 1));
+/* FUND_FACTS exactly as the page parses it. Through the loader, not by slicing
+ * the file between its outermost braces: that slice spanned BOTH objects the
+ * moment FUND_VEHICLES was added and this script died at load. */
+const FF = loadFundFactsAsset(path.join(ROOT, "fund-facts.js")).facts;
 const nYtd = Object.values(FF).filter((v) => v && v.ytd != null).length;
 console.log(`fund-facts.js: ${Object.keys(FF).length} tickers, ${nYtd} carry a ytd`);
 /* MUST-SEE: without this every figure below is a clean zero reporting on the

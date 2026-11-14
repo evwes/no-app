@@ -131,6 +131,45 @@ export function loadTrusts(path = "mtias.json") {
   };
 }
 
+/* fund-facts.js — the GENERATED browser asset, which holds TWO objects:
+ * FUND_FACTS (keyed by ticker) and FUND_VEHICLES (keyed provider::fund).
+ *
+ * WHY THIS IS HERE AND NOT INLINE AT EACH CALL SITE. Two tracked instruments
+ * read this file by slicing from the first "{" to the last "}" and parsing the
+ * result. That worked for the file's whole life, because it held one object.
+ * The vehicles ship added a second, and the slice now spans BOTH plus the
+ * closing of the first — so `ticker-source-queue.mjs` and `ytd-render-size.mjs`
+ * both died at load with a SyntaxError, and the queue that ranks what to source
+ * next was unrunnable. The ship's own gates were all green: nothing tests a
+ * measurement script.
+ *
+ * Keyed on the DECLARATION, and it THROWS when the name is absent, because the
+ * failure this replaces was a parse of the wrong bytes — which is the same
+ * family as reading a field by a name that sounds right. A renamed or removed
+ * object fails loudly at the first call instead of yielding a plausible count.
+ */
+export function loadFundFactsAsset(path = "fund-facts.js") {
+  const src = readFileSync(path, "utf8");
+  const one = (name) => {
+    const decl = `const ${name} = {`;
+    const at = src.indexOf(decl);
+    if (at < 0) {
+      throw new Error(
+        `${path}: no "${decl}" declaration.\n` +
+        `  This loader is keyed on the declaration, not on brace positions, ` +
+        `because the file holds more than one object.\n` +
+        `  Declarations present: ${(src.match(/^const \w+ = \{/gm) || ["(none)"]).join(", ")}`
+      );
+    }
+    const open = at + decl.length - 1;
+    /* the generator writes one entry per line and closes with "};" at column 0 */
+    const close = src.indexOf("\n};", open);
+    if (close < 0) throw new Error(`${path}: ${name} is not closed by a line-leading "};"`);
+    return JSON.parse(src.slice(open, close + 2));
+  };
+  return { facts: one("FUND_FACTS"), vehicles: one("FUND_VEHICLES") };
+}
+
 /* ---- self-test: the three real bugs must all throw ------------------------ */
 if (process.argv[1] && process.argv[1].endsWith("lib-schema.mjs") && process.argv.includes("--selftest")) {
   let fails = 0;
@@ -156,6 +195,36 @@ if (process.argv[1] && process.argv[1].endsWith("lib-schema.mjs") && process.arg
   const ack = P.get(row, "ack");
   mustWork("status.at(ack)?.c", () => (S.at(ack) ? S.at(ack).c ?? null : null));
   mustThrow("status.at(ack).confident", () => { const s = S.at(P.rows.find((r) => S.plans[P.get(r, "ack")]) ? P.get(P.rows.find((r) => S.plans[P.get(r, "ack")]), "ack") : ack); return s.confident; });
+
+  /* fund-facts.js: the two objects must come back SEPARATE. A loader that
+   * found the wrong closing brace would return one merged object and read as
+   * working, so the assertion is on the KEY SHAPES, not on a count. */
+  mustWork("fundFacts: FUND_FACTS and FUND_VEHICLES are separate", () => {
+    const { facts, vehicles } = loadFundFactsAsset();
+    const fk = Object.keys(facts), vk = Object.keys(vehicles);
+    if (!fk.length || !vk.length) throw new Error(`empty: ${fk.length} facts, ${vk.length} vehicles`);
+    const leaked = fk.filter((k) => k.includes("::"));
+    if (leaked.length) throw new Error(`vehicle keys leaked into FUND_FACTS: ${leaked.slice(0, 3).join(", ")}`);
+    const stray = vk.filter((k) => !k.includes("::"));
+    if (stray.length) throw new Error(`ticker keys leaked into FUND_VEHICLES: ${stray.slice(0, 3).join(", ")}`);
+    return { tickers: fk.length, vehicles: vk.length };
+  });
+  /* NEGATIVE CONTROL, and it must fail for ITS OWN REASON. The first version
+   * of this line passed `package.json`, which does not exist in this repo: it
+   * threw ENOENT and read as a working guard. A control that cannot fail for
+   * the reason it names is decorative, so the file must EXIST and the message
+   * must name the missing declaration. */
+  mustWork("fundFacts names the missing declaration (negative control)", () => {
+    const victim = "styles.css";
+    if (!readFileSync(victim, "utf8").length) throw new Error(`${victim} is empty — the control proves nothing`);
+    try { loadFundFactsAsset(victim); } catch (e) {
+      if (!/no "const FUND_FACTS = \{" declaration/.test(e.message)) {
+        throw new Error(`threw, but not for the declaration: ${String(e.message).split("\n")[0]}`);
+      }
+      return "throws, naming the declaration";
+    }
+    throw new Error(`${victim} parsed as fund-facts.js — the guard is inert`);
+  });
 
   console.log(fails ? `\n${fails} FAILED` : "\nall guards hold");
   process.exit(fails ? 1 : 0);
