@@ -7,6 +7,64 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-14 (owner directive, top-ten target-date families) — T. ROWE PRICE'S TRUSTS PUBLISH TOO, AND THE RESOLVER NEARLY PRICED THEIR MUTUAL FUNDS AS TRUSTS
+
+**THE PREMISE HELD FOR A SECOND ISSUER, AND THAT IS A MEASUREMENT PER ISSUER
+RATHER THAN A PROPERTY OF TRUSTS.** T. Rowe Price's own quarterly fact sheets
+state a **Trustee Fee** per named unit class, footnoted *on the sheet itself*:
+"Figure is equivalent to the annual operating expense ratio". Read by hand on
+Retirement 2030 Trust (Class A): 0.38%, YTD 7.04, 1/3/5/10-year 9.35 / 14.14 /
+6.48 / 9.14, as of 2026-09-30 — matching the stored entry exactly, including
+the column alignment (the seventh number on that row is *Since Inception* and
+is correctly excluded). Its CIT brochure gives a CUSIP per class, and the two
+sources agree on the fee for all 247 fact-sheet classes with **0 mismatches**.
+440 vehicles written. **State Street, by contrast, publishes nothing readable
+for its trusts** and that run correctly wrote zero.
+
+**THE DEFECT, CAUGHT BY READING THE REACHED NAMES RATHER THAN BY A COUNT.**
+The first T. Rowe arm did not require the filing to say *Trust*. T. Rowe sells a
+registered **Retirement 2040 Fund** beside the Retirement 2040 Trust, and the
+filings name both — so `"T. Rowe Price Retirement 2040 Fund Class I"` resolved
+to the **trust's** key. It published nothing only because that class happened to
+be unsourced, which is luck and not a design. Measured after the fix by
+neutering the guard over all 98,439 (name, issuer) pairs of the two houses:
+**567 filed names / 874 rows** are refused by that one word, among them
+`"TRVQX - T. Rowe Price 2070 Retirement Class I"` — a row carrying the mutual
+fund's own TICKER. *One word separates the two vehicles and the filer writes
+it.*
+
+**DELIVERED.** 1,258 rows / 110 plans / **578,208 readers** / $33.7B gain a
+sourced fee; 1,004 of them also gain a dated return. 0 fee values changed, 0
+tickers, 0 asterisks, 0 types, row membership identical. Each class shows two
+fees because Retirement and Retirement Blend price the same class letter
+differently, which is the internal check that the two lines are not crossed.
+
+**RETIREMENT HYBRID IS HELD, 150 ENTRIES.** Its fee is in the brochure but no
+Hybrid fact sheet is reachable, so the equivalence between "trustee fee" and an
+expense ratio is carried from a *sibling* product rather than stated for it. *A
+fee is SOURCED, never inferred.* The keys exist, carry a note saying exactly
+that, and the resolver refuses them.
+
+**TWO INSTRUMENTS WERE WRONG IN THE SAME WAY AND BOTH FAILED SILENTLY.** The
+differential's narrowing and the draw's filter each read `/vanguard/ && /target/`
+— the shape of the change that first needed them. Against a T. Rowe batch the
+differential reported **0 rows moved** and the draw would have sampled nothing,
+both looking like clean results. *A narrowing written for one change is not a
+narrowing for the next*, and its discharge test passed because it too only
+tested the house it was written for. The narrowing is now the UNION of the
+before and after resolvers, which supersets by construction for any house and
+can still express a loss.
+
+**PREVENTION.** `scripts/vehicle-key-test.mjs` is new and is the resolver's
+first gate — its pins previously lived in a measurement script CI never ran, and
+*a gate that is not run is indistinguishable from no gate*. 30 cases, 16 of them
+must-NOT-resolve and every one a real filed name some version reached. Only the
+**two** guards measured load-bearing on live data are mutated; the three that
+are redundant with the class matcher are asserted as refusals and their zero is
+written down rather than dressed up.
+
+---
+
 ## 2026-11-14 (owner-reported, Michels + Black Hills) — A COLLECTIVE TRUST CAN HAVE A PUBLISHED PRICE, AND ASSUMING IT COULD NOT COST 7.5M READERS A BLANK CELL
 
 **WHAT WAS WRONG.** `app.js`'s comparable note told readers a trust holding

@@ -27,6 +27,9 @@ on:
             # collective trust has to live and it held zero entries for its
             # whole life, so its rules were machinery nobody had ever run.
             "scripts/fund-facts-vehicle-test.mjs",
+            # the resolver's own gate, and fund-er.js is already in this list
+            # above, so a change to either can fire it
+            "scripts/vehicle-key-test.mjs",
             "scripts/fund-facts-ingest.mjs",
             # the ISSUER-PAGE extractor and its tether. The tether's own
             # workflow (fund-facts.yml) is dispatch-only, so without these two
@@ -432,6 +435,17 @@ jobs:
       # without naming that class. No network, writes only in the OS temp dir.
       - name: Vehicle entries are held to the same receipts as tickers
         run: node scripts/fund-facts-vehicle-test.mjs
+      # AND THE RESOLVER THAT DECIDES WHICH VEHICLE A FILED ROW IS. It picks the
+      # key whose fee and return the page then prints, so a wrong answer is not
+      # a missing cell -- it is a published fee belonging to a different
+      # product. Its must-NOT list is the interesting half and every entry is a
+      # real filed name a version of the resolver reached: the T. Rowe
+      # Retirement 2040 FUND sold beside the 2040 Trust, "Target Retirement
+      # Income AND GROWTH Trust" whose name contains the Income trust's, and a
+      # row carrying the mutual fund's own ticker. Until now its pins lived in a
+      # measurement script CI never ran.
+      - name: The vehicle resolver names the right vehicle
+        run: node scripts/vehicle-key-test.mjs
       # THE FEE MUST COME FROM ITS OWN COLUMN, NOT FROM THE DAY'S QUOTE. The
       # issuer page puts every label first and every value after, so a
       # label-proximity read returns the price change: it gave FXAIX 0.37%

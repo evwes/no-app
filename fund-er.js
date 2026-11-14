@@ -1983,10 +1983,72 @@ const VG_TRUST_GROWTH = /\bgro?w?th\b/i;
 const VG_TRUST_UNPRICED = /\bfle?x\b/i;
 const VG_CLASS_SLUG = { i: "i", ii: "ii", iii: "iii", 1: "i", 2: "ii", 3: "iii", plus: "plus", select: "select" };
 
+/* ---- T. ROWE PRICE -------------------------------------------------------
+ * Its own quarterly fact sheets state a "Trustee Fee" per named unit class,
+ * footnoted on the sheet itself: "Figure is equivalent to the annual operating
+ * expense ratio". Read by hand on Retirement 2030 Trust (Class A): 0.38%, YTD
+ * 7.04, as of 2026-09-30, matching the stored entry exactly. The CIT brochure
+ * gives a CUSIP per class, and the two sources agree on the fee for all 247
+ * fact-sheet classes with 0 mismatches.
+ *
+ * THREE PRODUCT LINES, AND ONLY TWO ARE RESOLVED HERE. Retirement and
+ * Retirement Blend each have a reachable sheet carrying that footnote.
+ * RETIREMENT HYBRID does NOT: its fee is in the brochure but no Hybrid sheet is
+ * reachable, so the equivalence between "trustee fee" and an expense ratio is
+ * carried over from a sibling product rather than stated for it. *A fee is
+ * SOURCED, never inferred* — so the Hybrid keys exist in the data, carry a note
+ * saying exactly that, and are deliberately NOT reachable from here. They
+ * publish nothing until someone reads a Hybrid sheet.
+ *
+ * WHAT MUST NOT RESOLVE, each for its own reason and each a real filed name:
+ * "Retirement Blend SELECT Trust ... Cl 5" is a different product absent from
+ * the brochure; "GGT TRP RETIRE DATE 2030 TR R1" is Great Gray's vehicle, not
+ * T. Rowe's; "T. Rowe Price Target 2030 Trust" is the Target line, not
+ * Retirement; and "TRP RETIREMENT HYB 2025 TR-114" states a marker T. Rowe
+ * does not use — probably a garbled "T14", which is a guess and so is refused.
+ */
+const TRP_HOUSE = /\bt\.?\s*rowe\s*price\b|\btrp\b|\btroweprice\b/i;
+const TRP_FAMILY = /\bretire(?:ment)?\b/i;
+/* `select` is a different trust; `ggt`/`great gray` is a different TRUSTEE */
+const TRP_VEH_NOT = /\bselect\b|\bggt\b|great\s*gray/i;
+const TRP_LINE = [["blend", /\bblend\b/i], ["hybrid", /\bhybrid\b|\bhyb\b/i]];
+/* A..K only. The Hybrid classes are T1..T18 and are not matched at all, which
+ * is what holds that line; and a bare digit ("Cl 5") belongs to Select. */
+const TRP_CLASS = /\b(?:class|cl)\.?\s*([a-k])\b/i;
+const TRP_VINTAGE = /\b(20(?:0[05]|[1-6][05]|70))\b/;
+const TRP_BALANCED = /\bbalanced\b/i;
+
+// eslint-disable-next-line no-unused-vars
+function trowePriceVehicleKey(n, house) {
+  if (!TRP_HOUSE.test(house)) return null;
+  if (!TRP_FAMILY.test(n)) return null;
+  if (TRP_VEH_NOT.test(house)) return null;
+  /* THE FILING MUST SAY *TRUST*, AND READING THE REACHED NAMES IS WHAT FOUND
+   * THIS. T. Rowe Price sells a registered RETIREMENT 2040 FUND alongside the
+   * Retirement 2040 Trust, and the filings name both. Without this the arm
+   * mapped "T. Rowe Price Retirement 2040 Fund Class I" onto the TRUST's key —
+   * publishing nothing today only because Class I happens to be unsourced,
+   * which is luck and not a design. One word separates the two vehicles and
+   * the filer writes it. */
+  if (!/\btrusts?\b/i.test(n)) return null;
+  const line = TRP_LINE.find(([, re]) => re.test(n));
+  if (line && line[0] === "hybrid") return null;      // held: see the note above
+  const cls = n.match(TRP_CLASS);
+  if (!cls) return null;
+  const yr = n.match(TRP_VINTAGE);
+  const vintage = yr ? yr[1] : (TRP_BALANCED.test(n) ? "balanced" : null);
+  if (!vintage) return null;
+  const seg = line ? `retirement-${line[0]}` : "retirement";
+  const tail = vintage === "balanced" ? "balanced" : vintage;
+  return `t-rowe-price::${seg}-${tail}-trust-class-${cls[1].toLowerCase()}`;
+}
+
 // eslint-disable-next-line no-unused-vars
 function vehicleKeyFor(name, iss) {
   const n = String(name || "");
   const house = `${iss || ""} ${n}`;
+  const trp = trowePriceVehicleKey(n, house);
+  if (trp) return trp;
   if (!VG_TRUST_FAMILY.test(house)) return null;
   if (!VG_TRUST_TARGET.test(n)) return null;
   if (VG_TRUST_UNPRICED.test(n)) return null;

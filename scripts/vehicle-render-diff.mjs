@@ -16,6 +16,7 @@
  * its table is <th>Fund</th><th>Value</th> — no ticker, fee or return column.
  */
 import { readFileSync, readdirSync, writeFileSync, mkdtempSync } from "node:fs";
+import vm from "node:vm";
 import { execFileSync } from "node:child_process";
 import os from "node:os";
 import path from "node:path";
@@ -26,8 +27,17 @@ import { servedLineup } from "./lib-ledger.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const tmp = mkdtempSync(path.join(os.tmpdir(), "vehdiff-"));
-const headApp = path.join(tmp, "app.js");
-writeFileSync(headApp, execFileSync("git", ["show", "HEAD:app.js"], { cwd: ROOT, encoding: "utf8" }));
+/* THE WHOLE BEFORE SIDE COMES FROM HEAD, not just app.js. A delivery can live
+ * in any of the three — the render (app.js), the resolver (fund-er.js) or the
+ * sourced data (fund-facts.js) — and the T. Rowe Price batch moved the last
+ * two while leaving app.js untouched. Varying only app.js would then have
+ * printed a perfect zero, which is the failure shape this record names: a
+ * BEFORE that is silently the AFTER reads as a clean no-difference. */
+const head = (f) => { const t = path.join(tmp, f);
+  writeFileSync(t, execFileSync("git", ["show", `HEAD:${f}`], { cwd: ROOT, encoding: "utf8" })); return t; };
+const headApp = head("app.js");
+const headFunder = head("fund-er.js");
+const headFacts = head("fund-facts.js");
 
 /* A BEFORE THAT IS SILENTLY THE AFTER READS AS A CLEAN NO-DIFFERENCE. Pin it
  * by pointing the loader at a missing path and requiring a THROW. */
@@ -35,14 +45,20 @@ let threw = false;
 try { buildRenderer({ appjs: path.join(tmp, "nope.js") }); } catch { threw = true; }
 if (!threw) throw new Error("control FAILED: buildRenderer accepted a missing app path");
 
-const BEFORE = buildRenderer({ appjs: headApp });
+const BEFORE = buildRenderer({ appjs: headApp, funder: headFunder, fundfacts: headFacts });
 const AFTER = buildRenderer({ appjs: path.join(ROOT, "app.js") });
 
 /* AND THE HARNESS MUST BE ABLE TO SEE THE CHANGE AT ALL — assert it on a row
  * carried out of the real data shape, before counting anything. A no-difference
  * is a finding only once the instrument has been shown able to see one. */
 {
-  const probe = { name: "Vanguard Target Retirement 2040 Trust Plus", iss: "", type: "Collective trust", value: 1e6 };
+  /* THE PROBE MUST BE A ROW THE CURRENT CHANGE MOVES, and it goes stale the
+   * moment that change ships: this one was the Vanguard trust until HEAD began
+   * pricing it, at which point the control FIRED and refused to measure — which
+   * is exactly what it is for. Point it at whatever the working tree adds.
+   * Override with VEHDIFF_PROBE / VEHDIFF_PROBE_TYPE. */
+  const probe = { name: process.env.VEHDIFF_PROBE || "T. Rowe Price Retirement 2040 Trust Class A",
+    iss: "", type: process.env.VEHDIFF_PROBE_TYPE || "Collective trust", value: 1e6 };
   const mk = (R) => { const f = { ...probe, nameRaw: probe.name, name: R.clean(probe.name) };
     return R.renderRow({ sponsorName: "x", ticker: "" }, f, "menu", 1e6); };
   const b = mk(BEFORE), a = mk(AFTER);
@@ -69,10 +85,25 @@ for (const row of d.rows) {
 const ppl = new Map();
 for (const row of d.rows) ppl.set(`${d.get(row, "ein")}|${d.get(row, "pn")}`, +d.get(row, "partEOY") || +d.get(row, "participants") || 0);
 
-/* NARROWED BY A PROPERTY OF THE CHANGE, DISCHARGED BELOW. vehicleKeyFor
- * requires `vanguard` somewhere and `target` in the NAME, so no row without
- * both can move. This supersets what the change can touch BY CONSTRUCTION. */
-const CAN_MOVE = (iss, n) => /vanguard/i.test(`${iss} ${n}`) && /target/i.test(n);
+/* NARROWED BY THE RESOLVERS THEMSELVES, AND BY BOTH OF THEM.
+ *
+ * This used to read `/vanguard/i && /target/i` — the shape of the change that
+ * first needed it. The T. Rowe Price batch then moved thousands of rows and
+ * this script reported ZERO, because no T. Rowe row carries the word Vanguard.
+ * A narrowing written for one change is not a narrowing for the next, and the
+ * failure is silent and flattering: it reads as "nothing moved".
+ *
+ * So the narrowing is now the vehicle resolver, which is the only thing the
+ * vehicle path consults — and it is the UNION of the BEFORE and AFTER
+ * resolvers. Keying it on the after side alone would exclude any row whose
+ * resolution was REMOVED, so a harness meant to catch losses could not express
+ * one. Supersets what the change can touch by construction, for any house. */
+const vkOf = (file) => { const c = { console: { log() {}, warn() {}, error() {} } };
+  vm.createContext(c);
+  vm.runInContext(readFileSync(file, "utf8") + "\nglobalThis.__vk = typeof vehicleKeyFor === 'function' ? vehicleKeyFor : () => null;", c);
+  return c.__vk; };
+const vkBefore = vkOf(headFunder), vkAfter = vkOf(path.join(ROOT, "fund-er.js"));
+const CAN_MOVE = (iss, n) => !!(vkBefore(n, iss) || vkAfter(n, iss));
 
 const VB = new Map(), VA = new Map();
 let rows = 0, considered = 0, memB = 0, memA = 0;
@@ -126,9 +157,15 @@ for (const sh of readdirSync(`${ROOT}/data/lineups`).sort()) {
   }
 }
 
-/* DISCHARGE: every shipped vehicle key's own shape must be inside CAN_MOVE. */
-for (const n of ["Vanguard Target Retirement 2040 Trust Plus", "Target Retirement Income Trust I"])
-  if (!CAN_MOVE("Vanguard", n)) throw new Error(`narrowing is not a superset: ${n}`);
+/* DISCHARGE, ONE PIN PER HOUSE THE RESOLVER ANSWERS FOR. The pins used to be
+ * Vanguard-only, which is how a Vanguard-shaped narrowing passed its own
+ * discharge while excluding every T. Rowe Price row. A discharge that only
+ * tests the house it was written for discharges nothing. */
+for (const [iss, n] of [["Vanguard", "Vanguard Target Retirement 2040 Trust Plus"],
+                        ["Vanguard", "Target Retirement Income Trust I"],
+                        ["", "T. Rowe Price Retirement 2040 Trust Class A"],
+                        ["", "T. Rowe Price Retirement Blend 2035 Trust Class A"]])
+  if (!CAN_MOVE(iss, n)) throw new Error(`narrowing is not a superset: ${JSON.stringify(n)}`);
 
 const readers = [...plans].reduce((a, k) => a + (ppl.get(k) || 0), 0);
 console.log(`rendered ${rows.toLocaleString()} served rows; ${considered.toLocaleString()} could move by construction`);

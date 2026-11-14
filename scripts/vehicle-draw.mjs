@@ -60,7 +60,10 @@ for (const sh of readdirSync(`${ROOT}/data/lineups`).sort()) {
     const total = e.funds.reduce((a, f) => a + (+f.value || 0), 0);
     for (const raw of e.funds) {
       const nameRaw = String(raw.name || ""), iss = String(raw.iss || "").trim();
-      if (!/vanguard/i.test(`${iss} ${nameRaw}`) || !/target/i.test(nameRaw)) continue;
+      /* BOTH HOUSES. This read `/vanguard/ && /target/` and would have drawn
+       * zero T. Rowe Price rows while reporting a clean sample — the same
+       * house-shaped narrowing that made the differential print 0 rows moved. */
+      if (!/vanguard|t\.?\s*rowe|trp\b/i.test(`${iss} ${nameRaw}`)) continue;
       const r = R.renderRow(lead, { ...raw, nameRaw, name: R.clean(nameRaw) }, "menu", total);
       if (!r || !r.vehicleCls) continue;              // only rows that NEWLY publish
       const pk = `${lead.ein}|${lead.pn}`;
