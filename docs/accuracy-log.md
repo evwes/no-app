@@ -55,6 +55,19 @@ tested the house it was written for. The narrowing is now the UNION of the
 before and after resolvers, which supersets by construction for any house and
 can still express a loss.
 
+**AND THE SEEDED DRAW EARNED ITS PLACE AGAIN.** Row 9 of 16 was
+`"Vanguard Target Retirement 2025 Income Trust II Fund"`, published as the 2025
+trust at +5.24% when it could as easily be the Income trust at +3.21%. Reading
+the whole class showed what they are: **WELDS**. `"Income Trust Plus Vanguard
+Target Retirement 2020"` and `"Target Retirement 2060 Trust II Vanguard Target
+Retirement In…"` are two adjacent menu rows glued together by the parser, so the
+row's VALUE belongs to one of them and nothing says which. A legitimate name
+states exactly one vintage — a year or Income, never both — so **35 rows are now
+refused**. The guard needed a LOOSER income marker than the one that assigns the
+vintage: `VG_TRUST_INCOME` demands the family word immediately before it, and in
+these the preceding word is the YEAR or nothing at all, so the first version of
+the guard let every weld through while reading as protection.
+
 **PREVENTION.** `scripts/vehicle-key-test.mjs` is new and is the resolver's
 first gate — its pins previously lived in a measurement script CI never ran, and
 *a gate that is not run is indistinguishable from no gate*. 30 cases, 16 of them

@@ -1977,6 +1977,15 @@ const VG_TRUST_INCOME = /\b(?:retirement|retire|ret|rmt)\.?\s*(?:income|inc)\b/i
  * sourced for Income and Growth, so null and a blank cell is the right answer
  * — and the real Income trust's name never contains the word. */
 const VG_TRUST_GROWTH = /\bgro?w?th\b/i;
+/* The contradiction test needs a LOOSER income marker than the one that
+ * ASSIGNS the income vintage. VG_TRUST_INCOME demands the family word right
+ * before it ("Retirement Income"), which is correct for assigning — but in
+ * "...Retirement 2025 Income Trust II" the word before Income is the YEAR, and
+ * in "Income Trust Plus Vanguard Target Retirement 2020" there is no word
+ * before it at all. Both are welds and both would have slipped through.
+ * Spelled-out `income` only: `inc` is a corporate suffix before it is a
+ * vintage, and every weld measured in this class writes the word in full. */
+const VG_TRUST_TWO_VINTAGE = /\bincome\b/i;
 /* FLEX is a real Vanguard trust class and is deliberately NOT resolved: the
  * issuer publishes no expense ratio for it, so a key would point at nothing.
  * Named here so the refusal is visible rather than accidental. */
@@ -2060,5 +2069,17 @@ function vehicleKeyFor(name, iss) {
   const vintage = yr ? yr[1] : (VG_TRUST_INCOME.test(n) ? "income" : null);
   if (!vintage) return null;
   if (vintage === "income" && VG_TRUST_GROWTH.test(n)) return null;
+  /* A NAME STATING TWO VINTAGES NAMES NEITHER. A seeded draw turned up
+   * "Vanguard Target Retirement 2025 Income Trust II Fund", published as the
+   * 2025 trust (YTD 5.24) when it could as easily be the Income trust (YTD
+   * 3.21). Reading the whole class showed what they are: WELDS. "Income Trust
+   * Plus Vanguard Target Retirement 2020" and "Target Retirement 2060 Trust II
+   * Vanguard Target Retirement In…" are two adjacent menu rows glued together
+   * by the parser, so the row's VALUE belongs to one of them and we cannot say
+   * which. *A witness that a row is damaged is not a witness to which side the
+   * damage is on.* A legitimate name states exactly one vintage — a year or
+   * Income, never both — so requiring that costs nothing real and refuses 35
+   * rows that were each a coin flip. */
+  if (yr && VG_TRUST_TWO_VINTAGE.test(n)) return null;
   return `vanguard::target-retirement-${vintage}-trust-${slug}`;
 }

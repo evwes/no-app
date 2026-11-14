@@ -89,6 +89,15 @@ const CASES = [
   ["Target retirement income growth trust II", "", null],            // ... with no connector
   ["Vanguard Target Retirement Income Trust II and Growth Trust II", "", null],
   ["Vanguard Target Retirement 2050 Trust Flex", "", null],          // real class, no published fee
+  /* A NAME STATING TWO VINTAGES NAMES NEITHER — found by a seeded draw, then
+   * read as a class: these are two adjacent menu rows WELDED by the parser, so
+   * the row's value belongs to one of them and nothing says which. 35 rows. */
+  ["Vanguard Target Retirement 2025 Income Trust II Fund", "", null],
+  ["Income Trust Plus Vanguard Target Retirement 2020", "", null],
+  ["Target Retirement 2035 Income Trust II", "", null],
+  /* and the honest Income trust, which must survive that guard */
+  ["Vanguard Target Retirement Income Trust II", "", "vanguard::target-retirement-income-trust-ii"],
+  ["VANGUARD TARGET RET INC TR I", "", "vanguard::target-retirement-income-trust-i"],
   ["Vanguard Target Retirement 2050 Fund", "", null],                // states no class
   ["Vanguard Target Retirement Trust Plus", "The Vanguard Group, Inc.", null], // no vintage; `Inc.` must not supply one
   ["Vanguard Institutional TR 2060", "", null],                      // `TR 2060` is a vintage, not a class
@@ -142,6 +151,8 @@ const MUTATIONS = [
     "T. Rowe Price Retirement 2040 Fund Class I", null],
   ["vanguard growth refusal", (t) => t.replace('  if (vintage === "income" && VG_TRUST_GROWTH.test(n)) return null;', "  // refusal removed"),
     "Vanguard Target Retirement Income and Growth Trust I", null],
+  ["vanguard two-vintage refusal", (t) => t.replace("  if (yr && VG_TRUST_TWO_VINTAGE.test(n)) return null;", "  // refusal removed"),
+    "Vanguard Target Retirement 2025 Income Trust II Fund", null],
 ];
 /* the redundant three, asserted as REFUSALS rather than as mutations */
 for (const [label, n] of [["hybrid hold", "T. Rowe Price Retirement Hybrid 2030 Trust Class T5"],
