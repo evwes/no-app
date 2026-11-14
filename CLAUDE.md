@@ -157,7 +157,12 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   (the host is not allowed), while an HTTP status with real bytes means the
   tunnel worked and the answer came from the SITE. `getaddrinfo ENOTFOUND` is
   a third thing — a client resolving DNS outside the proxy — and reads like a
-  dead host when the host is fine. Probe with
+  dead host when the host is fine. **A FOURTH SHAPE, measured 2026-11-14:
+  `CONNECT tunnel established, response 200` then `Recv failure: Connection
+  reset by peer` is THE SITE REJECTING THIS CLIENT**, after the proxy allowed
+  it — `prd-ams.ssga.com` does exactly this, so adding it to the allowlist
+  changed the shape and not the outcome. *Allowing a host proves the proxy will
+  carry you, never that the host will answer.* Probe with
   `curl -sS -o /dev/null -L -w "http=%{http_code} bytes=%{size_download}"`,
   never a bare grep: *a clean zero reports on the query.*
   Measured today: `*.gov` is allowed by wildcard (so `askebsa.dol.gov` 200 and
@@ -194,6 +199,36 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   expense ratio at all**, so an `erAsOf` taken from it is the QUOTE date. Use
   the NET expense ratio. *Treating this as Fidelity-only is what kept 4,754
   tickers / 304M reader-slots looking unreachable for half a day.*
+- **A COLLECTIVE TRUST'S OWN PRICE IS PUBLISHED BY SOME ISSUERS AND NOT OTHERS,
+  AND THAT IS A MEASUREMENT PER ISSUER (2026-11-14).** The `vehicles` mechanism
+  shipped this day: `vehicleKeyFor` in `fund-er.js` maps a filed name to a
+  `provider::fund` key, `gen-fund-facts-asset.mjs` emits only entries whose
+  `erBasis` is **`class-published`** with a fee inside two years, and `app.js`
+  prints that figure with a tooltip naming the unit class while the ticker keeps
+  its comparable asterisk. Extending it to a family is TWO jobs — source the
+  per-class figures, then add the family to the resolver — and **the first can
+  fail honestly.** Measured: **Vanguard publishes per class and shipped**
+  (7,527 rows / 7.54M readers); **State Street does NOT** — ssga.com carries its
+  registered mutual funds (SSDEX) but no readable page for the Non-Lending
+  Series trusts, whose per-class sheets sit on Lincoln and Voya, and its own
+  document host resets the connection. *Putting the registered fund's fee on the
+  trust rows would launder one vehicle's price onto another*, so those 3.0M
+  readers stay blank. **Do not reopen State Street without a new source.**
+  `scripts/trust-vehicle-size.mjs` ranks the ten families the owner named; it
+  keys on `erShown`, never `er`, because the estimate column once made it count
+  rows that already publish.
+- **THE YTD IS REFRESHED DAILY AT 3 AM EASTERN (owner directive 2026-11-14),
+  AND CITs AND TICKERS ARE TWO DIFFERENT STEPS.** `fund-facts.yml` runs
+  `0 8 * * *` (03:00 ET under EST — **re-check at the 2026-03-08 transition**
+  with `scripts/et-schedule.mjs --check 8 0 3 0`). The ticker path walks the
+  worklist through schwab.wallst.com; `scripts/fund-vehicles-refresh.mjs` is the
+  other half, because a trust has no ticker and can never be in that worklist.
+  **It refreshes and never discovers** — it cannot add an entry, change a key or
+  invent a source, so a cron job never decides what a fund is. It keeps what it
+  has on failure and **exits 1 when it reached nothing**, because a silent no-op
+  reads exactly like "nothing needed refreshing". The job regenerates
+  `fund-facts.js` and re-stamps in the same run: *without that a refreshed
+  figure lands in git and no reader sees it.*
 - **AN EMPLOYER-STOCK TICKER IS NOT A FUND, AND A WORK LIST BUILT FROM FILED
   NAMES WILL CONTAIN THEM.** `IBM`, `WMT` and `CVS` all reached a sourcing work
   list on 2026-11-13, every one because the HOLDING's name carries a
