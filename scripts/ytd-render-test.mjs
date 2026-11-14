@@ -81,6 +81,22 @@ const SPECS = [
    * specimens, one difference: whether the filing names the class. */
   { key: "621721435|004", label: "FedEx", minFilled: 12, maxFilled: 20, starred: 12, vehicles: 12,
     why: "a Vanguard target-date trust menu that STATES its unit class — the rows that must print the trust's own figure" },
+  /* A SECOND HOUSE, 2026-11-14. FedEx alone pins the mechanism against ONE
+   * issuer's filed shapes, and the T. Rowe arm differs in every detail that
+   * matters: the class marker is "Cl. B" rather than "Trust II", the fee comes
+   * from a quarterly fact sheet (so its YTD is dated 2026-09-30, not
+   * yesterday), and the house sells a registered FUND beside the TRUST under
+   * nearly the same name. A gate that only tests the house it was written for
+   * is how a Vanguard-shaped narrowing passed its own discharge while
+   * excluding every T. Rowe row. 13 of this menu's 35 rows are T. Rowe
+   * trusts. */
+  /* starred is 11 against 13 vehicle rows, and the gap is the point: TWO of
+   * these trusts resolve to NO comparable ticker at all, so they print a fee
+   * and a return beside an empty symbol cell. That is correct — a vehicle
+   * figure belongs to the vehicle and never needed a comparable to stand on —
+   * and pinning 13 here asserted a coupling that does not exist. */
+  { key: "340648199|005", label: "Squire Patton Boggs", minFilled: 13, maxFilled: 24, starred: 11, vehicles: 13,
+    why: "a T. ROWE PRICE trust menu — a second issuer, a different class marker, and a quarterly rather than daily figure" },
 ];
 
 const TABLE = `[...document.querySelectorAll("table.fund-table")].find((x) => {
