@@ -93,8 +93,16 @@ for (const sh of readdirSync(`${ROOT}/data/lineups`).sort()) {
       /* THE PUBLISHED SHAPE THIS IS ABOUT: the page prints NO fee and NO
        * return for the row today -- either because it is an asterisked
        * comparable (fee withdrawn 2026-11-13) or because nothing resolved. */
-      const printsFee = r.er != null && r.er !== "";
-      if (printsFee && !r.star) continue;
+      /* `r.er` IS THE PRE-OVERRIDE ESTIMATE AND THIS ONCE COUNTED ROWS THAT
+       * ALREADY PUBLISH. On the run of 2026-11-14 the Vanguard line read
+       * 10,948,950 readers while 7,544,702 of them had been served since that
+       * morning's ship — the census was measuring the estimate column and
+       * calling it the gap. `erShown` is the cell, and `ytdSourced` catches a
+       * row that publishes a return with no fee. *A STORED FIELD IS NOT A
+       * PUBLISHED ONE*, and here the harness hands you both. */
+      const printsFee = r.erShown != null && r.erShown !== "";
+      const printsReturn = !!r.ytdSourced;
+      if (printsFee || printsReturn) continue;
       const shown = String(r.shownType || "");
       if (!/collective trust|separate account|pooled/i.test(shown)) continue;
       trustish++;

@@ -18,14 +18,24 @@ on:
         default: "probe"
         type: choice
         options: ["probe", "fetch"]
-  # SCHEDULE DISABLED 2026-09-18: runs #1 and #2 both got HTTP 429 from
-  # Yahoo on every call (quoteSummary AND the crumb-free chart endpoint) —
-  # Yahoo rate-limits GitHub's runner IP range outright. A daily red run is
-  # noise, not coverage. Re-enable when a source answers from here: an API
-  # key (Alpha Vantage / FMP / Polygon) as a repo secret, or the sandbox
-  # network allowlist for the fund company pages.
-  # schedule:
-  #   - cron: "41 22 * * 1-5"   # weekdays 22:41Z, after the US close
+  # SCHEDULE RE-ENABLED 2026-11-14, on the owner's requirement that the YTD
+  # figure be updated DAILY AT 3 AM EASTERN for the previous day.
+  #
+  # It was disabled 2026-09-18 because Yahoo 429'd runs #1 and #2 on every
+  # call and a daily red run is noise, not coverage. The condition written
+  # down for re-enabling it was "when a source answers from here", and that
+  # has now happened twice over: the ticker path moved to schwab.wallst.com
+  # (measured answering a runner on run #8, with er AND ytd), and the vehicle
+  # path reads each entry's OWN recorded issuer URL. Neither touches Yahoo,
+  # and `scripts/fetch-fund-facts.mjs` — the Yahoo path — stays unused.
+  #
+  # 0 8 UTC is 03:00 Eastern under EST, checked through the one place that
+  # conversion lives: `node scripts/et-schedule.mjs --check 8 0 3 0`. It will
+  # read 04:00 Eastern after the 2026-03-08 transition and must be re-checked
+  # then — a fixed UTC cron is right for eight months and silently an hour
+  # wrong for the rest.
+  schedule:
+    - cron: "0 8 * * *"   # 03:00 Eastern (EST) — the previous day's figures
 
 permissions:
   contents: write
@@ -125,16 +135,43 @@ jobs:
       # series at all -- so this is diminishing rather than linear, and the
       # per-name misses are printed with their reason so the falloff is
       # visible rather than assumed.
-      - name: Fetch
-        if: inputs.mode == 'fetch'
+      # A SCHEDULED RUN CARRIES NO INPUTS, so `inputs.mode` is empty and a
+      # condition written only as `== 'fetch'` would make every nightly run a
+      # no-op that reports success -- the failure shape this record names as
+      # worse than a red run. The default is therefore FETCH when nothing was
+      # chosen, and a hand dispatch still defaults to probe through the input.
+      - name: Fetch (tickers — the registered funds)
+        if: inputs.mode == 'fetch' || github.event_name == 'schedule'
         run: node scripts/fund-facts-issuer.mjs --limit 1000 --verbose
+      # THE OTHER HALF, AND IT IS A DIFFERENT JOB (owner, 2026-11-14): "CITs and
+      # mutual funds will need different verification, both are needed." A
+      # collective trust has no ticker, so it is never in the worklist above and
+      # the step above can never refresh one. This re-reads each sourced
+      # vehicle's OWN recorded issuer URL. It refreshes and never discovers: it
+      # cannot add an entry, change a key or invent a source, so a cron job is
+      # never deciding what a fund is.
+      - name: Fetch (vehicles — the collective trusts)
+        if: inputs.mode == 'fetch' || github.event_name == 'schedule'
+        run: node scripts/fund-vehicles-refresh.mjs
+      # AND THE BROWSER MUST ACTUALLY SEE IT. data/fund-facts.json is the source
+      # of truth; fund-facts.js is what the page loads, and index.html carries a
+      # content-hash cache-buster. Without the regenerate-and-restamp a refreshed
+      # figure lands in git and NO READER EVER SEES IT -- which is exactly what
+      # the owner once reported as "nothing is updated in wampo" after four
+      # stamps went seventeen days stale.
+      - name: Regenerate the browser asset and re-stamp
+        if: inputs.mode == 'fetch' || github.event_name == 'schedule'
+        run: |
+          node scripts/gen-fund-facts-asset.mjs
+          node scripts/stamp-assets.mjs
+          node scripts/stamp-assets.mjs --check
       - name: Validate
         run: node scripts/fund-facts-check.mjs
       - name: Commit to the dev branch
         run: |
           git config user.name "wampo-data-bot"
           git config user.email "noreply@anthropic.com"
-          git add data/fund-facts.json data/fund-worklist.json
+          git add data/fund-facts.json data/fund-worklist.json fund-facts.js index.html
           if git diff --cached --quiet; then echo "no change"; exit 0; fi
           git commit -qm "Update fund facts and the sourcing worklist [skip ci]"
           for i in 1 2 3 4; do
