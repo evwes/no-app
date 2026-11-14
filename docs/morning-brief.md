@@ -2,13 +2,21 @@
 
 ## What shipped, and what it changed in numbers
 
-Four ships, all gated, and **all four are now LIVE** — mirrored `56c7f4a3 ->
-db0c7cc2` at 03:4xZ with `scripts/mirror.sh`, gate clean (0 plans stop being
-served), and `deploy-check` read Pages run **1265 on main's own HEAD** to
-`success` in 1.7 min. Verified a second way through the mirrored tree: main's
-`fund-facts.js` carries **501 vehicle entries — 440 `t-rowe-price` and 61
-`vanguard`** — all with a fee, 308 with a dated return, beside its 503 ticker
-entries as the positive control.
+Six ships, all gated, and **all six are now LIVE**, across TWO mirrors:
+`56c7f4a3 -> db0c7cc2` (the vehicles mechanism) and `e92c8e23 -> 96578333` (the
+sourced ladder figures). Each gate clean, 0 plans stopping being served, and
+`deploy-check` read Pages runs **1265 and 1268 on main's own HEAD** to `success`
+in 1.7 and 1.2 min. The second mirror is the first to pass `sitetest-gate` as
+well, which is the gate the first one needed and did not have.
+
+Verified a second way, through the mirrored tree rather than the live site,
+which this sandbox cannot reach: main's `fund-facts.js` now carries **550 ticker
+entries and 501 vehicle entries — 440 `t-rowe-price` and 61 `vanguard`** — all
+501 with a fee and 308 with a dated return, with FXAIX, VINIX (0.035%) and
+VIIIX (0.02%) still present as the positive control, so nothing was displaced.
+***Read through the loader, not a grep: a grep for `^ "trowe` on this same file
+reported 0 T. Rowe vehicles, because the key prefix is `t-rowe-price`. A clean
+zero reports on the query, and it would have read as the ship losing a house.***
 
 | ship | rows | plans | readers | value |
 |---|---|---|---|---|
@@ -88,12 +96,61 @@ describe the vehicle the plan actually owns.
   in the same menu state exactly one class. Plans rarely hold two unit classes
   of one ladder, but that is an inference from neighbours, not a filing.
 
-## What continues today
+## Second ship of the day — SOURCED FIGURES, live on `96578333`
 
-1. **DONE — mirrored and served.** Main had moved TWICE while the branch
-   worked (`bb484683`, then `56c7f4a3` from run #843 at 03:32Z), so the rebase
-   was done twice; the second time the trail showed 0 lines on main the branch
-   lacked. That is the hourly-cadence hazard behaving exactly as recorded.
+**47 ladder funds sourced, and 3,222 ALREADY-PUBLISHED FEES WERE WRONG.** First
+ticker-path batch against the owner's ten target-date families, in reader order.
+
+| | |
+|---|---|
+| fee newly published | 5,438 |
+| **fee CHANGED value** | **3,222** |
+| return newly published | 9,129 |
+| ticker / star / type / name moved | 0 / 0 / 0 / 0 |
+| plans / readers | 2,244 / **2,361,459** |
+
+The pattern table priced every JPMorgan SmartRetirement row at a flat 0.29% and
+distinguished neither Blend from non-Blend nor R6 from R5; sourced, those are
+0.17%, 0.34–0.39% and 0.45%. TRJWX published the **investor** class's 0.49% on
+319 rows / 319,723 readers whose filings state class I — now 0.34%. The estimate
+was wrong in **both directions**, and `FHLDX`/`FHNDX` by about double.
+
+## What was found wrong, the second half of the day
+
+- **I MIRRORED A COMMIT WHOSE SITE-TEST WAS RED.** `db0c7cc2`, verified two ways
+  and reported live. Run #291 on that SHA concluded `failure`, and #290 before
+  it. `mirror.sh` checked the DATA and the DEPLOYMENT and **nothing read the
+  verdict of the suite that tests the page code** — three layers, two watched.
+  Cause was benign (one step of 37, the `sec-tickers` CODE fingerprint, reddened
+  by an edit to a hashed input) but that was established AFTERWARDS by reading
+  the log, and the same red covers the smoke test, the YTD render and the map.
+  Closed by `scripts/sitetest-gate.mjs`, now a step in `mirror.sh`; it **fired
+  in production on this mirror** and its nine cases run in CI.
+- **The vehicles ship had broken the queue that prices the next ship.** Two
+  tracked instruments read `fund-facts.js` by slicing between its outermost
+  braces, which spanned both objects once `FUND_VEHICLES` existed. Every gate
+  on that ship was green and stayed green: nothing runs a measurement script.
+- **My own `--families` label was wrong by 6x**, and three classifier false
+  positives followed it, each hiding behind the last — the ladder test reading
+  the issuer cell (so T. Rowe's pattern matched the *recordkeeper*), the printer
+  showing a ticker's most common name rather than the name that matched, and a
+  warning that fired on 34 of 50 rows. Each found by READING the names.
+
+## What continues
+
+0. **A GAP IN THE NEW GATE, found by holding the mirror and not yet fixed.** No
+   site-test run is created for a head commit carrying `[skip ci]` — the regen's
+   commits do — so the gate falls through to its INHERITED branch. That is
+   unsound across a DATA change, because site-test's `record-check` and
+   `ledger-test` read the store. Worked around by dispatching a real verdict
+   (#295 on the exact head). The fix is to refuse an inherited verdict when the
+   stores differ between the tested SHA and the head, and to say whether that
+   SHA is even an ancestor. Held only because the weekly integrity agent is
+   testing that file right now.
+1. **DONE — mirrored and served twice.** Main moved FOUR times across the day
+   (`bb484683`, `56c7f4a3`, `b71a195f`, `e92c8e23`), so the rebase was done
+   three times; each time the trail ended at 0 lines on main the branch lacked.
+   That is the hourly-cadence hazard behaving exactly as recorded.
 2. **Ticker sourcing is now SIZED rather than guessed at**, because the queue
    that sizes it was broken by the vehicles ship and is fixed. 81.3% of
    tickered rows already carry a sourced figure; **92,282 rows across 5,337
