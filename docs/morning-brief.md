@@ -2,7 +2,13 @@
 
 ## What shipped, and what it changed in numbers
 
-Four ships, all gated, **none mirrored yet** (see HELD below).
+Four ships, all gated, and **all four are now LIVE** — mirrored `56c7f4a3 ->
+db0c7cc2` at 03:4xZ with `scripts/mirror.sh`, gate clean (0 plans stop being
+served), and `deploy-check` read Pages run **1265 on main's own HEAD** to
+`success` in 1.7 min. Verified a second way through the mirrored tree: main's
+`fund-facts.js` carries **501 vehicle entries — 440 `t-rowe-price` and 61
+`vanguard`** — all with a fee, 308 with a dated return, beside its 503 ticker
+entries as the positive control.
 
 | ship | rows | plans | readers | value |
 |---|---|---|---|---|
@@ -84,12 +90,26 @@ describe the vehicle the plan actually owns.
 
 ## What continues today
 
-1. **Mirror.** Main holds one pipeline data commit (`bb484683`) and all six
-   stores differ from the branch, so it carries fresh filings and must be
-   rebased in first — a mirror without it would discard them. Then the regen's
-   `site-test` verdict, then `scripts/mirror.sh`.
-2. **BlackRock LifePath** (5,052 rows / 4.16M readers) — sourcing in flight.
-   Then Fidelity Freedom (2.84M) and Principal LifeTime (2.13M).
+1. **DONE — mirrored and served.** Main had moved TWICE while the branch
+   worked (`bb484683`, then `56c7f4a3` from run #843 at 03:32Z), so the rebase
+   was done twice; the second time the trail showed 0 lines on main the branch
+   lacked. That is the hourly-cadence hazard behaving exactly as recorded.
+2. **Ticker sourcing is now SIZED rather than guessed at**, because the queue
+   that sizes it was broken by the vehicles ship and is fixed. 81.3% of
+   tickered rows already carry a sourced figure; **92,282 rows across 5,337
+   tickers** remain, and the tail is flat — a thousand lookups move coverage
+   81.8% -> 90.6%. 53,411 of those rows (57.9%) are in the ten houses the
+   owner named; **18,311 (19.8%) are in their target-date ladders.** The
+   readers are in the house lineups, not the ladders.
+   **Two exclusions before any batch:** 411 rows / 362 tickers are EMPLOYER
+   STOCK by the page's own flag (WMT at 2.0M readers and CVS at 0.4M head the
+   queue as a category error), and Vanguard's ladder reads 1 row because plans
+   hold it as TRUSTS, served by the vehicles path instead.
+3. **BlackRock LifePath trusts came back EMPTY, like State Street** — their
+   site carries only the LifePath mutual funds. The LifePath MUTUAL funds
+   (LIKKX, LIKIX, LIKAX, LIKPX, LIRKX) are unsourced and reachable; that is
+   ticker-path work. Then Fidelity Freedom (4,147 addressable ladder rows) and
+   J.P. Morgan SmartRetirement (3,878).
 3. **The daily YTD refresh now exists** — `fund-facts.yml` at `0 8 * * *`
    (03:00 ET under EST, re-check at the 2026-03-08 transition). Tickers through
    schwab.wallst.com, CITs through each vehicle's own recorded issuer URL. It

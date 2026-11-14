@@ -7,6 +7,52 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-14 — A SHIP BROKE THE INSTRUMENT THAT WOULD PRICE THE NEXT SHIP, AND NO GATE CAN SEE THAT CLASS
+
+**WHAT WAS WRONG.** `ticker-source-queue.mjs` and `ytd-render-size.mjs` read
+`fund-facts.js` by slicing from its first `{` to its last `}` and parsing the
+result. Correct for the file's whole life, because it held one object. The
+vehicles ship added `FUND_VEHICLES`, so the slice spanned **both** objects plus
+the closing of the first, and both scripts died at load with a SyntaxError. The
+disabled one is the queue that says which tickers to source next — the current
+owner emphasis — so the cost was not a wrong number but an unaskable question.
+
+**WHY NOTHING CAUGHT IT.** Every gate on that ship was green and stayed green.
+`site-test` runs the page's tests; `audit-data` runs on the store. **Nothing
+runs a measurement script**, and nothing should have to: the lesson is not
+"gate the scripts" but that *a ship can disable the instrument that would price
+the next ship, and the failure is invisible until someone reaches for it.*
+
+**THE CHANGE.** `loadFundFactsAsset()` in `lib-schema.mjs` — the file that
+exists for this exact family, reading the wrong thing by a name that sounds
+right. Keyed on the **declaration**, and it **throws** when the name is absent,
+naming the declarations the file does carry.
+
+**PREVENTION.** Two self-test cases. The first asserts the two objects come back
+**separate**, on KEY SHAPE — no `::` in `FUND_FACTS`, no bare ticker in
+`FUND_VEHICLES` — because a loader that found the wrong closing brace returns
+one merged object and *reads as working*. The second is the negative control,
+and **my first version of it was decorative**: it passed `package.json`, which
+does not exist here, so it threw ENOENT and I recorded a working guard. It now
+points at `styles.css` — a file that certainly exists and certainly has no such
+declaration — and requires the message to NAME the missing declaration.
+
+**AND A SECOND DEFECT IN THE SAME HOUR, IN MY OWN OUTPUT.** The new
+`--families` rollup printed its rows under "THE OWNER'S TEN TARGET-DATE
+FAMILIES" and was wrong by a factor of six: the regexes key on the HOUSE, so
+"Vanguard Target Retirement" reached European Stock Index Admiral and Dividend
+Appreciation, and "BlackRock LifePath" reached iShares ETFs. Nothing counted
+anything wrong — **the label claimed something the count does not support,
+which is the same defect as a published cell claiming more than its filing.**
+Found by the print the script's own header promised: read the names the
+classifier reaches, never only count them. Both units are now measured and
+labelled (house 53,411 rows, target-date ladder 18,311). *A clean zero reports
+on the query* applied twice more the same hour: a grep for `^ "trowe` on main's
+asset read 0 T. Rowe vehicles where the loader reads **440** under the key
+`t-rowe-price`.
+
+---
+
 ## 2026-11-14 (owner directive, top-ten target-date families) — T. ROWE PRICE'S TRUSTS PUBLISH TOO, AND THE RESOLVER NEARLY PRICED THEIR MUTUAL FUNDS AS TRUSTS
 
 **THE PREMISE HELD FOR A SECOND ISSUER, AND THAT IS A MEASUREMENT PER ISSUER
