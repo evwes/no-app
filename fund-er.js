@@ -2024,6 +2024,25 @@ const TRP_LINE = [["blend", /\bblend\b/i], ["hybrid", /\bhybrid\b|\bhyb\b/i]];
 /* A..K only. The Hybrid classes are T1..T18 and are not matched at all, which
  * is what holds that line; and a bare digit ("Cl 5") belongs to Select. */
 const TRP_CLASS = /\b(?:class|cl)\.?\s*([a-k])\b/i;
+/* A BARE CLASS LETTER AT THE END OF THE NAME, which is how most filers write
+ * it: "T. Rowe Price Retirement 2040 Trust C", not "... Trust Cl. C". Costco
+ * (279,798 readers) files "TRP Ret 2055 Active Trust K" and every T. Rowe row
+ * on its page showed a dash, which is what the owner reported.
+ *
+ * ANCHORED AT THE END, AND THE ANCHOR IS THE WHOLE SAFETY ARGUMENT. The
+ * obvious form -- a letter anywhere after "trust" -- reads the "T" of
+ * "T. Rowe" out of `Great Gray Trust T. Rowe Price Retirement Date 2025` and
+ * calls it share class T. Measured before writing this: that shape is 343 rows
+ * across 248 distinct names, every one a GREAT GRAY trust, which is a
+ * different provider whose own products this house must never answer for. A
+ * character class written for a concept picks up everything that shares its
+ * shape, so the letter must be the LAST token and nothing may follow it.
+ *
+ * `[a-k]` rather than `[a-z]` because T. Rowe's CIT unit classes run A to K;
+ * the sourced set holds exactly those. The end anchor also drops 14 rows of
+ * "Retirement Blend 2040 Trust B Cit", where a trailing "Cit" follows the
+ * letter -- correctly, since this cannot tell that B from a truncation. */
+const TRP_CLASS_TAIL = /\btrusts?\s+([a-k])\s*$/i;
 const TRP_VINTAGE = /\b(20(?:0[05]|[1-6][05]|70))\b/;
 const TRP_BALANCED = /\bbalanced\b/i;
 
@@ -2042,7 +2061,9 @@ function trowePriceVehicleKey(n, house) {
   if (!/\btrusts?\b/i.test(n)) return null;
   const line = TRP_LINE.find(([, re]) => re.test(n));
   if (line && line[0] === "hybrid") return null;      // held: see the note above
-  const cls = n.match(TRP_CLASS);
+  /* "Class K" wins over a trailing bare letter: a name carrying both states
+   * its class explicitly, and the explicit statement is the better evidence. */
+  const cls = n.match(TRP_CLASS) || n.match(TRP_CLASS_TAIL);
   if (!cls) return null;
   const yr = n.match(TRP_VINTAGE);
   const vintage = yr ? yr[1] : (TRP_BALANCED.test(n) ? "balanced" : null);
