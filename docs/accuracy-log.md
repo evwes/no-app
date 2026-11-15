@@ -7,6 +7,56 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-15 — I MADE THE CODE FINGERPRINT DATA-KEYED, WHICH THIS RECORD HAD ALREADY REFUSED IN WRITING
+
+**WHAT WAS WRONG.** `sec-tickers-stamp-test` failed on four consecutive site-test
+runs (#290, #291, #292, #293 for one cause, then #296 for this one) with nothing
+wrong in the code. `apppath.mjs` gained `fund-facts.js` loading on 2026-11-14 so
+the vehicles differential could observe sourced cells, and `codeFingerprint`
+forwards only `secTickers: false` to `composeSource` — so the sourced-figure
+asset entered the fingerprinted slice. The daily refresh rewrites that asset
+every morning, so the **code** fingerprint moved whenever **data** moved.
+
+**DIAGNOSED, NOT GUESSED, AND MY FIRST TWO ATTEMPTS WERE WRONG.** I checked all
+eight hashed inputs against the stamping commit: identical. Identical inputs
+cannot give a different hash, so the input list or the algorithm had to have
+moved — neither had. The decisive measurements: `FUND_FACTS_PATH=none` changes
+the value (so the asset is in the slice), and a real worktree at `96578333`
+recomputes the stamp **exactly** (so the stamp was right when written and
+something changed after). An earlier test of mine had read "not in the slice"
+because `codeFingerprint` ignores an `opts.fundfacts` it never forwards — all
+three of its arms read the same working-tree file and printed one value three
+times. *A before that is silently the after reads as a clean no-difference.*
+
+**THE CHANGE.** `fundfacts: false` beside `secTickers: false`. Correct rather
+than convenient: `gen-sec-tickers.mjs` and `match-sec-tickers.mjs` never read
+`fund-facts.js`, so it cannot change one key of the table the value describes.
+The stamp re-baselines from `703321bc…` (data-keyed) to `cf63f2b9…` (code-only)
+on the next regen.
+
+**PREVENTION, AND IT TOOK TWO TRIES.** A fourth drift control asserts that
+perturbing `fund-facts.js` leaves the fingerprint alone. My first version wrote
+the perturbation into the scratch tree like the three controls beside it and
+PASSED — decoratively: `composeSource` takes no `root` and resolves this asset
+from `ROOT + "fund-facts.js"`, the real repo root, whatever root the caller
+passes, so the copy is never read. Its own negative control said so in one line.
+Re-keyed on `FUND_FACTS_PATH`, the lever the code honours, it now passes with
+the fix and fails with `IT MOVED` without it.
+
+**THE LESSON IS ABOUT THE REFUSAL, NOT THE BUG.** This record already said: "A
+data-keyed FINGERPRINT stays refused… it would redden on every hourly data
+commit with nothing wrong." That was written three days earlier, about the plan
+store. The reasoning was in place, the guard was in place, and neither reached a
+new input added by a different change for a different reason. ***A safety
+argument belongs to a MECHANISM, not to the files it happened to name.*** The
+comment above `secTickers: false` even states the general form — a fingerprint
+must not be a function of what it describes — one step short of covering this.
+
+**NOT LIVE.** No reader is affected: the fingerprint gates CI, not the page, and
+the table's keys never moved.
+
+---
+
 ## 2026-11-15 — THE FIRST UNATTENDED REFRESH WROTE 91 MONTH-END RETURNS WEARING SAME-DAY RECEIPTS
 
 **WHAT WAS WRONG.** `fund-facts.yml` ran on its own for the first time and

@@ -977,6 +977,24 @@ also retires the other hand-dispatch this file used to prescribe after every
 regen. A data-keyed FINGERPRINT stays refused, on `lib-sec-fingerprint.mjs`'s own
 measurement: it would redden on every hourly data commit with nothing wrong.
 *The watcher a gate cannot be is a schedule.* `docs/accuracy-log.md` 2026-11-12.
+**AND THEN IT BECAME DATA-KEYED BY ACCIDENT, THREE DAYS LATER, THROUGH A FILE
+THIS REFUSAL DOES NOT NAME.** `apppath.mjs` gained `fund-facts.js` loading on
+2026-11-14 so the vehicles differential could observe sourced cells;
+`codeFingerprint` forwards only `secTickers: false`, so the sourced-figure asset
+entered the slice and the CODE fingerprint became a function of DATA the daily
+refresh rewrites every morning. `sec-tickers-stamp-test` went red on four
+consecutive runs with nothing whatsoever wrong in the code. The fix is
+`fundfacts: false` beside `secTickers: false`, and it is correct rather than
+convenient: `gen-sec-tickers.mjs` and `match-sec-tickers.mjs` never read that
+asset, so it cannot change one key of the table the value describes. ***A safety
+argument belongs to a MECHANISM, not to the files it happened to name*** — the
+refusal and its reasoning were both already written, about the plan store, and
+neither reached the new input. The drift control that now asserts it had to be
+written TWICE: the first version perturbed a scratch-tree copy, which
+`composeSource` never reads because it resolves this asset from the real repo
+root whatever root the caller passes, so it passed decoratively until its own
+negative control said so. The lever that works is `FUND_FACTS_PATH`.
+`docs/accuracy-log.md` 2026-11-15.
 
 **THE REGEN SPENDS 13 OF ITS 30 MINUTES CLONING HISTORY IT NEVER READS —
 measured 2026-11-06 on run #10, unbuilt.** `actions/checkout@v4` ran 12m53s of

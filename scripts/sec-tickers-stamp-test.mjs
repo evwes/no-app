@@ -173,6 +173,52 @@ for (const rel of ["sec-funds.json", "plans-all.json", "lineups-index.json"]) {
     got === baseline ? "" : "IT MOVED — an hourly data commit would redden this gate");
 }
 
+/* AND THE SOURCED-FIGURE ASSET, WHICH IS THE ONE THAT GOT THROUGH.
+ *
+ * The three drift controls above name the files that existed when they were
+ * written. On 2026-11-14 `apppath.mjs` began loading `fund-facts.js` into the
+ * composed source, and `codeFingerprint` forwarded only `secTickers:false`, so
+ * the CODE fingerprint became a function of SOURCED DATA — and the daily
+ * refresh rewrites that asset every morning. This gate went red twice on data
+ * with nothing wrong in the code, and the record had already refused a
+ * data-keyed fingerprint in those exact words about a different file.
+ *
+ * `gen-sec-tickers.mjs` and `match-sec-tickers.mjs` never read fund-facts.js,
+ * so it cannot change one key of the table this value describes. That is the
+ * claim, and this is it asserted over the REAL file rather than promised. */
+{
+  const rel = "fund-facts.js";
+  const real = existsSync(`${ROOT}/${rel}`) ? readFileSync(`${ROOT}/${rel}`, "utf8") : null;
+  if (real == null) ok(false, `${rel} is present to be perturbed`);
+  else {
+    /* THE LEVER MATTERS, AND MY FIRST VERSION OF THIS CONTROL USED THE WRONG
+     * ONE. It wrote the perturbation into the scratch tree, like the controls
+     * above, and passed — decoratively. `composeSource` has no `root` option:
+     * it resolves this asset from `ROOT + "fund-facts.js"`, the REAL repo root,
+     * whatever root the caller passes. So a scratch-tree copy of the file is
+     * never read and the control could not fail. Its own negative control said
+     * so in one line. *A control that cannot fail is decorative, and a
+     * perturbation written where the code does not look is exactly that.*
+     *
+     * The lever `composeSource` DOES honour is `FUND_FACTS_PATH`, consulted
+     * only when the caller has not passed `fundfacts`. Before the fix,
+     * `codeFingerprint` passed nothing, so this env var reached it and the
+     * value moved. With `fundfacts: false` hard-wired, `wantFacts` is false
+     * before the env is ever consulted, so it cannot. */
+    const perturbed = `${TMP}/perturbed-fund-facts.js`;
+    writeFileSync(perturbed, `const FUND_FACTS = {"ZZZZX":{"er":9.99,"erAsOf":"1999-01-01"}};\nconst FUND_VEHICLES = {};\n`);
+    ok(readFileSync(perturbed, "utf8") !== real, `the ${rel} perturbation differs from the real file`);
+    const prev = process.env.FUND_FACTS_PATH;
+    process.env.FUND_FACTS_PATH = perturbed;
+    let got;
+    try { got = codeFingerprint().fp; } finally {
+      if (prev === undefined) delete process.env.FUND_FACTS_PATH; else process.env.FUND_FACTS_PATH = prev;
+    }
+    ok(got === baseline, `a perturbed ${rel} leaves the fingerprint alone`,
+      got === baseline ? "" : "IT MOVED — the daily sourced-figure refresh would redden this gate with no code defect, which is what happened on 2026-11-15");
+  }
+}
+
 /* ---------- 5. labelled invariants ---------- */
 console.log("\n  invariants:");
 /* DELIBERATE ABSENCE, not an oversight. CLAUDE.md names lib-disclose.mjs as one

@@ -88,11 +88,35 @@ export function codeFingerprint(opts = {}) {
   const root = opts.root || ROOT;
   /* secTickers:false IS LOAD-BEARING: with the table loaded the slice would
    * contain the asset this value is stamped into, and the fingerprint would be
-   * a function of its own output — it could never disagree with itself. */
+   * a function of its own output — it could never disagree with itself.
+   *
+   * fundfacts:false IS LOAD-BEARING FOR THE SAME REASON, ONE STEP OUT, AND ITS
+   * ABSENCE COST FOUR RED CI RUNS (found 2026-11-15).
+   *
+   * `apppath.mjs` gained fund-facts.js loading on 2026-11-14, so the vehicles
+   * differential could observe sourced cells. `composeSource` therefore embeds
+   * that asset in `src`, and this call forwarded only `secTickers`, so the
+   * CODE fingerprint silently became a function of SOURCED DATA. The daily
+   * refresh rewrites `fund-facts.js` every morning, so `sec-tickers-stamp-test`
+   * went red on data with nothing whatsoever wrong in the code — once for the
+   * refresh and once for the rerun that corrected it.
+   *
+   * THIS PROJECT HAD ALREADY REFUSED EXACTLY THIS. The record reads: "A
+   * data-keyed FINGERPRINT stays refused, on lib-sec-fingerprint.mjs's own
+   * measurement: it would redden on every hourly data commit with nothing
+   * wrong." The refusal was about the plan store, so the guard and the
+   * reasoning were both in place and neither reached the new input. *A safety
+   * argument belongs to a MECHANISM, not to the files it happened to name.*
+   *
+   * Excluding it is correct rather than convenient: `gen-sec-tickers.mjs` and
+   * `match-sec-tickers.mjs` never read fund-facts.js, so it cannot change a
+   * single key in the table this value claims to describe. The drift control in
+   * `sec-tickers-stamp-test` now asserts that over the real file. */
   const { src } = composeSource({
     appjs: opts.appjs || `${root}/app.js`,
     funder: opts.funder || `${root}/fund-er.js`,
     secTickers: false,
+    fundfacts: false,
   });
   const h = createHash("sha256");
   const parts = {};
