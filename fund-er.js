@@ -2017,7 +2017,14 @@ const VG_CLASS_SLUG = { i: "i", ii: "ii", iii: "iii", 1: "i", 2: "ii", 3: "iii",
  * does not use — probably a garbled "T14", which is a guess and so is refused.
  */
 const TRP_HOUSE = /\bt\.?\s*rowe\s*price\b|\btrp\b|\btroweprice\b/i;
-const TRP_FAMILY = /\bretire(?:ment)?\b/i;
+/* `ret` as well as `retire`/`retirement`: filers abbreviate, and "TRP Ret 2055
+ * Active Trust K" is how Costco (279,798 readers) writes it. Widened only
+ * after reading EVERY name it newly reaches -- 33 distinct shapes, 581 rows,
+ * each one a T. Rowe Retirement or Retirement Blend trust stating a class and
+ * a vintage. The token is safe here because it is the weakest gate of six:
+ * the house, the word TRUST, a class in A-K, a vintage, and the Great Gray /
+ * Select refusals all have to pass as well. */
+const TRP_FAMILY = /\bretire(?:ment)?\b|\bret\b/i;
 /* `select` is a different trust; `ggt`/`great gray` is a different TRUSTEE */
 const TRP_VEH_NOT = /\bselect\b|\bggt\b|great\s*gray/i;
 const TRP_LINE = [["blend", /\bblend\b/i], ["hybrid", /\bhybrid\b|\bhyb\b/i]];
