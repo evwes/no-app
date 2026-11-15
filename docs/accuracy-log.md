@@ -7,6 +7,67 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-15 — THE FIRST UNATTENDED REFRESH WROTE 91 MONTH-END RETURNS WEARING SAME-DAY RECEIPTS
+
+**WHAT WAS WRONG.** `fund-facts.yml` ran on its own for the first time and
+committed `e0bcbd4d`. It stored **VCSTX at 17.91% "as of 2026-11-13"**; the
+cited page, re-read the next day with the same as-of date (markets shut Sat and
+Sun, so 11/13 is stable), states **12.09%**. 91 ticker entries moved, some by
+14.84 points in a claimed single day. Both numbers are on the page, and the
+layout says which is which:
+
+```
+$41.78 -0.74 (-1.74%) 0.91% 17.91% Quote data as of close 11/13/2026
+                                   As of 10/31/2026 Prospectus
+... 52 Week Range ... YTD Return <help text> 12.09% as of 11/13/2026
+```
+
+"Quote data as of close" dates the PRICE and the CHANGE. A **separate** "As of
+10/31/2026 Prospectus" dates the expense ratio *and the header YTD* — both
+month-end. The current YTD is in the detail block with its own date. The
+extractor read the header by position, which is right for the fee, then dated
+**both** figures with the quote date. So the fee was right and misdated, and the
+return was a month-end figure presented as that day's.
+
+**WHY NO CHECK COULD SEE IT.** Measured across six saved pages, the two YTDs
+differ on ALL SIX and in BOTH directions (header 17.91 vs detail 12.09; header
+6.23 vs detail 6.58), so no plausibility bound applies. And the tether's
+fixtures were ~200-character windows from a log, while production hands
+`extract` the whole 39KB page: **the defect lives in the relationship between
+two regions, and a window holding only one cannot express it.** The old FXAIX
+fixture ended in a bare `"A"` — the first letter of `As of 10/31/2026
+Prospectus`, the label that reveals the whole thing — with a comment saying the
+truncation was left in deliberately.
+
+**THE CHANGE.** `fund-facts-issuer.mjs` reads the detail block's dated figure
+for the YTD and the prospectus label for `erAsOf`; each figure takes ITS OWN
+date, and one whose date cannot be found is not written. The anchor's
+uniqueness is asserted rather than assumed — a page carrying two dated
+percentages is refused, because the anchor would no longer identify the YTD.
+
+**PREVENTION.** `data/fixtures/schwab-pages.json` pins four REAL detagged page
+spans covering both regions. The suite asserts each date separately and asserts
+the header's month-end value was **not** taken. **JNYAX is the sensitive case
+on purpose: header 11.00 against detail 11.03**, so a suite carrying only VCSTX
+would catch a wide miss and not a near one. Two new refusals: two dated
+percentages, and header-only — which must still publish the FEE, because a
+guard that blocks a wrong answer must not discard the honest evidence beside
+it. `ISSUER_PATH` runs the suite against another copy, and against the old
+extractor it fails **7 cases by name**.
+
+**NOT LIVE. No reader saw any of it** — `e0bcbd4d` was never mirrored, and none
+of the 47 entries sourced by hand the day before were among the 91.
+
+**AND A FALSE SENTENCE IN THIS PROJECT'S OWN RECORD CAUSED IT.** CLAUDE.md said
+the page "does **not** date its expense ratio at all, so an `erAsOf` taken from
+it is the QUOTE date." I wrote that, and then quoted it into the fund-facts
+agent's brief, where it was obeyed — so 47 hand-sourced entries also carry a
+quote-date `erAsOf`. Corrected in place. *A wrong note in the record is worse
+than an absent one: it is asserted again every time it is read, and an agent
+cannot tell it from a measurement.*
+
+---
+
 ## 2026-11-14 — A SHIP BROKE THE INSTRUMENT THAT WOULD PRICE THE NEXT SHIP, AND NO GATE CAN SEE THAT CLASS
 
 **WHAT WAS WRONG.** `ticker-source-queue.mjs` and `ytd-render-size.mjs` read

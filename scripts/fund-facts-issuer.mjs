@@ -117,6 +117,38 @@ const detag = (s) => s.replace(/<(script|style)[\s\S]*?<\/\1>/gi, " ").replace(/
  * is reported as a miss instead. */
 const QUOTE_GROUP = /\$\s?([\d,]+\.\d{2})\s+([-+]?[\d.]+)\s+\(\s*([-+]?[\d.]+)\s*%\s*\)\s+([\d.]+)\s*%\s+([-+]?[\d.]+)\s*%/;
 const AS_OF = /Quote\s+data\s+as\s+of\s+(?:close\s+)?(\d{2}\/\d{2}\/\d{4})/i;
+
+/* THE HEADER'S YTD IS A MONTH-END FIGURE AND THE QUOTE DATE DOES NOT DATE IT.
+ *
+ * FOUND 2026-11-15, in the first unattended run of the daily refresh, by
+ * reading what it had written: VCSTX was stored at 17.91% "as of 2026-11-13"
+ * while the cited page, re-read the next day with the same as-of date, states
+ * 12.09%. Both numbers are on the page. The layout says which is which:
+ *
+ *   $41.78 -0.74 (-1.74%) 0.91% 17.91% Quote data as of close 11/13/2026
+ *                                      As of 10/31/2026 Prospectus
+ *   ... 52 Week Range ... YTD Return <help text> 12.09% as of 11/13/2026
+ *
+ * "Quote data as of close" dates the PRICE and the CHANGE. The expense ratio
+ * and the header YTD are PROSPECTUS figures and carry their own, separate
+ * "As of 10/31/2026" -- a month-end. The current YTD is the one in the detail
+ * block, which states its date beside the value.
+ *
+ * So the old code was right about WHERE the fee is and wrong about everything
+ * dating it: 91 entries went in with a month-end return wearing a 11/13
+ * receipt. Measured across six saved pages, the two YTDs differ on ALL SIX and
+ * in BOTH directions (header 17.91 vs detail 12.09; header 6.23 vs detail
+ * 6.58), which is what a different series looks like rather than a bias -- so
+ * no plausibility bound could have caught it.
+ *
+ * The ER keeps its positional read, which is earned and controlled. What
+ * changes is that each figure now takes ITS OWN date, and a figure whose date
+ * cannot be found is not written -- the rule this file already had.
+ *
+ * Same lesson as the Vanguard API's `calendarYTDPct`, which is also the
+ * month-end series under a name that reads like the daily one. */
+const YTD_DATED = /([-+]?\d+\.\d+)\s*%\s+as\s+of\s+(\d{2}\/\d{2}\/\d{4})/gi;
+const ER_AS_OF = /As\s+of\s+(\d{2}\/\d{2}\/\d{4})\s+Prospectus/i;
 const DATE_ANY = /(?:as\s+of\s*)?(\d{2}\/\d{2}\/\d{4})|(\d{4}-\d{2}-\d{2})|([A-Z][a-z]{2,8}\s+\d{1,2},\s+\d{4})/;
 /* An index fund's expense ratio is basis points, not tens of percent. The bound
  * is loose on purpose -- some retail classes really do charge over 2% -- and it
@@ -146,21 +178,44 @@ function extract(text, url) {
   }
   const [, price, chg, chgPct, erPct, ytdPct] = g;
   out._win = text.slice(Math.max(0, g.index - 150), g.index + g[0].length + 60);
-  const date = isoDate(AS_OF.exec(text) || DATE_ANY.exec(out._win));
-  const er = +erPct, ytd = +ytdPct;
-  out._er = er; out._ytd = ytd; out._chgPct = +chgPct; out._price = price;
+  const quoteDate = isoDate(AS_OF.exec(text) || DATE_ANY.exec(out._win));
+  const er = +erPct;
+  out._er = er; out._chgPct = +chgPct; out._price = price;
+  out._headerYtd = +ytdPct;          // kept for the report, NEVER written
+  out._quoteDate = quoteDate;
+
+  /* THE DETAIL BLOCK'S YTD, WITH ITS OWN DATE, AND ITS UNIQUENESS ASSERTED.
+   * Across six saved pages there is exactly ONE dated percentage, which is why
+   * this anchor is safe -- but "exactly one on the pages I happened to save"
+   * is a measurement, not a guarantee, so a page carrying two is REFUSED
+   * rather than guessed at. A second one would mean the layout grew another
+   * dated figure and the anchor no longer identifies the YTD. */
+  YTD_DATED.lastIndex = 0;
+  const dated = [...text.matchAll(YTD_DATED)];
+  out._datedCount = dated.length;
+  let ytd = null, ytdDate = null;
+  if (dated.length === 1) { ytd = +dated[0][1]; ytdDate = isoDate([null, dated[0][2]]); }
+  else if (dated.length > 1) {
+    out._reject = `${dated.length} dated percentages on the page — the anchor no longer identifies the YTD alone`;
+    return out;
+  }
+  out._ytd = ytd; out._ytdAsOf = ytdDate;
+  const erDate = isoDate(ER_AS_OF.exec(text) || null);
+  out._erAsOf = erDate;
 
   /* THE CONTROL THAT THE COLUMNS ARE THE COLUMNS. If the "expense ratio" we
    * read equals the day's price change, we are reading the quote again -- the
    * exact run #9 defect -- so refuse rather than publish it. */
-  if (er === +chgPct && ytd === +chgPct) { out._reject = "er and ytd both equal the day's change — reading the quote, not the table"; return out; }
+  if (er === +chgPct && out._headerYtd === +chgPct) { out._reject = "er and header ytd both equal the day's change — reading the quote, not the table"; return out; }
   if (!(er >= 0 && er <= ER_MAX)) { out._reject = `expense ratio ${er}% outside 0-${ER_MAX}% — probably a column shift`; return out; }
 
-  /* A FIGURE WITHOUT A DATE IS NOT WRITTEN. Kept under `_` so the report can
-   * say "read it but dropped it", which is a different finding from "the page
-   * does not carry it" -- and the two have different remedies. */
-  if (date) { out.er = er; out.erAsOf = date; out.ytd = ytd; out.ytdAsOf = date; }
-  out._erAsOf = date; out._ytdAsOf = date;
+  /* A FIGURE WITHOUT A DATE IS NOT WRITTEN, AND NOW EACH ONE NEEDS ITS OWN.
+   * The old line dated BOTH with the quote date, which is what mislabelled 91
+   * month-end returns as same-day ones. Kept under `_` so the report can say
+   * "read it but dropped it", which is a different finding from "the page does
+   * not carry it" -- the two have different remedies. */
+  if (erDate) { out.er = er; out.erAsOf = erDate; }
+  if (ytd != null && ytdDate) { out.ytd = ytd; out.ytdAsOf = ytdDate; }
   return out;
 }
 

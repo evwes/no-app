@@ -38,6 +38,11 @@ on:
             # from no gate, and this one stands between a sourced fee and the
             # day's price change.
             "scripts/fund-facts-issuer.mjs", "scripts/fund-facts-extract-test.mjs",
+            # the REAL page spans the tether reads. Listed so that recapturing
+            # a fixture can start the job that checks it -- the old fixtures
+            # were truncated log windows and that truncation is exactly why
+            # the tether stayed green through the month-end-YTD defect.
+            "data/fixtures/schwab-pages.json",
             "scripts/lib-fundmatch.mjs",
             # the SOURCED-fee asset the page loads, and its generator. The JSON
             # is the source of truth and this is what the browser reads, so a

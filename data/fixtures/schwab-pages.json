@@ -1,0 +1,42 @@
+{
+ "_schema": "REAL detagged spans from www.schwab.wallst.com fund summary pages, captured 2026-11-14/15, trimmed verbatim to the span holding BOTH the header quote group and the detail block. Used by scripts/fund-facts-extract-test.mjs. Each records what the PAGE states: headerYtd is the month-end prospectus figure the extractor must NOT publish; detailYtd with ytdAsOf is the current one it must; er with erAsOf comes from the prospectus label, not the quote date.",
+ "captured": "2026-11-14/2026-11-15",
+ "cases": [
+  {
+   "tk": "VCSTX",
+   "headerYtd": 17.91,
+   "er": 0.91,
+   "erAsOf": "2026-10-31",
+   "detailYtd": 12.09,
+   "ytdAsOf": "2026-11-13",
+   "text": "Technology Fund VCSTX NAV Change Net Expense Ratio YTD Return YTD Return is adjusted for possible sales charges, and assumes reinvestment of dividends and capital gains. $41.78 -0.74 (-1.74%) 0.91% 17.91% Quote data as of close 11/13/2026 As of 10/31/2026 Prospectus Mutual Fund Report Card Summary Charts Performance Risk & Tax Analysis Portfolio Fund Facts & Fees Fund Performance Fund Details Historical Quote Dividends & Distributions YTD 1 Yr 3 Yrs 5 Yrs 10 Yrs Growth of $10,000 Investment &bull; VCSTX Fund &bull; Index &bull; Category 5482991 VCSTX This graph represents the growth of a hypothetical investment of $10,000. It assumes reinvestment of dividends and capital gains, and does not reflect sales loads, redemption fees or the effects of taxes on any capital gains and/or distributions. If the inception date of the Fund is less than the time period shown above, the Since Inception period is shown. Fund Strategy The investment seeks long-term capital appreciation. The fund normally invests at least 80% of net assets in the common stocks of companies that are expected to benefit from the development, advancement, and use of science and/or technology. It may invest up to 50% of its total assets in foreign securities. The fund may invest up to 30% of its total assets in companies organized or headquartered in emerging market countries, but no more than 20% of its total assets may be invested in any one emerging market country. The fund is non-diversified. Details 52 Week Range $33.55 - $51.55 YTD Return YTD Return is adjusted for possible sales charges, and assumes reinvestment of dividends and capital gains. 12.09% as of 11/13/2026 Gross Exp"
+  },
+  {
+   "tk": "FBGRX",
+   "headerYtd": 10.3,
+   "er": 0.72,
+   "erAsOf": "2026-10-31",
+   "detailYtd": 9.05,
+   "ytdAsOf": "2026-11-13",
+   "text": "hip Growth Fund FBGRX NAV Change Net Expense Ratio YTD Return YTD Return is adjusted for possible sales charges, and assumes reinvestment of dividends and capital gains. $269.49 -2.47 (-0.91%) 0.72% 10.30% Quote data as of close 11/13/2026 As of 10/31/2026 Prospectus Mutual Fund Report Card Summary Charts Performance Risk & Tax Analysis Portfolio Fund Facts & Fees Fund Performance Fund Details Historical Quote Dividends & Distributions YTD 1 Yr 3 Yrs 5 Yrs 10 Yrs Growth of $10,000 Investment &bull; FBGRX Fund &bull; Index &bull; Category 299721 FBGRX This graph represents the growth of a hypothetical investment of $10,000. It assumes reinvestment of dividends and capital gains, and does not reflect sales loads, redemption fees or the effects of taxes on any capital gains and/or distributions. If the inception date of the Fund is less than the time period shown above, the Since Inception period is shown. Fund Strategy The investment seeks growth of capital over the long term. The fund invests primarily in common stocks. It normally invests at least 80% of assets in blue chip companies (companies that, in Fidelity Management & Research Company LLC (FMR)'s view, are well-known, well-established and well-capitalized), which generally have large or medium market capitalizations. It invests in securities of domestic and foreign issuers. The fund uses fundamental analysis of factors such as each issuer's financial condition and industry position, as well as market and economic conditions, to select investments. The fund is non-diversified. Details 52 Week Range $237.26 - $319.00 YTD Return YTD Return is adjusted for possible sales charges, and assumes reinvestment of dividends and capital gains. 9.05% as of 11/13/2026 Gross Exp"
+  },
+  {
+   "tk": "TRJWX",
+   "headerYtd": 4.83,
+   "er": 0.34,
+   "erAsOf": "2026-10-31",
+   "detailYtd": 4.49,
+   "ytdAsOf": "2026-11-12",
+   "text": "ed Fund Class I TRJWX NAV Change Net Expense Ratio YTD Return YTD Return is adjusted for possible sales charges, and assumes reinvestment of dividends and capital gains. $14.40 -0.07 (-0.48%) 0.34% 4.83% Quote data as of close 11/12/2026 As of 10/31/2026 Prospectus Mutual Fund Report Card Summary Charts Performance Risk & Tax Analysis Portfolio Fund Facts & Fees Fund Performance Fund Details Historical Quote Dividends & Distributions YTD 1 Yr 3 Yrs 5 Yrs 10 Yrs Growth of $10,000 Investment &bull; TRJWX Fund &bull; Index &bull; Category 844701324 TRJWX This graph represents the growth of a hypothetical investment of $10,000. It assumes reinvestment of dividends and capital gains, and does not reflect sales loads, redemption fees or the effects of taxes on any capital gains and/or distributions. If the inception date of the Fund is less than the time period shown above, the Since Inception period is shown. Fund Strategy The investment seeks the highest total return over time consistent with an emphasis on both capital growth and income. The fund invests in a diversified portfolio of other T. Rowe Price equity and fixed income mutual funds that represent various asset classes and sectors. It is intended for retired investors who seek income and relative stability from bonds along with some capital appreciation potential from stocks. The fund's \"neutral allocations,\" which are what T. Rowe Price considers broadly appropriate for investors during their retirement years, are 40% equity funds and 60% fixed income funds. Details 52 Week Range $13.73 - $14.78 YTD Return YTD Return is adjusted for possible sales charges, and assumes reinvestment of dividends and capital gains. 4.49% as of 11/12/2026 Gross Exp"
+  },
+  {
+   "tk": "JNYAX",
+   "headerYtd": 11,
+   "er": 0.17,
+   "erAsOf": "2026-10-31",
+   "detailYtd": 11.03,
+   "ytdAsOf": "2026-11-12",
+   "text": "0 Fund Class R6 JNYAX NAV Change Net Expense Ratio YTD Return YTD Return is adjusted for possible sales charges, and assumes reinvestment of dividends and capital gains. $43.21 -0.27 (-0.62%) 0.17% 11.00% Quote data as of close 11/12/2026 As of 10/31/2026 Prospectus Mutual Fund Report Card Summary Charts Performance Risk & Tax Analysis Portfolio Fund Facts & Fees Fund Performance Fund Details Historical Quote Dividends & Distributions YTD 1 Yr 3 Yrs 5 Yrs 10 Yrs Growth of $10,000 Investment &bull; JNYAX Fund &bull; Index &bull; Category 48681280 JNYAX This graph represents the growth of a hypothetical investment of $10,000. It assumes reinvestment of dividends and capital gains, and does not reflect sales loads, redemption fees or the effects of taxes on any capital gains and/or distributions. If the inception date of the Fund is less than the time period shown above, the Since Inception period is shown. Fund Strategy The investment seeks high total return with a shift to current income and some capital appreciation over time as the fund approaches and passes the target retirement date. The fund is generally intended for investors who plan to retire around the year 2050 and then withdraw their investment in it throughout retirement. It is designed to provide exposure to equity, debt and cash/cash equivalent asset classes by investing in mutual funds and ETFs within the same group of investment companies, passive ETFs that are managed by unaffiliated investment advisers in certain limited instances and/or direct investments in securities and other financial instruments. Details 52 Week Range $37.33 - $44.77 YTD Return YTD Return is adjusted for possible sales charges, and assumes reinvestment of dividends and capital gains. 11.03% as of 11/12/2026 Gross Exp"
+  }
+ ]
+}

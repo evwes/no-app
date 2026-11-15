@@ -195,10 +195,25 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   mutualfunds/summary.asp?symbol=<T>` serves ANY mutual-fund ticker as static
   HTML** and was already the cited source for the FXAIX entry. Its page carries
   **TWO YTD figures** — the header one is an older month-end number, the DETAIL
-  block states its own date beside the value — and it does **not date its
-  expense ratio at all**, so an `erAsOf` taken from it is the QUOTE date. Use
-  the NET expense ratio. *Treating this as Fidelity-only is what kept 4,754
-  tickers / 304M reader-slots looking unreachable for half a day.*
+  block states its own date beside the value. Use the NET expense ratio.
+  *Treating this as Fidelity-only is what kept 4,754 tickers / 304M
+  reader-slots looking unreachable for half a day.*
+  **AND THE SENTENCE THAT USED TO END THIS ENTRY WAS FALSE, which is worse than
+  absent because it was quoted into an agent's brief and obeyed.** It read: "it
+  does **not** date its expense ratio at all, so an `erAsOf` taken from it is
+  the QUOTE date." The page DOES date it. The header strip reads
+  `$41.78 -0.74 (-1.74%) 0.91% 17.91% Quote data as of close 11/13/2026
+  As of 10/31/2026 Prospectus` — "Quote data as of close" dates the PRICE and
+  the CHANGE, and a SEPARATE **"As of … Prospectus"** dates the expense ratio
+  *and the header YTD*, both month-end. So the correct `erAsOf` is the
+  prospectus date, and the header YTD must never be published: it is a
+  month-end figure, and dating it with the quote date is how the first
+  unattended refresh wrote **91 month-end returns wearing same-day receipts**
+  (VCSTX stored at 17.91% "as of 2026-11-13" where the page says 12.09% for
+  that very date). Measured across six saved pages, the two YTDs differ on ALL
+  SIX and in BOTH directions, so no plausibility bound could catch it.
+  `data/fixtures/schwab-pages.json` pins four of those pages verbatim and
+  `fund-facts-extract-test` fails by name against the old extractor.
 - **A COLLECTIVE TRUST'S OWN PRICE IS PUBLISHED BY SOME ISSUERS AND NOT OTHERS,
   AND THAT IS A MEASUREMENT PER ISSUER (2026-11-14).** The `vehicles` mechanism
   shipped this day: `vehicleKeyFor` in `fund-er.js` maps a filed name to a
