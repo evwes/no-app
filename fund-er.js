@@ -1957,6 +1957,31 @@ const VG_TRUST_TARGET = /\btarget\s*(?:date|retirement|retire|ret\b|rmt\b)/i;
  * The trailing \b is what keeps `TR 2060` from reading its `2` as a class:
  * there is no word boundary inside `2060`. */
 const VG_TRUST_CLASS = /\b(?:trust|tr)\.?\s*(iii|ii|i|plus|select|[123])\b/i;
+/* AND THE SPELLING THAT OMITS THE WORD "TRUST" ALTOGETHER — found 2026-11-16
+ * on Black & Veatch, where ten rows worth $404M (25.7% of the master trust)
+ * showed a blank fee and return while the issuer's own figures sat in the
+ * store under keys the resolver never built. The filed names read
+ * `VANGUARD TARGET RET 2040 II`: the vintage, then the unit class, and no
+ * `Trust` anywhere. `VG_TRUST_TARGET` already accepts the abbreviated `RET`,
+ * so that conjunct passed and only this one failed.
+ *
+ * It is the SAME DEFECT SHAPE as the T. Rowe `Ret` miss fixed earlier the
+ * same day on Costco, in a different family — which is the recorded rule that
+ * *a fix for one phrasing of a class is not a fix for the class*, met again
+ * and now met across two families.
+ *
+ * TWO NARROWINGS, both load-bearing, and the second is the whole safety case:
+ *
+ *  - the class must END the name. A designator floating mid-name is not a
+ *    class statement, and the T. Rowe fix needed the same anchor to stop
+ *    `Great Gray Trust T. Rowe Price…` reading its `T` as a class.
+ *  - the BARE DIGITS ARE EXCLUDED HERE though `VG_TRUST_CLASS` accepts them.
+ *    A digit after the word `Trust` is a class; a digit after a VINTAGE is a
+ *    FOOTNOTE MARKER, and these filings carry them constantly
+ *    (`Vanguard Target Retirement 2040 1` is a footnote, not Trust I). With
+ *    `Trust` present the word does the disambiguating; without it, nothing
+ *    does, so only the roman and named classes may travel. */
+const VG_TRUST_CLASS_TAIL = /\b(?:20(?:0[05]|[1-6][05]|70)|income|inc)\s+(iii|ii|i|plus|select)\s*$/i;
 const VG_TRUST_VINTAGE = /\b(20(?:0[05]|[1-6][05]|70))\b/;
 const VG_TRUST_INCOME = /\b(?:retirement|retire|ret|rmt)\.?\s*(?:income|inc)\b/i;
 /* `Target Retirement INCOME AND GROWTH Trust` is a DIFFERENT PRODUCT from
@@ -2089,7 +2114,9 @@ function vehicleKeyFor(name, iss) {
   if (!VG_TRUST_FAMILY.test(house)) return null;
   if (!VG_TRUST_TARGET.test(n)) return null;
   if (VG_TRUST_UNPRICED.test(n)) return null;
-  const cls = n.match(VG_TRUST_CLASS);
+  /* the explicit `Trust <class>` statement wins; the tail form is the fallback
+   * for names that omit the word, exactly as TRP_CLASS_TAIL backs TRP_CLASS */
+  const cls = n.match(VG_TRUST_CLASS) || n.match(VG_TRUST_CLASS_TAIL);
   if (!cls) return null;
   const slug = VG_CLASS_SLUG[cls[1].toLowerCase()];
   if (!slug) return null;
