@@ -64124,3 +64124,71 @@ landed, the deployment has not been observed yet" — never "it failed" and neve
 answer to the owner and one unnecessary commit; the cost of the inverse error —
 reading UNSETTLED as live — is the 2026-11-06 case where a ship was mirrored,
 verified on the tree, and served to nobody for twenty minutes.
+
+## 2026-11-16 — 94 funds sourced, and the receipt test that makes a sourcing batch checkable
+
+**WHAT SHIPPED.** The `fund-facts` agent sourced an expense ratio AND a
+year-to-date return for 94 of the top 104 unsourced tickers by readers, from
+`schwab.wallst.com`. Measured through production's `renderRow` with
+`tab:"menu"` against a PINNED baseline asset, the symbols reached by those 94
+tickers carry **15,236 published+served rows, 23,478,513 reader-slots and
+$28.9B** of menu value. `FUND_FACTS` delta: 94 added, **0 changed, 0 removed**
+— no existing figure was touched.
+
+**THE CHECK WORTH KEEPING, because a sourcing batch is otherwise unauditable.**
+Every receipt a sourcing run produces is valid by construction — it quotes a
+page it just read — so "0 failures" from `fund-facts-check.mjs` says only that
+the figures are dated and plausible. What it cannot see is the defect that
+published 91 wrong returns on 2026-11-15: Schwab's header carries a MONTH-END
+YTD beside a same-day quote date, and the detail block carries the current one.
+So all 104 pages were saved and the check is **literal and position-free**: the
+recorded value must appear on the page IMMEDIATELY BEFORE its own recorded date.
+94 of 94 PASS. **The control that makes that non-decorative: on 93 of the 94
+pages the header YTD DIFFERS from the recorded one**, so a batch that had taken
+the header figure would have failed 93 times. *A test over a saved page is worth
+more than the extractor that produced the figure, because it cannot share the
+extractor's mistake.*
+
+**THE IDENTITY CHECK, which is the one sourcing makes WORSE if skipped.**
+Sourcing promotes a figure above the "est." estimate, so a mis-resolved share
+class becomes a confident wrong number (Black Hills / VINIX-vs-Plus). Of the
+printed filed spellings, 270 state a share class on both the filing and the
+priced page and **270 agree**; the screen's negative control flags 5 crafted
+mismatches, so the zero is a finding and not a broken query. Its blind spot was
+then SIZED rather than assumed: 206 rows across 14 tickers state no class in the
+filing while the page prices a specific one. Read by hand, all but ~2
+money-market rows are DFA / T. Rowe / Artisan institutional-ONLY funds where the
+filed name does carry the class and the token test missed it (`Inst'l`, `Instl`,
+`I Fd`, `F1`). *The remaining classless slice is the owner-gated 10.5M-reader
+class, unchanged by this ship.*
+
+**WHAT THE PATTERN TABLE WAS GETTING WRONG, now visible because a sourced figure
+sits beside it.** 23 of 94 differ by ≥0.1 point, in BOTH directions, and the
+large ones are retail classes the name-pattern priced as index funds: GCINX
+**0.06 est → 1.28 sourced** (21x), SFNNX and SFLNX 0.04 → 0.25, MDIHX 0.60 →
+1.07. The other direction is smaller and mostly DFA (0.30 → 0.18–0.24).
+*A disagreement is a ticker question before it is a fee question* — each of the
+23 was read against its page's fund name and class, and none is a mis-resolution.
+
+**THE 10 NOT SOURCED, with a diagnosed cause each, because "we could not read
+it" describes US and not the filing.** FIVFX and JBYSX: Schwab serves "No
+information available". Seven are **Fidelity Managed Retirement** vintages
+(FMRFX, FMRJX, FHRFX, FHRVX, FJRSX, FRQHX, FRHMX) whose pages carry a stale
+June-2026 quote date and `--` in every figure cell — workplace-only funds Schwab
+appears to have dropped. The tenth is NOT in that class and was a real miss:
+**FPIFX is Fidelity Freedom Index 2020 Fund Investor Class and its page states
+Gross 0.12% / Net 0.12% with a prospectus date of 2026-10-31** — a dated,
+sourceable FEE. Only its YTD is unavailable (no quote date, no dated detail
+figure, and the header 4.85% is month-end, which this record already refuses).
+Queued as a fee-only entry. *A page that refuses one figure has not refused the
+other, and a batch keyed on "both or nothing" drops the half that was there.*
+
+**TWO HOSTS MEASURED IN PASSING, both decision-relevant.**
+`www.principalam.com` is REACHABLE (200, 214KB) and NOT READABLE: its per-fund
+pages are keyed by CUSIP (`/us/fund/<cusip>`) and contain **zero percentages**,
+the figures being client-rendered, with the fund-finder behind a Coveo token.
+*Allow-listing a host proves the proxy will carry you, never that the page
+carries data.* And T. Rowe's `trust-single-class` quarterly fact sheets exist
+for Classes A–H only (productCodes RH1–RH9, RH4 absent; RHA–RHE 404), which is
+the measured reason Costco's Class K rows publish a fee and no return — 193 of
+440 T. Rowe vehicles. Consistent with the 2026-11-14 entry; not reopened.

@@ -5820,6 +5820,946 @@
    "ytdAsOf": "2026-11-12",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=RCITX",
    "note": "Net expense ratio; Schwab page does not date it, so erAsOf is the quote date, not a prospectus date. YTD is the detail-block figure with its own stated date."
+  },
+  "BSFIX": {
+   "name": "Baron Small Cap Fund Institutional Class",
+   "updated": "2026-11-16",
+   "er": 1.06,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=BSFIX",
+   "ytd": 1.24,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=BSFIX"
+  },
+  "PRNHX": {
+   "name": "T. Rowe Price New Horizons Fund",
+   "updated": "2026-11-16",
+   "er": 0.8,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=PRNHX",
+   "ytd": 7.19,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=PRNHX"
+  },
+  "NRGSX": {
+   "name": "Neuberger Genesis Fund R6 Class",
+   "updated": "2026-11-16",
+   "er": 0.74,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=NRGSX",
+   "ytd": 13.96,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=NRGSX"
+  },
+  "PRFDX": {
+   "name": "T. Rowe Price Equity Income Fund",
+   "updated": "2026-11-16",
+   "er": 0.69,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=PRFDX",
+   "ytd": 22.4,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=PRFDX"
+  },
+  "FUFRX": {
+   "name": "Franklin Utilities Fund Class R6",
+   "updated": "2026-11-16",
+   "er": 0.5,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FUFRX",
+   "ytd": 7.29,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FUFRX"
+  },
+  "RIRGX": {
+   "name": "American Funds Capital Income Builder® Class R-6",
+   "updated": "2026-11-16",
+   "er": 0.26,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=RIRGX",
+   "ytd": 11.27,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=RIRGX"
+  },
+  "JEMWX": {
+   "name": "JPMorgan Emerging Markets Equity Fund Class R6",
+   "updated": "2026-11-16",
+   "er": 0.74,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=JEMWX",
+   "ytd": 12.16,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=JEMWX"
+  },
+  "JSVUX": {
+   "name": "JPMorgan Small Cap Value Fund Class R6",
+   "updated": "2026-11-16",
+   "er": 0.65,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=JSVUX",
+   "ytd": 17.35,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=JSVUX"
+  },
+  "MVCHX": {
+   "name": "MFS Mid Cap Value Fund Class R3",
+   "updated": "2026-11-16",
+   "er": 0.97,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=MVCHX",
+   "ytd": 17.2,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=MVCHX"
+  },
+  "DFVEX": {
+   "name": "DFA U.S. Vector Equity Portfolio Institutional Class",
+   "updated": "2026-11-16",
+   "er": 0.24,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=DFVEX",
+   "ytd": 15.93,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=DFVEX"
+  },
+  "PHYFX": {
+   "name": "Principal High Yield Fund Class R-6",
+   "updated": "2026-11-16",
+   "er": 0.52,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=PHYFX",
+   "ytd": 0.2,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=PHYFX"
+  },
+  "OGGYX": {
+   "name": "JPMorgan Government Bond Fund Class R6",
+   "updated": "2026-11-16",
+   "er": 0.3,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=OGGYX",
+   "ytd": -1.81,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=OGGYX"
+  },
+  "TILIX": {
+   "name": "Nuveen Large Cap Growth Index Fund (R6)",
+   "updated": "2026-11-16",
+   "er": 0.05,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TILIX",
+   "ytd": -2.33,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TILIX"
+  },
+  "PRGFX": {
+   "name": "T. Rowe Price Growth Stock Fund",
+   "updated": "2026-11-16",
+   "er": 0.66,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=PRGFX",
+   "ytd": -3.64,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=PRGFX"
+  },
+  "TSBIX": {
+   "name": "Nuveen Core and Impact Bond Fund (R6)",
+   "updated": "2026-11-16",
+   "er": 0.35,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TSBIX",
+   "ytd": -1.15,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TSBIX"
+  },
+  "JDEUX": {
+   "name": "JPMorgan U.S. Research Enhanced Equity Fund Class R6",
+   "updated": "2026-11-16",
+   "er": 0.25,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=JDEUX",
+   "ytd": 9.38,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=JDEUX"
+  },
+  "DISVX": {
+   "name": "DFA International Small Cap Value Portfolio Institutional Class",
+   "updated": "2026-11-16",
+   "er": 0.43,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=DISVX",
+   "ytd": 11.51,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=DISVX"
+  },
+  "FEGRX": {
+   "name": "First Eagle Global Fund Class R6",
+   "updated": "2026-11-16",
+   "er": 0.78,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FEGRX",
+   "ytd": 11.16,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FEGRX"
+  },
+  "LDLVX": {
+   "name": "Lord Abbett Short Duration Income Fund Class R6",
+   "updated": "2026-11-16",
+   "er": 0.32,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=LDLVX",
+   "ytd": 1.6,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=LDLVX"
+  },
+  "BALFX": {
+   "name": "American Funds American Balanced Fund® Class F-1",
+   "updated": "2026-11-16",
+   "er": 0.61,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=BALFX",
+   "ytd": 7.81,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=BALFX"
+  },
+  "RIDGX": {
+   "name": "American Funds The Income Fund of America® Class R-6",
+   "updated": "2026-11-16",
+   "er": 0.26,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=RIDGX",
+   "ytd": 10.03,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=RIDGX"
+  },
+  "APHMX": {
+   "name": "Artisan Mid Cap Fund Institutional Class",
+   "updated": "2026-11-16",
+   "er": 0.98,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=APHMX",
+   "ytd": 3.69,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=APHMX"
+  },
+  "RLBEX": {
+   "name": "American Funds American Balanced Fund® Class R-4",
+   "updated": "2026-11-16",
+   "er": 0.6,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=RLBEX",
+   "ytd": 7.83,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=RLBEX"
+  },
+  "LCEAX": {
+   "name": "Invesco Diversified Dividend Fund Class A",
+   "updated": "2026-11-16",
+   "er": 0.83,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=LCEAX",
+   "ytd": 13.57,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=LCEAX"
+  },
+  "WIGRX": {
+   "name": "Wasatch Core Growth Fund Institutional Class Shares",
+   "updated": "2026-11-16",
+   "er": 1.05,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=WIGRX",
+   "ytd": 6.27,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=WIGRX"
+  },
+  "NSRIX": {
+   "name": "Northern Funds - World Selection Index Fund Class I",
+   "updated": "2026-11-16",
+   "er": 0.29,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=NSRIX",
+   "ytd": 9.98,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=NSRIX"
+  },
+  "PRJIX": {
+   "name": "T. Rowe Price New Horizons Fund I Class",
+   "updated": "2026-11-16",
+   "er": 0.66,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=PRJIX",
+   "ytd": 7.32,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=PRJIX"
+  },
+  "SWLGX": {
+   "name": "Schwab ® U.S. Large-Cap Growth Index Fund",
+   "updated": "2026-11-16",
+   "er": 0.035,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SWLGX",
+   "ytd": -2.51,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SWLGX"
+  },
+  "RIGGX": {
+   "name": "American Funds International Growth and Income Fund Class R-6",
+   "updated": "2026-11-16",
+   "er": 0.53,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=RIGGX",
+   "ytd": 10.12,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=RIGGX"
+  },
+  "DFALX": {
+   "name": "DFA Large Cap International Portfolio Institutional Class",
+   "updated": "2026-11-16",
+   "er": 0.18,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=DFALX",
+   "ytd": 11.81,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=DFALX"
+  },
+  "RPFGX": {
+   "name": "Davis Financial Fund Class A",
+   "updated": "2026-11-16",
+   "er": 0.94,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=RPFGX",
+   "ytd": 3.79,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=RPFGX"
+  },
+  "JAMFX": {
+   "name": "Jacob Internet Investor Class",
+   "updated": "2026-11-16",
+   "er": 2.38,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=JAMFX",
+   "ytd": -22.36,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=JAMFX"
+  },
+  "PRUFX": {
+   "name": "T. Rowe Price Growth Stock Fund I Class",
+   "updated": "2026-11-16",
+   "er": 0.52,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=PRUFX",
+   "ytd": -3.53,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=PRUFX"
+  },
+  "BOSVX": {
+   "name": "Bridgeway Omni Small-Cap Value Fund Class N",
+   "updated": "2026-11-16",
+   "er": 0.47,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=BOSVX",
+   "ytd": 22.26,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=BOSVX"
+  },
+  "WBVRX": {
+   "name": "William Blair Small Cap Value Fund Class R6",
+   "updated": "2026-11-16",
+   "er": 0.8,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=WBVRX",
+   "ytd": 20.48,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=WBVRX"
+  },
+  "CWVGX": {
+   "name": "Calvert International Equity Fund Class A",
+   "updated": "2026-11-16",
+   "er": 1.14,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=CWVGX",
+   "ytd": 11.17,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=CWVGX"
+  },
+  "BFOCX": {
+   "name": "Berkshire Focus Fund",
+   "updated": "2026-11-16",
+   "er": 1.95,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=BFOCX",
+   "ytd": -13,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=BFOCX"
+  },
+  "PFORX": {
+   "name": "PIMCO International Bond Fund (U.S. Dollar-Hedged) Institutional Class",
+   "updated": "2026-11-16",
+   "er": 0.64,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=PFORX",
+   "ytd": -0.53,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=PFORX"
+  },
+  "DVZRX": {
+   "name": "Nomura Small Cap Value Fund Class R6",
+   "updated": "2026-11-16",
+   "er": 0.71,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=DVZRX",
+   "ytd": 15.83,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=DVZRX"
+  },
+  "GCINX": {
+   "name": "Green Century MSCI International Index Fund Individual Investor",
+   "updated": "2026-11-16",
+   "er": 1.28,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=GCINX",
+   "ytd": 7.14,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=GCINX"
+  },
+  "HIMDX": {
+   "name": "Hennessy Cornerstone Mid Cap 30 Fund Institutional Class",
+   "updated": "2026-11-16",
+   "er": 0.98,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=HIMDX",
+   "ytd": 3.87,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=HIMDX"
+  },
+  "IHGIX": {
+   "name": "The Hartford Dividend and Growth Fund Class A",
+   "updated": "2026-11-16",
+   "er": 0.96,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=IHGIX",
+   "ytd": 18.76,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=IHGIX"
+  },
+  "TIVFX": {
+   "name": "American Beacon IMC International Small Cap Fund Investor Class",
+   "updated": "2026-11-16",
+   "er": 1.31,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TIVFX",
+   "ytd": 8.79,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TIVFX"
+  },
+  "MRSKX": {
+   "name": "MFS Research International Fund Class R6",
+   "updated": "2026-11-16",
+   "er": 0.64,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=MRSKX",
+   "ytd": 10.85,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=MRSKX"
+  },
+  "TPLGX": {
+   "name": "T. Rowe Price Institutional Large Cap Core Growth Fund",
+   "updated": "2026-11-16",
+   "er": 0.56,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TPLGX",
+   "ytd": -3.88,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TPLGX"
+  },
+  "HOIBX": {
+   "name": "Homestead Intermediate Bond Fund",
+   "updated": "2026-11-16",
+   "er": 0.8,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=HOIBX",
+   "ytd": -1.97,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=HOIBX"
+  },
+  "AALRX": {
+   "name": "American Beacon Large Cap Value Fund Class R6",
+   "updated": "2026-11-16",
+   "er": 0.64,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=AALRX",
+   "ytd": 15.53,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=AALRX"
+  },
+  "DEVIX": {
+   "name": "Nomura Small Cap Value Fund Class Institutional",
+   "updated": "2026-11-16",
+   "er": 0.84,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=DEVIX",
+   "ytd": 15.7,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=DEVIX"
+  },
+  "DFSCX": {
+   "name": "DFA U.S. Micro Cap Portfolio Institutional Class",
+   "updated": "2026-11-16",
+   "er": 0.41,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=DFSCX",
+   "ytd": 19.56,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=DFSCX"
+  },
+  "PMEGX": {
+   "name": "T. Rowe Price Institutional Mid-Cap Equity Growth Fund",
+   "updated": "2026-11-16",
+   "er": 0.61,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=PMEGX",
+   "ytd": 4.92,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=PMEGX"
+  },
+  "SWSSX": {
+   "name": "Schwab Small Cap Index Fund®",
+   "updated": "2026-11-16",
+   "er": 0.04,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SWSSX",
+   "ytd": 13.59,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SWSSX"
+  },
+  "RLBCX": {
+   "name": "American Funds American Balanced Fund® Class R-3",
+   "updated": "2026-11-16",
+   "er": 0.89,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=RLBCX",
+   "ytd": 7.55,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=RLBCX"
+  },
+  "VCAAX": {
+   "name": "VALIC Company I Asset Allocation Fund",
+   "updated": "2026-11-16",
+   "er": 0.66,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VCAAX",
+   "ytd": 2.13,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VCAAX"
+  },
+  "TRVLX": {
+   "name": "T. Rowe Price Value Fund",
+   "updated": "2026-11-16",
+   "er": 0.71,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TRVLX",
+   "ytd": 25.33,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TRVLX"
+  },
+  "LBNVX": {
+   "name": "Lord Abbett Bond Debenture Fund Class R6",
+   "updated": "2026-11-16",
+   "er": 0.67,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=LBNVX",
+   "ytd": -1.08,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=LBNVX"
+  },
+  "OTIIX": {
+   "name": "T. Rowe Price Small-Cap Stock Fund I Class",
+   "updated": "2026-11-16",
+   "er": 0.77,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=OTIIX",
+   "ytd": 7.85,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=OTIIX"
+  },
+  "PSMVX": {
+   "name": "Principal SmallCap Value Fund II Class R-6",
+   "updated": "2026-11-16",
+   "er": 0.89,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=PSMVX",
+   "ytd": 15.84,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=PSMVX"
+  },
+  "TCIXX": {
+   "name": "Nuveen Money Market Fund (R6)",
+   "updated": "2026-11-16",
+   "er": 0.12,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TCIXX",
+   "ytd": 3.09,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TCIXX"
+  },
+  "SWAGX": {
+   "name": "Schwab U.S. Aggregate Bond Index Fund",
+   "updated": "2026-11-16",
+   "er": 0.04,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SWAGX",
+   "ytd": -1.6,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SWAGX"
+  },
+  "CCALX": {
+   "name": "Conestoga Small Cap Institutional Class",
+   "updated": "2026-11-16",
+   "er": 0.9,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=CCALX",
+   "ytd": -3.26,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=CCALX"
+  },
+  "TILVX": {
+   "name": "Nuveen Large Cap Value Index Fund (R6)",
+   "updated": "2026-11-16",
+   "er": 0.05,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TILVX",
+   "ytd": 26.66,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TILVX"
+  },
+  "STYJX": {
+   "name": "Allspring Core Plus Bond Fund Class R6",
+   "updated": "2026-11-16",
+   "er": 0.3,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=STYJX",
+   "ytd": -1.61,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=STYJX"
+  },
+  "MEDHX": {
+   "name": "MFS Emerging Markets Debt Fund Class R6",
+   "updated": "2026-11-16",
+   "er": 0.71,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=MEDHX",
+   "ytd": -0.01,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=MEDHX"
+  },
+  "RNWEX": {
+   "name": "American Funds New World Fund® Class R-4",
+   "updated": "2026-11-16",
+   "er": 0.92,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=RNWEX",
+   "ytd": 5.15,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=RNWEX"
+  },
+  "SFNNX": {
+   "name": "Schwab Fundamental International Equity Index Fund",
+   "updated": "2026-11-16",
+   "er": 0.25,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SFNNX",
+   "ytd": 19.22,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SFNNX"
+  },
+  "SWVXX": {
+   "name": "Schwab® Prime Advantage Money Fund Investor Shares",
+   "updated": "2026-11-16",
+   "er": 0.34,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SWVXX",
+   "ytd": 3.02,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SWVXX"
+  },
+  "MDIHX": {
+   "name": "MFS International Diversification Fund Class R3",
+   "updated": "2026-11-16",
+   "er": 1.07,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=MDIHX",
+   "ytd": 10.1,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=MDIHX"
+  },
+  "DCZRX": {
+   "name": "Nomura Small Cap Core Fund Class R6",
+   "updated": "2026-11-16",
+   "er": 0.69,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=DCZRX",
+   "ytd": 13.25,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=DCZRX"
+  },
+  "RGACX": {
+   "name": "American Funds The Growth Fund of America® Class R-3",
+   "updated": "2026-11-16",
+   "er": 0.93,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=RGACX",
+   "ytd": 4.74,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=RGACX"
+  },
+  "PIREX": {
+   "name": "Principal Real Estate Securities Fund Institutional Class",
+   "updated": "2026-11-16",
+   "er": 0.86,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=PIREX",
+   "ytd": 15.89,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=PIREX"
+  },
+  "PBFKX": {
+   "name": "Victory Pioneer Bond Fund Class R6",
+   "updated": "2026-11-16",
+   "er": 0.35,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=PBFKX",
+   "ytd": -1.68,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=PBFKX"
+  },
+  "JNEMX": {
+   "name": "JPMorgan International Equity Fund Class R6",
+   "updated": "2026-11-16",
+   "er": 0.5,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=JNEMX",
+   "ytd": 9.46,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=JNEMX"
+  },
+  "VSORX": {
+   "name": "Victory Sycamore Small Company Opportunity Fund R6",
+   "updated": "2026-11-16",
+   "er": 0.84,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VSORX",
+   "ytd": 18.42,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VSORX"
+  },
+  "PHYQX": {
+   "name": "PGIM High Yield Fund- Class R6",
+   "updated": "2026-11-16",
+   "er": 0.38,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=PHYQX",
+   "ytd": 0.77,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=PHYQX"
+  },
+  "ERASX": {
+   "name": "Eaton Vance Atlanta Capital SMID-Cap Fund Class R6",
+   "updated": "2026-11-16",
+   "er": 0.81,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=ERASX",
+   "ytd": 10.97,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=ERASX"
+  },
+  "LSSIX": {
+   "name": "Loomis Sayles Small Cap Growth Fund Institutional Class",
+   "updated": "2026-11-16",
+   "er": 0.93,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=LSSIX",
+   "ytd": 14.99,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=LSSIX"
+  },
+  "SFLNX": {
+   "name": "Schwab Fundamental U.S. Large Company Index Fund",
+   "updated": "2026-11-16",
+   "er": 0.25,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SFLNX",
+   "ytd": 22.54,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=SFLNX"
+  },
+  "VSENX": {
+   "name": "JPMorgan Small Cap Equity Fund Class R6",
+   "updated": "2026-11-16",
+   "er": 0.65,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VSENX",
+   "ytd": 9.08,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=VSENX"
+  },
+  "TIBFX": {
+   "name": "Nuveen Core Plus Bond Fund (R6)",
+   "updated": "2026-11-16",
+   "er": 0.29,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TIBFX",
+   "ytd": -1.03,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TIBFX"
+  },
+  "CSXRX": {
+   "name": "Calvert US Large Cap Core Responsible Index Fund Class R6",
+   "updated": "2026-11-16",
+   "er": 0.19,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=CSXRX",
+   "ytd": 11.5,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=CSXRX"
+  },
+  "JLVMX": {
+   "name": "JPMorgan Large Cap Value Fund Class R6",
+   "updated": "2026-11-16",
+   "er": 0.44,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=JLVMX",
+   "ytd": 17.19,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=JLVMX"
+  },
+  "TRPIX": {
+   "name": "T. Rowe Price Value Fund I Class",
+   "updated": "2026-11-16",
+   "er": 0.57,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TRPIX",
+   "ytd": 25.48,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TRPIX"
+  },
+  "JGVVX": {
+   "name": "JPMorgan Growth Advantage Fund Class R6",
+   "updated": "2026-11-16",
+   "er": 0.5,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=JGVVX",
+   "ytd": -4.76,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=JGVVX"
+  },
+  "ICSFX": {
+   "name": "Invesco Comstock Fund Class R6",
+   "updated": "2026-11-16",
+   "er": 0.43,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=ICSFX",
+   "ytd": 14.89,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=ICSFX"
+  },
+  "HWDVX": {
+   "name": "The Hartford World Bond Fund Class R6",
+   "updated": "2026-11-16",
+   "er": 0.62,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=HWDVX",
+   "ytd": 0.95,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=HWDVX"
+  },
+  "TISBX": {
+   "name": "Nuveen Small Cap Blend Index Fund (R6)",
+   "updated": "2026-11-16",
+   "er": 0.05,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TISBX",
+   "ytd": 13.58,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TISBX"
+  },
+  "BSBIX": {
+   "name": "Baird Short-Term Bond Fund Institutional Class",
+   "updated": "2026-11-16",
+   "er": 0.3,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=BSBIX",
+   "ytd": 1.28,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=BSBIX"
+  },
+  "FIHBX": {
+   "name": "Federated Hermes Institutional High Yield Bond Fund Institutional Shares",
+   "updated": "2026-11-16",
+   "er": 0.5,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FIHBX",
+   "ytd": 1.19,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=FIHBX"
+  },
+  "BPAVX": {
+   "name": "Boston Partners All Cap Value Fund Investor Class",
+   "updated": "2026-11-16",
+   "er": 1.05,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=BPAVX",
+   "ytd": 19.22,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=BPAVX"
+  },
+  "AAMCX": {
+   "name": "Absolute Capital Asset Allocator Fund Investor Class",
+   "updated": "2026-11-16",
+   "er": 2.57,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=AAMCX",
+   "ytd": 8.97,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=AAMCX"
+  },
+  "AREDX": {
+   "name": "American Century Real Estate Fund R6 Class",
+   "updated": "2026-11-16",
+   "er": 0.81,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=AREDX",
+   "ytd": 14.35,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=AREDX"
+  },
+  "DGCXX": {
+   "name": "BNY Dreyfus Government Cash Management Fund Institutional Shares",
+   "updated": "2026-11-16",
+   "er": 0.16,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=DGCXX",
+   "ytd": 3.04,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=DGCXX"
+  },
+  "HFARX": {
+   "name": "Janus Henderson Developed World Bond Fund Class N",
+   "updated": "2026-11-16",
+   "er": 0.57,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=HFARX",
+   "ytd": -0.41,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=HFARX"
+  },
+  "TCIEX": {
+   "name": "Nuveen International Equity Index Fund (R6)",
+   "updated": "2026-11-16",
+   "er": 0.05,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TCIEX",
+   "ytd": 10.13,
+   "ytdAsOf": "2026-11-13",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=TCIEX"
   }
  },
  "vehicles": {
@@ -17098,5 +18038,5 @@
    "note": "er is the Trustee Fee (23 bps, TPA Exp 0) listed for this unit class in T. Rowe Price's CIT brochure fee schedule (listing 'As of May 1, 2026'; Table 1 CUSIP). The brochure does not call it an expense ratio; T. Rowe's fact sheets for sibling trusts state the trustee fee is equivalent to the annual operating expense ratio. No class fact sheet reachable, so no returns recorded."
   }
  },
- "generated": "2026-11-15"
+ "generated": "2026-11-16"
 }
