@@ -64218,3 +64218,50 @@ resolver's guess.* One of those rows pairs `iss:"Fidelity"` with
 `stk:"HOIBX"`, so the FILING is internally inconsistent and preferring the
 stated ticker over the issuer cell is the right reading. It also means the
 sourcing work list reaches funds no name-resolver would ever resolve.
+
+## 2026-11-16 (evening) — the work was ranked AFTER it was done, and the instrument that should have ranked it first
+
+**WHAT WAS WRONG, and it is a method defect rather than a published one.** Asked
+to drive coverage toward a target, I sourced 9,269 mutual funds and then 5,793
+ETFs before building any instrument that could say what either was worth. The
+ETF batch is honest work — 4,597 entries carrying both a fee and a return, 0
+checker failures, nothing loosened — and it is **0.1% of the reader-weighted
+gap**. The measurement that says so took one script and one pass, and it could
+have been written first.
+
+**THE INSTRUMENT.** `scripts/completion.mjs` measures, through production's own
+`renderRow` with the argument the page passes, what share of published fund rows
+carry a fee and a return — weighted by rows, READERS and dollars. The denominator
+is the honest part and is reported separately rather than chosen to flatter: a
+brokerage window is not a fund, employer stock has no expense ratio, a loan or
+cash line is not a vehicle anyone prices. Those are NOT PRICEABLE, read off the
+page's own row verdicts rather than off a name rule.
+
+**THE BASELINE, 62,109 published menus:** 30.79% of reader-weighted priceable
+rows carry BOTH figures; 43.38% carry a fee, of which 31.17% sourced.
+
+**AND THE SPLIT THAT CHANGES WHAT HAPPENS NEXT.** Reporting the gap as one total
+hides which KIND of work can close it — a ticker is a mutual-fund lever, while a
+collective trust has no ticker and no public price unless its ISSUER publishes
+per unit class. Collective trust 35.9% of the gap (10.4% complete), mutual fund
+29.2% (51.6%), untyped 23.2% (28.3%), pooled separate account 6.1% (0.0%).
+
+**THE ARITHMETIC, which is why this entry exists:** 80% needs +1.59B
+reader-slots; mutual funds and untyped rows together hold 1.17B of gap, so
+closing EVERY one of them lands at **67%**. 80% requires pricing ~418M
+reader-slots of collective trusts, which turns on an owner question already open
+on this record. From the other side, separate and pooled separate accounts —
+163M reader-slots, 5 points — are negotiated per plan and permanently unpriceable
+from any public source, so the absolute maximum is about **95%**.
+
+**THE PREVENTION.** `--append` writes one derived line per run to
+`docs/completion-history.jsonl`, so the target is diffable rather than re-quoted.
+*A goal with no instrument is a wish, and the cheapest moment to build the
+instrument is before the work, not after it.*
+
+**A SECOND LESSON, paid for in wall clock the same evening:** the differential
+that gates the mirror was started while two agents were already doing full-store
+passes, and it was SIGTERMed at its timeout having printed nothing — three-way
+CPU contention on one container, 25 minutes for no result. *One container, one
+heavy pass at a time*, and a measurement that returns nothing is indistinguishable
+from one that found nothing.
