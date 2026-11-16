@@ -51,7 +51,10 @@ jobs:
     # request plus 600ms of politeness), so roughly 17 minutes of fetching plus
     # checkout and the probes. The politeness delay is NOT what to cut if this
     # ever runs long -- the limit is.
-    timeout-minutes: 35
+    # 50, up from 35: the Fidelity API pull (94 pages) and the share-class
+    # re-derivation (a full pass over the lineup store) are both new and both
+    # minutes rather than seconds. A timeout is a BOUND, not a target.
+    timeout-minutes: 50
     steps:
       - uses: actions/checkout@v4
         with:
@@ -140,6 +143,23 @@ jobs:
       # no-op that reports success -- the failure shape this record names as
       # worse than a red run. The default is therefore FETCH when nothing was
       # chosen, and a hand dispatch still defaults to probe through the input.
+      # FIDELITY'S OWN SCREENER API FIRST, AND THE ORDER IS LOAD-BEARING.
+      # Measured 2026-11-16: schwab.wallst.com LAGS THE FUND COMPANY ON THE FUND
+      # COMPANY'S OWN FUNDS by exactly one trading day — for every disagreeing
+      # Fidelity-family fund, `schwab − fidelity` equalled minus that day's
+      # return, residual mean +0.019 and never above 0.13, while 62 of 63
+      # non-Fidelity same-day pairs agreed exactly. So this step writes the
+      # issuer's figure first and `mayReplace` then stops the Schwab step below
+      # from putting the stale one back. Run the other way round and the
+      # correction is undone every morning with a valid receipt.
+      #
+      # It also carries 9,385 tickers against the worklist's 1,000, dates every
+      # daily YTD on ONE date, and dates each fee with that fund's OWN
+      # prospectus date. It REFRESHES AND NEVER DISCOVERS: no --add here, so a
+      # cron job is never deciding what a fund is.
+      - name: Fetch (tickers — Fidelity's screener API, the issuer for its own funds)
+        if: inputs.mode == 'fetch' || github.event_name == 'schedule'
+        run: node scripts/fund-facts-fidelity.mjs
       - name: Fetch (tickers — the registered funds)
         if: inputs.mode == 'fetch' || github.event_name == 'schedule'
         run: node scripts/fund-facts-issuer.mjs --limit 1000 --verbose
@@ -159,6 +179,15 @@ jobs:
       # figure lands in git and NO READER EVER SEES IT -- which is exactly what
       # the owner once reported as "nothing is updated in wampo" after four
       # stamps went seventeen days stale.
+      # THE SHARE-CLASS GATE IS RE-DERIVED BEFORE THE ASSET IS WRITTEN, because
+      # it is a function of the STORE and the store moves hourly: a list kept by
+      # hand would be stale within a day and would then either withhold figures
+      # that are fine or publish ones that are not. The generator REFUSES to run
+      # without it, so a failure here stops the publish rather than quietly
+      # widening it.
+      - name: Re-derive the share-class withholding (the filing vs the priced class)
+        if: inputs.mode == 'fetch' || github.event_name == 'schedule'
+        run: node scripts/fund-facts-class-screen.mjs --emit
       - name: Regenerate the browser asset and re-stamp
         if: inputs.mode == 'fetch' || github.event_name == 'schedule'
         run: |
@@ -171,7 +200,7 @@ jobs:
         run: |
           git config user.name "wampo-data-bot"
           git config user.email "noreply@anthropic.com"
-          git add data/fund-facts.json data/fund-worklist.json fund-facts.js index.html
+          git add data/fund-facts.json data/fund-facts-withheld.json data/fund-worklist.json fund-facts.js index.html
           if git diff --cached --quiet; then echo "no change"; exit 0; fi
           git commit -qm "Update fund facts and the sourcing worklist [skip ci]"
           for i in 1 2 3 4; do

@@ -38,9 +38,42 @@ const funds = raw.funds || {};
 const isDate = (s) => typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s);
 const today = new Date().toISOString().slice(0, 10);
 
+/* ---- THE SHARE-CLASS WITHHOLDING ----------------------------------------
+ *
+ * `data/fund-facts-withheld.json` lists tickers where the FILING states one
+ * share class and the sourced fund's own name states another. Publishing a
+ * sourced figure there would upgrade a wrong-class row from a hedged "est." to
+ * a confident tick — the single thing sourcing makes WORSE rather than better,
+ * and the owner's standing decision of 2026-11-05 is to correct the symbol and
+ * withdraw the fee, not to price the wrong class. The correction lives in the
+ * resolver and is not built yet, so until it is, these are withheld HERE,
+ * because this file is the publish gate and a figure refused here cannot reach
+ * a page by any route.
+ *
+ * A MISSING LIST IS A REFUSAL, NOT A PASS. "A gate the file it guards cannot
+ * trigger is indistinguishable from no gate": if the list is absent the
+ * generator stops rather than silently publishing everything. `--no-withhold`
+ * is the explicit way to regenerate without it, and it says so in the output.
+ */
+const withheldPath = path.join(ROOT, "data", "fund-facts-withheld.json");
+let WITHHELD = new Set();
+if (process.argv.includes("--no-withhold")) {
+  console.log("--no-withhold: the share-class gate is OFF for this run");
+} else if (!existsSync(withheldPath)) {
+  console.error(`MISSING ${withheldPath} — regenerate it with:`);
+  console.error(`  node scripts/fund-facts-class-screen.mjs --emit`);
+  console.error(`or pass --no-withhold to publish without the share-class gate, deliberately.`);
+  process.exit(1);
+} else {
+  const w = JSON.parse(readFileSync(withheldPath, "utf8"));
+  WITHHELD = new Set(Object.keys(w.tickers || {}).map((t) => t.toUpperCase()));
+}
+
 const out = {};
 const skipped = [];
+const withheld = [];
 for (const [tk, f] of Object.entries(funds)) {
+  if (WITHHELD.has(String(tk).toUpperCase())) { withheld.push(tk); continue; }
   const e = {};
   /* The same refusals the checker applies, repeated HERE rather than trusted,
    * because this file is what a reader sees and the JSON is edited by hand and
@@ -141,4 +174,5 @@ if (CHECK) {
 writeFileSync(OUT, text);
 console.log(`wrote fund-facts.js: ${keys.length} funds, ${vkeys.length} vehicles, ${text.length} bytes`);
 if (vskipped.length) console.log(`vehicles withheld (not class-published, or a fee older than ${STALE_YEARS}y): ${vskipped.length} — ${vskipped.slice(0, 6).join(" ")}`);
+if (withheld.length) console.log(`tickers withheld (the filing names a DIFFERENT share class — data/fund-facts-withheld.json): ${withheld.length} — ${withheld.slice(0, 8).join(" ")}`);
 if (skipped.length) console.log(`skipped ${skipped.length} with no usable dated figure: ${skipped.slice(0, 8).join(" ")}`);

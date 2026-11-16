@@ -46,6 +46,15 @@ import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadRegistry, resolve, tickerFor } from "./lib-fundmatch.mjs";
+/* THE PROVENANCE RULE LIVES IN ONE PLACE and is imported rather than restated,
+ * because this record carries seven cases of a shipped predicate re-typed from
+ * memory and every one produced a wrong published figure. See
+ * `fund-facts-fidelity.mjs`: a figure may be replaced only by a STRICTLY NEWER
+ * one, or by one from the SAME source that is not older. That is what stops
+ * this path — a distributor's feed, measured on 2026-11-16 to lag the fund
+ * company on the fund company's OWN funds by exactly one day — from quietly
+ * undoing a correction every morning at 03:00 ET. */
+import { mayReplace } from "./fund-facts-fidelity.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const argv = process.argv.slice(2);
@@ -288,8 +297,20 @@ for (const w of QUEUE) {
       ent.name = w.name; ent.matchGrade = hit.grade; ent.matchWhy = t.why;
     }
     ent.filedNames = (ent.filedNames || 0) + 1;
-    if (e.er != null) { ent.er = e.er; ent.erAsOf = e.erAsOf; ent.erSource = e.src; }
-    if (e.ytd != null) { ent.ytd = e.ytd; ent.ytdAsOf = e.ytdAsOf; ent.ytdSource = e.src; }
+    /* A BETTER-DATED FIGURE FROM ANOTHER SOURCE IS NOT OVERWRITTEN. Before
+     * this guard, a scheduled run of this script put a one-day-stale Schwab
+     * YTD back on top of the issuer's own figure, on 164 Fidelity-family
+     * entries, with a valid receipt and a date one trading day too late. */
+    if (e.er != null) {
+      if (mayReplace(ent.erAsOf, ent.erSource, e.erAsOf, e.src)) {
+        ent.er = e.er; ent.erAsOf = e.erAsOf; ent.erSource = e.src;
+      } else rep.keptEr = (rep.keptEr || 0) + 1;
+    }
+    if (e.ytd != null) {
+      if (mayReplace(ent.ytdAsOf, ent.ytdSource, e.ytdAsOf, e.src)) {
+        ent.ytd = e.ytd; ent.ytdAsOf = e.ytdAsOf; ent.ytdSource = e.src;
+      } else rep.keptYtd = (rep.keptYtd || 0) + 1;
+    }
     rep.wrote++;
   }
   await new Promise((s) => setTimeout(s, 600));   // politeness

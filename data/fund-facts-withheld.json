@@ -1,0 +1,2429 @@
+{
+ "generated": "2026-11-16",
+ "reason": "the filing states a share class the sourced fund's own name contradicts; owner's standing decision 2026-11-05 is to correct the symbol and withdraw the fee, and until the resolver does that a sourced figure here would publish a confident wrong class",
+ "producedBy": "scripts/fund-facts-class-screen.mjs --emit",
+ "tickers": {
+  "VBTLX": {
+   "rows": 849,
+   "readers": 4412121,
+   "plans": 846,
+   "sourceName": "Vanguard Total Bond Market Index Fund Admiral Shares",
+   "filed": [
+    {
+     "n": 85,
+     "cls": "inst",
+     "name": "Vanguard Ttl Bd Mkt Idx Inst"
+    },
+    {
+     "n": 82,
+     "cls": "inst",
+     "name": "Vanguard Total Bond Market Index Fund Institutional Shares"
+    }
+   ]
+  },
+  "VSMAX": {
+   "rows": 698,
+   "readers": 4230206,
+   "plans": 695,
+   "sourceName": "Vanguard Morningstar Small-Cap Index Fund Admiral Shares",
+   "filed": [
+    {
+     "n": 101,
+     "cls": "inst",
+     "name": "Vanguard Small-Cap Index Fund Institutional Shares"
+    },
+    {
+     "n": 58,
+     "cls": "inst",
+     "name": "Vanguard Small Cap Index Instl"
+    }
+   ]
+  },
+  "VIMAX": {
+   "rows": 640,
+   "readers": 3869819,
+   "plans": 639,
+   "sourceName": "Vanguard Morningstar Mid-Cap Index Fund Admiral Shares",
+   "filed": [
+    {
+     "n": 110,
+     "cls": "inst",
+     "name": "Vanguard Mid-Cap Index Fund Institutional Shares"
+    },
+    {
+     "n": 42,
+     "cls": "inst",
+     "name": "Vanguard Mid Cap Index Instl"
+    }
+   ]
+  },
+  "VTIAX": {
+   "rows": 520,
+   "readers": 2852143,
+   "plans": 519,
+   "sourceName": "Vanguard Total International Stock Index Fund Admiral Shares",
+   "filed": [
+    {
+     "n": 65,
+     "cls": "inst",
+     "name": "Vanguard Ttl Intl Stk Idx Inst"
+    },
+    {
+     "n": 51,
+     "cls": "inst",
+     "name": "Vanguard Total International Stock Index Fund Institutional Shares"
+    }
+   ]
+  },
+  "DODGX": {
+   "rows": 426,
+   "readers": 2322600,
+   "plans": 422,
+   "sourceName": "Dodge & Cox Stock Fund Class I",
+   "filed": [
+    {
+     "n": 226,
+     "cls": "x",
+     "name": "Dodge & Cox Stock Fund Class X"
+    },
+    {
+     "n": 51,
+     "cls": "x",
+     "name": "Stock Fund Class X"
+    }
+   ]
+  },
+  "DODIX": {
+   "rows": 619,
+   "readers": 1597747,
+   "plans": 617,
+   "sourceName": "Dodge & Cox Income Fund Class I",
+   "filed": [
+    {
+     "n": 254,
+     "cls": "x",
+     "name": "Dodge & Cox Income Fund Class X"
+    },
+    {
+     "n": 83,
+     "cls": "x",
+     "name": "Dodge & Cox Income Fund - Cl X"
+    }
+   ]
+  },
+  "VEXAX": {
+   "rows": 334,
+   "readers": 1513618,
+   "plans": 332,
+   "sourceName": "Vanguard Extended Market Index Fund Admiral Shares",
+   "filed": [
+    {
+     "n": 53,
+     "cls": "inst",
+     "name": "Vanguard Extended Mkt Idx Inst"
+    },
+    {
+     "n": 31,
+     "cls": "inst",
+     "name": "Vanguard Extended Market Index Fund Institutional Shares"
+    }
+   ]
+  },
+  "VTSAX": {
+   "rows": 232,
+   "readers": 998960,
+   "plans": 231,
+   "sourceName": "Vanguard Morningstar Total Stock Market Index Fund Admiral Shares",
+   "filed": [
+    {
+     "n": 35,
+     "cls": "inst",
+     "name": "Vanguard Total Stock Market Index Fund Institutional Shares"
+    },
+    {
+     "n": 21,
+     "cls": "investor",
+     "name": "Vanguard Total Stock Market Index Fund Investor Shares"
+    }
+   ]
+  },
+  "MEIKX": {
+   "rows": 493,
+   "readers": 648109,
+   "plans": 471,
+   "sourceName": "MFS Value Fund Class R6",
+   "filed": [
+    {
+     "n": 71,
+     "cls": "r3",
+     "name": "MFS Value R3"
+    },
+    {
+     "n": 44,
+     "cls": "r4",
+     "name": "MFS Value Fund Class R4"
+    }
+   ]
+  },
+  "DODFX": {
+   "rows": 144,
+   "readers": 399235,
+   "plans": 144,
+   "sourceName": "Dodge & Cox International Stock Fund Class I",
+   "filed": [
+    {
+     "n": 57,
+     "cls": "x",
+     "name": "Dodge & Cox International Stock Fund Class X"
+    },
+    {
+     "n": 23,
+     "cls": "x",
+     "name": "International Stock Fund Class X"
+    }
+   ]
+  },
+  "VWENX": {
+   "rows": 77,
+   "readers": 346522,
+   "plans": 77,
+   "sourceName": "Vanguard Wellington Fund Admiral Shares",
+   "filed": [
+    {
+     "n": 52,
+     "cls": "investor",
+     "name": "Vanguard Wellington Fund Investor Shares"
+    },
+    {
+     "n": 8,
+     "cls": "investor",
+     "name": "Wellington Fund Investor Shares"
+    }
+   ]
+  },
+  "OAKIX": {
+   "rows": 167,
+   "readers": 275588,
+   "plans": 162,
+   "sourceName": "Oakmark International Fund Investor Class",
+   "filed": [
+    {
+     "n": 19,
+     "cls": "r6",
+     "name": "Oakmark International R6"
+    },
+    {
+     "n": 14,
+     "cls": "inst",
+     "name": "Oakmark International Institutional"
+    }
+   ]
+  },
+  "VFIAX": {
+   "rows": 115,
+   "readers": 155277,
+   "plans": 115,
+   "sourceName": "Vanguard 500 Index Fund Admiral Shares",
+   "filed": [
+    {
+     "n": 52,
+     "cls": "investor",
+     "name": "Vanguard 500 Index Fund Investor Shares"
+    },
+    {
+     "n": 5,
+     "cls": "investor",
+     "name": "500 Index Fund Investor Shares"
+    }
+   ]
+  },
+  "WFSPX": {
+   "rows": 202,
+   "readers": 130147,
+   "plans": 199,
+   "sourceName": "iShares S&P 500 Index Fund Class K",
+   "filed": [
+    {
+     "n": 40,
+     "cls": "inst",
+     "name": "iShares S&P 500 Index Instl"
+    },
+    {
+     "n": 25,
+     "cls": "inst",
+     "name": "ISHARES S&P 500 INDEX I"
+    }
+   ]
+  },
+  "OIEJX": {
+   "rows": 61,
+   "readers": 116702,
+   "plans": 61,
+   "sourceName": "JPMorgan Equity Income Fund Class R6",
+   "filed": [
+    {
+     "n": 50,
+     "cls": "a",
+     "name": "JPMorgan Equity Inc Fd Cla R6"
+    },
+    {
+     "n": 2,
+     "cls": "a",
+     "name": "Equity Inc Fd Cla R6"
+    }
+   ]
+  },
+  "VWNAX": {
+   "rows": 66,
+   "readers": 115685,
+   "plans": 66,
+   "sourceName": "Vanguard Windsor II Fund Admiral Shares",
+   "filed": [
+    {
+     "n": 48,
+     "cls": "investor",
+     "name": "Vanguard Windsor II Fund Investor Shares"
+    },
+    {
+     "n": 10,
+     "cls": "investor",
+     "name": "Windsor II Fund Investor Shares"
+    }
+   ]
+  },
+  "PTTRX": {
+   "rows": 73,
+   "readers": 76179,
+   "plans": 73,
+   "sourceName": "PIMCO Total Return Fund Institutional Class",
+   "filed": [
+    {
+     "n": 17,
+     "cls": "a",
+     "name": "PIMCO Total Return Fund Class A"
+    },
+    {
+     "n": 9,
+     "cls": "a",
+     "name": "PIMCO Total Return Fund - Class A"
+    }
+   ]
+  },
+  "PIMIX": {
+   "rows": 40,
+   "readers": 55647,
+   "plans": 40,
+   "sourceName": "PIMCO Income Fund Institutional Class",
+   "filed": [
+    {
+     "n": 11,
+     "cls": "gm",
+     "name": "PIMCO INCOME FUND INSTL CL GM"
+    },
+    {
+     "n": 3,
+     "cls": "a",
+     "name": "PIMCO Income Fund Institutional Class a"
+    }
+   ]
+  },
+  "MVCKX": {
+   "rows": 2,
+   "readers": 43478,
+   "plans": 2,
+   "sourceName": "MFS Mid Cap Value Fund Class R6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r5",
+     "name": "MVCKX - MFS MID CAP VALUE FUND CL R5"
+    },
+    {
+     "n": 1,
+     "cls": "r5",
+     "name": "MVCKX - MFS Mid Cap Value Fund Cl R5"
+    }
+   ]
+  },
+  "MWTIX": {
+   "rows": 35,
+   "readers": 28502,
+   "plans": 35,
+   "sourceName": "TCW MetWest Total Return Bond Fund Class I",
+   "filed": [
+    {
+     "n": 5,
+     "cls": "m",
+     "name": "TCW MetWest Total Return Bond Fund Class M"
+    },
+    {
+     "n": 4,
+     "cls": "m",
+     "name": "Metropolitan West Total Return Bond Fund Class M"
+    }
+   ]
+  },
+  "PBFKX": {
+   "rows": 29,
+   "readers": 26986,
+   "plans": 29,
+   "sourceName": "Victory Pioneer Bond Fund Class R6",
+   "filed": [
+    {
+     "n": 11,
+     "cls": "k",
+     "name": "Pioneer Bond Fund Class K"
+    },
+    {
+     "n": 9,
+     "cls": "k",
+     "name": "Bond Fund Class K"
+    }
+   ]
+  },
+  "PHYQX": {
+   "rows": 3,
+   "readers": 25468,
+   "plans": 3,
+   "sourceName": "PGIM High Yield Fund- Class R6",
+   "filed": [
+    {
+     "n": 3,
+     "cls": "q",
+     "name": "PHYQX - Prudential High Yield Cl Q"
+    }
+   ]
+  },
+  "BCOIX": {
+   "rows": 27,
+   "readers": 19431,
+   "plans": 27,
+   "sourceName": "Baird Core Plus Bond Fund Institutional Class",
+   "filed": [
+    {
+     "n": 10,
+     "cls": "investor",
+     "name": "Baird Core Plus Bond Fund Class Investor"
+    },
+    {
+     "n": 2,
+     "cls": "investor",
+     "name": "Baird Core Plus Bond Fund - Investor Class"
+    }
+   ]
+  },
+  "TRLGX": {
+   "rows": 9,
+   "readers": 18163,
+   "plans": 9,
+   "sourceName": "T. Rowe Price Large-Cap Growth Fund I Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "T. Rowe Price Large Cap Growth 1 (R6)"
+    },
+    {
+     "n": 1,
+     "cls": "t",
+     "name": "Investor Class T. Rowe Price Large Cap Growth"
+    }
+   ]
+  },
+  "VEXRX": {
+   "rows": 12,
+   "readers": 17863,
+   "plans": 12,
+   "sourceName": "Vanguard Explorer Fund Admiral Shares",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "R6 Vanguard Explorer Fund - Admiral"
+    },
+    {
+     "n": 1,
+     "cls": "r5",
+     "name": "R5 Vanguard Explorer Adm"
+    }
+   ]
+  },
+  "TRUBX": {
+   "rows": 2,
+   "readers": 16691,
+   "plans": 2,
+   "sourceName": "T. Rowe Price Retirement 2015 Fund I Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "k",
+     "name": "Fund Class K T.Rowe Price Retirement 2015 I"
+    },
+    {
+     "n": 1,
+     "cls": "r5",
+     "name": "R5 T. Rowe Price Retirement 2015 I"
+    }
+   ]
+  },
+  "HACAX": {
+   "rows": 15,
+   "readers": 15839,
+   "plans": 15,
+   "sourceName": "Harbor Capital Appreciation Fund Institutional Class",
+   "filed": [
+    {
+     "n": 5,
+     "cls": "investor",
+     "name": "Harbor Capital Appreciation Fund Investor Class"
+    },
+    {
+     "n": 2,
+     "cls": "r",
+     "name": "Harbor Capital Appreciation CL R"
+    }
+   ]
+  },
+  "VPMAX": {
+   "rows": 34,
+   "readers": 15739,
+   "plans": 34,
+   "sourceName": "Vanguard PRIMECAP Fund Admiral Shares",
+   "filed": [
+    {
+     "n": 24,
+     "cls": "investor",
+     "name": "Vanguard PRIMECAP Fund Investor Shares"
+    },
+    {
+     "n": 5,
+     "cls": "investor",
+     "name": "PRIMECAP Fund Investor Shares"
+    }
+   ]
+  },
+  "AVFIX": {
+   "rows": 1,
+   "readers": 14849,
+   "plans": 1,
+   "sourceName": "American Beacon Small Cap Value Fund Class R5",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "AVFIX - American Beacon Small Cap Val Instl"
+    }
+   ]
+  },
+  "DFFVX": {
+   "rows": 17,
+   "readers": 14243,
+   "plans": 17,
+   "sourceName": "DFA U.S. Targeted Value Portfolio Institutional Class",
+   "filed": [
+    {
+     "n": 2,
+     "cls": "us",
+     "name": "Institutional Class US Targeted Value Portfolio, Institutional"
+    },
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "Class R6 Dimensional U.S. Targeted Value"
+    }
+   ]
+  },
+  "VSIAX": {
+   "rows": 4,
+   "readers": 14222,
+   "plans": 4,
+   "sourceName": "Vanguard Morningstar Small-Cap Value Index Fund Admiral Shares",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "‘Vanguard Small Cap Value Index Admiral UGVVX JPMorgan Growth Advantage R6"
+    },
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Small Cap Value Index Admiral Fund i"
+    }
+   ]
+  },
+  "VINIX": {
+   "rows": 5,
+   "readers": 13175,
+   "plans": 5,
+   "sourceName": "Vanguard Institutional Index Fund Institutional Shares",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "admiral",
+     "name": "Vanguard Institutional Index - Admiral"
+    },
+    {
+     "n": 1,
+     "cls": "admiral",
+     "name": "Admiral Shares Vanguard Institutional Index Fund"
+    }
+   ]
+  },
+  "FLIFX": {
+   "rows": 1,
+   "readers": 11710,
+   "plans": 1,
+   "sourceName": "Fidelity Freedom Index 2015 Fund - Investor Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "o",
+     "name": "Freedom Index 2015 Fund - Investor Class o"
+    }
+   ]
+  },
+  "FKIFX": {
+   "rows": 1,
+   "readers": 11710,
+   "plans": 1,
+   "sourceName": "Fidelity Freedom® Index 2010 Fund Investor Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "e",
+     "name": "Freedom Index 2010 Fund - Investor Class e"
+    }
+   ]
+  },
+  "MIEIX": {
+   "rows": 1,
+   "readers": 11703,
+   "plans": 1,
+   "sourceName": "MFS International Equity Fund Class R6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "MFS Institutional International Equity (MIEIX)"
+    }
+   ]
+  },
+  "VGSLX": {
+   "rows": 3,
+   "readers": 11055,
+   "plans": 3,
+   "sourceName": "Vanguard Real Estate Index Fund Admiral Shares",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Instl Vanguard Real Estate Index Fund Admiral Shs"
+    },
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "R6 Vanguard Real Estate Indx Adm"
+    }
+   ]
+  },
+  "TLXIX": {
+   "rows": 3,
+   "readers": 10527,
+   "plans": 3,
+   "sourceName": "Nuveen Lifecycle Index 2045 Fund (R6)",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "TIAA-CREF Lifecycle 2045 Instl (TLXIX)"
+    },
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "TLXIX - TIAA-CREF Lifecycle Index 2045 Fund Inst"
+    }
+   ]
+  },
+  "TLHIX": {
+   "rows": 2,
+   "readers": 10227,
+   "plans": 2,
+   "sourceName": "Nuveen Lifecycle Index 2030 Fund (R6)",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "TLHIX - TIAA-CREF Lifecycle Index 2030 Fund Inst"
+    },
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "TIAA-CREF LIFECYCLE INDEX 2030 INSTL (TLHIX)"
+    }
+   ]
+  },
+  "TLQIX": {
+   "rows": 2,
+   "readers": 10227,
+   "plans": 2,
+   "sourceName": "Nuveen Lifecycle Index 2025 Fund (R6)",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "TLQIX - TIAA-CREF Lifecycle Index 2025 Fund Inst"
+    },
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "TIAA-CREF LIFE CYCLE INDEX 2025 INSTL (TLQIX)"
+    }
+   ]
+  },
+  "TLWIX": {
+   "rows": 2,
+   "readers": 10227,
+   "plans": 2,
+   "sourceName": "Nuveen Lifecycle Index 2020 Fund (R6)",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "TLWIX - TIAA-CREF Lifecycle Index 2020 Fund Inst"
+    },
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "TIAA-CREF LIFECYCLE INDEX 2020 INSTL (TLWIX)"
+    }
+   ]
+  },
+  "VEIRX": {
+   "rows": 7,
+   "readers": 9716,
+   "plans": 7,
+   "sourceName": "Vanguard Equity Income Fund Admiral Shares",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "Retirement Fund Class R6 Vanguard Equity Income Fund Admiral"
+    },
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "Growth & Income R6 Vanguard Equity Income Admiral"
+    }
+   ]
+  },
+  "WFBIX": {
+   "rows": 10,
+   "readers": 8613,
+   "plans": 10,
+   "sourceName": "iShares U.S. Aggregate Bond Index Fund Class K",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "ISHARES U.S. Aggregate Bond Index Inst"
+    },
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "ISHARES U.S. AGGREGATE BOND INDEX INST"
+    }
+   ]
+  },
+  "PRBLX": {
+   "rows": 1,
+   "readers": 8341,
+   "plans": 1,
+   "sourceName": "Parnassus Core Equity Fund - Investor Shares",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r1",
+     "name": "Class R1 Parnassus Core Equity Investor"
+    }
+   ]
+  },
+  "TLLIX": {
+   "rows": 2,
+   "readers": 8220,
+   "plans": 2,
+   "sourceName": "Nuveen Lifecycle Index 2050 Fund (R6)",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "TIAA-CREF Lifecycle 2050 Instl (TLLIX)"
+    },
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "TLLIX - TIAA-CREF Lifecycle Index 2050 Fund Inst"
+    }
+   ]
+  },
+  "TTIIX": {
+   "rows": 2,
+   "readers": 8220,
+   "plans": 2,
+   "sourceName": "Nuveen Lifecycle Index 2055 Fund (R6)",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "TIAA-CREF Lifecycle 2055 Instl (TTIIX)"
+    },
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "TTIIX - TIAA-CREF Lifecycle Index 2055 Fund Inst"
+    }
+   ]
+  },
+  "TVIIX": {
+   "rows": 2,
+   "readers": 8220,
+   "plans": 2,
+   "sourceName": "Nuveen Lifecycle Index 2060 Fund (R6)",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "TIAA-CREF Lifecycle 2060 Instl (TVIIX)"
+    },
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "TVIIX - TIAA-CREF Lifecycle Index 2060 Fund Inst"
+    }
+   ]
+  },
+  "TLYIX": {
+   "rows": 2,
+   "readers": 8220,
+   "plans": 2,
+   "sourceName": "Nuveen Lifecycle Index 2035 Fund (R6)",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "TIAA-CREF Lifecycle 2035 Instl (TLYIX)"
+    },
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "TLYIX - TIAA-CREF Lifecycle Index 2035 Fund Inst"
+    }
+   ]
+  },
+  "BAGIX": {
+   "rows": 8,
+   "readers": 8179,
+   "plans": 8,
+   "sourceName": "Baird Aggregate Bond Fund Class Institutional",
+   "filed": [
+    {
+     "n": 3,
+     "cls": "investor",
+     "name": "Baird Aggregate Bond Fund Class Investor"
+    },
+    {
+     "n": 1,
+     "cls": "r5",
+     "name": "Bond R5 Class Baird Aggregate Bond Class Institutional"
+    }
+   ]
+  },
+  "DFIVX": {
+   "rows": 6,
+   "readers": 7711,
+   "plans": 6,
+   "sourceName": "DFA International Value Portfolio Institutional Class",
+   "filed": [
+    {
+     "n": 2,
+     "cls": "admiral",
+     "name": "Fund Admiral Shares DFA International Value Portfolio"
+    },
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "Fund Cl R6 Dfa Intl Val"
+    }
+   ]
+  },
+  "HLMVX": {
+   "rows": 2,
+   "readers": 5952,
+   "plans": 2,
+   "sourceName": "Harding Loevner Global Equity Portfolio Institutional Class",
+   "filed": [
+    {
+     "n": 2,
+     "cls": "z",
+     "name": "Global Equity Institutional Z"
+    }
+   ]
+  },
+  "CSRIX": {
+   "rows": 4,
+   "readers": 5414,
+   "plans": 4,
+   "sourceName": "Cohen & Steers Institutional Realty Shares",
+   "filed": [
+    {
+     "n": 2,
+     "cls": "r6",
+     "name": "Class R6 Cohen & Steers Institutional Realty"
+    },
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "Fund Class R6 Cohen & Steers Instl Realty"
+    }
+   ]
+  },
+  "VVIAX": {
+   "rows": 7,
+   "readers": 4476,
+   "plans": 7,
+   "sourceName": "Vanguard Morningstar Value Index Fund Admiral Shares",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "Retirement Fund Class R6 Vanguard Value Index Fund Admiral"
+    },
+    {
+     "n": 1,
+     "cls": "k",
+     "name": "Value Index Adm Fund k"
+    }
+   ]
+  },
+  "FFGZX": {
+   "rows": 2,
+   "readers": 4456,
+   "plans": 2,
+   "sourceName": "Fidelity Freedom Index Retirement Fund - Institutional Premium Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "e",
+     "name": "Fidelity Freedom Index Retirement Fund Institutional Premium Cle"
+    },
+    {
+     "n": 1,
+     "cls": "as",
+     "name": "Fidelity Freedom Index Income Fund Institutional Premium Clas"
+    }
+   ]
+  },
+  "FIWTX": {
+   "rows": 3,
+   "readers": 3523,
+   "plans": 3,
+   "sourceName": "Fidelity Freedom Index 2020 Fund - Institutional Premium Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Fidelity Freedom Index 2020 Fund - Institutional Premium Class a"
+    },
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Fidelity Frdm Idx 2020 Fund Instl Prem Class a"
+    }
+   ]
+  },
+  "PCSMX": {
+   "rows": 2,
+   "readers": 3369,
+   "plans": 2,
+   "sourceName": "Principal SmallCap Growth Fund I Class R-6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r",
+     "name": "Principal SmallCap Growth Fund I Class R 6"
+    },
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "PCSMX - Principal SmallCap Growth Fund I"
+    }
+   ]
+  },
+  "JMGMX": {
+   "rows": 1,
+   "readers": 3115,
+   "plans": 1,
+   "sourceName": "JPMorgan Mid Cap Growth Fund Class R6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "jp",
+     "name": "Class JP Morgan Mid Cap Growth Class R6"
+    }
+   ]
+  },
+  "PMJIX": {
+   "rows": 2,
+   "readers": 2938,
+   "plans": 2,
+   "sourceName": "PIMCO RAE US S Fund Institutional Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "b",
+     "name": "PIMCO RAE US Small Fund Institutional Class b"
+    },
+    {
+     "n": 1,
+     "cls": "af",
+     "name": "Pimco Rae Us Small Instl Class Af"
+    }
+   ]
+  },
+  "DFSTX": {
+   "rows": 6,
+   "readers": 2604,
+   "plans": 6,
+   "sourceName": "DFA U.S. Small Cap Portfolio Institutional Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "admiral",
+     "name": "Fund Admiral Shares DFA US Small Cap Fund"
+    },
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "Fund Class R-6 DFA U.S. Small Cap Portfolio"
+    }
+   ]
+  },
+  "TIOIX": {
+   "rows": 1,
+   "readers": 2284,
+   "plans": 1,
+   "sourceName": "TIAA-CREF International Opportunities Fund Institutional Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "Nuveen International Opportunities Fund R6 Class"
+    }
+   ]
+  },
+  "DFEVX": {
+   "rows": 4,
+   "readers": 2268,
+   "plans": 4,
+   "sourceName": "DFA Emerging Markets Value Portfolio Institutional Class",
+   "filed": [
+    {
+     "n": 2,
+     "cls": "admiral",
+     "name": "Admiral Shares DFA Emerging Markets Value Portfolio"
+    },
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "Emerging Markets Value Fund Class R6"
+    }
+   ]
+  },
+  "AHIVX": {
+   "rows": 1,
+   "readers": 2003,
+   "plans": 1,
+   "sourceName": "American Century High Income Fund Investor Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "American Century High Income R6 (AHIVX)"
+    }
+   ]
+  },
+  "FFEGX": {
+   "rows": 4,
+   "readers": 1824,
+   "plans": 4,
+   "sourceName": "Fidelity Freedom Index 2030 Fund - Institutional Premium Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Fidelity Freedom Index 2030 Fund Instnl Premium Class a"
+    },
+    {
+     "n": 1,
+     "cls": "k",
+     "name": "Freedom Idx 2030 Inst Prem +k"
+    }
+   ]
+  },
+  "BMGKX": {
+   "rows": 1,
+   "readers": 1783,
+   "plans": 1,
+   "sourceName": "BlackRock Mid-Cap Growth Equity Portfolio Class K",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "Class R6 Blackrock Mid-Cap Growth Equity K"
+    }
+   ]
+  },
+  "VIGAX": {
+   "rows": 4,
+   "readers": 1759,
+   "plans": 4,
+   "sourceName": "Vanguard Morningstar Growth Index Fund Admiral Shares",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "k",
+     "name": "Vanguard Growth Index Adm k"
+    },
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Vanguard Growth Index -Admiral 1DC-INC Dodge & Cox Income Fund - I"
+    }
+   ]
+  },
+  "FFEDX": {
+   "rows": 3,
+   "readers": 1688,
+   "plans": 3,
+   "sourceName": "Fidelity Freedom Index 2025 Fund - Institutional Premium Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Fidelity Freedom Index 2025 Fund Instnl Premium Class a"
+    },
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Fidelity Frdm Idx 2025 Fund Instl Prem Class a"
+    }
+   ]
+  },
+  "DFSVX": {
+   "rows": 3,
+   "readers": 1638,
+   "plans": 3,
+   "sourceName": "DFA U.S. Small Cap Value Portfolio Institutional Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "admiral",
+     "name": "Fund Admiral Shares U.S. Small Cap Value Portfolio"
+    },
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "Class R6 DFA U.S. Small Cap Value Portfolio"
+    }
+   ]
+  },
+  "TRJMX": {
+   "rows": 1,
+   "readers": 1634,
+   "plans": 1,
+   "sourceName": "T. Rowe Price Retirement 2055 Fund I Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "R-6 T. Rowe Price Retirement 2055 Fund I Class"
+    }
+   ]
+  },
+  "TRDBX": {
+   "rows": 1,
+   "readers": 1634,
+   "plans": 1,
+   "sourceName": "T. Rowe Price Retirement 2020 Fund I Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "t",
+     "name": "Class T. Rowe Price Retirement 2020 Fund I Class"
+    }
+   ]
+  },
+  "DFCEX": {
+   "rows": 4,
+   "readers": 1484,
+   "plans": 4,
+   "sourceName": "DFA Emerging Markets Core Equity 2 Portfolio Institutional Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Emerging Markets Core Equity 2 Portfolio Inst Class a"
+    },
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "R6 Dimensional Emerging Markets Core Equity 2"
+    }
+   ]
+  },
+  "FFOPX": {
+   "rows": 3,
+   "readers": 1354,
+   "plans": 3,
+   "sourceName": "Fidelity Freedom Index 2050 Fund - Institutional Premium Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Fidelity Freedom Index 2050 Fund Instnl Premium Class a"
+    },
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Fidelity Frdm Idx 2050 Fund Instl Prem Class a"
+    }
+   ]
+  },
+  "PRVIX": {
+   "rows": 1,
+   "readers": 1333,
+   "plans": 1,
+   "sourceName": "T. Rowe Price Small-Cap Value Fund I Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "t",
+     "name": "Equity Fund I Class T. Rowe Price Small-Cap Value Fund I"
+    }
+   ]
+  },
+  "FQIPX": {
+   "rows": 3,
+   "readers": 1269,
+   "plans": 3,
+   "sourceName": "Fidelity Freedom Index 2045 Fund - Premier Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Freedom Index 2045 Fund - Premier I"
+    },
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Freedom Index 2045 Premier I"
+    }
+   ]
+  },
+  "FPIPX": {
+   "rows": 3,
+   "readers": 1269,
+   "plans": 3,
+   "sourceName": "Fidelity Freedom Index 2040 Fund - Premier Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Freedom Index 2040 Fund - Premier I"
+    },
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Freedom Index 2040 Premier I"
+    }
+   ]
+  },
+  "FNIPX": {
+   "rows": 3,
+   "readers": 1269,
+   "plans": 3,
+   "sourceName": "Fidelity Freedom Index 2035 Fund - Premier Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Freedom Index 2035 Fund - Premier I"
+    },
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Freedom Index 2035 Premier I"
+    }
+   ]
+  },
+  "FTYPX": {
+   "rows": 3,
+   "readers": 1269,
+   "plans": 3,
+   "sourceName": "Fidelity Freedom Index 2055 Fund - Premier Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Freedom Index 2055 Fund - Premier I"
+    },
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Freedom Index 2055 Premier I"
+    }
+   ]
+  },
+  "FRLPX": {
+   "rows": 3,
+   "readers": 1269,
+   "plans": 3,
+   "sourceName": "Fidelity Freedom Index 2050 Fund - Premier Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Freedom Index 2050 Fund - Premier I"
+    },
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Freedom Index 2050 Premier I"
+    }
+   ]
+  },
+  "FUIPX": {
+   "rows": 3,
+   "readers": 1269,
+   "plans": 3,
+   "sourceName": "Fidelity Freedom Index 2060 Fund - Premier Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Freedom Index 2060 Fund - Premier I"
+    },
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Freedom Index 2060 Premier I"
+    }
+   ]
+  },
+  "FMKPX": {
+   "rows": 3,
+   "readers": 1269,
+   "plans": 3,
+   "sourceName": "Fidelity Freedom Index 2030 Fund - Premier Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Freedom Index 2030 Fund - Premier I"
+    },
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Freedom Index 2030 Premier I"
+    }
+   ]
+  },
+  "FLIPX": {
+   "rows": 3,
+   "readers": 1269,
+   "plans": 3,
+   "sourceName": "Fidelity Freedom Index 2025 Fund - Premier Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Freedom Index 2025 Fund - Premier I"
+    },
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Freedom Index 2025 Premier I"
+    }
+   ]
+  },
+  "FVIPX": {
+   "rows": 3,
+   "readers": 1269,
+   "plans": 3,
+   "sourceName": "Fidelity Freedom Index 2065 Fund - Premier Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Freedom Index 2065 Fund - Premier I"
+    },
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Freedom Index 2065 Premier I"
+    }
+   ]
+  },
+  "FKIPX": {
+   "rows": 3,
+   "readers": 1269,
+   "plans": 3,
+   "sourceName": "Fidelity Freedom Index 2020 Fund - Premier Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Freedom Index 2020 Fund - Premier I"
+    },
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Freedom Index 2020 Premier I"
+    }
+   ]
+  },
+  "FFLEX": {
+   "rows": 3,
+   "readers": 1226,
+   "plans": 3,
+   "sourceName": "Fidelity Freedom Index 2060 Fund - Institutional Premium Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Fidelity Freedom Index 2060 Fund Instnl Premium Class a"
+    },
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Fidelity Frdm Idx 2060 Fund Instl Prem Class a"
+    }
+   ]
+  },
+  "VTMGX": {
+   "rows": 1,
+   "readers": 1210,
+   "plans": 1,
+   "sourceName": "Vanguard Developed Markets Index Fund Admiral Shares",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Fd Instl Cl Vanguard Developed Mkts Idx Fd Adm"
+    }
+   ]
+  },
+  "FFOLX": {
+   "rows": 2,
+   "readers": 1174,
+   "plans": 2,
+   "sourceName": "Fidelity Freedom Index 2045 Fund - Institutional Premium Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Fidelity Freedom Index 2045 Fund Instnl Premium Class a"
+    },
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Fidelity Frdm Idx 2045 Fund Instl Prem Class a"
+    }
+   ]
+  },
+  "FFIZX": {
+   "rows": 2,
+   "readers": 1174,
+   "plans": 2,
+   "sourceName": "Fidelity Freedom Index 2040 Fund - Institutional Premium Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Fidelity Freedom Index 2040 Fund Instnl Premium Class a"
+    },
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Fidelity Frdm Idx 2040 Fund Instl Prem Class a"
+    }
+   ]
+  },
+  "FFEZX": {
+   "rows": 2,
+   "readers": 1174,
+   "plans": 2,
+   "sourceName": "Fidelity Freedom Index 2035 Fund - Institutional Premium Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Fidelity Freedom Index 2035 Fund Instnl Premium Class a"
+    },
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Fidelity Frdm Idx 2035 Fund Instl Prem Class a"
+    }
+   ]
+  },
+  "FFLDX": {
+   "rows": 2,
+   "readers": 1174,
+   "plans": 2,
+   "sourceName": "Fidelity Freedom Index 2055 Fund - Institutional Premium Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Fidelity Freedom Index 2055 Fund Instnl Premium Class a"
+    },
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Fidelity Frdm Idx 2055 Fund Instl Prem Class a"
+    }
+   ]
+  },
+  "FFIKX": {
+   "rows": 2,
+   "readers": 1174,
+   "plans": 2,
+   "sourceName": "Fidelity Freedom Index 2065 Fund - Institutional Premium Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Fidelity Freedom Index 2065 Fund Instnl Premium Class a"
+    },
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Fidelity Frdm Idx 2065 Fund Instl Prem Class a"
+    }
+   ]
+  },
+  "FRBUX": {
+   "rows": 2,
+   "readers": 1174,
+   "plans": 2,
+   "sourceName": "Fidelity Freedom Index 2070 Fund - Institutional Premium Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Fidelity Freedom Index 2070 Fund Instnl Premium Class a"
+    },
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Fidelity Frdm Idx 2070 Fund Instl Prem Class a"
+    }
+   ]
+  },
+  "FAPIX": {
+   "rows": 2,
+   "readers": 1162,
+   "plans": 2,
+   "sourceName": "Fidelity Freedom Index Retirement Fund - Premier Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Freedom Index Income Fund Premier Class a"
+    },
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Fidelity Freedom Index Retirement Fund - Premier Class a"
+    }
+   ]
+  },
+  "DFISX": {
+   "rows": 3,
+   "readers": 1114,
+   "plans": 3,
+   "sourceName": "DFA International Small Company Portfolio Institutional Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "admiral",
+     "name": "Admiral Shares International Small Company"
+    },
+    {
+     "n": 1,
+     "cls": "admiral",
+     "name": "Fund Admiral Shares International Small Company"
+    }
+   ]
+  },
+  "TRMIX": {
+   "rows": 1,
+   "readers": 1111,
+   "plans": 1,
+   "sourceName": "T. Rowe Price Mid-Cap Value Fund I Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r4",
+     "name": "Retirement Fund Class R-4 T. Rowe Price Mid Cap Value Fund I"
+    }
+   ]
+  },
+  "RNWGX": {
+   "rows": 4,
+   "readers": 1108,
+   "plans": 4,
+   "sourceName": "American Funds New World Fund® Class R-6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r",
+     "name": "American Funds New World Fund Class R- 6"
+    },
+    {
+     "n": 1,
+     "cls": "as",
+     "name": "American Funds New World Fund Clas s R6"
+    }
+   ]
+  },
+  "VAIPX": {
+   "rows": 1,
+   "readers": 1003,
+   "plans": 1,
+   "sourceName": "Vanguard Inflation-Protected Securities Fund Admiral Shares",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Class I Vanguard Infl Protect Sec Adm"
+    }
+   ]
+  },
+  "TBCIX": {
+   "rows": 1,
+   "readers": 995,
+   "plans": 1,
+   "sourceName": "T. Rowe Price Blue Chip Growth Fund I Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "T. Rowe Price Blue Chip Growth Fund I Cla"
+    }
+   ]
+  },
+  "FFYPX": {
+   "rows": 2,
+   "readers": 970,
+   "plans": 2,
+   "sourceName": "Fidelity Freedom Index 2015 Fund - Premier Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Freedom Index 2015 Fund - Premier I"
+    },
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Freedom Index 2015 Premier I"
+    }
+   ]
+  },
+  "DFLVX": {
+   "rows": 2,
+   "readers": 946,
+   "plans": 2,
+   "sourceName": "DFA U.S. Large Cap Value Portfolio Institutional Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "Fund Class R-6 DFA U.S. Large Cap Value"
+    },
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "US Large Cap Value I R6"
+    }
+   ]
+  },
+  "JLGMX": {
+   "rows": 2,
+   "readers": 927,
+   "plans": 2,
+   "sourceName": "JPMorgan Large Cap Growth Fund Class R6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "z",
+     "name": "Class Z JPMorgan Large Cap Growth Fund Class R6"
+    },
+    {
+     "n": 1,
+     "cls": "jp",
+     "name": "Fund Institutional Premium Class JP Morgan Large Cap Growth R6"
+    }
+   ]
+  },
+  "FIWFX": {
+   "rows": 1,
+   "readers": 906,
+   "plans": 1,
+   "sourceName": "Fidelity Freedom Index 2015 Fund - Institutional Premium Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Fidelity Frdm Idx 2015 Fund Instl Prem Class a"
+    }
+   ]
+  },
+  "VMVAX": {
+   "rows": 1,
+   "readers": 902,
+   "plans": 1,
+   "sourceName": "Vanguard Morningstar Mid-Cap Value Index Fund Admiral Shares",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Mid-Cap Value Index Admiral i"
+    }
+   ]
+  },
+  "VMGMX": {
+   "rows": 2,
+   "readers": 786,
+   "plans": 2,
+   "sourceName": "Vanguard Morningstar Mid-Cap Growth Index Fund Admiral Shares",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "y",
+     "name": "International Small Cap Fund Class Y Vanguard Mid-Cap Growth Index Admiral"
+    },
+    {
+     "n": 1,
+     "cls": "i1",
+     "name": "MID-CAP GROWTH INDEX ADMIRAL SHARES - I1"
+    }
+   ]
+  },
+  "JUEMX": {
+   "rows": 1,
+   "readers": 703,
+   "plans": 1,
+   "sourceName": "JPMorgan U.S. Equity Fund Class R6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "jp",
+     "name": "Fund Institutional Premium Class JP Morgan U.S. Equity Fund R6"
+    }
+   ]
+  },
+  "JCBUX": {
+   "rows": 1,
+   "readers": 621,
+   "plans": 1,
+   "sourceName": "JPMorgan Core Bond Fund Class R6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r1",
+     "name": "Class R1 JPMorgan Core Bond Fund Class R6"
+    }
+   ]
+  },
+  "DISVX": {
+   "rows": 1,
+   "readers": 590,
+   "plans": 1,
+   "sourceName": "DFA International Small Cap Value Portfolio Institutional Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "admiral",
+     "name": "Admiral Shares DFA International Small Cap Value"
+    }
+   ]
+  },
+  "JNBSX": {
+   "rows": 1,
+   "readers": 579,
+   "plans": 1,
+   "sourceName": "JPMorgan Income Builder Fund Class I Shares",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "select",
+     "name": "JNBSX - JPMorgan Income Builder Select"
+    }
+   ]
+  },
+  "FJTKX": {
+   "rows": 1,
+   "readers": 565,
+   "plans": 1,
+   "sourceName": "Fidelity Freedom 2045 Fund - Class K6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Freedom 2045 K6 i"
+    }
+   ]
+  },
+  "FDEWX": {
+   "rows": 1,
+   "readers": 537,
+   "plans": 1,
+   "sourceName": "Fidelity Freedom Index 2055 Fund - Investor Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Fidelity Freedom Index 2055 Fund Investor Class a"
+    }
+   ]
+  },
+  "VSGAX": {
+   "rows": 1,
+   "readers": 454,
+   "plans": 1,
+   "sourceName": "Vanguard Morningstar Small-Cap Growth Index Fund Admiral Shares",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "Principal SmallCap R6 IVSGAX1 Vanguard Small Cap Growth Index Admiral"
+    }
+   ]
+  },
+  "TRFHX": {
+   "rows": 1,
+   "readers": 446,
+   "plans": 1,
+   "sourceName": "T. Rowe Price Retirement 2030 Fund I Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r4",
+     "name": "Class R4 T. Rowe Price Retirement 2030 I"
+    }
+   ]
+  },
+  "TRIKX": {
+   "rows": 1,
+   "readers": 446,
+   "plans": 1,
+   "sourceName": "T. Rowe Price Retirement 2045 Fund I Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r1",
+     "name": "Class R1 T. Rowe Price Retirement 2045 I"
+    }
+   ]
+  },
+  "JCPUX": {
+   "rows": 1,
+   "readers": 402,
+   "plans": 1,
+   "sourceName": "JPMorgan Core Plus Bond Fund Class R6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "z",
+     "name": "Class Z JPMorgan Core Plus Bond Fund; Class R6"
+    }
+   ]
+  },
+  "VFTAX": {
+   "rows": 2,
+   "readers": 379,
+   "plans": 2,
+   "sourceName": "Vanguard FTSE Social Index Fund Admiral Shares",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "Index Fund (R6) FTSE Social Index Fund Admiral"
+    },
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "American Fds 2060 Tar Ret R6"
+    }
+   ]
+  },
+  "FCTKX": {
+   "rows": 1,
+   "readers": 365,
+   "plans": 1,
+   "sourceName": "Fidelity Freedom 2055 Fund - Class K6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Freedom 2055 K6 i"
+    }
+   ]
+  },
+  "DFALX": {
+   "rows": 1,
+   "readers": 342,
+   "plans": 1,
+   "sourceName": "DFA Large Cap International Portfolio Institutional Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "admiral",
+     "name": "Admiral Shares DFA Large Cap International"
+    }
+   ]
+  },
+  "RIRGX": {
+   "rows": 1,
+   "readers": 342,
+   "plans": 1,
+   "sourceName": "American Funds Capital Income Builder® Class R-6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r",
+     "name": "American Funds Capital Income Builder® - Class R·6"
+    }
+   ]
+  },
+  "VTWAX": {
+   "rows": 1,
+   "readers": 326,
+   "plans": 1,
+   "sourceName": "Vanguard Total World Stock Index Fund Admiral Shares",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Vanguard Total World Stock Index Admiral IWCMEX —— WCM Focused Emerging Markets Instl"
+    }
+   ]
+  },
+  "VBIAX": {
+   "rows": 2,
+   "readers": 301,
+   "plans": 2,
+   "sourceName": "Vanguard Balanced Index Fund Admiral Shares",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Vanguard Balanced Index Fund Admiral Shares i"
+    },
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Vanguard Balanced Idx Adm i"
+    }
+   ]
+  },
+  "TLZIX": {
+   "rows": 1,
+   "readers": 300,
+   "plans": 1,
+   "sourceName": "Nuveen Lifecycle Index 2040 Fund (R6)",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "TIAA-CREF Lifecycle 2040 Instl (TLZIX)"
+    }
+   ]
+  },
+  "FRBWX": {
+   "rows": 1,
+   "readers": 299,
+   "plans": 1,
+   "sourceName": "Fidelity Freedom Index 2070 - Fund Premier Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Fidelity Freedom Index 2070 Fund - Premier Class a"
+    }
+   ]
+  },
+  "PIREX": {
+   "rows": 2,
+   "readers": 289,
+   "plans": 2,
+   "sourceName": "Principal Real Estate Securities Fund Institutional Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "Principal Real Estate Securities Institution (R6)"
+    },
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "Principal Real Estate Securities Instl R6"
+    }
+   ]
+  },
+  "TRFJX": {
+   "rows": 1,
+   "readers": 260,
+   "plans": 1,
+   "sourceName": "T. Rowe Price Retirement 2035 Fund I Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "GROWTH CI R6 T. ROWE PRICE RETIREMENT I 2035 - I"
+    }
+   ]
+  },
+  "DFREX": {
+   "rows": 1,
+   "readers": 258,
+   "plans": 1,
+   "sourceName": "DFA Real Estate Securities Portfolio Institutional Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "admiral",
+     "name": "Admiral Share DFA Real Estate Securities Portfolio"
+    }
+   ]
+  },
+  "ANODX": {
+   "rows": 1,
+   "readers": 224,
+   "plans": 1,
+   "sourceName": "American Century Small Cap Growth Fund R6 Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "b",
+     "name": "American Century Small Cap Growth Fund R6 Class b"
+    }
+   ]
+  },
+  "FIKFX": {
+   "rows": 1,
+   "readers": 224,
+   "plans": 1,
+   "sourceName": "Fidelity Freedom Index Retirement Fund - Investor Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "b",
+     "name": "Fidelity Freedom Index Retirement Fund Investor Class b"
+    }
+   ]
+  },
+  "PVMIX": {
+   "rows": 1,
+   "readers": 224,
+   "plans": 1,
+   "sourceName": "Principal MidCap Value Fund I Institutional Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "b",
+     "name": "Principal MidCap Value Fund I Institutional Class b"
+    }
+   ]
+  },
+  "RNPGX": {
+   "rows": 1,
+   "readers": 213,
+   "plans": 1,
+   "sourceName": "American Funds New Perspective Fund® Class R-6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r",
+     "name": "AM FDS New Perspective Fund CL R 6"
+    }
+   ]
+  },
+  "TISBX": {
+   "rows": 1,
+   "readers": 211,
+   "plans": 1,
+   "sourceName": "Nuveen Small Cap Blend Index Fund (R6)",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "TISBX TIAA-CREF SMALL-CAP BLEND INDEX FUND (INSTITUTIONAL)"
+    }
+   ]
+  },
+  "TROIX": {
+   "rows": 1,
+   "readers": 207,
+   "plans": 1,
+   "sourceName": "T. Rowe Price Overseas Stock Fund I Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "Class R6 T. Rowe Price Overseas Stock Fund - Class I"
+    }
+   ]
+  },
+  "TRAJX": {
+   "rows": 1,
+   "readers": 183,
+   "plans": 1,
+   "sourceName": "T. Rowe Price Retirement 2005 Fund I Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "z",
+     "name": "Inc. Class Z T. Rowe Price Retirement 2005 Fund I Class"
+    }
+   ]
+  },
+  "CCALX": {
+   "rows": 1,
+   "readers": 182,
+   "plans": 1,
+   "sourceName": "Conestoga Small Cap Institutional Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "il",
+     "name": "Conestoga Small Cap Fund - Institutional Class il"
+    }
+   ]
+  },
+  "RFDTX": {
+   "rows": 1,
+   "readers": 176,
+   "plans": 1,
+   "sourceName": "American Funds 2025 Target Date Retirement Income Fund® Class R-6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r",
+     "name": "American Funds 2025 Target Date Retirement Class R 6"
+    }
+   ]
+  },
+  "RFETX": {
+   "rows": 1,
+   "readers": 176,
+   "plans": 1,
+   "sourceName": "American Funds 2030 Target Date Retirement Fund® Class R-6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r",
+     "name": "American Funds 2030 Target Date Retirement Class R 6"
+    }
+   ]
+  },
+  "RFFTX": {
+   "rows": 1,
+   "readers": 176,
+   "plans": 1,
+   "sourceName": "American Funds 2035 Target Date Retirement Fund® Class R-6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r",
+     "name": "American Funds 2035 Target Date Retirement Class R 6"
+    }
+   ]
+  },
+  "RFHTX": {
+   "rows": 1,
+   "readers": 176,
+   "plans": 1,
+   "sourceName": "American Funds 2045 Target Date Retirement Fund® Class R-6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r",
+     "name": "American Funds 2045 Target Date Retirement Class R 6"
+    }
+   ]
+  },
+  "RFKTX": {
+   "rows": 1,
+   "readers": 176,
+   "plans": 1,
+   "sourceName": "American Funds 2055 Target Date Retirement Fund® Class R-6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r",
+     "name": "American Funds 2055 Target Date Retirement Class R 6"
+    }
+   ]
+  },
+  "RFITX": {
+   "rows": 1,
+   "readers": 176,
+   "plans": 1,
+   "sourceName": "American Funds 2050 Target Date Retirement Fund® Class R-6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r",
+     "name": "American Funds 2050 Target Date Retirement Class R 6"
+    }
+   ]
+  },
+  "RFGTX": {
+   "rows": 1,
+   "readers": 176,
+   "plans": 1,
+   "sourceName": "American Funds 2040 Target Date Retirement Fund® Class R-6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r",
+     "name": "American Funds 2040 Target Date Retirement Class R 6"
+    }
+   ]
+  },
+  "RFUTX": {
+   "rows": 1,
+   "readers": 176,
+   "plans": 1,
+   "sourceName": "American Funds 2060 Target Date Retirement Fund® Class R-6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r",
+     "name": "American Funds 2060 Target Date Retirement Class R 6"
+    }
+   ]
+  },
+  "RFVTX": {
+   "rows": 1,
+   "readers": 176,
+   "plans": 1,
+   "sourceName": "American Funds 2065 Target Date Retirement Fund® Class R-6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r",
+     "name": "American Funds 2065 Target Date Retirement Class R 6"
+    }
+   ]
+  },
+  "RRCTX": {
+   "rows": 1,
+   "readers": 176,
+   "plans": 1,
+   "sourceName": "American Funds 2020 Target Date Retirement Income Fund® Class R-6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r",
+     "name": "American Funds 2020 Target Date Retirement Class R 6"
+    }
+   ]
+  },
+  "RFJTX": {
+   "rows": 1,
+   "readers": 176,
+   "plans": 1,
+   "sourceName": "American Funds 2015 Target Date Retirement Income Fund® Class R-6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r",
+     "name": "American Funds 2015 Target Date Retirement Class R 6"
+    }
+   ]
+  },
+  "TWMIX": {
+   "rows": 1,
+   "readers": 156,
+   "plans": 1,
+   "sourceName": "American Century Emerging Markets Fund Investor Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "k",
+     "name": "BlackRock Emerging Markets Inv K"
+    }
+   ]
+  },
+  "JMVYX": {
+   "rows": 1,
+   "readers": 143,
+   "plans": 1,
+   "sourceName": "JPMorgan Mid Cap Value Fund Class R6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "inst",
+     "name": "Class I JPMorgan Mid Cap Value Fund Class R6"
+    }
+   ]
+  },
+  "MGRDX": {
+   "rows": 1,
+   "readers": 135,
+   "plans": 1,
+   "sourceName": "MFS International Growth Fund Class R6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r1",
+     "name": "Class R1 MFS International Growth Fund Class R6"
+    }
+   ]
+  },
+  "RERGX": {
+   "rows": 1,
+   "readers": 132,
+   "plans": 1,
+   "sourceName": "EUPAC Fund R-6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r5",
+     "name": "R5 American Funds EuroPacific Gr R6"
+    }
+   ]
+  },
+  "RPTIX": {
+   "rows": 1,
+   "readers": 124,
+   "plans": 1,
+   "sourceName": "T. Rowe Price Mid-Cap Growth Fund I Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "Class R6 T. Rowe Price Divers Mid Cap Gr I"
+    }
+   ]
+  },
+  "VWEAX": {
+   "rows": 1,
+   "readers": 122,
+   "plans": 1,
+   "sourceName": "Vanguard High-Yield Corporate Fund Admiral Shares",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "r6",
+     "name": "R6 Vang Hi Yld Corp Adm"
+    }
+   ]
+  },
+  "JOBYX": {
+   "rows": 1,
+   "readers": 117,
+   "plans": 1,
+   "sourceName": "JPMorgan SmartRetirement Blend 2040 Fund Class R6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "JP Morga n SmartReti rement Bl end 2040 Fund Cl a s s R6"
+    }
+   ]
+  },
+  "JNYAX": {
+   "rows": 1,
+   "readers": 117,
+   "plans": 1,
+   "sourceName": "JPMorgan SmartRetirement Blend 2050 Fund Class R6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "JP Morga n SmartReti rement Bl end 2050 Fund Cl a s s R6"
+    }
+   ]
+  },
+  "JRBYX": {
+   "rows": 1,
+   "readers": 117,
+   "plans": 1,
+   "sourceName": "JPMorgan SmartRetirement Blend 2030 Fund Class R6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "JP Morga n SmartReti rement Bl end 2030 Fund Cl a s s R6"
+    }
+   ]
+  },
+  "JTYBX": {
+   "rows": 1,
+   "readers": 117,
+   "plans": 1,
+   "sourceName": "JPMorgan SmartRetirement Blend 2055 Fund Class R6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "JP Morga n SmartReti rement Bl end 2055 Fund Cl a s s R6"
+    }
+   ]
+  },
+  "JIYBX": {
+   "rows": 1,
+   "readers": 117,
+   "plans": 1,
+   "sourceName": "JPMorgan SmartRetirement Blend Income Fund Class R6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "JP Morga n SmartReti rement Bl end Income Fund Cl a s s R6"
+    }
+   ]
+  },
+  "JPYRX": {
+   "rows": 1,
+   "readers": 117,
+   "plans": 1,
+   "sourceName": "JPMorgan SmartRetirement Blend 2035 Fund Class R6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "JP Morga n SmartReti rement Bl end 2035 Fund Cl a s s R6"
+    }
+   ]
+  },
+  "JMYAX": {
+   "rows": 1,
+   "readers": 117,
+   "plans": 1,
+   "sourceName": "JPMorgan SmartRetirement Blend 2045 Fund Class R6",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "JP Morga n SmartReti rement Bl end 2045 Fund Cl a s s R6"
+    }
+   ]
+  }
+ }
+}
