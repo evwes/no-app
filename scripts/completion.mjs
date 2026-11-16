@@ -21,9 +21,15 @@
  * Weights: ROWS, READERS (the plan's participants, counted per row because a
  * reader sees every row of their own menu), and VALUE.
  *
- * Run: node scripts/completion.mjs [--json] [--top 25]
+ * `--append` writes ONE LINE to `docs/completion-history.jsonl`, so progress
+ * toward the owner's target is DIFFABLE rather than a number re-quoted from
+ * memory. This project's own record is explicit about why: a figure asserted
+ * in prose goes stale exactly as fast as the one it replaced, and a loop that
+ * cannot see itself is the thing it was built to prevent.
+ *
+ * Run: node scripts/completion.mjs [--json] [--append] [--top 25]
  */
-import { readFileSync, readdirSync } from "node:fs";
+import { readFileSync, readdirSync, appendFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildRenderer } from "./apppath.mjs";
@@ -32,6 +38,7 @@ import { servedLineup } from "./lib-ledger.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const JSONOUT = process.argv.includes("--json");
+const APPEND = process.argv.includes("--append");
 const TOP = (() => { const i = process.argv.indexOf("--top"); return i > 0 ? +process.argv[i + 1] : 25; })();
 
 const R = buildRenderer({ appjs: path.join(ROOT, "app.js") });
@@ -115,11 +122,19 @@ const line = (label, b, base) =>
   `${b.ppl.toLocaleString().padStart(15)}  ${pc(b.ppl, base.ppl).padStart(6)}%` +
   `  $${(b.val / 1e9).toFixed(1).padStart(8)}B  ${pc(b.val, base.val).padStart(6)}%`;
 
+const record = { at: new Date().toISOString(), menus,
+  rows: all.rows, ppl: all.ppl, val: Math.round(all.val),
+  priceableRows: priceable.rows, priceablePpl: priceable.ppl,
+  feePpl: withFee.ppl, sourcedFeePpl: withSourcedFee.ppl, retPpl: withReturn.ppl, bothPpl: withBoth.ppl,
+  pctFee: +pc(withFee.ppl, priceable.ppl), pctReturn: +pc(withReturn.ppl, priceable.ppl),
+  pctBoth: +pc(withBoth.ppl, priceable.ppl),
+  gapByType: Object.fromEntries([...gapType].map(([t, b]) => [t, b.ppl])) };
+if (APPEND) {
+  appendFileSync(path.join(ROOT, "docs", "completion-history.jsonl"), JSON.stringify(record) + "\n");
+  console.log("appended to docs/completion-history.jsonl");
+}
 if (JSONOUT) {
-  console.log(JSON.stringify({ at: new Date().toISOString(), menus, all, notPriceable, priceable,
-    withFee, withSourcedFee, withReturn, withBoth,
-    pctFee: +pc(withFee.ppl, priceable.ppl), pctReturn: +pc(withReturn.ppl, priceable.ppl),
-    pctBoth: +pc(withBoth.ppl, priceable.ppl) }));
+  console.log(JSON.stringify(record));
 } else {
   console.log(`\nWAMPO ROW COMPLETION — ${menus.toLocaleString()} published menus\n`);
   console.log(`  ${"".padEnd(30)}${"rows".padStart(11)}${"".padStart(8)}${"readers".padStart(15)}${"".padStart(9)}${"value".padStart(10)}`);
