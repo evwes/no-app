@@ -5,7 +5,7 @@
  * for each lives in that JSON, by ticker. A figure here is SOURCED, not
  * estimated, which is the whole reason the page may print it without "est.".
  *
- * 644 funds · 644 with an expense ratio · 643 with a YTD return
+ * 645 funds · 645 with an expense ratio · 644 with a YTD return
  */
 const FUND_FACTS = {
  "AALRX":{"er":0.64,"erAsOf":"2026-10-31","ytd":15.53,"ytdAsOf":"2026-11-13"},
@@ -30,6 +30,7 @@ const FUND_FACTS = {
  "BSBIX":{"er":0.3,"erAsOf":"2026-10-31","ytd":1.28,"ytdAsOf":"2026-11-13"},
  "BSFIX":{"er":1.06,"erAsOf":"2026-10-31","ytd":1.24,"ytdAsOf":"2026-11-13"},
  "CCALX":{"er":0.9,"erAsOf":"2026-10-31","ytd":-3.26,"ytdAsOf":"2026-11-13"},
+ "CGGG":{"er":0.39,"erAsOf":"2026-10-31","ytd":-6.36,"ytdAsOf":"2026-11-16"},
  "CMGIX":{"er":0.8,"erAsOf":"2026-11-12","ytd":-5.23,"ytdAsOf":"2026-11-12"},
  "CPFXX":{"er":0.47,"erAsOf":"2026-10-31","ytd":2.79,"ytdAsOf":"2026-11-13"},
  "CSRIX":{"er":0.75,"erAsOf":"2026-10-31","ytd":16.55,"ytdAsOf":"2026-11-13"},
@@ -271,7 +272,7 @@ const FUND_FACTS = {
  "IHOVX":{"er":0.69,"erAsOf":"2026-11-12","ytd":5.43,"ytdAsOf":"2026-11-12"},
  "IIBZX":{"er":0.3,"erAsOf":"2026-11-12","ytd":-0.71,"ytdAsOf":"2026-11-12"},
  "IVV":{"er":0.03,"erAsOf":"2026-11-12","ytd":11.96,"ytdAsOf":"2026-11-12"},
- "IWN":{"er":0.24,"erAsOf":"2026-10-31","ytd":18.52,"ytdAsOf":"2026-11-13"},
+ "IWN":{"er":0.24,"erAsOf":"2026-10-31","ytd":18.52,"ytdAsOf":"2026-11-16"},
  "JAAYX":{"er":0.17,"erAsOf":"2026-11-12","ytd":11.05,"ytdAsOf":"2026-11-12"},
  "JAKYX":{"er":0.39,"erAsOf":"2026-11-12","ytd":8.21,"ytdAsOf":"2026-11-12"},
  "JAMFX":{"er":2.38,"erAsOf":"2026-10-31","ytd":-22.36,"ytdAsOf":"2026-11-13"},
