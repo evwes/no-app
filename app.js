@@ -2806,6 +2806,21 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
   }
 
   window.__wampoForfeitureAccountRow = isForfeitureAccountRow;  // read by the smoke test only
+  const SHARE_CLASS_ALIAS = { instl: "inst", institutional: "inst", instit: "inst",
+    i: "inst", advisor: "adv", retail: "investor" };
+  function shareClassToken(name) {
+    const n = " " + String(name || "").replace(/[‐-―]/g, "-").toLowerCase() + " ";
+    const m =
+      n.match(/\b(?:class|cl\.?)\s*([a-z]{1,2}-?\d{0,2})\b/) ||
+      n.match(/\b(r-?[1-6])\b/) ||
+      n.match(/\b(adv(?:isor)?|admiral|institutional|inst(?:l)?|instit|investor|retail|service|premier|select|signal|z|y2?|i[1-3]?|k6?)\s*(?:class|shares?)?\s*$/) ||
+      n.match(/\b(admiral|institutional|instl|inst'l)\b/);
+    if (!m) return null;
+    const t = m[1].replace(/-/g, "").replace(/'/g, "");
+    return SHARE_CLASS_ALIAS[t] || t;
+  }
+
+  window.__wampoShareClassToken = shareClassToken;  // read by the smoke test only
 
   /* A SCHEDULE H PARTICIPANT-DIRECTION CAPTION IS NOT A HOLDING — the rule,
    * the Microsoft row that found it ($6,602,388,247 = 8.6% of a 50-row menu),
@@ -4762,11 +4777,46 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
        * `ytdAsOf` is required, not optional. A return with no date cannot be
        * rendered the way this project requires returns to be rendered, so an
        * undated figure prints nothing rather than printing bare. */
+      /* AND THE FILING MUST NAME THE SAME SHARE CLASS THE SYMBOL IS.
+       *
+       * A ticker names ONE share class. Where the filed name states a class and
+       * the sourced fund's own name states a DIFFERENT one, the symbol is
+       * already wrong for this row and pricing it would upgrade that row from a
+       * hedged "est." to a confident tick — the one thing sourcing makes WORSE
+       * rather than better. The owner's standing decision of 2026-11-05 on this
+       * exact class is to correct the symbol and WITHDRAW the fee, never to
+       * publish the other class's price.
+       *
+       * MEASURED 2026-11-16 over all 695,144 published rows whose ticker
+       * carries a sourced figure: 292,742 state a class on both sides, 286,552
+       * agree, and 6,190 conflict across 154 tickers — VBTLX, VSMAX, VIMAX and
+       * VTIAX published as Admiral where the filing names Institutional (4.4M,
+       * 4.2M, 3.9M and 2.9M readers), DODGX and DODIX as Class I where it names
+       * Class X.
+       *
+       * IT IS PER ROW AND THAT IS THE POINT. The first version of this gate
+       * withheld whole TICKERS, and the screen that produced the list also
+       * priced it: 182,106 rows / 215,075,598 reader-slots whose filed name
+       * names the RIGHT class would have lost their figure to protect 6,190
+       * that do not. The conflict was never a property of the ticker.
+       *
+       * EITHER SIDE STATING NO CLASS IS NOT A CONFLICT. `shareClassToken`
+       * returns null for "Fidelity 500 Index Fund", and a filing that names no
+       * class at all is the separate, owner-gated question — a gate keyed on
+       * absence would sweep 101,256 rows into a decision made elsewhere.
+       *
+       * `shareClassToken` is the twin of lib-disclose's, written by
+       * `gen-generic-twin.mjs` and tethered by the smoke test, so the page, the
+       * publish gate and the screen answer from one definition. */
       let erSourced = null, ytdSourced = null, vehicleCls = null;
       if (!star && tk && typeof FUND_FACTS === "object" && FUND_FACTS) {
         const sf = FUND_FACTS[String(tk).toUpperCase()];
-        if (sf && sf.er != null) erSourced = sf;
-        if (sf && sf.ytd != null && sf.ytdAsOf) ytdSourced = sf;
+        const filedCls = sf && sf.cls ? shareClassToken(f && f.name) : null;
+        const classConflict = !!(sf && sf.cls && filedCls && filedCls !== sf.cls);
+        if (!classConflict) {
+          if (sf && sf.er != null) erSourced = sf;
+          if (sf && sf.ytd != null && sf.ytdAsOf) ytdSourced = sf;
+        }
       }
       /* THE VEHICLE'S OWN PUBLISHED FIGURE — THE EXACT OPPOSITE OF THE ERROR
        * THE COMMENT ABOVE DESCRIBES, and the distinction is the whole licence

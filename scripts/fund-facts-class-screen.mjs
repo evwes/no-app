@@ -25,6 +25,7 @@ import { writeFileSync } from "node:fs";
 import { buildRenderer } from "./apppath.mjs";
 import { loadPlans, loadFundFactsAsset } from "./lib-schema.mjs";
 import { servedLineup } from "./lib-ledger.mjs";
+import { shareClassToken } from "./lib-disclose.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const RAW = JSON.parse(readFileSync(`${ROOT}/data/fund-facts.json`, "utf8"));
@@ -47,22 +48,12 @@ if (oi > 0) {
   console.log(`restricted to the ${ONLY.size} tickers this ingest ADDS`);
 }
 
-/* one normalised share-class token, or null. Narrow on purpose: a bare letter
- * counts only where "Class"/"Cl" introduces it, because `Great Gray Trust T.
- * Rowe Price…` would otherwise read "T" as a class. */
-const norm = (s) => {
-  const n = " " + String(s).replace(/[‐-―]/g, "-").toLowerCase() + " ";
-  const m =
-    n.match(/\b(?:class|cl\.?)\s*([a-z]{1,2}-?\d{0,2})\b/) ||
-    n.match(/\b(r-?[1-6])\b/) ||
-    n.match(/\b(adv(?:isor)?|admiral|institutional|inst(?:l)?|instit|investor|retail|service|premier|select|signal|z|y2?|i[1-3]?|k6?)\s*(?:class|shares?)?\s*$/) ||
-    n.match(/\b(admiral|institutional|instl|inst'l)\b/);
-  if (!m) return null;
-  let t = m[1].replace(/-/g, "").replace(/'/g, "");
-  const alias = { instl: "inst", institutional: "inst", instit: "inst", i: "inst",
-                  advisor: "adv", retail: "investor" };
-  return alias[t] || t;
-};
+/* THE CLASS TOKEN IS IMPORTED, NEVER RESTATED. It was a local copy here first,
+ * and this record carries seven cases of a shipped predicate re-typed from
+ * memory, every one of which produced a wrong published figure. The same
+ * function is sliced into app.js by `gen-generic-twin.mjs`, so the screen, the
+ * publish gate and the page all answer from one definition. */
+const norm = shareClassToken;
 
 const R = buildRenderer({ appjs: path.join(ROOT, "app.js") });
 const lidx = JSON.parse(readFileSync(`${ROOT}/lineups-index.json`, "utf8")).plans;
@@ -161,9 +152,11 @@ const list = [...CONFLICT.entries()].sort((a, b) => b[1].ppl - a[1].ppl);
  * browser asset — is the next piece of work, not a reason to publish now. */
 if (process.argv.includes("--emit")) {
   const out = { generated: new Date().toISOString().slice(0, 10), reason:
-    "the filing states a share class the sourced fund's own name contradicts; " +
-    "owner's standing decision 2026-11-05 is to correct the symbol and withdraw the fee, " +
-    "and until the resolver does that a sourced figure here would publish a confident wrong class",
+    "A MEASUREMENT, NOT A GATE — the gate is per ROW and lives in app.js, which compares " +
+    "shareClassToken(filed name) against the sourced asset's `cls`. This file lists the tickers " +
+    "where at least one published row's filing states a class the symbol is not, so the class can " +
+    "be read and the resolver fixed; nothing reads it to decide what to publish. Withholding these " +
+    "tickers WHOLESALE was the first design and it cost 182,106 correctly-filed rows to protect 6,190.",
     producedBy: "scripts/fund-facts-class-screen.mjs --emit", tickers: {} };
   for (const [tk, g] of list) {
     out.tickers[tk] = { rows: g.rows, readers: g.ppl, plans: g.plans.size,

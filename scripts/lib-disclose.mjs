@@ -5633,3 +5633,48 @@ export function trustScheduleDMenu(trust, hasOwnMenu, zeroEOY) {
   const share = assets > 0 && total > 0 ? Math.min(1, total / assets) : null;
   return { rows, total, trustAssets: assets > 0 ? assets : 0, share };
 }
+
+/* ---- THE SHARE CLASS A NAME STATES ------------------------------------- *
+ *
+ * WHAT THIS IS FOR. A sourced fee or return is published against a TICKER, and
+ * a ticker names ONE share class. Where the filing names a different class of
+ * the same fund, publishing the sourced figure upgrades a wrong-class row from
+ * a hedged "est." to a confident tick — the one thing sourcing makes WORSE
+ * rather than better, and the owner's standing decision of 2026-11-05 is to
+ * correct the symbol and withdraw the fee, never to price the other class.
+ *
+ * MEASURED 2026-11-16 over all 695,144 published rows whose ticker carries a
+ * sourced figure: 292,742 state a class on BOTH the filed name and the sourced
+ * fund's own name. 286,552 agree and 6,190 conflict across 154 tickers —
+ * VBTLX, VSMAX, VIMAX and VTIAX published as Admiral where the filing names
+ * Institutional (4.4M, 4.2M, 3.9M and 2.9M readers), DODGX and DODIX as Class
+ * I where it names Class X.
+ *
+ * WHY IT RETURNS A TOKEN RATHER THAN A VERDICT. The comparison is between two
+ * names and the gate needs BOTH sides reduced the same way; a predicate that
+ * took two names would have to be called from two places that disagree about
+ * which name is which. A null means "this name states no class", which is NOT
+ * a conflict — it is the separate, owner-gated question of a filing that names
+ * no class at all, and a gate keyed on absence would sweep 101,256 rows into a
+ * class decided differently.
+ *
+ * NARROW ON PURPOSE. A bare letter counts only where `Class`/`Cl` introduces
+ * it, because `Great Gray Trust T. Rowe Price Retirement 2030` would otherwise
+ * read "T" as a class — the same end-anchoring the T. Rowe vehicle resolver
+ * needed, and for the same reason. A word that is merely IN a fund name
+ * ("Value", "Growth", "Select Semiconductors") is not a class either, so the
+ * trailing-word arm requires the word to END the name.
+ */
+export const SHARE_CLASS_ALIAS = { instl: "inst", institutional: "inst", instit: "inst",
+  i: "inst", advisor: "adv", retail: "investor" };
+export function shareClassToken(name) {
+  const n = " " + String(name || "").replace(/[‐-―]/g, "-").toLowerCase() + " ";
+  const m =
+    n.match(/\b(?:class|cl\.?)\s*([a-z]{1,2}-?\d{0,2})\b/) ||
+    n.match(/\b(r-?[1-6])\b/) ||
+    n.match(/\b(adv(?:isor)?|admiral|institutional|inst(?:l)?|instit|investor|retail|service|premier|select|signal|z|y2?|i[1-3]?|k6?)\s*(?:class|shares?)?\s*$/) ||
+    n.match(/\b(admiral|institutional|instl|inst'l)\b/);
+  if (!m) return null;
+  const t = m[1].replace(/-/g, "").replace(/'/g, "");
+  return SHARE_CLASS_ALIAS[t] || t;
+}

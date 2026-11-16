@@ -28,6 +28,7 @@
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { shareClassToken } from "./lib-disclose.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CHECK = process.argv.includes("--check");
@@ -55,25 +56,30 @@ const today = new Date().toISOString().slice(0, 10);
  * generator stops rather than silently publishing everything. `--no-withhold`
  * is the explicit way to regenerate without it, and it says so in the output.
  */
-const withheldPath = path.join(ROOT, "data", "fund-facts-withheld.json");
-let WITHHELD = new Set();
-if (process.argv.includes("--no-withhold")) {
-  console.log("--no-withhold: the share-class gate is OFF for this run");
-} else if (!existsSync(withheldPath)) {
-  console.error(`MISSING ${withheldPath} — regenerate it with:`);
-  console.error(`  node scripts/fund-facts-class-screen.mjs --emit`);
-  console.error(`or pass --no-withhold to publish without the share-class gate, deliberately.`);
-  process.exit(1);
-} else {
-  const w = JSON.parse(readFileSync(withheldPath, "utf8"));
-  WITHHELD = new Set(Object.keys(w.tickers || {}).map((t) => t.toUpperCase()));
-}
-
+/* SUPERSEDED BY THE PER-ROW GATE, AND THE REPLACEMENT IS WHY, NOT A RETREAT.
+ *
+ * The first version of this gate withheld whole TICKERS listed in
+ * `data/fund-facts-withheld.json`. The screen that produced that list also
+ * priced it, which is the only reason the mistake was visible: withholding at
+ * ticker level cost **182,106 rows / 215,075,598 reader-slots** whose filed
+ * name names the RIGHT class, to protect **6,190** rows that name a different
+ * one. A gate with a 29:1 collateral ratio is the wrong instrument, and the
+ * conflict was never a property of the ticker — it is a property of the ROW,
+ * because the FILED NAME is what disagrees.
+ *
+ * So the asset now ships `cls`, the share class the sourced fund's own name
+ * states, and `app.js` compares it against the filed name's class per row. A
+ * figure is withheld exactly where the two disagree and published everywhere
+ * else. `shareClassToken` is defined ONCE in `lib-disclose.mjs`, imported
+ * here, imported by the screen, and sliced into app.js by
+ * `gen-generic-twin.mjs`, so the three cannot drift apart.
+ *
+ * *A measurement built to keep a gate honest is allowed to veto the gate.*
+ */
 const out = {};
 const skipped = [];
-const withheld = [];
+let withCls = 0;
 for (const [tk, f] of Object.entries(funds)) {
-  if (WITHHELD.has(String(tk).toUpperCase())) { withheld.push(tk); continue; }
   const e = {};
   /* The same refusals the checker applies, repeated HERE rather than trusted,
    * because this file is what a reader sees and the JSON is edited by hand and
@@ -86,6 +92,11 @@ for (const [tk, f] of Object.entries(funds)) {
     e.ytd = f.ytd; e.ytdAsOf = f.ytdAsOf;
   }
   if (e.er == null && e.ytd == null) { skipped.push(tk); continue; }
+  /* the share class THIS SYMBOL is, so the page can refuse to price a row
+   * whose filing names a different one. Absent where the fund's own name
+   * states no class — which is not a conflict and must not be read as one. */
+  const cls = shareClassToken(f.name);
+  if (cls) { e.cls = cls; withCls++; }
   out[String(tk).toUpperCase()] = e;
 }
 
@@ -174,5 +185,5 @@ if (CHECK) {
 writeFileSync(OUT, text);
 console.log(`wrote fund-facts.js: ${keys.length} funds, ${vkeys.length} vehicles, ${text.length} bytes`);
 if (vskipped.length) console.log(`vehicles withheld (not class-published, or a fee older than ${STALE_YEARS}y): ${vskipped.length} — ${vskipped.slice(0, 6).join(" ")}`);
-if (withheld.length) console.log(`tickers withheld (the filing names a DIFFERENT share class — data/fund-facts-withheld.json): ${withheld.length} — ${withheld.slice(0, 8).join(" ")}`);
+console.log(`tickers carrying a share class for the per-row gate: ${withCls} of ${keys.length}`);
 if (skipped.length) console.log(`skipped ${skipped.length} with no usable dated figure: ${skipped.slice(0, 8).join(" ")}`);

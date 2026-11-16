@@ -43,7 +43,7 @@ import { isValuationNoteRow,
   employerStockSymbolOk, sponsorNameKey, trustScheduleDMenu,
   hasNoFundIdentity, isLabelOnlyName, isSentenceRow, isNonIssuerCell,
   isScheduleHCaption, cleanFiledName, isDateHeaderRow,
-  isForfeitureAccountRow } from "./lib-disclose.mjs";
+  isForfeitureAccountRow, shareClassToken } from "./lib-disclose.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const lib = readFileSync(ROOT + "scripts/lib-4i.mjs", "utf8");
@@ -164,6 +164,20 @@ if (cps < 0) throw new Error("gen-generic-twin: CAPTION_WORD moved in lib-disclo
 const cpe = dis.indexOf("\n}\n", dis.indexOf("export function isScheduleHCaption(")) + 3;
 if (cpe < 3) throw new Error("gen-generic-twin: isScheduleHCaption moved in lib-disclose");
 const caption = dis.slice(cps, cpe).replace(/^export /gm, "");
+
+/* THE SHARE CLASS A NAME STATES, sliced on the day the per-row gate ships
+ * (2026-11-16). The page compares this against the `cls` the sourced asset
+ * carries, and a published fee turns on the two agreeing — so a retyped copy
+ * here would silently re-decide which of 695,144 rows may be priced. The slice
+ * runs from the ALIAS table, because the aliases ARE the rule: without them
+ * "Institutional" and "Inst'l" read as different classes and every Vanguard
+ * row would withhold. */
+const scs = dis.indexOf("export const SHARE_CLASS_ALIAS = ");
+if (scs < 0) throw new Error("gen-generic-twin: SHARE_CLASS_ALIAS moved in lib-disclose");
+const sce = dis.indexOf("\n}\n", dis.indexOf("export function shareClassToken(")) + 3;
+if (sce < 3) throw new Error("gen-generic-twin: shareClassToken moved in lib-disclose");
+if (sce <= scs) throw new Error("gen-generic-twin: share-class slice is inverted");
+const shareclass = dis.slice(scs, sce).replace(/^export /gm, "");
 
 /* `isNamelessFundRow` extracted VERBATIM from lib-disclose, body and all */
 const ns = dis.indexOf("export function isNamelessFundRow(");
@@ -430,6 +444,8 @@ ${dateheader.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoDateHeaderRow = isDateHeaderRow;  // read by the smoke test only
 ${forfacct.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
   window.__wampoForfeitureAccountRow = isForfeitureAccountRow;  // read by the smoke test only
+${shareclass.split("\n").map((l) => (l.trim() ? "  " + l : l)).join("\n")}
+  window.__wampoShareClassToken = shareClassToken;  // read by the smoke test only
 `;
 
 /* THE END MARKER MUST BE THE BLOCK'S LAST LINE. It was `__wampoGenericName`
@@ -447,6 +463,7 @@ const MARK_S = "  /* GENERATED FROM scripts/lib-4i.mjs — DO NOT EDIT BY HAND."
  * moved and the old tail stayed — so the list only ever grows, and the cut must
  * be made at the LAST marker present, not the first one found. */
 const MARK_ENDS = [
+  "  window.__wampoShareClassToken = shareClassToken;  // read by the smoke test only\n",
   "  window.__wampoForfeitureAccountRow = isForfeitureAccountRow;  // read by the smoke test only\n",
   "  window.__wampoDateHeaderRow = isDateHeaderRow;  // read by the smoke test only\n",
   "  window.__wampoLoanAccountRow = isLoanAccountRow;  // read by the smoke test only\n",
@@ -547,6 +564,8 @@ vm.runInContext(block
     "globalThis.__dh = isDateHeaderRow;")
   .replace("window.__wampoForfeitureAccountRow = isForfeitureAccountRow;  // read by the smoke test only",
     "globalThis.__fa = isForfeitureAccountRow;")
+  .replace("window.__wampoShareClassToken = shareClassToken;  // read by the smoke test only",
+    "globalThis.__sct = shareClassToken;")
   .replace(/^\s{2}/gm, ""), ctx);
 const names = ["Mutual funds", "Mutual Fund Shares", "Sub-total: Registered Investment Companies",
   "Commingled funds", "Pooled separate account funds", "Collective trust funds",
@@ -1252,6 +1271,35 @@ for (const n of forfRows) if (ctx.__fa(n) !== isForfeitureAccountRow(n)) {
 }
 if (!ctx.__fa("Master Expense Account 4") || ctx.__fa("Vanguard Federal MMKT Fund - Forfeitures")) {
   bad++; console.log("  FORFEITURE-ACCOUNT TWIN DECIDES NOTHING — it agrees with lib-disclose while answering the same way on both sides");
+}
+/* THE SHARE-CLASS TOKEN, both directions and one probe per arm. A published
+ * fee turns on this agreeing with the sourced asset's `cls`, so a drifted twin
+ * would re-decide which rows may be priced — silently, because the fee would
+ * simply fall back to the estimate and no count would move. The must-be-NULL
+ * half is the safety argument: `Great Gray Trust T. Rowe Price Retirement
+ * 2030` must not read "T" as a class (343 rows / 248 names), and a word that
+ * is merely IN a fund name is not a class either. */
+const classNames = [
+  /* the `Class`/`Cl` arm */ "Dodge & Cox Stock Fund Class X", "Dodge & Cox Stock Fund Class I",
+  "American Funds Capital Income Builder Class R-6", "MFS Mid Cap Value Fund Class R3",
+  /* the bare R-n arm */ "Neuberger Genesis R6", "Franklin Utilities R6", "JPMorgan Small Cap Value R6",
+  /* the trailing-word arm */ "Vanguard Total Bond Market Index Fund Admiral Shares",
+  "Vanguard Total Bond Market Index Fund Institutional Shares", "Artisan Mid Cap Fund Institutional",
+  "Schwab Prime Advantage Money Fund Investor Shares",
+  /* the alias arm — these three must all reduce to the SAME token or every
+   * Vanguard row withholds */ "Conestoga Small Cap Inst'l", "DFA US Micro Cap Portfolio Institutional",
+  "Federated Hermes Instl High Yield Bond",
+  /* must stay NULL */ "Great Gray Trust T. Rowe Price Retirement 2030",
+  "Fidelity 500 Index Fund", "Fidelity Select Semiconductors Portfolio",
+  "T. Rowe Price Value Fund", "Vanguard Wellington Fund", "Intermediate Bond Fund",
+];
+for (const n of classNames) if (ctx.__sct(n) !== shareClassToken(n)) {
+  bad++; console.log(`  SHARE-CLASS DRIFT ${JSON.stringify(n)} twin=${ctx.__sct(n)} lib=${shareClassToken(n)}`);
+}
+if (ctx.__sct("Great Gray Trust T. Rowe Price Retirement 2030") !== null
+    || ctx.__sct("Vanguard Total Bond Market Index Fund Admiral Shares") !== "admiral"
+    || ctx.__sct("Conestoga Small Cap Inst'l") !== ctx.__sct("DFA US Micro Cap Portfolio Institutional")) {
+  bad++; console.log("  SHARE-CLASS TWIN DECIDES NOTHING — it answers the same way on both sides, or the alias table did not travel");
 }
 /* THE BANK-DEPOSIT PROBES ARE ROWS AS OF 2026-10-02, not names — the predicate
  * reads the ISSUER cell as well, and every probe here was a bare string, so
