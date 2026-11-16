@@ -512,7 +512,7 @@
    "erAsOf": "2026-10-31",
    "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=IWN",
    "ytd": 18.52,
-   "ytdAsOf": "2026-11-13",
+   "ytdAsOf": "2026-11-16",
    "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=IWN",
    "filedNames": 5
   },
@@ -194867,6 +194867,19 @@
    "source": "https://fundresearch.fidelity.com/mutual-funds/summary/46143U468",
    "note": "Read from POST /fund-screener/api/search/v1/funds (Fidelity screener).",
    "inception": "2026-01-30"
+  },
+  "CGGG": {
+   "name": "LARGE CAPITAL GROWTH",
+   "updated": "2026-11-16",
+   "matchGrade": "subset",
+   "matchWhy": "sole registered class",
+   "filedNames": 1,
+   "er": 0.39,
+   "erAsOf": "2026-10-31",
+   "erSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=CGGG",
+   "ytd": -6.36,
+   "ytdAsOf": "2026-11-16",
+   "ytdSource": "https://www.schwab.wallst.com/schwab/Prospect/research/mutualfunds/summary.asp?symbol=CGGG"
   }
  },
  "vehicles": {

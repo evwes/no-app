@@ -5,7 +5,7 @@
  * for each lives in that JSON, by ticker. A figure here is SOURCED, not
  * estimated, which is the whole reason the page may print it without "est.".
  *
- * 9114 funds · 9031 with an expense ratio · 8314 with a YTD return
+ * 9115 funds · 9032 with an expense ratio · 8315 with a YTD return
  */
 const FUND_FACTS = {
  "AAAAX":{"er":1.15,"erAsOf":"2026-08-01"},
@@ -1176,6 +1176,7 @@ const FUND_FACTS = {
  "CGAFX":{"er":0.73,"erAsOf":"2026-02-01","ytd":-1.83,"ytdAsOf":"2026-11-13"},
  "CGBIX":{"er":0.48,"erAsOf":"2026-02-01","ytd":-1.61,"ytdAsOf":"2026-11-13"},
  "CGFIX":{"er":0.79,"erAsOf":"2026-02-28","ytd":-0.82,"ytdAsOf":"2026-11-13"},
+ "CGGG":{"er":0.39,"erAsOf":"2026-10-31","ytd":-6.36,"ytdAsOf":"2026-11-16"},
  "CGHIX":{"er":2.18,"erAsOf":"2026-01-28","ytd":2.71,"ytdAsOf":"2026-11-13"},
  "CGJAX":{"er":0.49,"erAsOf":"2026-02-01","ytd":6.2,"ytdAsOf":"2026-11-13"},
  "CGJIX":{"er":0.24,"erAsOf":"2026-02-01","ytd":6.43,"ytdAsOf":"2026-11-13"},
@@ -4109,7 +4110,7 @@ const FUND_FACTS = {
  "IVSAX":{"er":0.92,"erAsOf":"2026-07-31","ytd":-0.79,"ytdAsOf":"2026-11-13"},
  "IVV":{"er":0.03,"erAsOf":"2026-11-12","ytd":11.96,"ytdAsOf":"2026-11-12"},
  "IWIRX":{"er":1.24,"erAsOf":"2026-04-30","ytd":8.39,"ytdAsOf":"2026-11-13"},
- "IWN":{"er":0.24,"erAsOf":"2026-10-31","ytd":18.52,"ytdAsOf":"2026-11-13"},
+ "IWN":{"er":0.24,"erAsOf":"2026-10-31","ytd":18.52,"ytdAsOf":"2026-11-16"},
  "JAAAX":{"er":1.7,"erAsOf":"2026-01-01","ytd":8.41,"ytdAsOf":"2026-11-13"},
  "JAAIX":{"er":1.4,"erAsOf":"2026-01-01","ytd":8.71,"ytdAsOf":"2026-11-13"},
  "JAAWX":{"er":0.99,"erAsOf":"2026-01-01","ytd":9.41,"ytdAsOf":"2026-11-13"},
