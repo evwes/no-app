@@ -64129,11 +64129,21 @@ verified on the tree, and served to nobody for twenty minutes.
 
 **WHAT SHIPPED.** The `fund-facts` agent sourced an expense ratio AND a
 year-to-date return for 94 of the top 104 unsourced tickers by readers, from
-`schwab.wallst.com`. Measured through production's `renderRow` with
-`tab:"menu"` against a PINNED baseline asset, the symbols reached by those 94
-tickers carry **15,236 published+served rows, 23,478,513 reader-slots and
-$28.9B** of menu value. `FUND_FACTS` delta: 94 added, **0 changed, 0 removed**
-— no existing figure was touched.
+`schwab.wallst.com`. `FUND_FACTS` delta: 94 added, **0 changed, 0 removed** —
+no existing figure was touched.
+
+**DELIVERED, by a render differential varying ONLY `fund-facts.js` against a
+pinned baseline, through both renderers' `renderRow` with `tab:"menu"`:**
+15,414 candidate rows, **12,143 plans / 15,980,333 readers**, of which
+**15,210 rows newly publish a RETURN**, 8,849 newly publish a FEE and 5,188
+have a published fee CHANGE VALUE. Nothing was withdrawn, and
+`ticker / star / type / name` cells moved **0 / 0 / 0 / 0** — fees and returns
+only. 4,416 control rows (1 in 400 non-candidates) differ on **0**, which
+discharges the narrowing. *The first figure written here was 23,478,513
+"reader-slots" from a per-ticker count, and it is 1.47x the real number because
+a reader holding two of these funds counts twice; the differential
+plan-deduplicates across the whole batch. A per-ticker total is not a reader
+count, and labelling it "slots" does not make it one.*
 
 **THE CHECK WORTH KEEPING, because a sourcing batch is otherwise unauditable.**
 Every receipt a sourcing run produces is valid by construction — it quotes a
@@ -64192,3 +64202,19 @@ carries data.* And T. Rowe's `trust-single-class` quarterly fact sheets exist
 for Classes A–H only (productCodes RH1–RH9, RH4 absent; RHA–RHE 404), which is
 the measured reason Costco's Class K rows publish a fee and no return — 193 of
 440 T. Rowe vehicles. Consistent with the 2026-11-14 entry; not reopened.
+
+**AND THE SYMBOL CAN COME OFF THE FILING, which is how a bare generic name gets
+priced correctly.** The draw's riskiest-looking row was `Intermediate Bond Fund`
+— no house named, 241 rows / 256,647 readers / $609M, now publishing HOIBX's
+0.80% and −1.97% where it published nothing. A synthetic row with that name
+resolves NO ticker, and **HOIBX appears nowhere in `fund-er.js`,
+`sec-tickers.js`, `app.js` or `data.js`**, so the page cannot have guessed it.
+Carried out of the store, the rows read `{"name":"Intermediate Bond
+Fund","stk":"HOIBX"}`: the symbol is the FILER'S OWN, from the filing's ticker
+column, and the display prefers it over its resolver. *A synthetic row
+under-states any arm keyed on the row's own fields — here it under-stated the
+page's CONFIDENCE, making a filing-sourced identification look like a
+resolver's guess.* One of those rows pairs `iss:"Fidelity"` with
+`stk:"HOIBX"`, so the FILING is internally inconsistent and preferring the
+stated ticker over the issuer cell is the right reading. It also means the
+sourcing work list reaches funds no name-resolver would ever resolve.
