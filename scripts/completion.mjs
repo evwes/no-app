@@ -55,6 +55,12 @@ const add = (b, ppl, val) => { b.rows++; b.ppl += ppl; b.val += val; };
 const all = z(), notPriceable = z(), priceable = z();
 const withFee = z(), withSourcedFee = z(), withReturn = z(), withBoth = z();
 const gapNames = new Map();      // what is MISSING, by readers — the work list
+/* AND THE GAP BY FILED TYPE, which is the number that decides what work can
+ * close it. A ticker is a mutual-fund lever; a collective trust has no ticker
+ * and no public price unless its ISSUER publishes per unit class. Reporting
+ * the gap as one total hides which of those two it is. */
+const gapType = new Map();
+const haveType = new Map();
 let menus = 0;
 
 for (const sh of readdirSync(`${ROOT}/data/lineups`).sort()) {
@@ -90,6 +96,9 @@ for (const sh of readdirSync(`${ROOT}/data/lineups`).sort()) {
       if (src) add(withSourcedFee, ppl, val);
       if (ret) add(withReturn, ppl, val);
       if (fee && ret) add(withBoth, ppl, val);
+      const tkey = (raw.type && String(raw.type).trim()) || "(no type stated)";
+      const tb = (m) => { let b = m.get(tkey); if (!b) m.set(tkey, b = z()); return b; };
+      add(tb(fee && ret ? haveType : gapType), ppl, val);
       if (!fee || !ret) {
         const k = f.nameRaw.slice(0, 64);
         const g = gapNames.get(k) || { rows: 0, ppl: 0, val: 0, fee, ret, tk: r.tk || null, type: raw.type || "" };
@@ -124,6 +133,16 @@ if (JSONOUT) {
   console.log(line("of priceable: has BOTH", withBoth, priceable));
   console.log(`\n  *** HEADLINE: ${pc(withBoth.ppl, priceable.ppl)}% of reader-weighted priceable rows carry BOTH a fee and a return ***`);
   console.log(`      fee only: ${pc(withFee.ppl, priceable.ppl)}%   return only: ${pc(withReturn.ppl, priceable.ppl)}%`);
+  console.log(`\nTHE GAP BY FILED TYPE — what KIND of work can close it:`);
+  const types = [...new Set([...gapType.keys(), ...haveType.keys()])]
+    .map((t) => ({ t, g: gapType.get(t) || z(), h: haveType.get(t) || z() }))
+    .sort((a, b) => b.g.ppl - a.g.ppl);
+  console.log(`  ${"filed type".padEnd(24)}${"MISSING readers".padStart(17)}${"share of gap".padStart(14)}${"already complete".padStart(18)}`);
+  const gapTotal = types.reduce((a, x) => a + x.g.ppl, 0);
+  for (const x of types.slice(0, 12)) {
+    const done = x.h.ppl + x.g.ppl ? (100 * x.h.ppl / (x.h.ppl + x.g.ppl)).toFixed(1) : "0.0";
+    console.log(`  ${x.t.slice(0, 22).padEnd(24)}${x.g.ppl.toLocaleString().padStart(17)}${(100 * x.g.ppl / gapTotal).toFixed(1).padStart(13)}%${(done + "%").padStart(18)}`);
+  }
   console.log(`\nTHE GAP, by readers — the work list (top ${TOP}):`);
   const g = [...gapNames].sort((a, b) => b[1].ppl - a[1].ppl).slice(0, TOP);
   for (const [n, v] of g) {
