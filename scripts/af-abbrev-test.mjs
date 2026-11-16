@@ -517,5 +517,446 @@ for (const mut of FID_MUTATIONS) {
     bad("INVARIANT (7): Institutional Premium and Premier resolve to the SAME ticker");
 }
 
+/* ==========================================================================
+ * THE VANGUARD FAMILY OF THE SAME ARM, 2026-11-16.
+ *
+ * Its own frozen registry, for the same CI-safety reason as the other two, and
+ * every row below is COPIED FROM `sec-funds.json` rather than invented — the
+ * share classes and symbols are the registry's, because a fixture that gets a
+ * class wrong tests the fixture.
+ *
+ * WHAT IS CHECKED HERE AND NOWHERE ELSE:
+ *   - the MARKER derives the family and the two registrants it must LEAVE OUT
+ *     are in the fixture to be left out: `VANGUARD INSTITUTIONAL INDEX FUNDS`
+ *     (VINIX / VIIIX — Vanguard's own, and no class called Admiral) and
+ *     `FORUM FUNDS` (a FOREIGN house that registers `Institutional Plus
+ *     Shares`, which is why that obvious widening of the marker is refused);
+ *   - `INST` ABSTAINING, in two different shapes. It is a legitimate
+ *     truncation of `Institutional Shares` AND of `Institutional Plus Shares`,
+ *     and separately it is a SUBSEQUENCE of `Investor` — so a series carrying
+ *     both institutional classes abstains on ambiguity and a series carrying
+ *     only Investor abstains on the dedicated truncation rule. Two conditions,
+ *     two cases, and the second is this family's own;
+ *   - every COLLECTIVE-TRUST spelling abstaining. The registry holds the mutual
+ *     fund, whose only class is `Investor Shares`; the trust's unit
+ *     designations are not abbreviations of it. `VANGUARD TARGET RET 2040 II`
+ *     matters most: `fund-er.js` resolves that exact spelling to a SOURCED
+ *     trust unit-class price, so an asserted mutual-fund symbol there would be
+ *     two vehicles on one row.
+ * ========================================================================== */
+const VG_FIXTURE = [
+  ...R("VANGUARD TAX-MANAGED FUNDS", "Vanguard Developed Markets Index Fund",
+    [["VTMGX", "Admiral Shares"], ["VTMNX", "Institutional Shares"], ["VEA", "ETF Shares"],
+      ["VDIPX", "Institutional Plus Shares"], ["VDVIX", "Investor Shares"]]),
+  ...R("VANGUARD INDEX FUNDS", "Vanguard 500 Index Fund",
+    [["VFINX", "Investor Shares"], ["VFIAX", "Admiral Shares"], ["VOO", "ETF Shares"],
+      ["VFFSX", "Institutional Select Shares"]]),
+  ...R("VANGUARD INDEX FUNDS", "Vanguard Total Stock Market Index Fund",
+    [["VTSMX", "Investor Shares"], ["VTSAX", "Admiral Shares"], ["VITSX", "Institutional Shares"],
+      ["VTI", "ETF Shares"], ["VSMPX", "Institutional Plus Shares"], ["VSTSX", "Institutional Select Shares"]]),
+  ...R("VANGUARD INDEX FUNDS", "Vanguard Mid-Cap Index Fund",
+    [["VIMSX", "Investor Shares"], ["VIMAX", "Admiral Shares"], ["VMCIX", "Institutional Shares"],
+      ["VO", "ETF Shares"], ["VMCPX", "Institutional Plus Shares"]]),
+  ...R("VANGUARD INDEX FUNDS", "Vanguard Growth Index Fund",
+    [["VIGRX", "Investor Shares"], ["VIGAX", "Admiral Shares"], ["VIGIX", "Institutional Shares"],
+      ["VUG", "ETF Shares"]]),
+  /* Windsor and Windsor II are DIFFERENT FUNDS at different fees, and the
+   * ordered match is the only thing keeping them apart under `WNDSR` */
+  ...R("VANGUARD WINDSOR FUNDS", "Vanguard Windsor Fund",
+    [["VWNDX", "Investor Shares"], ["VWNEX", "Admiral Shares"]]),
+  ...R("VANGUARD WINDSOR FUNDS", "Vanguard Windsor II Fund",
+    [["VWNFX", "Investor Shares"], ["VWNAX", "Admiral Shares"]]),
+  ...R("VANGUARD WORLD FUND", "Vanguard International Growth Fund",
+    [["VWIGX", "Investor Shares"], ["VWILX", "Admiral Shares"]]),
+  ...R("VANGUARD BOND INDEX FUNDS", "Vanguard Total Bond Market Index Fund",
+    [["VBMFX", "Investor Shares"], ["VBTLX", "Admiral Shares"], ["VBTIX", "Institutional Shares"],
+      ["BND", "ETF Shares"], ["VBMPX", "Institutional Plus Shares"], ["VTBSX", "Institutional Select Shares"]]),
+  /* THE TARGET-DATE LADDER REGISTERS EXACTLY ONE CLASS, and that single fact is
+   * what makes `Inst` dangerous here and `Trust II` harmless. Its registrant is
+   * derived through a SIBLING series — PRIMECAP is the only Chester series with
+   * an Admiral class — which is itself worth pinning: the marker reaches a
+   * SERIES through its REGISTRANT, so a ladder registering one class only is in
+   * the family or out of it on another fund's account. */
+  ...R("VANGUARD CHESTER FUNDS", "Vanguard Target Retirement 2040 Fund", [["VFORX", "Investor Shares"]]),
+  ...R("VANGUARD CHESTER FUNDS", "Vanguard PRIMECAP Fund",
+    [["VPMCX", "Investor Shares"], ["VPMAX", "Admiral Shares"]]),
+  /* OUT OF THE FAMILY, AND VANGUARD'S OWN: it registers no class called
+   * Admiral, so the marker does not derive it. The gap is named in
+   * `lib-af-abbrev.mjs` rather than papered over. */
+  ...R("VANGUARD INSTITUTIONAL INDEX FUNDS", "Vanguard Institutional Index Fund",
+    [["VINIX", "Institutional Shares"], ["VIIIX", "Institutional Plus Shares"]]),
+  /* FOREIGN, and the reason `Institutional Plus Shares` cannot be a marker */
+  ...R("FORUM FUNDS", "DF Dent Midcap Growth Fund",
+    [["DFDMX", "Investor Shares"], ["DFMGX", "Institutional Shares"], ["DFMLX", "Institutional Plus Shares"]]),
+  /* FOREIGN, no marker at all */
+  ...R("FIDELITY SALEM STREET TRUST", "Fidelity 500 Index Fund", [["FXAIX", "Fidelity 500 Index Fund"]]),
+];
+const VGX = M.buildVgIndex(VG_FIXTURE);
+{
+  const fam = [...VGX.family].sort();
+  const wantFam = ["VANGUARD BOND INDEX FUNDS", "VANGUARD CHESTER FUNDS", "VANGUARD INDEX FUNDS",
+    "VANGUARD TAX-MANAGED FUNDS", "VANGUARD WINDSOR FUNDS", "VANGUARD WORLD FUND"];
+  if (JSON.stringify(fam) !== JSON.stringify(wantFam))
+    bad(`the Vanguard marker derivation changed: ${JSON.stringify(fam)}`);
+  for (const out of ["VANGUARD INSTITUTIONAL INDEX FUNDS", "FORUM FUNDS", "FIDELITY SALEM STREET TRUST"])
+    if (VGX.family.has(out)) bad(`${out} must NOT be in the Vanguard family`);
+  /* THE SHIPPED BAND IS A LIVE-REGISTRY NUMBER (28 registrants) AND A FIXTURE
+   * CANNOT CARRY IT WITHOUT BEING A COPY OF THE REGISTRY — so the band is
+   * asserted by making it REFUSE this six-registrant family, which is the only
+   * way to show it is wired at all, and the rest of the config is then exercised
+   * through a band-widened clone. */
+  let bandThrew = false;
+  try { M.assertFamily(VGX); } catch (e) { bandThrew = /outside 22-36/.test(String(e.message)); }
+  if (!bandThrew) bad("the Vanguard band is not wired: assertFamily accepted a 6-registrant family, or threw for another reason");
+  const WIDE = { ...M.VG_FAMILY, band: [1, 99] };
+  if (M.assertFamily(M.buildFamilyIndex(VG_FIXTURE, WIDE)) !== 6)
+    bad("assertFamily does not accept the band-widened Vanguard fixture family");
+  /* the NAME TEST, asserted by poisoning: this family's marker is one class
+   * name, so a foreign registrant adopting it would void the safety claim */
+  {
+    const poisoned = VG_FIXTURE.concat(R("FRANKLIN TEMPLETON TRUST", "Franklin Growth Fund", [["FKGRX", "Admiral Shares"]]));
+    let threw = false;
+    try { M.assertFamily(M.buildFamilyIndex(poisoned, WIDE)); } catch { threw = true; }
+    if (!threw) bad("assertFamily did NOT throw on a foreign registrant carrying `Admiral Shares` — the Vanguard safety claim is unguarded");
+  }
+  /* and `must` must be LIVE: drop one of the named registrants and the gate has
+   * to fail rather than go silently inert on a registry refresh */
+  {
+    const dropped = VG_FIXTURE.filter((r) => !String(r[0]).startsWith("VANGUARD WINDSOR FUNDS"));
+    let threw = false;
+    try { M.assertFamily(M.buildFamilyIndex(dropped, WIDE)); } catch { threw = true; }
+    if (!threw) bad("assertFamily did NOT throw when a `must` registrant left the Vanguard family");
+  }
+  if (!M.VG_FAMILY.must.includes("VANGUARD WINDSOR FUNDS"))
+    bad("the Vanguard `must` list no longer names the registrant the liveness control drops");
+}
+
+const VG_MUST_FIRE = [
+  ["VGD DEVELOPED MARKETS INDEX FUND INSTITUTIONAL", "VTMNX", "the motivating spelling: house contracted, class spelled out"],
+  ["VGD DEVELOPED MKTS INDX ADM", "VTMGX", "both sides contracted, class by the RELATION"],
+  ["VANGUARD DEVELOPED MARKETS INDEX FUND ADMIRAL SHARES", "VTMGX", "the undamaged control, by EQUALITY"],
+  ["VGD TOTAL STOCK MKT INDX ADM", "VTSAX", "three contracted product tokens"],
+  ["VGD MCP INDEX ADM", "VIMAX", "`mcp` is ONE filed token consuming TWO series words"],
+  ["VGD INTL GROWTH ADM", "VWILX", "`intl` -> international"],
+  ["VGD WNDSR ADM", "VWNEX", "Windsor — and NOT Windsor II, which the ordered match refuses"],
+  ["VGD WNDSR II ADM", "VWNAX", "Windsor II: a different fund and a different fee"],
+  ["Vanguard Total Bond Market Index Fund Instl Plus", "VBMPX", "a two-token class run"],
+  ["VANG MD CP IDX IS PL", "VMCPX", "... and the same class in four characters"],
+  ["VGD TARGET RETIRE 2040 INV", "VFORX", "the MUTUAL fund, Investor class stated"],
+  ["Vanguard 500 Index Fund ETF Shares", "VOO", "the ETF class is a registered class and the filing states it"],
+  ["Vanguard Growth Index Fund Institutional", "VIGIX", "institutional where the series registers it"],
+];
+for (const [n, want, why] of VG_MUST_FIRE) {
+  const got = ask(M, VGX, n);
+  if (got !== want) bad(`VG MUST FIRE (${why}): ${JSON.stringify(n)} should answer ${want}, got ${got || "nothing"}`);
+}
+
+const VG_MUST_NOT = [
+  ["VGD DEVELOPED MKTS INDX INST", "`INST` truncates Institutional AND Institutional Plus, two classes of this very series at two different fees"],
+  ["Vanguard Developed Markets Index Fund Inst", "the same, spelled out"],
+  ["Vanguard Target Retirement 2040 Inst", "`inst` is a SUBSEQUENCE of `investor` and this series registers nothing else — the dedicated truncation rule is the only protection"],
+  ["Vanguard Windsor Fund Inst", "the same shape in a series registering Investor and Admiral"],
+  ["Vanguard 500 Index Fund", "no class stated: the honest answer is a comparable, and comparables are the owner's"],
+  ["Vanguard Growth Index Fund E", "a one-character class run"],
+  ["VGD INDEX ADM", "a product too generic to pin one series"],
+  ["500 Index Fund Admiral Shares", "no leading house: that row is `admAsk`'s, not this arm's"],
+  ["Fidelity Vanguard 500 Index Fund Admiral", "a foreign house in the LEAD"],
+  ["Vanguard Fidelity 500 Index Admiral", "a foreign house welded in behind a stated house"],
+  ["Vanguard Institutional Index Fund Institutional Plus", "VINIX's registrant is OUTSIDE the derived family — it registers no class called Admiral"],
+  ["Vanguard DF Dent Midcap Growth Institutional Plus", "a FOREIGN registrant that does register Institutional Plus Shares"],
+  /* EVERY COLLECTIVE-TRUST SPELLING. The registry holds the mutual fund and its
+   * one Investor class; the trust's unit designations are not abbreviations of
+   * it, and a filed `Trust` token has no series word left to consume. */
+  ["Vanguard Target Retirement 2040 Trust", "a collective trust, not the fund"],
+  ["Vanguard Target Retirement 2040 Trust I", "its unit class I"],
+  ["Vanguard Target Retirement 2040 Trust II", "... II"],
+  ["Vanguard Target Retirement 2040 Trust Plus", "... Plus"],
+  ["Vanguard Target Retirement 2040 Trust Select", "... Select"],
+  ["VANGUARD TARGET RET 2040 II", "the spelling with NO `Trust` word, which fund-er.js resolves to a SOURCED trust unit price — two vehicles on one row if this answered"],
+  ["VGD TGT RETIRE 2040 TR II", "the same, contracted"],
+];
+for (const [n, why] of VG_MUST_NOT) {
+  const got = ask(M, VGX, n);
+  if (got) bad(`VG MUST NOT FIRE (${why}): ${JSON.stringify(n)} answered ${got}`);
+}
+
+/* ==========================================================================
+ * THE JOHN HANCOCK FAMILY, 2026-11-16, and the LEADING-TOKEN DIGIT REPAIR.
+ *
+ * The fixture carries three kinds of registrant on purpose: the three that
+ * register `Class NAV` (the family), a John Hancock trust that does NOT
+ * (`JOHN HANCOCK BOND TRUST`, so the marker is shown to be a marker and not a
+ * name test), and `JOHN HANCOCK VARIABLE INSURANCE TRUST`, whose `NAV`, `NAV
+ * Class` and `Series I` designations are a VARIABLE-ANNUITY ladder — excluded
+ * by requiring the exact string `class nav`, which is a property worth pinning
+ * because a plan does not buy those.
+ * ========================================================================== */
+const JH_FIXTURE = [
+  ...R("John Hancock Funds III", "John Hancock Disciplined Value Mid Cap Fund",
+    [["JVMAX", "Class A"], ["JVMIX", "Class I"], ["JVMCX", "Class C"], ["JVMRX", "Class R6"],
+      ["JVMSX", "Class R2"], ["JVMTX", "Class R4"]]),
+  ...R("John Hancock Funds III", "John Hancock Disciplined Value Fund",
+    [["JVLAX", "Class A"], ["JVLCX", "Class C"], ["JVLIX", "Class I"], ["JDVFX", "Class R4"],
+      ["JDVVX", "CLASS R5"], ["JDVNX", "Class NAV"], ["JDVWX", "Class R6"], ["JDVPX", "Class R2"]]),
+  /* the two 2040 ladders, which are what `portfolio`-in-skip buys and what the
+   * within-family uniqueness test has to separate */
+  ...R("John Hancock Funds II", "Multimanager 2040 Lifetime Portfolio",
+    [["JLIAX", "Class A"], ["JLIGX", "Class R4"], ["JLIHX", "CLASS R5"], ["JLIOX", "Class 1"],
+      ["JLIIX", "Class R6"], ["JLIEX", "Class R2"], ["JHRDX", "Class I"]]),
+  ...R("John Hancock Funds II", "2040 Lifetime Blend Portfolio",
+    [["JRTTX", "Class 1"], ["JRTVX", "Class R4"], ["JRTWX", "Class R6"], ["JHBAX", "Class A"]]),
+  ...R("JOHN HANCOCK INVESTMENT TRUST", "BALANCED FUND",
+    [["SVBAX", "Class A"], ["SVBCX", "Class C"], ["SVBIX", "Class I"], ["JBAFX", "Class R4"],
+      ["JBAVX", "CLASS R5"], ["JBAWX", "Class R6"], ["JBATX", "Class R2"]]),
+  /* THE MARKER REACHES A SERIES THROUGH ITS REGISTRANT, so each of the three
+   * needs a series that actually carries `Class NAV` — none of the funds above
+   * does, and the first draft of this fixture derived ONE registrant and said
+   * so. These two are what put Funds II and the Investment Trust in the family. */
+  ...R("JOHN HANCOCK INVESTMENT TRUST", "Fundamental Large Cap Core Fund",
+    [["TAGRX", "Class A"], ["JLVIX", "Class I"], ["JLCWX", "Class R6"], ["JLCNX", "Class NAV"]]),
+  ...R("John Hancock Funds II", "Core Bond Fund",
+    [["JHCDX", "Class NAV"], ["JICDX", "Class 1"]]),
+  /* John Hancock's own, and OUT: it registers no Class NAV */
+  ...R("JOHN HANCOCK BOND TRUST", "John Hancock Investment Grade Bond Fund",
+    [["TAUSX", "Class A"], ["TIUSX", "Class I"], ["JIGEX", "Class R6"]]),
+  /* John Hancock's own VARIABLE-ANNUITY ladder, and OUT: `NAV` is not `Class NAV` */
+  ...R("JOHN HANCOCK VARIABLE INSURANCE TRUST", "500 Index Trust",
+    [["JAGMX", "NAV"], ["JFIVX", "Series I"], ["JAGKX", "Series II"]]),
+  /* FOREIGN, registering Class R6 — the marker's single-protection case */
+  ...R("MFS SERIES TRUST I", "MFS Value Fund", [["MEIKX", "Class R6"], ["MEIAX", "Class A"]]),
+];
+const JHX = M.buildJhIndex(JH_FIXTURE);
+{
+  const fam = [...JHX.family].sort();
+  const wantFam = ["JOHN HANCOCK INVESTMENT TRUST", "John Hancock Funds II", "John Hancock Funds III"];
+  if (JSON.stringify(fam) !== JSON.stringify(wantFam))
+    bad(`the John Hancock marker derivation changed: ${JSON.stringify(fam)}`);
+  for (const out of ["JOHN HANCOCK BOND TRUST", "JOHN HANCOCK VARIABLE INSURANCE TRUST", "MFS SERIES TRUST I"])
+    if (JHX.family.has(out)) bad(`${out} must NOT be in the John Hancock family`);
+  if (M.assertFamily(JHX) !== 3) bad("assertFamily does not accept the three-registrant John Hancock fixture family");
+  {
+    const poisoned = JH_FIXTURE.concat(R("FRANKLIN TEMPLETON TRUST", "Franklin Growth Fund", [["FKGRX", "Class NAV"]]));
+    let threw = false;
+    try { M.assertFamily(M.buildJhIndex(poisoned)); } catch { threw = true; }
+    if (!threw) bad("assertFamily did NOT throw on a foreign registrant carrying `Class NAV`");
+  }
+  {
+    const dropped = JH_FIXTURE.filter((r) => !String(r[0]).startsWith("JOHN HANCOCK INVESTMENT TRUST"));
+    let threw = false;
+    try { M.assertFamily(M.buildJhIndex(dropped)); } catch { threw = true; }
+    if (!threw) bad("assertFamily did NOT throw when a `must` registrant left the John Hancock family");
+  }
+}
+
+const JH_MUST_FIRE = [
+  ["JHCOCK3 DISCIPLINED VAL MCP R6", "JVMRX", "THE MOTIVATING ROW: the trailing `3` on the house token"],
+  ["JHancock3 Disciplined Val Md cp R6", "JVMRX", "the same defect in the spelling the store actually carries"],
+  ["JHCOCK DISCIPLINED VAL MCP R6", "JVMRX", "... and without the digits"],
+  ["JOHN HANCOCK DISCIPLINED VALUE MID CAP R6", "JVMRX", "the undamaged control"],
+  ["John Hancock Disciplined Value Mid Cap Fund Class R6", "JVMRX", "spelled out with the designation word"],
+  ["JH DSCPL VAL MDCP R6", "JVMRX", "a two-letter house run, read in the store"],
+  ["J H BALANCED I", "SVBIX", "the house as two single letters, and Class I"],
+  ["JOHN HANCOCK DISCIPLINED VALUE R6", "JDVWX", "a DIFFERENT fund: Mid Cap is refused by the ordered match"],
+  ["JOHN HANCOCK BALANCED R6", "JBAWX", "a series carrying no house of its own"],
+  ["JOHN HANCOCK MULTIMANAGER 2040 LIFETIME R6", "JLIIX", "`Portfolio` left out: the family's own skip word"],
+  ["JOHN HANCOCK 2040 LIFETIME BLEND R6", "JRTWX", "the other 2040 ladder, which must not be confused with it"],
+  ["JHancock Disciplined Value Mid Cap R2", "JVMSX", "R-2 is a different class and a different ticker"],
+];
+for (const [n, want, why] of JH_MUST_FIRE) {
+  const got = ask(M, JHX, n);
+  if (got !== want) bad(`JH MUST FIRE (${why}): ${JSON.stringify(n)} should answer ${want}, got ${got || "nothing"}`);
+}
+
+const JH_MUST_NOT = [
+  ["John Hancock Disciplined Value Mid Cap NAV", "that series registers A, C, I, R2, R4 and R6 and NO Class NAV — a stated designation must abstain, never be offered the nearest class"],
+  ["John Hancock Disciplined Value Mid Cap 1", "... nor a Class 1, which the Lifetime ladders do register"],
+  ["John Hancock Investment Grade Bond R6", "a John Hancock fund OUTSIDE the derived family: its registrant carries no Class NAV"],
+  ["John Hancock 500 Index Trust NAV", "the VARIABLE-ANNUITY ladder, excluded by requiring the exact string `class nav`"],
+  ["JOHN HANCOCK 2040 LIFETIME R6", "Blend or Multimanager: two series, so the arm abstains"],
+  ["JHCOCK2 BOND R6", "`bond` pins no unique series"],
+  ["Disciplined Value Mid Cap R6", "no leading house at all"],
+  ["2040 LIFETIME BLEND R6", "likewise, and a leading VINTAGE strips to nothing"],
+  ["JOHN HANCOCK VANGUARD DISCIPLINED VALUE R6", "a foreign house welded in behind a stated house"],
+  ["JOHN HANCOCK MFS VALUE R6", "a foreign registrant whose series DOES register Class R6"],
+  ["John Hancock Disciplined Value Mid Cap Fund", "no class stated"],
+  ["John Hancock Disciplined Value Mid Cap R", "a one-character class run"],
+];
+for (const [n, why] of JH_MUST_NOT) {
+  const got = ask(M, JHX, n);
+  if (got) bad(`JH MUST NOT FIRE (${why}): ${JSON.stringify(n)} answered ${got}`);
+}
+
+/* ---------- the LEADING-TOKEN DIGIT REPAIR, asked of the OLDEST family ------
+ * A VINTAGE IS NEVER THE LEADING HOUSE TOKEN, and the Capital Group family is
+ * where that is load-bearing rather than decorative: the year IS the product
+ * there. So the narrowing is proved on the ladder it would destroy. */
+const DIGIT_CASES = [
+  ["AMERFUNDS 2035 TARG DATERET R6", "RFFTX", "the vintage sits in position 2 and the strip cannot reach it"],
+  ["AMERFUNDS2 2035 TARG DATERET R6", "RFFTX", "a digit run on the HOUSE, with the vintage intact"],
+  ["AMERFUNDS2035 TARG DATERET R6", null, "the vintage WELDED onto the house is lost with it, and the arm ABSTAINS rather than picking a year"],
+  ["AMERFUNDS3 AMER BALANCED - R6", "RLBGX", "a digit run on the house of a product with no vintage at all"],
+];
+for (const [n, want, why] of DIGIT_CASES) {
+  const got = ask(M, IDX, n);
+  if (got !== want) bad(`DIGIT CASE (${why}): ${JSON.stringify(n)} should answer ${want || "nothing"}, got ${got || "nothing"}`);
+}
+
+const VGJH_MUTATIONS = [
+  { name: "the Vanguard family is derived from a MARKER, not named",
+    from: '  markers: new Set(["admiral shares"]), house: [["vanguard"]],',
+    to: '  markers: new Set(["admiral shares", "institutional plus shares"]), house: [["vanguard"]],',
+    /* the obvious widening, and the case is Vanguard's own registrant: with
+     * `Institutional Plus Shares` as a marker VINIX's trust joins the family —
+     * and so does FORUM FUNDS, which is why the widening is refused rather
+     * than taken. The `assertFamily` half of that is asserted above. */
+    expect: [["Vanguard Institutional Index Fund Institutional Plus", "VIIIX"],
+      ["Vanguard DF Dent Midcap Growth Institutional Plus", "DFMLX"]], vg: true },
+  { name: "the Vanguard family's own skip set (the house word on the SERIES side)",
+    from: '  skip: new Set([...BASE_SKIP, "vanguard"]), classRelation: true,\n  band: [22, 36], nameTest: /vanguard/i,',
+    to: '  skip: new Set([...BASE_SKIP]), classRelation: true,\n  band: [22, 36], nameTest: /vanguard/i,',
+    expect: [["VGD DEVELOPED MKTS INDX ADM", null], ["VGD WNDSR ADM", null]], vg: true },
+  { name: "the class RELATION is opt-in and Vanguard must take it",
+    from: '  skip: new Set([...BASE_SKIP, "vanguard"]), classRelation: true,\n  band: [22, 36], nameTest: /vanguard/i,',
+    to: '  skip: new Set([...BASE_SKIP, "vanguard"]), classRelation: false,\n  band: [22, 36], nameTest: /vanguard/i,',
+    /* `ADMIRAL` equals the class key and answers either way; `ADM` does not,
+     * so it answers only if this family matches the class by the relation */
+    expect: [["VGD DEVELOPED MKTS INDX ADM", null], ["VGD MCP INDEX ADM", null]], vg: true },
+  { name: "a run that TRUNCATES a designation the series does not register",
+    from: "      if (!cm[0].ck.startsWith(ck) && idx.famClassKeys\n        && [...idx.famClassKeys].some((fk) => fk !== cm[0].ck && fk.startsWith(ck))) continue;",
+    to: "      if (false) continue;",
+    /* `inst` is a SUBSEQUENCE of `investor`, and the Target Retirement ladder
+     * registers Investor Shares and nothing else — so the uniqueness test sees
+     * one match, the sibling-prefix test sees no sibling, and without this
+     * condition the arm publishes the Investor class on a filing that says
+     * INSTITUTIONAL. Two live shapes, one per series kind. */
+    expect: [["Vanguard Target Retirement 2040 Inst", "VFORX"],
+      ["Vanguard Windsor Fund Inst", "VWNDX"]], vg: true },
+  { name: "the truncation rule spares a run that truncates the class it MATCHED",
+    from: "      if (!cm[0].ck.startsWith(ck) && idx.famClassKeys",
+    to: "      if (idx.famClassKeys",
+    /* WITHOUT that clause the new condition swallows three shipped ones: `PRE`
+     * (`stated`'s own case), `P` (the floor's) and `PREMIE` (the sibling-prefix
+     * rule's) are each refused a second time and none of them decides anything
+     * any more — and `stated` becomes unreachable by construction, since a key
+     * always starts with itself.
+     *
+     * THE CASE IS A FIELD-WIDTH TRUNCATION, which is the shape that makes the
+     * clause necessary rather than tidy. `Instituti` truncates `Institutional`
+     * — the class the run MATCHED — and it equally truncates
+     * `Institutional Plus`, a designation the family registers elsewhere. The
+     * Growth Index series registers Institutional and NO Plus, so inside its own
+     * series the run is settled and the shipped arm answers; the series-level
+     * prefix rule above cannot be what spares it, because there is no sibling to
+     * be confused with. On a series that DOES register both, that rule refuses
+     * the same run — which is why this case had to be drawn from a series that
+     * does not, or it would be protected twice and prove nothing. */
+    expect: [["Vanguard Growth Index Fund Instituti", null]], vg: true },
+  { name: "the John Hancock family is derived from `Class NAV`",
+    from: '  markers: new Set(["class nav"]), house: [["john", "hancock"]],',
+    to: '  markers: new Set(["class r6"]), house: [["john", "hancock"]],',
+    expect: [["JOHN HANCOCK MFS VALUE R6", "MEIKX"]], jh: true },
+  { name: "`portfolio` in the John Hancock skip set",
+    from: '  skip: new Set([...BASE_SKIP, "john", "hancock", "portfolio"]), classRelation: false,',
+    to: '  skip: new Set([...BASE_SKIP, "john", "hancock"]), classRelation: false,',
+    /* 62 of the 87 live series are `… Portfolio`: without this the whole
+     * target-date and lifestyle half of the family abstains */
+    expect: [["JOHN HANCOCK MULTIMANAGER 2040 LIFETIME R6", null],
+      ["JOHN HANCOCK 2040 LIFETIME BLEND R6", null]], jh: true },
+  { name: "the LEADING-TOKEN digit repair exists at all",
+    from: "  if (!T.length || !LEAD_DIGITS.test(T[0])) return 0;\n  return houseRunAsFiled([T[0].replace(LEAD_DIGITS, \"\"), ...T.slice(1)], phrases);",
+    to: "  return 0;",
+    expect: [["JHCOCK3 DISCIPLINED VAL MCP R6", null], ["JHancock3 Disciplined Val Md cp R6", null]], jh: true },
+  { name: "the digit repair is the LEADING token's and NOT every token's",
+    from: "  if (!T.length || !LEAD_DIGITS.test(T[0])) return 0;\n  return houseRunAsFiled([T[0].replace(LEAD_DIGITS, \"\"), ...T.slice(1)], phrases);",
+    to: "  if (!T.length) return 0;\n  return houseRunAsFiled(T.map((t) => t.replace(LEAD_DIGITS, \"\")), phrases);",
+    /* THE DIRECTION HERE IS THE MUTANT ANSWERING, NOT LOSING, and the first
+     * version of this control had it backwards. The narrowing does NOT protect
+     * the VINTAGE: `houseRun` returns a token COUNT and `afAbbrevAsk` slices
+     * `rest` out of the ORIGINAL tokens, so nothing can rewrite a year in
+     * position 2 — `AMERFUNDS2 2035 TARG DATERET R6` answers RFFTX under BOTH
+     * versions, which is exactly how the false claim was caught.
+     *
+     * What the narrowing really decides is whether a digit welded onto the
+     * SECOND house token is forgiven, and it is only reachable at all for the
+     * TWO-WORD phrases whose first token cannot satisfy them alone: `AMERICAN`
+     * does not cover the mandatory `f` of `american funds`, so the as-filed
+     * pass reads 0 and the leading-token strip has nothing to fix — while
+     * `JOHN` DOES cover the `h` of `john hancock` (j-o-h-n spread over
+     * `johnhancock` at 0,1,4,6), so every `JOHN HANCOCK3 …` already gets a
+     * house run of 1 and this condition never sees it. */
+    expect: [["AMERICAN FUNDS2 2035 TARG DATERET R6", "RFFTX"]], af: true },
+];
+for (const mut of VGJH_MUTATIONS) {
+  if (!SRC.includes(mut.from)) { bad(`VG/JH MUTATION "${mut.name}": its anchor is no longer in the source — re-derive it`); continue; }
+  const src = SRC.split(mut.from).join(mut.to);
+  let mod;
+  try { mod = await load(src); } catch (e) { bad(`VG/JH MUTATION "${mut.name}": the mutated module does not load (${String(e && e.name)})`); continue; }
+  const base = mut.af ? IDX : mut.jh ? JHX : VGX;
+  const fix = mut.af ? FIXTURE : mut.jh ? JH_FIXTURE : VG_FIXTURE;
+  const idx2 = mut.af ? mod.buildAfIndex(fix) : mut.jh ? mod.buildJhIndex(fix) : mod.buildVgIndex(fix);
+  let ok = true;
+  for (const [n, wantMutated] of mut.expect) {
+    let b = null, got = null;
+    try { b = ask(M, base, n); } catch { b = "(threw)"; }
+    try { got = ask(mod, idx2, n); } catch { got = "(threw)"; }
+    if (b === wantMutated) {
+      ok = false;
+      bad(`VG/JH MUTATION "${mut.name}": the SHIPPED arm already answers ${JSON.stringify(b)} on ${JSON.stringify(n)} — this case cannot test that condition`);
+    } else if (got !== wantMutated) {
+      ok = false;
+      bad(`VG/JH MUTATION "${mut.name}" did NOT change the verdict on ${JSON.stringify(n)} (shipped ${b || "nothing"}, mutant ${got || "nothing"}, expected mutant ${wantMutated || "nothing"}) — DECORATIVE here, or the case is protected twice`);
+    }
+  }
+  if (ok) console.error(`  mutation ok  ${mut.name}`);
+}
+
+/* ---------- INVARIANTS the two new families add ---------- */
+{
+  const FAMS = [["Capital Group", IDX, MUST_FIRE], ["Fidelity", FIDX, FID_MUST_FIRE],
+    ["Vanguard", VGX, VG_MUST_FIRE], ["John Hancock", JHX, JH_MUST_FIRE]];
+  /* (8) ALL FOUR families are pairwise DISJOINT, so the ORDER of the four
+   *     `!out` blocks at the call site cannot change an answer. Each phrase's
+   *     first letter is mandatory under the relation and the four differ, but
+   *     that is an argument; this is the assertion, over all twelve ordered
+   *     pairs rather than the two the Fidelity ship checked. */
+  for (const [an, ai] of FAMS) for (const [bn, , bFire] of FAMS) {
+    if (an === bn) continue;
+    for (const [n] of bFire) if (ask(M, ai, n))
+      bad(`INVARIANT (8): the ${an} family answered a ${bn} name: ${JSON.stringify(n)}`);
+  }
+  /* (9) `buildVgIndex` and `buildJhIndex` are WRAPPERS, not second copies */
+  for (const [label, wrap, cfg, fix, fire] of [
+    ["Vanguard", VGX, M.VG_FAMILY, VG_FIXTURE, VG_MUST_FIRE],
+    ["John Hancock", JHX, M.JH_FAMILY, JH_FIXTURE, JH_MUST_FIRE]]) {
+    const viaCfg = M.buildFamilyIndex(fix, cfg);
+    if (viaCfg.family.size !== wrap.family.size || viaCfg.series.size !== wrap.series.size)
+      bad(`INVARIANT (9): the ${label} wrapper and buildFamilyIndex disagree`);
+    for (const [n] of fire) if (ask(M, viaCfg, n) !== ask(M, wrap, n))
+      bad(`INVARIANT (9): the ${label} wrapper and the generalised builder disagree on ${JSON.stringify(n)}`);
+  }
+  /* (10) THE ORDERING INSIDE `houseRun` IS A SCOPE LIMIT, NOT A GUARD, and this
+   *      is the assertion that stands in for the condition deliberately NOT
+   *      written. A filed token carrying a digit can never satisfy the as-filed
+   *      relation, because every head token must consume at least one phrase
+   *      word and a digit has nothing to match — so a DIGITS-ONLY leading token
+   *      strips to the empty string and is refused by the relation itself. */
+  const PH = [["american", "funds"], ["capital", "group"], ["fidelity"], ["vanguard"], ["john", "hancock"]];
+  for (const [t, want] of [["amerfunds2", 1], ["jhcock3", 1], ["vgd1", 1], ["fid3", 1],
+    ["2040", 0], ["", 0], ["x9", 0], ["2040amerfunds", 0]])
+    if (M.houseRun([t, "x", "y"], PH) !== want)
+      bad(`INVARIANT (10): houseRun on a leading ${JSON.stringify(t)} is ${M.houseRun([t, "x", "y"], PH)}, not ${want}`);
+  /* (11) and the class relation is a STRICTNESS CHOICE for John Hancock rather
+   *      than a live difference, which is worth asserting because the family
+   *      header claims it: its designations are CODES, so the relation can only
+   *      ever reach what equality already reaches. Asserted over the fixture's
+   *      whole must-fire and must-not-fire set rather than argued. */
+  {
+    const relOn = M.buildFamilyIndex(JH_FIXTURE, { ...M.JH_FAMILY, classRelation: true });
+    for (const [n] of [...JH_MUST_FIRE, ...JH_MUST_NOT.map((x) => [x[0]])])
+      if (ask(M, relOn, n) !== ask(M, JHX, n))
+        bad(`INVARIANT (11): John Hancock's classRelation:false is NOT merely stricter — ${JSON.stringify(n)} answers ${ask(M, relOn, n)} with the relation on and ${ask(M, JHX, n)} with it off; price it before leaving it off`);
+  }
+}
+
 if (fails) { console.error(`\naf-abbrev-test: ${fails} FAILURE(S)`); process.exit(1); }
-console.error(`af-abbrev-test OK  (${MUST_FIRE.length + FID_MUST_FIRE.length} must-fire, ${MUST_NOT.length + FID_MUST_NOT.length} must-not-fire, ${MUTATIONS.length + FID_MUTATIONS.length} mutations, 7 invariants)`);
+console.error(`af-abbrev-test OK  (${MUST_FIRE.length + FID_MUST_FIRE.length + VG_MUST_FIRE.length + JH_MUST_FIRE.length + DIGIT_CASES.length} must-fire, ${MUST_NOT.length + FID_MUST_NOT.length + VG_MUST_NOT.length + JH_MUST_NOT.length} must-not-fire, ${MUTATIONS.length + FID_MUTATIONS.length + VGJH_MUTATIONS.length} mutations, 11 invariants)`);

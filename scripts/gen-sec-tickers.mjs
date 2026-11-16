@@ -65,7 +65,8 @@ import { buildRenderer } from "./apppath.mjs";
 import { servedLineup } from "./lib-ledger.mjs";
 import { buildIndex, resolveHolding, norm, decodeEntities,
   STRUCTURAL, CLASS_WORDS, DESCRIPTIVE, isAssetWord } from "./match-sec-tickers.mjs";
-import { buildAfIndex, assertAfFamily, buildFidIndex, assertFamily, afAbbrevAsk, afToks } from "./lib-af-abbrev.mjs";
+import { buildAfIndex, assertAfFamily, buildFidIndex, buildVgIndex, buildJhIndex,
+  assertFamily, afAbbrevAsk, afToks, houseRun } from "./lib-af-abbrev.mjs";
 import { codeFingerprint, codeLine, assetFingerprint } from "./lib-sec-fingerprint.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
@@ -743,6 +744,124 @@ const FID_FAMILY_N = assertFamily(FID_INDEX);
   console.error(`fid-abbrev controls OK  (family ${FID_FAMILY_N} registrants, ${FID_INDEX.series.size} series, ${must.length} name + ${issMust.length} issuer-cell cases)`);
 }
 
+/* ---------- THE SAME ARM, THE VANGUARD FAMILY (2026-11-16) ----------
+ * Everything family-specific is in `lib-af-abbrev.mjs`'s VG_FAMILY header: the
+ * marker (`Admiral Shares`, exactly 28 Vanguard registrants and 0 foreign), the
+ * two widenings MEASURED AND REFUSED, the class relation and the structural
+ * reason every collective-trust spelling abstains.
+ *
+ * THE HOUSE PHRASE IS ONE WORD, as Fidelity's is, so the short leading runs the
+ * relation accepts are checked by READING rather than by argument — the run
+ * report at the end of this file prints every key the arm adds. */
+const VG_INDEX = buildVgIndex(regRows);
+const VG_FAMILY_N = assertFamily(VG_INDEX);
+{
+  const must = [
+    ["VGD DEVELOPED MARKETS INDEX FUND INSTITUTIONAL", "VTMNX"], // the motivating spelling
+    ["VGD DEVELOPED MKTS INDX ADM", "VTMGX"],      // both sides contracted, class by RELATION
+    ["VANGUARD DEVELOPED MARKETS INDEX FUND ADMIRAL", "VTMGX"],  // the undamaged control
+    ["VGD TOTAL STOCK MKT INDX ADM", "VTSAX"],
+    ["VGD MCP INDEX ADM", "VIMAX"],                // `mcp` -> mid cap, one token two words
+    ["VGD INTL GROWTH ADM", "VWILX"],
+    ["VGD WNDSR ADM", "VWNEX"],                    // Windsor, and NOT Windsor II
+    ["VGD WNDSR II ADM", "VWNAX"],                 // ... which is a different fund and fee
+    ["Vanguard Total Bond Market Index Fund Instl Plus", "VBMPX"],
+    ["VGD TARGET RETIRE 2040 INV", "VFORX"],       // the mutual fund, Investor class stated
+    /* must NOT fire */
+    ["VGD DEVELOPED MKTS INDX INST", null],        // `INST`: Institutional OR Institutional Plus
+    ["Vanguard Developed Markets Index Fund Inst", null],        // ... the same, spelled out
+    ["Vanguard 500 Index Fund", null],             // no class stated: a comparable is the owner's
+    ["VGD INDEX ADM", null],                       // a product too generic to pin one series
+    ["Vanguard Growth Index Fund E", null],        // a one-character class run
+    ["500 Index Fund Admiral Shares", null],       // no leading house: that is `admAsk`'s row
+    ["Fidelity Vanguard 500 Index Fund Admiral", null],          // a wrapper/foreign lead
+    ["Vanguard Fidelity 500 Index Admiral", null], // a foreign house welded in behind ours
+    ["Vanguard Institutional Index Fund Institutional Plus", null], // registrant OUT of the family
+    /* AND EVERY COLLECTIVE-TRUST SPELLING, which is the vehicle harm this arm
+     * must never commit: the registry holds the mutual fund, whose only class is
+     * `Investor Shares`, and the trust's unit designations are not abbreviations
+     * of it. `VANGUARD TARGET RET 2040 II` matters most — `fund-er.js` resolves
+     * that exact spelling to a SOURCED trust unit-class price. */
+    ["Vanguard Target Retirement 2040 Trust", null],
+    ["Vanguard Target Retirement 2040 Trust I", null],
+    ["Vanguard Target Retirement 2040 Trust II", null],
+    ["Vanguard Target Retirement 2040 Trust Plus", null],
+    ["Vanguard Target Retirement 2040 Trust Select", null],
+    ["VANGUARD TARGET RET 2040 II", null],
+    ["VGD TGT RETIRE 2040 TR II", null],
+  ];
+  for (const [n, want] of must) {
+    const got = afAbbrevAsk(VG_INDEX, n);
+    if ((got ? got.ticker : null) !== want)
+      throw new Error(`gen-sec-tickers: VG-ABBREV CONTROL — ${JSON.stringify(n)} should answer ${want || "nothing"}, got ${got ? got.ticker : "nothing"}`);
+  }
+  console.error(`vg-abbrev controls OK  (family ${VG_FAMILY_N} registrants, ${VG_INDEX.series.size} series, ${must.length} cases incl. 7 collective-trust spellings)`);
+}
+
+/* ---------- THE SAME ARM, THE JOHN HANCOCK FAMILY (2026-11-16) ----------
+ * `JHCOCK3 DISCIPLINED VAL MCP R6` -> JVMRX needed two things: this family, and
+ * the trailing-digit repair of the LEADING house token (`lib-af-abbrev.mjs`'s
+ * LEAD_DIGITS header carries the three narrowings and why the ordering is a
+ * scope limit rather than a guard). The marker is `Class NAV`, which is
+ * John-Hancock-exclusive at 3 registrants / 87 series, and the class is matched
+ * by EQUALITY only — John Hancock's designations are codes. */
+const JH_INDEX = buildJhIndex(regRows);
+const JH_FAMILY_N = assertFamily(JH_INDEX);
+{
+  const must = [
+    ["JHCOCK3 DISCIPLINED VAL MCP R6", "JVMRX"],   // the motivating spelling, digits and all
+    ["JHCOCK DISCIPLINED VAL MCP R6", "JVMRX"],    // ... without the digits
+    ["JOHN HANCOCK DISCIPLINED VALUE MID CAP R6", "JVMRX"],      // the undamaged control
+    ["John Hancock Disciplined Value Mid Cap Fund Class R6", "JVMRX"],
+    ["JOHN HANCOCK DISCIPLINED VALUE R6", "JDVWX"],// a DIFFERENT fund: Mid Cap is not it
+    ["JOHN HANCOCK BALANCED R6", "JBAWX"],
+    ["JOHN HANCOCK MULTIMANAGER 2040 LIFETIME R6", "JLIIX"],     // `Portfolio` skipped
+    ["JOHN HANCOCK 2040 LIFETIME BLEND R6", "JRTWX"],
+    ["JOHN HANCOCK 2040 PRESERVATION BLEND R6", "JRRSX"],
+    /* must NOT fire */
+    ["John Hancock Disciplined Value Mid Cap NAV", null],  // that series registers no Class NAV
+    ["John Hancock Disciplined Value Mid Cap 1", null],    // ... nor a Class 1
+    ["JHCOCK2 BOND R6", null],                     // no unique series: `bond` pins nothing
+    ["JOHN HANCOCK 2040 LIFETIME R6", null],       // Blend or Multimanager: ambiguous
+    ["Disciplined Value Mid Cap R6", null],        // no leading house
+    ["JOHN HANCOCK VANGUARD DISCIPLINED VALUE R6", null],        // a foreign house welded in
+    ["John Hancock Disciplined Value Mid Cap Fund", null],        // no class stated
+    /* THE DIGIT STRIP IS THE LEADING TOKEN'S AND A VINTAGE IS NEVER THE LEAD.
+     * Asked of the Capital Group family, where the vintage is the whole
+     * product: the year must survive in position 2 and must NOT survive welded
+     * onto the house, where the arm abstains rather than picking a vintage. */
+    ["2040 LIFETIME BLEND R6", null],
+  ];
+  for (const [n, want] of must) {
+    const got = afAbbrevAsk(JH_INDEX, n);
+    if ((got ? got.ticker : null) !== want)
+      throw new Error(`gen-sec-tickers: JH-ABBREV CONTROL — ${JSON.stringify(n)} should answer ${want || "nothing"}, got ${got ? got.ticker : "nothing"}`);
+  }
+  /* the digit repair, asked of the OLDEST family so the narrowing is proved
+   * where the vintage is load-bearing rather than where it is decoration */
+  const digit = [
+    ["AMERFUNDS 2040 TARG DATERET R6", "RFGTX"],   // the vintage is T[1]: untouched
+    ["AMERFUNDS2040 TARG DATERET R6", null],       // welded onto the house: the year is LOST
+    ["AMERFUNDS2 2040 TARG DATERET R6", "RFGTX"],  // a digit run on the house, year intact
+  ];
+  for (const [n, want] of digit) {
+    const got = afAbbrevAsk(AF_INDEX, n);
+    if ((got ? got.ticker : null) !== want)
+      throw new Error(`gen-sec-tickers: LEAD-DIGIT CONTROL — ${JSON.stringify(n)} should answer ${want || "nothing"}, got ${got ? got.ticker : "nothing"}`);
+  }
+  /* and the DIGITS-ONLY leading token is refused BY THE RELATION rather than by
+   * a guard: `2040` strips to the empty string, which can satisfy no phrase
+   * because every head token must consume at least one phrase word. Asserted,
+   * because this is the condition deliberately NOT written. */
+  const PH = [["american", "funds"], ["capital", "group"], ["fidelity"], ["vanguard"],
+    ["john", "hancock"]];
+  for (const [t, want] of [["amerfunds2", 1], ["jhcock3", 1], ["vgd1", 1], ["fid3", 1],
+    ["2040", 0], ["", 0], ["x9", 0]])
+    if (houseRun([t, "x", "y"], PH) !== want)
+      throw new Error(`gen-sec-tickers: LEAD-DIGIT CONTROL — houseRun on a leading ${JSON.stringify(t)} should be ${want}; re-derive the scope limit`);
+  console.error(`jh-abbrev controls OK  (family ${JH_FAMILY_N} registrants, ${JH_INDEX.series.size} series, ${must.length} cases + ${digit.length} lead-digit cases)`);
+}
+
 const secCache = new Map();
 /* AN APOSTROPHE-ELIDED SHARE CLASS LEAVES A STRAY LETTER AND THE MATCHER THEN
  * REFUSES THE WHOLE ROW — 2026-10-10 (05:3xZ).
@@ -1397,6 +1516,22 @@ function secAsk(nameRaw, nameClean, iss) {
     const a = afAbbrevAsk(FID_INDEX, nameRaw) || afAbbrevAsk(FID_INDEX, nameClean);
     if (a) out = a;
   }
+  /* and the VANGUARD and JOHN HANCOCK families of the same arm (2026-11-16),
+   * appended for the same reason: `!out` makes each additive to everything
+   * already shipped BY CONSTRUCTION, and the four families are disjoint by
+   * their house phrases — a leading run cannot abbreviate two of
+   * `american funds` / `fidelity` / `vanguard` / `john hancock`, because each
+   * phrase's FIRST letter is mandatory and they differ. `af-abbrev-test.mjs`
+   * asserts that over all four pairs rather than assuming it, so the ORDER of
+   * these four blocks cannot change an answer. */
+  if (!out) {
+    const a = afAbbrevAsk(VG_INDEX, nameRaw) || afAbbrevAsk(VG_INDEX, nameClean);
+    if (a) out = a;
+  }
+  if (!out) {
+    const a = afAbbrevAsk(JH_INDEX, nameRaw) || afAbbrevAsk(JH_INDEX, nameClean);
+    if (a) out = a;
+  }
   /* ---------- THE HOUSE CAN BE IN THE ISSUER CELL AND NOT IN THE NAME --------
    * 2026-11-13. `afAbbrevAsk` requires the filed name to OPEN with a run
    * abbreviating the house, and that anchor is the arm's decoy guard. But the
@@ -1578,6 +1713,23 @@ let fidFormerRows = 0, fidFormerDollars = 0;
 const fidFormerKeys = new Map(), fidFormerPlans = new Map();
 const fidKeys = new Set(), fidAcks = new Set(), fidPlans = new Map();
 const fidClass = new Map();
+/* THE VANGUARD AND JOHN HANCOCK FAMILIES (2026-11-16), each with EVERY key
+ * retained rather than counted, because *a widening is only as safe as the
+ * names it newly reaches* and the discharge for that is the list being READ.
+ * `wouldRefuse` is the population `attestedAnySpelling` would have blocked if
+ * these two families were not exempt — measured rather than argued, the way
+ * the Fidelity exemption was measured away. */
+let vgRows = 0, vgDollars = 0;
+const vgKeys = new Map(), vgAcks = new Set(), vgPlans = new Map();
+let vgWouldRefuse = 0; const vgWouldRefuseKeys = new Set();
+let jhRows = 0, jhDollars = 0;
+const jhKeys = new Map(), jhAcks = new Set(), jhPlans = new Map();
+let jhWouldRefuse = 0; const jhWouldRefuseKeys = new Set();
+/* and the LEADING-TOKEN DIGIT REPAIR, which is a change to `houseRun` and so
+ * touches ALL FOUR families: every key whose leading token carries a trailing
+ * digit run is tallied and printed, whichever family answered it. */
+let digitRows = 0, digitDollars = 0;
+const digitKeys = new Map(), digitPlans = new Map();
 let admUnattested = 0; const admUnattestedKeys = new Set();
 const gains = [];
 const compKeys = new Set();
@@ -1681,13 +1833,36 @@ for (let s = 0; s < 64; s++) {
        * the ship's claim is attributable without a second regeneration. */
       const viaFid = (sec.why || "").startsWith("fid-abbrev");
       const viaFidIss = (sec.why || "") === "fid-abbrev+iss";
+      /* THE VANGUARD AND JOHN HANCOCK FAMILIES ARE EXEMPT FROM `registrantAttested`
+       * FOR THE CAPITAL GROUP REASON, NOT BY ANALOGY, and the exempted population
+       * is MEASURED below rather than assumed away. The guard asks whether the
+       * registrant's distinctive vocabulary appears in the FILED spelling, and
+       * these two families exist precisely because the filer CONTRACTED it:
+       * `VANGUARD INDEX FUNDS` says nothing distinctive beyond `vanguard`, which
+       * `VGD` is not — this file already records that exact refusal costing the
+       * Admiral arm its plain index funds. What stands in its place is the same
+       * stricter conjunction computed against the repaired reading: a stated
+       * house at the LEAD, a destination inside a registry-derived family that
+       * `assertFamily` holds to ONE house by band and name test, a product
+       * abbreviating exactly ONE of its series, and a class THAT SERIES
+       * REGISTERS. So a wrong answer can still only ever be the wrong Vanguard
+       * fund or the wrong John Hancock fund. */
+      const viaVg = (sec.why || "") === "vg-abbrev";
+      const viaJh = (sec.why || "") === "jh-abbrev";
       /* `attestedAnySpelling`, not `registrantAttested`: the guard is asked of
        * the filing as written AND of the destination-blind typo repair, which
        * is the only one of the four candidate spellings that is both
        * non-circular and not inert. ATTESTATION_INPUTS carries the whole
        * measurement. The touchable population is exactly the rows carrying a
        * `MEFS` token, because `deTypo` is the identity everywhere else. */
-      if (!viaAf && !attestedAnySpelling(sec.ticker, f.nameRaw, f.iss || "")) {
+      if (viaVg || viaJh) {
+        /* the exemption's own price, tallied before it is taken */
+        if (!attestedAnySpelling(sec.ticker, f.nameRaw, f.iss || "")) {
+          if (viaVg) { vgWouldRefuse++; vgWouldRefuseKeys.add(key); }
+          else { jhWouldRefuse++; jhWouldRefuseKeys.add(key); }
+        }
+      }
+      if (!viaAf && !viaVg && !viaJh && !attestedAnySpelling(sec.ticker, f.nameRaw, f.iss || "")) {
         unattested++;
         unattestedPpl += ppl;
         if (viaAdm) { admUnattested++; admUnattestedKeys.add(key); }
@@ -1734,6 +1909,39 @@ for (let s = 0; s < 64; s++) {
         for (const m of mem) fidPlans.set(`${m.ein}|${m.pn}`, m.ppl);
         const ckey = `${sec.how || "?"}:${sec.className || "?"}`;
         fidClass.set(ckey, (fidClass.get(ckey) || 0) + 1);
+      }
+      const famTally = (rowsInc, keysMap, acks, plans) => {
+        acks.add(ack);
+        for (const m of mem) plans.set(`${m.ein}|${m.pn}`, m.ppl);
+        let v = keysMap.get(key);
+        if (!v) keysMap.set(key, v = { tk: sec.ticker, iss: f.iss || "", name: f.nameRaw,
+          series: sec.series || "", cls: sec.className || "", how: sec.how || "",
+          type: f.type || "", rows: 0, ppl: 0, val: 0 });
+        v.rows++; v.ppl += ppl; v.val += +f.value || 0;
+        return rowsInc;
+      };
+      if (viaVg) {
+        vgRows++; vgDollars += +f.value || 0;
+        famTally(1, vgKeys, vgAcks, vgPlans);
+      }
+      if (viaJh) {
+        jhRows++; jhDollars += +f.value || 0;
+        famTally(1, jhKeys, jhAcks, jhPlans);
+      }
+      /* the LEADING-TOKEN DIGIT REPAIR, across whichever family answered: the
+       * repair is in `houseRun`, so its population is a property of the name and
+       * not of the family, and a tally keyed on one family would miss it. */
+      if (viaAf || viaVg || viaJh || viaFid) {
+        const lead = (afToks(f.nameRaw)[0] || "");
+        if (/[a-z]\d+$/.test(lead)) {
+          digitRows++; digitDollars += +f.value || 0;
+          for (const m of mem) digitPlans.set(`${m.ein}|${m.pn}`, m.ppl);
+          let v = digitKeys.get(key);
+          if (!v) digitKeys.set(key, v = { tk: sec.ticker, iss: f.iss || "", name: f.nameRaw,
+            series: sec.series || "", cls: sec.className || "", why: sec.why || "",
+            type: f.type || "", rows: 0, ppl: 0, val: 0 });
+          v.rows++; v.ppl += ppl; v.val += +f.value || 0;
+        }
       }
       const prev = table.get(key);
       if (prev !== undefined && prev !== sec.ticker) conflicts.push([key, prev, sec.ticker]);
@@ -1809,6 +2017,20 @@ console.error([
   `  fund carried before the issuer renamed it, which the registry does not hold:`,
   `    GAIN an ASSERTED symbol               ${fidFormerRows.toLocaleString()} rows / ${fidFormerKeys.size.toLocaleString()} keys -> ${fidFormerPlans.size.toLocaleString()} plans / ${sum(fidFormerPlans).toLocaleString()} ppl / $${fidFormerDollars.toLocaleString()}`,
   ``,
+  ``,
+  `THE VANGUARD FAMILY OF THAT ARM, attributed by the vg-abbrev tag:`,
+  `  GAIN an ASSERTED symbol                 ${vgRows.toLocaleString()} rows / ${vgKeys.size.toLocaleString()} keys / ${vgAcks.size.toLocaleString()} acks -> ${vgPlans.size.toLocaleString()} plans / ${sum(vgPlans).toLocaleString()} ppl / $${vgDollars.toLocaleString()}`,
+  `  registry-derived family                 ${VG_FAMILY_N} registrants / ${VG_INDEX.series.size} series`,
+  `  attestation WOULD have refused          ${vgWouldRefuse.toLocaleString()} rows / ${vgWouldRefuseKeys.size.toLocaleString()} keys  (the exemption's measured price, not an assumption)`,
+  ``,
+  `THE JOHN HANCOCK FAMILY OF THAT ARM, attributed by the jh-abbrev tag:`,
+  `  GAIN an ASSERTED symbol                 ${jhRows.toLocaleString()} rows / ${jhKeys.size.toLocaleString()} keys / ${jhAcks.size.toLocaleString()} acks -> ${jhPlans.size.toLocaleString()} plans / ${sum(jhPlans).toLocaleString()} ppl / $${jhDollars.toLocaleString()}`,
+  `  registry-derived family                 ${JH_FAMILY_N} registrants / ${JH_INDEX.series.size} series`,
+  `  attestation WOULD have refused          ${jhWouldRefuse.toLocaleString()} rows / ${jhWouldRefuseKeys.size.toLocaleString()} keys`,
+  ``,
+  `THE LEADING-TOKEN DIGIT REPAIR (houseRun), across ALL FOUR families:`,
+  `  GAIN an ASSERTED symbol                 ${digitRows.toLocaleString()} rows / ${digitKeys.size.toLocaleString()} keys -> ${digitPlans.size.toLocaleString()} plans / ${sum(digitPlans).toLocaleString()} ppl / $${digitDollars.toLocaleString()}`,
+  ``,
   `PRECEDENCE: a hedged registry answer replaced by an arm naming the STATED class`,
   `  spellings overridden                    ${compOverridden.toLocaleString()}  (distinct (iss, raw, clean) triples — \`secAsk\` is cached, so this is not a row count)`,
 ].join("\n"));
@@ -1816,6 +2038,22 @@ if (admForeignKeys.size) {
   console.error(`\nEVERY key the Admiral arm refused for a foreign house in the NAME:`);
   for (const [, a] of admForeignKeys)
     console.error(`  [${a.house}] filed=${JSON.stringify(a.name)}  iss=${JSON.stringify(a.iss)}  would have published ${a.tk} ("${a.series}")`);
+}
+/* EVERY KEY THE TWO NEW FAMILIES ADD, PRINTED FOR READING. *A resolver GAIN is
+ * evidence the string reaches a fund, not evidence it reaches THIS fund*, so the
+ * discharge for a widening is the list, not the count — and the filed TYPE is
+ * printed beside each because a symbol can be right for the FUND and wrong for
+ * the VEHICLE, which is how both of this project's vehicle defects were found. */
+for (const [label, km] of [["VANGUARD (vg-abbrev)", vgKeys], ["JOHN HANCOCK (jh-abbrev)", jhKeys]]) {
+  if (!km.size) continue;
+  console.error(`\nEVERY KEY THE ${label} FAMILY ADDS — ${km.size} keys, by readers, so every newly reached name is READ:`);
+  for (const [, v] of [...km].sort((a, b) => b[1].ppl - a[1].ppl))
+    console.error(`  ${v.tk}  ${String(v.ppl).padStart(9)} ppl  ${String(v.rows).padStart(5)} rows  $${(v.val / 1e6).toFixed(1).padStart(9)}M  type=${JSON.stringify(String(v.type).slice(0, 22))}  iss=${JSON.stringify(v.iss)}  filed=${JSON.stringify(v.name)}  -> "${v.series}" / ${v.cls} / ${v.how}`);
+}
+if (digitKeys.size) {
+  console.error(`\nEVERY KEY THE LEADING-TOKEN DIGIT REPAIR ADDS — ${digitKeys.size} keys, whichever family answered:`);
+  for (const [, v] of [...digitKeys].sort((a, b) => b[1].ppl - a[1].ppl))
+    console.error(`  [${v.why}] ${v.tk}  ${String(v.ppl).padStart(9)} ppl  ${String(v.rows).padStart(5)} rows  type=${JSON.stringify(String(v.type).slice(0, 22))}  filed=${JSON.stringify(v.name)}  -> "${v.series}" / ${v.cls}`);
 }
 if (fidFormerKeys.size) {
   console.error(`\nEVERY KEY THE FORMER-NAME ROUTE (+former) ADDS, so every newly reached name is READ:`);

@@ -264,12 +264,78 @@ export const __liftedMatch = abbreviatesVintageLifted;
  * is refused by the SERIES MATCH on its own and never reaches an answer.
  * `af-abbrev-test.mjs` asserts that rather than leaving it to a comment. */
 const HOUSE_PHRASES = [["american", "funds"], ["capital", "group"]];
-export function houseRun(T, phrases = HOUSE_PHRASES) {
+function houseRunAsFiled(T, phrases) {
   for (let n = Math.min(3, T.length); n >= 1; n--) {
     const head = T.slice(0, n);
     for (const ph of phrases) if (abbreviates(head, ph, 2, NO_SKIP)) return n;
   }
   return 0;
+}
+
+/* ---------- THE LEADING HOUSE TOKEN MAY CARRY A TRAILING DIGIT RUN ----------
+ * 2026-11-16. `JHCOCK3 DISCIPLINED VAL MCP R6` is John Hancock Funds III's
+ * Disciplined Value Mid Cap Fund, Class R6 — JVMRX — and `houseRun` read 0 on
+ * it. The relation is right and the TOKEN is not: `jhcock` abbreviates
+ * `john hancock` by the relation above, and the `3` the filer welded on names
+ * the TRUST (Funds III), not a word the house phrase contains. Measured:
+ * stripping it takes `houseRun` from 0 to 1 and the row resolves.
+ *
+ * THREE NARROWINGS, AND EACH IS PRICED RATHER THAN ASSERTED:
+ *
+ *  - THE LEADING TOKEN ONLY. ***AND THE REASON I FIRST WROTE HERE WAS FALSE,
+ *    which is worse than absent because it was an argument for the shape of
+ *    the code.*** It read: "because a VINTAGE is never the house — stripping
+ *    every token would destroy `AMERFUNDS 2035 TARG DATERET R6`." It would
+ *    not. `houseRun` returns a token COUNT and `afAbbrevAsk` slices `rest` out
+ *    of the ORIGINAL tokens, so nothing here can rewrite a vintage in position
+ *    2 — the mutation that was supposed to prove this left every Capital Group
+ *    verdict intact, which is how the claim was caught. What protects the
+ *    vintage is that `houseRun` renames nothing, and the one case where the
+ *    digits really are discarded is the leading token, because that token is
+ *    CONSUMED as the house.
+ *    So this narrowing is a SCOPE choice with a MEASURED COST, not a
+ *    protection, and the cost is ONE ROW: over all 406,979 reader-visible
+ *    blank keys, stripping every head token instead would additionally
+ *    forgive `J HANCOCK3 DISCIPLINED VAL I` -> JVLIX (1 key / 1 row / 354
+ *    readers) and nothing else, with 0 keys lost and 0 symbols changed.
+ *    It is that small because the boundary is only REACHABLE where the
+ *    leading token cannot satisfy a TWO-WORD phrase by itself: `AMERICAN`
+ *    cannot cover the mandatory `f` of `american funds`, so the as-filed pass
+ *    reads 0 there and the second token's digits matter — while `JOHN` DOES
+ *    cover the `h` of `john hancock` (j-o-h-n spread over `johnhancock` at
+ *    0,1,4,6), so every `JOHN HANCOCK3 …` already has a house run of 1 and
+ *    this condition never sees it. `af-abbrev-test.mjs` pins the boundary in
+ *    the direction it actually runs — the mutant ANSWERS where the shipped arm
+ *    abstains — because a control pointed the other way reads as a clean
+ *    no-difference, which is exactly what the false version produced.
+ *  - TRAILING digits only, so a digit anywhere else in the token still has to
+ *    be explained by the phrase.
+ *  - AFTER the as-filed pass, so a token that already satisfies the relation
+ *    is never rewritten. ***That ordering is a SCOPE LIMIT, NOT A GUARD, and
+ *    it is labelled as one.*** A filed token carrying a digit can NEVER
+ *    satisfy `absorbs` against a letters-only house phrase: every filed token
+ *    in the head must consume at least one phrase word, and a digit has
+ *    nothing in `johnhancock` / `americanfunds` / `vanguard` / `fidelity` to
+ *    match. So the as-filed pass is unreachable-with-digits BY CONSTRUCTION,
+ *    and *a condition unreachable by construction reads as a guard and is dead
+ *    code* — hence a FALLBACK rather than an `if`, with the unreachability
+ *    ASSERTED (`af-abbrev-test.mjs` INVARIANT (10), and again in the
+ *    generator's own control block) instead of claimed here: a digits-only
+ *    leading token strips to the empty string and is refused by the relation
+ *    itself, which is why no non-empty guard is written either.
+ *
+ * AND THE DIGITS ARE DISCARDED, NOT RE-READ. `houseRun` returns a token COUNT
+ * and every caller does `T.slice(h)`, so the whole leading token leaves with
+ * the house. A filer who welds the VINTAGE onto the house — `AMERFUNDS2040
+ * TARG DATERET R6` — therefore loses the year, and the product match then
+ * fails for want of it: the arm ABSTAINS rather than picking a vintage, which
+ * is the conservative direction and is pinned as a must-not-fire case. */
+const LEAD_DIGITS = /\d+$/;
+export function houseRun(T, phrases = HOUSE_PHRASES) {
+  const n = houseRunAsFiled(T, phrases);
+  if (n) return n;
+  if (!T.length || !LEAD_DIGITS.test(T[0])) return 0;
+  return houseRunAsFiled([T[0].replace(LEAD_DIGITS, ""), ...T.slice(1)], phrases);
 }
 
 /* ---------- the registry-derived family and its series index ---------- */
@@ -374,6 +440,112 @@ export const FID_FAMILY = {
   must: ["FIDELITY SALEM STREET TRUST", "FIDELITY ABERDEEN STREET TRUST"],
   formerNames: FID_SERIES_FORMER_NAMES,
 };
+/* ---------- THE VANGUARD FAMILY, 2026-11-16 ----------
+ * The same defect again and in the largest house on the store: a filer
+ * contracts `Vanguard` to `VGD` and the product with it, and the page publishes
+ * no symbol. `VGD DEVELOPED MARKETS INDEX FUND INSTITUTIONAL` is VTMNX and read
+ * blank. Nothing about the relation needed changing — `vgd` -> vanguard,
+ * `mkts` -> markets, `indx` -> index, `instl` -> institutional, `intl` ->
+ * international and `mcp` -> mid cap are all already accepted — so this is a
+ * CONFIGURATION, like Fidelity's, and the three family-specific facts are:
+ *
+ * THE MARKER IS `Admiral Shares` AND IT IS EXACTLY VANGUARD. Measured over all
+ * 29,406 registry rows: 28 registrants, 204 series, and every one of the 28 is
+ * a Vanguard trust by reading (`VANGUARD INDEX FUNDS`, `VANGUARD CHESTER
+ * FUNDS`, `Vanguard Charlotte Funds`, …). ZERO foreign houses, so a wrong
+ * answer from this arm can only ever be the wrong VANGUARD fund — and
+ * `assertFamily`'s band plus the `/vanguard/i` name test is what keeps that a
+ * measured fact rather than an assumption.
+ *
+ * FIVE VANGUARD REGISTRANTS ARE OUT OF REACH AND THAT IS NAMED, NOT HIDDEN:
+ * `VANGUARD ADMIRAL FUNDS` (which registers no class CALLED Admiral),
+ * `VANGUARD INSTITUTIONAL INDEX FUNDS` (VINIX / VIIIX), `Vanguard Montgomery
+ * Funds`, `VANGUARD OHIO TAX-FREE FUNDS` and `VANGUARD MASSACHUSETTS
+ * TAX-EXEMPT FUNDS` carry no Admiral class, so the marker does not derive them.
+ * ***The obvious widening was MEASURED AND REFUSED.*** `Institutional Plus
+ * Shares` would bring VINIX's registrant in and it also brings `FORUM FUNDS`,
+ * a foreign house, which makes `assertFamily` THROW — correctly. `ETF Shares`
+ * is Vanguard-exclusive today (20 registrants) and would reach both of the big
+ * two, but it trades a DISTINCTIVE registry witness for a GENERIC class name
+ * that any registrant may adopt, and the failure mode is a hard throw that
+ * blocks every future regeneration of the whole table. So the family stays
+ * keyed on the distinctive marker and the gap is reported.
+ *
+ * THE CLASS IS MATCHED BY THE RELATION, like Fidelity's and unlike Capital
+ * Group's, because Vanguard's designations are WORDS that filers contract:
+ * `ADM`, `INSTL`, `INV`, `INSTL PLUS`. And the shipped prefix rule is what
+ * makes that safe — a filed `INST` is a legitimate truncation of BOTH
+ * `Institutional Shares` and `Institutional Plus Shares`, which are different
+ * classes at different fees, so `VGD DEVELOPED MKTS INDX INST` ABSTAINS. That
+ * abstention is the arm's whole value: a share class is never guessed, because
+ * the point of resolving a ticker here is that a SOURCED fee and a SOURCED
+ * return get hung on it.
+ *
+ * AND A COLLECTIVE TRUST IS NOT ITS NAMESAKE FUND. Vanguard's Target
+ * Retirement TRUSTS are filed in thousands of menus and the registry holds only
+ * the mutual funds, whose single registered class is `Investor Shares`. Every
+ * trust spelling abstains, and by CONSTRUCTION rather than by a blocklist: the
+ * unit designations `I`, `II`, `III`, `Plus` and `Select` are none of them
+ * abbreviations of `Investor`, and a filed `Trust` token has no series word
+ * left to consume. Probed: `… 2040 Trust`, `Trust I`, `Trust II`, `Trust
+ * Plus`, `Trust Select`, `VGD TGT RETIRE 2040 TR II` and `VANGUARD TARGET RET
+ * 2040 II` all answer nothing, which matters doubly now that `fund-er.js`
+ * resolves that last spelling to a SOURCED trust unit-class price. The call
+ * site's `pooledRow` is the second, type-keyed protection. */
+export const VG_FAMILY = {
+  key: "vg", label: "Vanguard", why: "vg-abbrev",
+  markers: new Set(["admiral shares"]), house: [["vanguard"]],
+  skip: new Set([...BASE_SKIP, "vanguard"]), classRelation: true,
+  band: [22, 36], nameTest: /vanguard/i,
+  must: ["VANGUARD INDEX FUNDS", "VANGUARD CHESTER FUNDS", "VANGUARD TAX-MANAGED FUNDS",
+    "VANGUARD WINDSOR FUNDS", "VANGUARD WORLD FUND"],
+};
+
+/* ---------- THE JOHN HANCOCK FAMILY, 2026-11-16 ----------
+ * `JHCOCK3 DISCIPLINED VAL MCP R6` is JVMRX. Two things stood between that row
+ * and its symbol and only one of them was a configuration: the family did not
+ * exist, and `houseRun` read 0 on the trailing `3` (see LEAD_DIGITS above).
+ *
+ * THE MARKER IS `Class NAV` AND IT IS JOHN-HANCOCK-EXCLUSIVE: 3 registrants —
+ * `John Hancock Funds II`, `John Hancock Funds III` and `JOHN HANCOCK
+ * INVESTMENT TRUST` — 87 series, 0 foreign. Class NAV is the designation John
+ * Hancock sells to its own insurance separate accounts, and no other registrant
+ * in the file registers a class by that exact name.
+ *
+ * TEN OTHER JOHN HANCOCK REGISTRANTS ARE OUT OF REACH, and the trade is
+ * deliberate. `JOHN HANCOCK BOND TRUST`, `… SOVEREIGN BOND FUND`, `… CAPITAL
+ * SERIES`, `… STRATEGIC SERIES`, `… MUNICIPAL SECURITIES TRUST` and the rest
+ * register no Class NAV, and the only designation they share with the three is
+ * `Class R5`/`Class A`-style codes that dozens of foreign houses also
+ * register — so there is no wider marker that stays John Hancock. ***And
+ * `JOHN HANCOCK VARIABLE INSURANCE TRUST` is excluded on purpose:*** it
+ * registers `NAV`, `NAV Class`, `Series I`, `Series II` and `Series NAV` — a
+ * VARIABLE-ANNUITY ladder, not a fund a plan buys, and its exclusion is a
+ * property of requiring the exact string `class nav`.
+ *
+ * THE CLASS IS NOT MATCHED BY THE RELATION, unlike Vanguard's and Fidelity's,
+ * because John Hancock's designations are CODES that survive normalisation:
+ * `R6` -> `Class R-6`... `classKey("Class R6")` is `r6` and a filed `R6` or
+ * `R-6` reaches it by EQUALITY, which is the registry's answer and not ours.
+ * Opting out is the stricter choice and it is what refuses `John Hancock
+ * Disciplined Value Mid Cap NAV`: that series registers A, C, I, R2, R4 and R6
+ * and NO Class NAV, so the honest answer is nothing rather than the nearest
+ * class — the harm this file already records for a bare Fidelity `K`.
+ *
+ * `portfolio` IS IN THE SKIP SET AND IT IS LOAD-BEARING: 62 of the 87 series
+ * are `… Portfolio` rather than `… Fund` (the Lifetime, Lifestyle and
+ * Preservation Blend ladders), and a filer writing `JOHN HANCOCK MULTIMANAGER
+ * 2040 LIFETIME R6` leaves that word out. Without it the whole target-date
+ * half of this family abstains; `af-abbrev-test.mjs` mutates it away and
+ * watches the ladder go. It is a PERMISSION, never an obligation, so the
+ * spelled-out name still matches. */
+export const JH_FAMILY = {
+  key: "jh", label: "John Hancock", why: "jh-abbrev",
+  markers: new Set(["class nav"]), house: [["john", "hancock"]],
+  skip: new Set([...BASE_SKIP, "john", "hancock", "portfolio"]), classRelation: false,
+  band: [3, 6], nameTest: /john\s*hancock/i,
+  must: ["John Hancock Funds II", "John Hancock Funds III", "JOHN HANCOCK INVESTMENT TRUST"],
+};
 const CLASS_SKIP = new Set(["class", "shares", "share"]);
 
 export function buildFamilyIndex(funds, fam) {
@@ -416,6 +588,8 @@ export function buildFamilyIndex(funds, fam) {
 }
 export const buildAfIndex = (funds) => buildFamilyIndex(funds, AF_FAMILY);
 export const buildFidIndex = (funds) => buildFamilyIndex(funds, FID_FAMILY);
+export const buildVgIndex = (funds) => buildFamilyIndex(funds, VG_FAMILY);
+export const buildJhIndex = (funds) => buildFamilyIndex(funds, JH_FAMILY);
 
 /* THE FAMILY IS ASSERTED, NOT TRUSTED. If a refresh of `sec-funds.json` ever
  * puts a registrant in here that is not a Capital Group trust, the arm's whole
@@ -537,6 +711,43 @@ export function afAbbrevAsk(idx, filedName) {
        * thick enough and still ambiguous (`PREMIE`, 275 rows, is six characters).
        * Each has its own live case in `af-abbrev-test.mjs`. */
       if (s.classList.some((c) => c.ck !== cm[0].ck && c.ck.startsWith(ck))) continue;
+      /* ---------- A TRUNCATION OF A DESIGNATION THE SERIES DOES NOT HAVE -----
+       * 2026-11-16, and the Vanguard family walked straight into it. `inst` is a
+       * SUBSEQUENCE of `investor` — i-n-s-t at positions 0,1,4,5 — so the
+       * relation reads `Vanguard Target Retirement 2040 Inst` as the INVESTOR
+       * class and answers VFORX. That series registers Investor Shares and
+       * NOTHING ELSE, so the within-series uniqueness test sees one match and
+       * the prefix test above sees no sibling to be confused with: both pass,
+       * and the arm would publish a share class the filing does not state. The
+       * filer who types `Inst` means INSTITUTIONAL — a designation this family
+       * registers sixty-odd times and this series does not carry at all — and
+       * the honest answer is therefore nothing. Vanguard's Target Retirement
+       * ladder is filed in thousands of menus, so the difference between
+       * abstaining and guessing here is a wrong fee and a wrong return under a
+       * verified tick, which is the one thing this arm exists to make safe.
+       *
+       * SO THE CONDITION IS: the run truncates some designation the FAMILY
+       * registers, other than the one it matched, AND IS NOT A TRUNCATION OF THE
+       * ONE IT MATCHED. That second clause is what keeps it a DEDICATED DISJUNCT
+       * whose blast radius is the phrase, rather than a widening that swallows
+       * three shipped conditions — and it was derived from their own single-
+       * protection cases rather than from taste. Asked of the whole family
+       * WITHOUT it, `PRE` (`stated`), `P` (the length floor), `PREMIE` and `IN`
+       * (the prefix rule above) are all refused a second time, every one of
+       * those conditions stops being the only thing deciding its verdict, and
+       * `stated` becomes unreachable by construction — a key always starts with
+       * itself. With it, each keeps its own live case and this one has its own:
+       * `inst`, where the matched `investor` is NOT what the run truncates.
+       *
+       * It is a PREFIX test and not "the run abbreviates another designation",
+       * which was the first draft and was too broad by one shipped family: `prm`
+       * abbreviates `premierii` without being a prefix of it, so that version
+       * abstained on the 28 Fidelity Freedom series registering Premier and no
+       * Premier II — refusing a run that is unambiguous inside its own series.
+       * *A truncation is a prefix and an abbreviation need not be*, on both
+       * halves of the question. */
+      if (!cm[0].ck.startsWith(ck) && idx.famClassKeys
+        && [...idx.famClassKeys].some((fk) => fk !== cm[0].ck && fk.startsWith(ck))) continue;
       hits.push({ ticker: cm[0].ticker, series: s.name, reg: s.reg, ck: cm[0].ck, how: "relation" + via });
     }
     if (hits.length !== 1) continue;             // ambiguous or nothing: abstain
