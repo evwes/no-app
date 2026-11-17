@@ -782,7 +782,15 @@ old-version tail. A second large `pv` cohort means a PARTIAL store
 harsher threshold because a 403 PRESERVES the stored entry and an extraction
 failure DESTROYS it.
 
-**THE HIGH BASELINE IS 6 — and it was 4, then 7, inside three days.** This
+**THE HIGH BASELINE IS 13 ON THE NEWEST LINE, AND 6 OF THEM ARE THE STANDING
+ONES — and it was 4, then 7, then 6, inside ten days.** v206 (run #861) appended
+`high: 13`: the 6 standing findings plus **7 self-clearing `reparse-loss`
+entries** raised from `losses-triage.txt`, a run artifact that exists only in
+CI. Those 7 are the OCR re-roll documented in `docs/accuracy-log.md`
+2026-11-17 and they clear on the next run, so **13 is what the trail says and 6
+is what persists** — `record-check` compares against the trail, which is why
+this sentence names 13. *Derive it from the trail's `high` key, never from this
+sentence.* This
 line read **4** (`3 contrib outliers + fabricated-name`) while
 `docs/coverage-history.jsonl` has carried `high: 7` on every recent line
 (2026-11-07 x2 and 2026-11-08 all read 7), so it was corrected to 7 — and by
@@ -832,22 +840,25 @@ estimate: it refutes itself the moment a new import appears.
 
 **THE LEDGER IS THE QUEUE.** `node scripts/ledger-report.mjs` prints the one
 participant-weighted scalar and the addressable gap per field; it is DERIVED and
-must never be copied forward. Re-derived 2026-11-10: **115,641 plans /
-119,907,098 participants / overall 78.87%**, with addressable gaps
+must never be copied forward. Re-derived 2026-11-17 from run #861's own merge
+(v206): **115,641 plans / 119,907,098 participants / overall 79.28%**,
+87,476,850 participant-cells addressable, with addressable gaps
 
-| field | readers with no answer | owner agent |
-|---|---|---|
-| contributions (pre-tax / Roth / after-tax / brokerage) | **41.76M** | `tier-a-contributions` |
-| match | **20.86M** | `tier-a-plan-terms` |
-| vesting | **14.58M** | `tier-a-plan-terms` |
-| custodian / recordkeeper | **11.72M** | `tier-a-custodian` |
-| fund menu | **0.91M** | `tier-a-lineup` |
+| field | shown | readers with no answer | owner agent |
+|---|---|---|---|
+| contributions (pre-tax / Roth / after-tax / brokerage) | 67.14% | **39.40M** | `tier-a-contributions` |
+| match | 68.58% | **20.86M** (13.84M withheld on purpose) | `tier-a-plan-terms` |
+| vesting | 77.06% | **14.59M** (10.75M withheld on purpose) | `tier-a-plan-terms` |
+| custodian / recordkeeper | 90.22% | **11.72M** | `tier-a-custodian` |
+| fund menu | 93.52% | **0.91M** (6.25M withheld on purpose) | `tier-a-lineup` |
 
 **THE SCALAR WENT DOWN AND THAT WAS ACCURACY, TWICE.** 79.82% -> 78.33% when
 `lib-ledger` stopped reading code **2R** as designated Roth (2R is the
 brokerage window; **no 8a code names Roth or after-tax at all**), which
 withdrew a false `roth: true` from 2,344 plans / 8,549,974 readers. Then
-78.33% -> 78.87% when v205 shipped. *A number that only ever rises is not
+78.33% -> 78.87% when v205 shipped, and **78.87% -> 79.28% when v206 shipped**
+(the Roth-beside-a-tax-word arm: `roth` 42,689 -> 44,624 plans, against a
+pre-registered centre of 44,627). *A number that only ever rises is not
 measuring anything.*
 
 Row-level fields (per-fund ticker, fee, return) are deliberately NOT in that
@@ -1107,9 +1118,12 @@ because most carry a refuted route that must not be rebuilt.
   consultant, advisor or broker as the recordkeeper, of which ~36 are
   unarguable (an accountant is never a recordkeeper). The fix needs no new
   source and moves up to ~2,200 published names.
-- **`overshoot` 366 -> 764 -> 679 is a DOL refresh, not a regression** (764
-  attributed 2026-11-05 at `PARSER_VERSION` 204; **v205's re-parse took it to
-  679 / 762,169 readers**, withdrawing junk rather than fixing the cause).
+- **`overshoot` 366 -> 764 -> 679 -> 683 is a DOL refresh, not a regression**
+  (764 attributed 2026-11-05 at `PARSER_VERSION` 204; v205's re-parse took it to
+  679 / 762,169 readers, withdrawing junk rather than fixing the cause; **v206
+  took it to 683 / 762,739 readers**, a +4 the v206 arm cannot have caused since
+  it writes only `out.roth` — it is the OCR re-roll of `docs/accuracy-log.md`
+  2026-11-17).
   Remedy — judge a prior-year fallback against the FALLBACK YEAR's assets — is
   in `fetch-4i`, so it needs a bump and a full re-parse. **It now has a second
   motivating case, read against the filing:** Albertsons (239,818 readers)
