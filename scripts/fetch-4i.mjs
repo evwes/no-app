@@ -467,8 +467,39 @@ if (PARSE_SHARD != null) work = work.filter((_, i) => i % PARSE_SHARDS === PARSE
  * between parts that each passed. Never set in the workflow. */
 if (process.env.ONLY_ACKS_4I) {
   const only = new Set(process.env.ONLY_ACKS_4I.split(",").map((s) => s.trim()).filter(Boolean));
-  work = work.filter((p) => only.has(p.ack));
-  console.log(`ONLY_ACKS_4I: work list restricted to ${work.length} of ${only.size} named acks`);
+  /* FORCE, not filter — and this is a correction, not a widening (2026-11-17).
+   *
+   * This used to narrow `work`, which has ALREADY been cut to acks whose stored
+   * pv differs from PARSER_VERSION. So the flag could only ever reach a filing
+   * that was going to be re-parsed anyway, and the moment a run stamps the
+   * current pv on an ack the flag can never touch it again. Naming ten such acks
+   * printed "restricted to 0 of 10", wrote a delta of 0 entries and EXITED 0 —
+   * a clean zero reporting on the query, in the direction that looks like
+   * success. That defeats the stated purpose two lines above ("positive-control
+   * a change through the REAL production path on a handful of plans").
+   *
+   * It also leaves one real failure mode with no repair at all: a filing whose
+   * DOWNLOAD fails keeps its stored entry and its stale pv, so every later run
+   * retries it; a filing that is fetched and parses BADLY is stamped at the
+   * current pv and is thereafter invisible to the work list. Run #861 withdrew
+   * nine plans' menus that way, and `trace-filing --vs` reproduces CONFIDENT=true
+   * on the same filings today — so the store held a withdrawal the parser does
+   * not agree with, and nothing short of a PARSER_VERSION bump could reach it.
+   *
+   * Selecting from the unfiltered buildWorkList() is what makes the flag able to
+   * repair that. It is opt-in, never set by the workflow, so the scheduled and
+   * dispatched paths are byte-for-byte unchanged. */
+  work = buildWorkList().filter((p) => only.has(p.ack));
+  if (PARSE_SHARD != null) work = work.filter((_, i) => i % PARSE_SHARDS === PARSE_SHARD);
+  console.log(`ONLY_ACKS_4I: work list FORCED to ${work.length} of ${only.size} named acks (stale-pv filter bypassed)`);
+  /* Exit non-zero on an empty forced run. A no-op here is indistinguishable from
+   * "nothing needed re-parsing", which is exactly the reading that cost an hour
+   * when the flag silently matched nothing. Same rule fund-vehicles-refresh.mjs
+   * already follows. */
+  if (!work.length) {
+    console.error("ONLY_ACKS_4I: none of the named acks is in the work universe — refusing to exit 0 on an empty forced run");
+    process.exit(1);
+  }
 }
 console.log(`work list: ${work.length} filings to (re)parse at parser v${PARSER_VERSION}` +
   (PARSE_SHARD != null ? ` (matrix shard ${PARSE_SHARD}/${PARSE_SHARDS})` : "") + `; fetching up to ${BATCH} this run`);
