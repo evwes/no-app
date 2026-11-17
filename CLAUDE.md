@@ -220,7 +220,24 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   `provider::fund` key, `gen-fund-facts-asset.mjs` emits only entries whose
   `erBasis` is **`class-published`** with a fee inside two years, and `app.js`
   prints that figure with a tooltip naming the unit class while the ticker keeps
-  its comparable asterisk. Extending it to a family is TWO jobs — source the
+  its comparable asterisk.
+  **AND A BAND WHERE THE FILING NAMES THE TRUST AND NOT THE CLASS (2026-11-17),
+  which is a different mechanism and must not be confused with the above.**
+  `vehicleFamilyKeyFor` answers a FAMILY, `gen-fund-facts-asset.mjs` emits
+  `FUND_VEHICLE_BANDS` (41 families) from the already-published class entries,
+  and the cell prints a RANGE whose tooltip NAMES the classes it covers —
+  because a range over the sourced classes does not bound the family. 3,503
+  rows / 3.63M readers. Its three refusals are each a measured population: the
+  trust word belonging to the CUSTODIAN (`Empower Trust Company, LLC …`, 156
+  rows — the phrase is stripped before the question is asked, not refused,
+  since a row may name trustee AND vehicle); a stated class, because an exact
+  figure outranks a range; and a name whose vehicle word is **Fund** or absent
+  (20,718 rows / **9.08M readers**, STILL BLANK and the largest open vehicle
+  question — `…2050 Fund` is VFIFX's exact registered name on a row typed
+  collective trust, and nothing says which cell is wrong). The HELD Hybrid line
+  is refused in the GENERATOR as well as the resolver, and `vehicle-key-test`
+  asserts no Hybrid band exists.
+  Extending it to a family is TWO jobs — source the
   per-class figures, then add the family to the resolver — and **the first can
   fail honestly.** Measured: **Vanguard publishes per class and shipped**
   (7,527 rows / 7.54M readers); **State Street does NOT** — ssga.com carries its
@@ -244,6 +261,21 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   acceptable source, and is one plan's stated figure the price a different plan
   pays?* Until it is answered, **never put a LifePath or SSGA MUTUAL FUND's fee
   on a trust row**: that is the laundering both runs correctly refused.
+  **THE OWNER ANSWERED YES AND THE ROUTE IS CLOSED ANYWAY, BY THE SITES — 
+  measured 2026-11-17, do not reopen it without a new host.** Asked whether to
+  use recordkeeper-hosted sheets, the answer was yes, and `my.voya.com`,
+  `voyaretirementplans.com` and `lincolnfinancial.com` were added to the Default
+  environment's allowlist with the owner's approval. All three then refused:
+  `my.voya.com` gives `CONNECT tunnel established, response 200` and then an
+  HTTP **403 with a real 5,306-byte body** — the SITE rejecting this client, the
+  fourth failure shape this file already records — while the other two never
+  complete the CONNECT at all. `ssga.com` itself answers 200 and its DC page
+  names no non-lending or collective-trust document, only ETF factsheets.
+  *Allowing a host proves the proxy will carry you, never that the host will
+  answer*, and an approved question is not an unblocked one. So SSGA's and
+  BlackRock's per-class CIT fees have no reachable source from this sandbox and
+  those rows stay blank; the only remaining route is the owner supplying a sheet
+  directly, the way `docs/form5500-instructions-2025.txt` arrived.
   `scripts/trust-vehicle-size.mjs` ranks the ten families the owner named; it
   keys on `erShown`, never `er`, because the estimate column once made it count
   rows that already publish.

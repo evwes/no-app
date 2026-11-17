@@ -7323,3 +7323,50 @@ The `dl` population has been HEAD-probed whole four times (68/68, 78/78, 23/23,
 20/20 → 403), so `e=download` is an honest published claim and a rise means the
 EFAST2 bucket grew, not that our code broke.
 
+---
+
+## 2026-11-17 — SHIPPED: the Vanguard family word read abbreviated, misspelled and absent
+
+`vehicleKeyFor`'s Vanguard arm demanded `target` spelled in full and directly
+before the retirement word, so three filed shapes resolved nothing while the
+issuer's own per-class figure sat in the store: the abbreviation (`Vanguard Tgt
+Retire 2055 Tr I`), the OCR typo (`Tat`, `Targel`, `Tar`, `Targ`) and the
+omission (`VANGUARD RET INCOME TRUST II`, `Retirement 2040 Trust II` with
+Vanguard in the ISSUER cell). **509 rows / 91 menus / 722,574 readers / $15.42B
+gained an exact SOURCED fee and return**, 0 rows lost a cell, 0 keys changed.
+
+All 121 newly reached spellings were READ before shipping — the licence for
+widening a closed vocabulary — and reading them caught a wrong number: five rows
+are Target Retirement Income AND GROWTH, whose guard `\bgro?w?th\b` requires the
+letters `th`, so `Gr` and `Grow` walked past it onto the plain Income trust's
+figures. A second refusal covers `Savings Trust III Vanguard Tgt Retire 2020`,
+Vanguard Retirement SAVINGS Trust welded in front of a target row.
+
+## 2026-11-17 — SHIPPED: a fee and return BAND where the filing names the trust and not the class
+
+**3,503 rows / 344 menus / 3,630,306 readers / $164.5B** showed a blank fee and
+return on `T. Rowe Price Retirement 2050 Trust`-shaped names: vehicle settled,
+class not. The cell prints a range (`0.0375–0.075%`, `+3.40–3.44%`) whose
+tooltip names the classes it quotes. 0 replaced a shown figure; 7 withdrew one
+(see the accuracy log). 41 families in `FUND_VEHICLE_BANDS`.
+
+`vehicleKeyFor` was asserted **byte-identical to HEAD on all 1,781,478 rows**
+across the refactor that gave the family relation one definition — the generator
+CALLS `vehicleFamilyOfKey` rather than reimplementing the key surgery.
+
+### REFUTED / CLOSED by this work, do not rebuild
+
+- **The recordkeeper-hosted CIT sheet route is CLOSED BY THE SITES.** The owner
+  approved it and three hosts were added to the allowlist; `my.voya.com` returns
+  403 with a real body after the tunnel succeeds, the other two never complete
+  CONNECT, and ssga.com publishes no CIT document. *An approved question is not
+  an unblocked one.* SSGA and BlackRock per-class fees have no reachable source.
+- **A band keyed on the TYPE CELL alone is refused**, pending the owner: 20,718
+  rows / 9.08M readers name the vehicle `Fund` or name none, and `…2050 Fund` is
+  VFIFX's exact registered name on a row typed collective trust.
+- **A band built from `raw.vehicles` rather than the published set is wrong**:
+  Vanguard's dormant Trust III fee (0.4000 as of 2014-03-31) lands at the top of
+  the range, reading 0.0375–0.4% instead of 0.0375–0.075%.
+- **`VEHICLE_NAME_SAYS_TRUST` applied to the raw name is refuted** — 156 rows get
+  their trust word from the CUSTODIAN (`Empower Trust Company, LLC`), and almost
+  every one names its vehicle as a Fund.
