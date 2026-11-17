@@ -7,6 +7,64 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-17 — THREE CONSUMERS WENT BLIND TO A CELL TYPE THE PAGE HAD JUST GAINED, AND ONE ARM READ THE CUSTODIAN AS THE MANAGER
+
+**WHAT WAS WRONG, part one — the scoreboard.** The trust fee/return BAND shipped
+on 2026-11-17 and `completion.mjs` could not see it. It decides a row is
+answered from `r.erShown != null && r.ytdSourced`, and a banded row has
+`erShown` null — the range lives in `r.band`. So all 3,503 rows the page now
+answers with a range counted as GAPS, and the headline read **31.73% where the
+truth was 32.83%**: 1.10 points, understating the page, with nothing failing.
+Two more consumers followed within the hour: `loadFundFactsAsset` returned only
+`{facts, vehicles}`, so a Schwab delta script asked for `bands`, got
+`undefined`, and printed "NO BAND" about families that have one.
+
+**This is the `tkExact` hazard, met twice more in one day.** A consumer that
+RE-DERIVES what the page decides goes blind the moment the page gains an arm,
+and *nothing executes a comment asserting equivalence*. The band was added to
+`renderRow`'s return value precisely so instruments could see it, and the one
+consumer that needed it was not updated with it.
+
+**THE CHANGE.** `completion.mjs` counts bands SEPARATELY — a range is not a
+figure, so folding it into `withBoth` would over-state in the other direction
+and erase the distinction a reader experiences; it prints two headlines and
+`bandPpl`/`pctAnswered` reach the JSON. `loadFundFactsAsset` now returns
+`bands`, tolerant of absence because a before-side legitimately reads an older
+asset through `git show`. The fix belongs in the loader rather than in each
+caller, which is what the third instance proved.
+
+**WHAT WAS WRONG, part two — the Schwab arm read the custodian as the manager.**
+`schwabVehicleParts` tested its house against issuer-plus-name like its two
+siblings. But `Charles Schwab Trust Bank` is a CUSTODIAN for plans holding every
+house's funds, so "Schwab in the issuer cell" never meant "a Schwab fund".
+Neutering each guard in turn over all 6,672 live Schwab (name, issuer, type)
+triples resolved `VGD TARGET RET INCOME GROWTH I` — a **Vanguard** fund — to
+`schwab::sirt-income-trust-class-i`. The line word blocked it incidentally, and
+the same commit was about to widen that word to accept `Mng`. `SCHWAB_NOT_OURS`
+now refuses another house's name outright, and the refusal is ASSERTED rather
+than mutated because the line word makes it redundant today — stated, with the
+measurement, instead of pretended load-bearing.
+
+**AND A COMMITTED SCRIPT MISLABELLED A BENCHMARK AS A FUND.**
+`schwab-ctf-extract.py` keyed a fund label on "no expense in column B", and a
+BENCHMARK row has no expense either, so `Russell 1000® Value Index` was read as
+a fund name on the ITF sheet. The `fund-facts` agent caught it by parsing the
+sheet itself rather than trusting the script. A fund label carries no numbers at
+all; a benchmark has them in E..M.
+
+**WHAT PREVENTS IT.** The band is in the loader every consumer already uses, so
+the next instrument gets it for free. `vehicle-key-test` pins the Vanguard-at-
+Schwab row as a must-not-resolve case, and its CASES loop now carries the TYPE
+CELL as a fourth element — it could not express that input before, which is why
+two Schwab cases looked wrong when they were right.
+
+*A metric that re-derives the page's verdict is a second implementation, and the
+day the page gains an arm it reports on itself rather than on the page. And
+"Schwab in the issuer cell" is a name inside a name: it measures the custodian,
+not the vehicle.*
+
+---
+
 ## 2026-11-17 — WE PUBLISHED THE DATED T. ROWE TRUST'S FEE AND RETURN ON THE INCOME SERIES, A DIFFERENT PRODUCT
 
 **WHAT WAS WRONG.** `trowePriceVehicleParts` took the first dated vintage it

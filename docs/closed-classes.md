@@ -7370,3 +7370,54 @@ CALLS `vehicleFamilyOfKey` rather than reimplementing the key surgery.
 - **`VEHICLE_NAME_SAYS_TRUST` applied to the raw name is refuted** — 156 rows get
   their trust word from the CUSTODIAN (`Empower Trust Company, LLC`), and almost
   every one names its vehicle as a Fund.
+
+---
+
+## 2026-11-17 — SHIPPED: Schwab's collective trusts, from the owner's copy of Schwab's own workbook
+
+The owner supplied `CTF_Monthly_Performance_10312026_FINAL.xlsx`; it is committed
+at `docs/sources/schwab-ctf-monthly-performance-2026-10-31.xlsx` and cited by its
+raw URL, because `fund-facts-check.mjs` requires an `https://` source and
+`www.schwabassetmanagement.com` answers **403 with a real body** to this client.
+The precedent is `docs/form5500-instructions-2025.txt`.
+
+The `fund-facts` agent wrote **111 unit-class entries** (SMRT 78, SIRT 26, ITF 7),
+all `erBasis: class-published` with a `shareClass`, every figure dated
+2026-10-31, checker 0 failures. 107 carry a fee and a YTD; **100 carry trailing
+returns, and 76 the full 1/3/5/10-year curve — the first sourced trailing
+returns in the schema**, open since 2026-11-13 with 0 funds carrying one.
+
+**DELIVERED**, enumerated per triple against all 1,781,478 rows: **794 triples
+newly resolve an exact class key, 4,387,845 reader-slots, every key priced**;
+349 newly resolve a family band, 760,386 slots; **0 lost**. 27 Schwab band
+families came free from the key convention. Mirrored `9d0fe4d6 → c4f8f857`,
+Pages run 1288 success.
+
+### REFUTED / CLOSED by this work, do not rebuild
+
+- **The Great Gray IDENTITY route is REFUTED.** The uploaded flexPATH supplement
+  names ~188 Great Gray funds and several are names any house uses. Measured
+  against the filings' own issuer cells over the 2,180 matching rows / 5,968,383
+  slots: **`Prudential Trust Company` 2,065,213**, no issuer cell 1,907,870,
+  `American Century` 354,333, and only **318,942 carrying a Great Gray issuer
+  cell** — which already say Great Gray, so the PDF adds nothing to them.
+  `JP Morgan`, `Fidelity`, `Causeway` and `Nomura` each own instances of
+  `Emerging Markets Fund`. The 2.6M-reader `Core Plus Bond Fund` is largely
+  **Prudential's**. Co-occurrence cannot rescue it: 4,138,472 of the slots sit
+  in menus holding exactly ONE supplement name, 4,111,870 of them generic.
+  *A count keyed on a vocabulary measures the vocabulary.*
+- **`VANGUARD TARGET 2055` is NOT a resolver fix.** It was written up as ~22M
+  slots needing only a family-gate widening. It carries **no vehicle word**, so
+  the band refuses it whatever the gate says — tested by asking the shipped
+  resolver about `Vanguard Target Retirement 2055`, which passes the gate and
+  still gets no band. Those slots are inside the OWNER-GATED vehicle question.
+- **ITF is not resolved** and that is a measurement: its five funds appear in the
+  store once, as `SCHWAB INST LCP VAL TRUST CL I` (83,961 readers), and `CL I`
+  is not one of its published class names (Retirement / Institutional / Select).
+- **Two Schwab abbreviation gaps are NAMED AND LEFT**, each needing its own
+  enumeration: `Tr Fd` is not the word Trust (`Indexed Ret Tr Fd 2035 I` with no
+  type cell, 5,246 readers), and `...Trust Fund2045 CL IV` welds the vintage so
+  `\b(20..)\b` cannot see it (1,158 readers).
+- **`schwabassetmanagement.com` is allowlisted and still unusable** — 403 with a
+  real body, the site refusing after the proxy allowed it. Do not re-probe it
+  expecting a live fetch.
