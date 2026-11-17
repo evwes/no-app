@@ -4856,7 +4856,10 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
       if (!erSourced && !ytdSourced && !typeContradictsTrust
           && typeof FUND_VEHICLES === "object" && FUND_VEHICLES
           && typeof vehicleKeyFor === "function") {
-        const vkey = vehicleKeyFor(f.nameRaw || f.name, f.iss);
+        /* the TYPE cell travels too: it is the filer's own statement that the
+         * vehicle is pooled, and it is what licenses reading a bare trailing
+         * class token as a UNIT class on a name that omits the word "Trust". */
+        const vkey = vehicleKeyFor(f.nameRaw || f.name, f.iss, f.type);
         const vf = vkey ? FUND_VEHICLES[vkey] : null;
         if (vf) {
           if (vf.er != null) { erSourced = vf; vehicleCls = vf.cls || null; }

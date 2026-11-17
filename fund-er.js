@@ -2075,11 +2075,41 @@ const TRP_CLASS = /\b(?:class|cl)\.?\s*([a-k])\b/i;
  * "Retirement Blend 2040 Trust B Cit", where a trailing "Cit" follows the
  * letter -- correctly, since this cannot tell that B from a truncation. */
 const TRP_CLASS_TAIL = /\btrusts?\s+([a-k])\s*$/i;
+/* AND THE SPELLINGS THAT OMIT "TRUST", ABBREVIATE IT, OR NAME A T-SERIES CLASS
+ * — found 2026-11-17 by bucketing what the page does with classless trust rows.
+ * 20,536 rows / 9,156,026 readers are typed as a collective trust, carry a
+ * STARRED comparable ticker and publish NO fee, and the dominant spellings are
+ * `T. Rowe Price Retirement 2060 A`, `T. Rowe Price Retirement Blend 2045 A`
+ * and `T Rowe Price Retire 2040 Tr K`. The unit class is stated in every one;
+ * only the word `Trust` is missing, or shortened to `Tr`.
+ *
+ * THIS IS THE SAME DEFECT AS THE VANGUARD `VANGUARD TARGET RET 2040 II` MISS
+ * FIXED YESTERDAY, in a second house — the recorded rule that *a fix for one
+ * phrasing of a class is not a fix for the class*, now met across three
+ * families (Vanguard trusts, T. Rowe trusts, and the `Ret` family word).
+ *
+ * `t\d{1,2}` joins `[a-k]` because the sourced set holds T4 through T14 as
+ * well as A-K; `TRP_CLASS` and the older tail were written when only the
+ * letters were known, so a `Trust T6` row could not resolve a key we hold.
+ *
+ * THE NARROWING, and it is the whole safety case. The class must IMMEDIATELY
+ * follow the vintage — a year, `balanced` or `income` — with at most an
+ * abbreviated `Tr`/`Trust` between, and must END the name. A letter floating
+ * anywhere else is not a class statement: this is the same end-anchoring that
+ * stops `Great Gray Trust T. Rowe Price Retirement 2030` reading its `T` as a
+ * class, and it keeps `Retirement Blend 2040 Trust B Cit` refused, where a
+ * trailing `Cit` means the `B` cannot be told from a truncation. */
+const TRP_TRUST_WORD = /\btrusts?\b/i;
+/* the filed TYPE cell, as the filer stated it. Deliberately narrow: these are
+ * the words a 4i type column uses for a pooled vehicle, and nothing else. */
+const VEHICLE_TYPE_IS_TRUST = /\b(?:collective|commingled|pooled|trust|cit)\b/i;
+const TRP_CLASS_AFTER_VINTAGE =
+  /\b(?:20(?:0[05]|[1-6][05]|70)|balanced|income)\s+(?:trusts?\.?\s+|tr\.?\s+)?([a-k]|t\d{1,2})\s*$/i;
 const TRP_VINTAGE = /\b(20(?:0[05]|[1-6][05]|70))\b/;
 const TRP_BALANCED = /\bbalanced\b/i;
 
 // eslint-disable-next-line no-unused-vars
-function trowePriceVehicleKey(n, house) {
+function trowePriceVehicleKey(n, house, type) {
   if (!TRP_HOUSE.test(house)) return null;
   if (!TRP_FAMILY.test(n)) return null;
   if (TRP_VEH_NOT.test(house)) return null;
@@ -2090,12 +2120,28 @@ function trowePriceVehicleKey(n, house) {
    * publishing nothing today only because Class I happens to be unsourced,
    * which is luck and not a design. One word separates the two vehicles and
    * the filer writes it. */
-  if (!/\btrusts?\b/i.test(n)) return null;
+  /* THE NAME SAYS TRUST, **OR THE FILER'S OWN TYPE CELL DOES**. 2026-11-17.
+   *
+   * This guard is what separates the TRUST from the identically-named MUTUAL
+   * FUND, and it must not be deleted: without it `T. Rowe Price Retirement
+   * 2060 Fund` would be priced as a collective trust. But as a NAME-only test
+   * it also made `TRP_CLASS_AFTER_VINTAGE` UNREACHABLE BY CONSTRUCTION — the
+   * 20,536 rows / 9,156,026 readers that state a unit class and omit the word
+   * `Trust` could never reach the class match, so a new arm added for exactly
+   * them would have shipped inert and read as a clean zero.
+   *
+   * The type cell is the FILER'S OWN STATEMENT about the vehicle, and the page
+   * already relies on it to treat these rows as trusts at all — it is what
+   * makes their ticker a starred comparable rather than an assertion. So a row
+   * the filer typed as a collective trust may have a bare trailing class token
+   * read as a UNIT class. A row typed as a mutual fund may not, and a row that
+   * states no class token still resolves nothing. */
+  if (!TRP_TRUST_WORD.test(n) && !VEHICLE_TYPE_IS_TRUST.test(String(type || ""))) return null;
   const line = TRP_LINE.find(([, re]) => re.test(n));
   if (line && line[0] === "hybrid") return null;      // held: see the note above
   /* "Class K" wins over a trailing bare letter: a name carrying both states
    * its class explicitly, and the explicit statement is the better evidence. */
-  const cls = n.match(TRP_CLASS) || n.match(TRP_CLASS_TAIL);
+  const cls = n.match(TRP_CLASS) || n.match(TRP_CLASS_TAIL) || n.match(TRP_CLASS_AFTER_VINTAGE);
   if (!cls) return null;
   const yr = n.match(TRP_VINTAGE);
   const vintage = yr ? yr[1] : (TRP_BALANCED.test(n) ? "balanced" : null);
@@ -2106,10 +2152,10 @@ function trowePriceVehicleKey(n, house) {
 }
 
 // eslint-disable-next-line no-unused-vars
-function vehicleKeyFor(name, iss) {
+function vehicleKeyFor(name, iss, type) {
   const n = String(name || "");
   const house = `${iss || ""} ${n}`;
-  const trp = trowePriceVehicleKey(n, house);
+  const trp = trowePriceVehicleKey(n, house, type);
   if (trp) return trp;
   if (!VG_TRUST_FAMILY.test(house)) return null;
   if (!VG_TRUST_TARGET.test(n)) return null;

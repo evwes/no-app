@@ -15076,7 +15076,7 @@ const FUND_FACTS = {
  * the unit class the figure is quoted for -- the page prints it, because "0.055%" means
  * nothing without saying which class of the trust it prices.
  *
- * 501 vehicles · 501 with an expense ratio · 308 with a YTD return
+ * 502 vehicles · 502 with an expense ratio · 309 with a YTD return
  */
 const FUND_VEHICLES = {
  "t-rowe-price::retirement-2005-trust-class-a":{"er":0.38,"erAsOf":"2026-09-30","ytd":4.24,"ytdAsOf":"2026-09-30","cls":"Class A"},
@@ -15519,6 +15519,7 @@ const FUND_VEHICLES = {
  "t-rowe-price::retirement-hybrid-balanced-trust-class-t7":{"er":0.28,"erAsOf":"2026-05-01","cls":"Class T7"},
  "t-rowe-price::retirement-hybrid-balanced-trust-class-t8":{"er":0.27,"erAsOf":"2026-05-01","cls":"Class T8"},
  "t-rowe-price::retirement-hybrid-balanced-trust-class-t9":{"er":0.23,"erAsOf":"2026-05-01","cls":"Class T9"},
+ "tiaa::real-estate-account":{"er":0.855,"erAsOf":"2026-05-01","ytd":2.1,"ytdAsOf":"2026-06-30","cls":"Account (one expense deduction applies to all contracts)"},
  "vanguard::target-retirement-2020-trust-a":{"er":0.0375,"erAsOf":"2026-03-31","ytd":3.43,"ytdAsOf":"2026-11-13","cls":"Trust A"},
  "vanguard::target-retirement-2020-trust-i":{"er":0.065,"erAsOf":"2026-03-31","ytd":3.42,"ytdAsOf":"2026-11-13","cls":"Trust I"},
  "vanguard::target-retirement-2020-trust-ii":{"er":0.075,"erAsOf":"2026-03-31","ytd":3.4,"ytdAsOf":"2026-11-13","cls":"Trust II"},
