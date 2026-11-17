@@ -7,6 +7,68 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-17 — A FULL RE-PARSE RE-ROLLS THE OCR POPULATION, AND THE STORE KEEPS WHICHEVER ROLL CAME LAST
+
+**WHAT WAS WRONG.** Run #861 (v206) withdrew the published menus of 9 plans /
+7,634 participants. The audit's own tolerance called it noise — `confident -7`
+against a −200 threshold, verdict "improved or held" — and it *is* noise in
+aggregate. Underneath it, nine named plans lost a menu for no reason a reader
+could accept. **`mirror-gate` refused the mirror on exactly those nine, and was
+right to**; the count-based check and the plan-keyed gate disagreed, and the
+gate was the one measuring the thing that matters.
+
+**IT WAS NOT THE PARSER CHANGE.** v206 adds 91 lines inside `if (!out.roth)`
+and writes only `out.roth`/`out.rothText`, so it cannot reach a lineup.
+`trace-filing --vs` proved it rather than arguing it: on all four TEXT losses,
+v205 and v206 return byte-identical verdicts — same rows, same ratios, all
+`CONFIDENT=true`. *A pre-registration that says "every other key unchanged" is
+worth having precisely because it makes four tiny moves demand an explanation.*
+
+**THE CAUSE IS OCR NON-DETERMINISM, OBSERVED NOT INFERRED.** The remaining
+losses are all OCR filings, and the rasteriser drops pages run to run — `Too
+few characters. Skipping this page`, `Error during processing.` Msk Group
+parsed to **32 rows at v205 and 3 rows now, on identical code and an identical
+filing.** So every full re-parse re-rolls a fraction of the ~6,765 OCR entries,
+in both directions, and the store keeps whichever roll the last run made.
+
+**AND THE TRAP THAT MAKES IT PERMANENT.** A filing whose DOWNLOAD fails keeps
+its stored entry and a stale `pv`, so every later run retries it. A filing that
+is fetched and parses BADLY is stamped at the CURRENT `pv` and is thereafter
+invisible to the work list — unreachable without a `PARSER_VERSION` bump and a
+four-hour universe re-parse. `ONLY_ACKS_4I` should have been the escape hatch,
+but it *filtered* the already-pv-narrowed list instead of forcing one, so naming
+ten such acks printed `restricted to 0 of 10`, wrote a delta of 0 entries and
+**exited 0**. *A clean zero reporting on the query, failing in the direction
+that looks like success.*
+
+**THE CHANGE.** `ONLY_ACKS_4I` now selects from the unfiltered
+`buildWorkList()`, re-applies the shard filter, and **exits 1 on an empty forced
+run**. Opt-in, never set by the workflow, so scheduled and dispatched paths are
+byte-identical. A forced re-parse of the ten acks returned **6 of 9 plans** to
+confidence (+6 / −0, 0 row-droppers), including the HEXCEL MASTER TRUST that
+serves both Hexcel plans.
+
+**THE TWO THAT STAYED, READ BY HAND — and they are NOT the same case.**
+Parkhill's v205 "menu" was 5 rows: `Mutual funds`, `Group annuity level
+contracts`, `Interest in fair value of investments and dividends $ 12,859,9`,
+`Guaranteed return account`, `Stable value fund` — a statement summary
+published to 815 readers as a fund menu. **Its withdrawal is a correction.**
+Msk's was genuine (Fidelity Freedom Index vintages, Brown Advisory, Principal
+Guaranteed Option) but carried `Othe fe ccecnennnnnn… | A618) |` at
+**$54,091,088** as its largest holding. Mirrored with `--force-data` on that
+evidence: 100% of the remaining losses sampled, not a tolerance.
+
+**A LIMIT ON THE NEW TOOL, FOUND BY USING IT.** A local forced re-parse cannot
+reproduce a FALLBACK-served plan: `fallbacks.json` is a prep-stage artifact that
+exists only inside the pipeline, and without it the log says `prior-year
+fallback disabled this run`. Msk was served from its 2024 filing, so locally it
+can only ever reach the newest filing's summary page. **Repairing a
+fallback-served ack needs a workflow dispatch, not a session.**
+
+**WHAT IS STILL OPEN.** An OCR parse that is strictly worse than the stored one
+should not overwrite it. That is a parser change, it needs a version bump, and
+it is the real fix — this entry is the repair, not the cure.
+
 ## 2026-11-17 — THE TRAILING CURVE WAS SOURCED, DATED, VALIDATED AND DROPPED BY THE GENERATOR, ONE LAYER BEFORE THE PAGE
 
 **WHAT WAS WRONG.** `data/fund-facts.json` carried annualised, dated, sourced
