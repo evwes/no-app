@@ -8103,6 +8103,97 @@ export function extractPlanFeatures(text, sponsorName = "") {
     t.match(/(?:contribut|defer)\w*[^.]{0,140}?(?:pre-?tax|before-?tax)\s*(?:,|\bor\b|\band\b|\/)\s*(?:designated\s+|after-?tax\s+|post-?tax\s+)?\broth\b/i) ||
     t.match(/(?:contribut|defer)\w*[^.]{0,140}?\broth\b\s*(?:,|\bor\b|\band\b|\/)\s*(?:pre-?tax|before-?tax)/i);
   if (roth) { out.roth = true; out.rothText = sentence(roth.index); }
+  /* v206: ROTH NAMED BESIDE A TAX-BASIS WORD — the ordinary way an auditor
+   * states Roth, and the shape every arm above misses.
+   *
+   * Measured over a seeded random draw of 261 filings from the 22,356 plans
+   * that have READ notes and no Roth or after-tax flag: of the 33 whose text
+   * mentions either word, the single largest class is Roth written as an
+   * APPOSITIVE on a tax-basis word — "on a pre-tax or after-tax (Roth)
+   * basis", "pretax and/or Roth post tax annual compensation", "or after-tax
+   * basis in accordance with the Roth provision", "on a tax-deferred and/or
+   * Roth after-tax basis". Each arm above needs Roth to follow a separator
+   * DIRECTLY, so a parenthesis, an "and/or", an intervening noun ("savings",
+   * "basis", "401(k)") or a line-wrap hyphen ("after- tax") defeats it, and
+   * the page told those readers "Roth — not stated in the audited notes"
+   * about a filing that states it in the word.
+   *
+   * THE SHAPE IS SYMMETRIC because the filings are: Roth sits before the tax
+   * word as often as after it ("Roth after-tax amounts", "Roth post tax
+   * compensation"). The window is tight and excludes `.` and `;` so it cannot
+   * reach across a sentence.
+   *
+   * AND IT MUST REFUSE THREE THINGS, each a filing in that same draw:
+   *  - A ROLLOVER FROM ANOTHER PLAN. Amazon (1,428,999 readers) files
+   *    "Participants may also roll over amounts representing pre-tax or Roth
+   *    after-tax distributions from other qualified plans." That is Roth
+   *    money arriving from somewhere else; the sentence makes no claim that
+   *    THIS plan offers Roth contributions, and publishing it as the evidence
+   *    for one would put a rollover clause under a contribution heading.
+   *  - A ROTH IRA, for the same reason one step further out.
+   *  - A SENTENCE THAT IS NOT ABOUT MONEY GOING IN. An in-service withdrawal
+   *    of "Roth amounts" and an in-plan CONVERSION both presuppose a Roth
+   *    account without stating a contribution type; `inPlanRoth` already
+   *    carries the conversion fact on its own.
+   * A sponsor NAMED Roth (Roth Bros., Inc., 218 readers, whose filing prints
+   * the name 26 times) is refused by the adjacency requirement itself — no
+   * tax-basis word sits beside it — and is pinned as a gate specimen.
+   *
+   * AND A FOURTH REFUSAL, MEASURED AT 3 OF THE 37 GAINS AND THE LARGEST BLOCK
+   * OF READERS AMONG THEM (133,930 of 437,041): THE SECURE 2.0 CATCH-UP
+   * MANDATE. Whole Foods (123,250 readers) files "the Plan required all
+   * participants aged 50 and older to make their catch-up contributions on a
+   * Roth (after-tax) basis" and its notes say NOTHING else about Roth. Section
+   * 603 makes high earners' CATCH-UP contributions Roth; it says nothing about
+   * whether a participant may elect Roth for ordinary deferrals, and a reader
+   * shown "Roth — yes" would read the opposite of what the filing supports.
+   * The discriminator is REQUIREMENT vs PERMISSION, not the word "catch-up":
+   * US Acute Care's "May elect to contribute … (plus catch-up contributions as
+   * defined in the Plan document) … on a pre-tax basis and/or after-tax (Roth)
+   * basis" names catch-up inside a general election and is kept. This is
+   * statutory boilerplate entering every 2026 filing, so the population only
+   * grows.
+   *
+   * WHAT EACH CONDITION IS WORTH, MEASURED OVER 497 FILING TEXTS BY DISABLING
+   * IT, because this record's own rule is that a guard's blocking population
+   * is measured on the data and not imagined:
+   *   `!out.roth`        16 QUOTE DISPLACEMENTS prevented, IBM's 144,897
+   *                      readers among them, and W. W. Grainger's rothText
+   *                      would have become a VESTING sentence. A guard that
+   *                      blocks a wrong answer must not discard the honest
+   *                      evidence, and this one protects evidence already
+   *                      published.
+   *   forward adjacency  needed for 26 filings / 248,994 readers
+   *   reverse adjacency  needed for 1 filing / 332 readers (Asian Art Museum)
+   *   CATCHUP_MANDATE    blocks 3 filings / 133,930 readers, sole protection
+   *   money-going-IN     blocks 0 ALONE
+   *   the three vetoes   block 0 ALONE
+   * THE LAST TWO LINES ARE THE TRAP THIS PROJECT HAS PAID FOR BEFORE: they are
+   * MUTUALLY REDUNDANT on Amazon, so pricing them one at a time reads "0" for
+   * each while removing BOTH admits Amazon's rollover sentence and its
+   * 1,428,999 readers. Neither is dead code; the pair is load-bearing and
+   * `roth-pairing-test.mjs` discharges exactly that. The vetoes are kept on
+   * measured REACHABILITY rather than on a blocking count: 26 of those 497
+   * filings carry a sentence that passes every other condition and trips one
+   * of them — "Participants are allowed to withdraw, at any time, any portion
+   * of after-tax participant contributions" — one word short of firing. */
+  if (!out.roth) {
+    const ROLL_IN = /roll(?:ed|ing|s)?[- ]?over|rollover|transferr?ed (?:in|from)|from (?:other|another|a prior|a predecessor|a former)\b/i;
+    const NOT_IN = /\bwithdraw|\bdistribut|in[- ]?plan|\bconvert|\bconversion|\brecharacteriz/i;
+    const CATCHUP_MANDATE = (s) => /catch-? ?up/i.test(s) && /\b(?:required|requires|require|must|mandat\w+)\b/i.test(s);
+    for (const m of t.matchAll(/(?:pre|before|after|post)-? ?tax\b[^.;]{0,32}?\broth\b|\broth\b[^.;]{0,14}?(?:pre|before|after|post)-? ?tax\b/gi)) {
+      const s = sentence(m.index);
+      /* money going IN. `savings` is here for Xylem's "designate savings as
+       * pre-tax savings, after-tax savings, Roth savings", which carries no
+       * contribution or deferral word at all — but a bare `savings` token
+       * matches every "401(k) Savings Plan" heading this corpus glues into
+       * sentences, so it is admitted only in its verb-phrase form. */
+      if (!/contribut|\bdefer|designate\w* savings|savings (?:as|on) a/i.test(s)) continue;
+      if (ROLL_IN.test(s) || NOT_IN.test(s) || /\broth\s+ira\b/i.test(s)) continue;
+      if (CATCHUP_MANDATE(s)) continue;
+      out.roth = true; out.rothText = s; break;
+    }
+  }
   if (/in.?plan.{0,40}(roth )?(conversion|rollover)|convert.{0,40}(to )?(a )?roth/i.test(t)) out.inPlanRoth = true;
   // "after-tax [deferral] contributions", incl. enumerations like
   // "pre-tax, Roth and after-tax deferral contributions". Veto only the

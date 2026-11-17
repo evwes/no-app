@@ -58,6 +58,12 @@ on:
             # data condition must never be able to stop the pipeline ingesting
             # new filings. A red site-test blocks nothing but the verdict.
             "scripts/lib-4i.mjs", "scripts/slice-vq.mjs",
+            # v206's Roth-beside-a-tax-word arm. Its fixtures are VERBATIM
+            # sentences and its two discharges disable the arm by text
+            # substitution on lib-4i, so an edit to EITHER file can make it
+            # lie; both are listed. It also runs in build-data's prep gate,
+            # where a red result stops a 3.5-hour parse before it starts.
+            "scripts/roth-pairing-test.mjs",
             "scripts/lib-disclose.mjs", "scripts/build-seo-pages.mjs",
             # the SEC ticker table, its consumer's harness, and the matcher
             # whose answers it carries
@@ -369,6 +375,7 @@ jobs:
           node scripts/schd-name-test.mjs
           node scripts/match-formula-test.mjs
           node scripts/wrap-repair-test.mjs
+          node scripts/roth-pairing-test.mjs
       - name: The field ledger's own suite — the one number the loop steers by
         run: node scripts/ledger-test.mjs
       - name: Generic-typo gate

@@ -241,6 +241,54 @@ const FEATURE_SPECIMENS = [
     "20260825120902NAL0025739360001", { vesting: "Immediate" }],
   ["v203 decoy (AV_SCHEDULE `immediate`): Capital Health 'vested immediately … 100% at normal retirement' keeps Immediate",
     "20251015083721NAL0004357777001", { vesting: "Immediate" }],
+  /* v206 — ROTH NAMED BESIDE A TAX-BASIS WORD. Measured over a seeded random
+   * draw of 261 filings from the 22,356 plans whose notes we READ and whose
+   * Roth and after-tax are both unset: the largest resolvable class is Roth
+   * written as an appositive on a tax word, which every pre-v206 arm misses
+   * because it needs Roth to follow a separator DIRECTLY. Four positives, one
+   * per shape that defeated a different arm, and each is the measured
+   * single-protection case for one condition:
+   *   Southwest    the prepositional form, "after-tax basis through a Roth
+   *                provision" — nothing follows Roth but a noun
+   *   Sealed Air   the LINE-WRAP HYPHEN, "before- tax or Roth basis"
+   *   Xylem        the `savings` verb-phrase arm of the money-going-IN test:
+   *                "designate savings as pre-tax savings, after-tax savings,
+   *                Roth savings" carries no contribution or deferral word at
+   *                all, and is the ONLY filing in 497 for which that arm is
+   *                load-bearing
+   *   Asian Art    the REVERSE order, "Roth after-tax basis" — the only
+   *                filing in 497 the reverse alternative is needed for
+   * AND TWO NEGATIVES, each the sole protection for its own condition:
+   *   Roth Bros.   THE SPONSOR IS NAMED ROTH and the filing prints the name 26
+   *                times. Protected only by the adjacency requirement — no tax
+   *                word sits beside any of them. *A screen keyed on a
+   *                vocabulary measures the vocabulary.*
+   *   Whole Foods  THE SECURE 2.0 CATCH-UP MANDATE, 123,250 readers: "the Plan
+   *                required all participants aged 50 and older to make their
+   *                catch-up contributions on a Roth (after-tax) basis", and
+   *                the notes say nothing else about Roth. Section 603 makes
+   *                high earners' CATCH-UP contributions Roth and says nothing
+   *                about ordinary deferrals; publishing "Roth — yes" from it
+   *                tells a reader under 50 something the filing does not
+   *                support. Removing `CATCHUP_MANDATE` admits this and two
+   *                others (133,930 readers), and nothing else blocks them.
+   * The three rollover/withdrawal vetoes have NO single-protection case in
+   * that population — they block 0 of 497 filings — so no fixture for them is
+   * invented here; their reachability is recorded instead (26 of 497 filings
+   * carry a sentence that passes every other condition and trips one of them,
+   * one word short of firing). Same position as AV_FULL above. */
+  ["v206: Southwest — 'deferring to the Plan on an after-tax basis through a Roth provision'",
+    "20260707151841NAL0015672371001", { roth: true }],
+  ["v206: Sealed Air — line-wrap hyphen, 'on a before- tax or Roth basis'",
+    "20260824135735NAL0018933971001", { roth: true }],
+  ["v206: Xylem — 'designate savings as pre-tax savings, after-tax savings, Roth savings'",
+    "20261007085527NAL0015242339001", { roth: true }],
+  ["v206: Asian Art Museum — reverse order, 'tax-deferred and/or Roth after-tax basis'",
+    "20261008084025NAL0026155041001", { roth: true }],
+  ["v206 control: the SPONSOR is named Roth (Roth Bros., Inc.) — no Roth claim",
+    "20260930073605NAL0011352403001", { roth: null }],
+  ["v206 control: Whole Foods — a SECURE 2.0 catch-up mandate is not a Roth offering",
+    "20260918110451NAL0012578674001", { roth: null }],
 ];
 
 const SPECIMENS = [

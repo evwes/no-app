@@ -7,6 +7,62 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-17 — v206: ROTH BESIDE A TAX-BASIS WORD, AND THE AFTER-TAX HALF OF 2K THE NOTES CANNOT ANSWER
+
+**THE CEILING, MEASURED BEFORE THE PARSER CHANGE.** Of the 58,681 2K plans in
+`contributions`' `partial` bucket, 36,745 are SHORT FORM and 4,050 yielded no
+features, leaving **22,356 plans / 30,168,199 readers** whose notes we read. A
+seeded random draw of 261, OCR'd wherever a per-filing control showed the text
+did not reproduce the STORED features: **81.3% of plans / 67.3% of readers say
+nothing about Roth or after-tax.** The control mattered — Amazon's 1,428,999
+readers first read "no Roth" because my text held no notes at all. *A clean
+negative reports on the query.*
+
+**THE CHANGE.** The one resolvable class is Roth as an APPOSITIVE on a tax word
+("a pre-tax or after-tax (Roth) basis", "pretax and/or Roth post tax",
+"after-tax basis in accordance with the Roth provision"): all five existing
+arms need Roth to follow a separator DIRECTLY, so a parenthesis, an "and/or",
+an intervening noun or a LINE-WRAP HYPHEN ("before- tax") defeats them. One
+additive arm gated on `!out.roth`. Over 497 filing texts: **34 roth gained, 0
+lost, 0 changed, no other field moved.**
+
+**EACH CONDITION PRICED BY DISABLING IT.** `!out.roth` prevents **16 QUOTE
+DISPLACEMENTS** (IBM 144,897 readers; Grainger's Roth quote would become a
+VESTING sentence). `CATCHUP_MANDATE` blocks 3 filings / 133,930 readers, sole
+protection. The money-going-IN test and the three rollover/withdrawal vetoes
+block **0 alone** and together block Amazon — *a conjunction's conditions
+cannot be priced one at a time when two of them block the same population*, and
+the first fixture claimed one as a single-protection case on that evidence.
+
+**REFUSED, WITH SIZES.** The **SECURE 2.0 §603 catch-up mandate** (Whole Foods,
+123,250 readers — a claim about over-50 catch-up money, not about electing
+Roth, and boilerplate entering every 2026 filing); a rollover from another
+plan; an in-plan conversion; and **the after-tax half of 2K: 7.3% of plans /
+14.9% of readers write "pretax or post tax annual compensation" naming no
+arrangement anywhere in the filing** (Google 160,603, Sherwin-Williams 62,399,
+Giant 41,288) — the 2K disjunction restated in prose, where reading "post-tax"
+either way is an inference, not a quote. `aftertax` is predicted to move by
+**0**: the whole after-tax ceiling measures ~1% of the cohort, below the reader
+floor, which is why no after-tax arm shipped.
+
+**AND `diff-parser.mjs` HAD THROWN `ERR_MODULE_NOT_FOUND` SINCE v201** — it
+copied ONE file out of the ref and let the copy's imports resolve wherever they
+fell, so the repo's only tracked features differential was unrunnable for five
+parser versions with nothing saying so. Now on `lib-refmod.mjs`, which was
+extracted for this exact failure and adopted by `trace-filing` and
+`parse-replay` and never here. *A shared mechanism fixes only the callers that
+adopt it.*
+
+**PREVENTION.** Six `parser-gate` specimens — four positives, one per defeated
+shape, plus Roth Bros., Inc. (**the SPONSOR IS NAMED ROTH**, printed 26 times)
+and Whole Foods as controls — seven `defect-specimens.json` entries, and
+`scripts/roth-pairing-test.mjs`: 16 verbatim sentences, a discharge proving
+every positive is FALSE without the new arm, and a joint discharge proving the
+two mutually-redundant guards are load-bearing together. Both were verified to
+fail by name by disabling what they describe.
+
+---
+
 ## 2026-11-17 — THREE CONSUMERS WENT BLIND TO A CELL TYPE THE PAGE HAD JUST GAINED, AND ONE ARM READ THE CUSTODIAN AS THE MANAGER
 
 **WHAT WAS WRONG, part one — the scoreboard.** The trust fee/return BAND shipped

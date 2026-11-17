@@ -8,22 +8,35 @@
  * because a label that changes SHAPE is a change even when the totals do not
  * move (Graded -> cliff is invisible to a coverage count — v92 shipped 48 of
  * those on a green verdict).
+ *
+ * THIS SCRIPT THREW `ERR_MODULE_NOT_FOUND` ON EVERY RUN FROM v201 TO v205 AND
+ * NOTHING SAID SO. It copied ONE file out of the git ref and let the copy's
+ * relative imports resolve wherever they fell; v201 added
+ * `import … from "./lib-quote.mjs"` to lib-4i, so the baseline could no longer
+ * be loaded at all and the ONLY tracked features differential in the repo was
+ * unrunnable for five parser versions — exactly the failure `lib-refmod.mjs`
+ * was extracted to prevent, fixed there for `trace-filing` and `parse-replay`
+ * and never here. *A shared mechanism fixes only the callers that adopt it.*
+ * Found 2026-11-17 by reaching for this tool for a features change and getting
+ * a stack trace; the whole module graph now comes from the ref.
+ *
+ * NOTE WHAT THIS CANNOT SEE, since the alternative keeps being reached for:
+ * `parse-replay.mjs` replays `parse4i` and is BLIND to every feature field, so
+ * a features change measured there prints 0 lost by construction. This is the
+ * instrument for features; that one is the instrument for menus.
  */
-import { readFileSync, readdirSync, writeFileSync, mkdtempSync } from "node:fs";
-import { execFileSync } from "node:child_process";
-import os from "node:os";
+import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
+import { materialiseAt } from "./lib-refmod.mjs";
 
 const ref = process.argv[2] || "HEAD";
 const DIR = process.env.CORPUS_DIR || "/tmp/wampo-corpus";
 
-const tmp = mkdtempSync(path.join(os.tmpdir(), "wampo-diff-"));
-const baseline = path.join(tmp, "lib-4i-baseline.mjs");
-writeFileSync(baseline, execFileSync("git", ["show", `${ref}:scripts/lib-4i.mjs`], { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 }));
-
-const oldLib = await import(baseline);
+const base = materialiseAt(ref, "lib-4i.mjs", { label: "wampo-diff" });
+const oldLib = await import(base.entryPath);
 const newLib = await import("./lib-4i.mjs");
 console.log(`baseline ${ref} = v${oldLib.PARSER_VERSION}  ->  working tree = v${newLib.PARSER_VERSION}`);
+console.log(`  baseline graph: ${base.files.join(", ")}`);
 
 const files = readdirSync(DIR).filter((f) => f.endsWith(".txt"));
 const tally = {};

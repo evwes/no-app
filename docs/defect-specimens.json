@@ -1236,6 +1236,55 @@
    "fixed": "v205",
    "sponsor": "TriNet HR III",
    "was": "COUNTER-SPECIMEN, 219,334 readers: a participating employer whose NAME is 'COLLEGE MATCH', plus a vesting sentence about VOLUNTARY contributions (vested by law, not an employer match). Both were quoted by the first version of the arm"
+  },
+  {
+   "ack": "20260707151841NAL0015672371001",
+   "class": "roth-beside-tax-word",
+   "fixed": "v206",
+   "sponsor": "Southwest Airlines",
+   "was": "87,150 readers: 'deferring to the Plan on an after-tax basis through a Roth provision' - nothing follows Roth but a noun, so every pre-v206 arm missed it"
+  },
+  {
+   "ack": "20260824135735NAL0018933971001",
+   "class": "roth-beside-tax-word-WRAP-HYPHEN",
+   "fixed": "v206",
+   "sponsor": "Sealed Air",
+   "was": "8,968 readers: 'on a before- tax or Roth basis' - pdftotext keeps the line-wrap hyphen and `before-?tax` does not match 'before- tax'"
+  },
+  {
+   "ack": "20261007085527NAL0015242339001",
+   "class": "roth-beside-tax-word-SAVINGS-NOUN",
+   "fixed": "v206",
+   "sponsor": "Xylem",
+   "was": "1,016 readers: 'designate savings as pre-tax savings, after-tax savings, Roth savings' - the sentence carries no contribution or deferral word at all"
+  },
+  {
+   "ack": "20261008084025NAL0026155041001",
+   "class": "roth-beside-tax-word-REVERSE",
+   "fixed": "v206",
+   "sponsor": "Asian Art Museum Foundation",
+   "was": "332 readers: 'on a tax-deferred and/or Roth after-tax basis' - Roth precedes the tax word; the only filing in 497 the reverse alternative is needed for"
+  },
+  {
+   "ack": "20260930073605NAL0011352403001",
+   "class": "roth-beside-tax-word-COUNTER",
+   "fixed": "v206",
+   "sponsor": "Roth Bros., Inc.",
+   "was": "COUNTER-SPECIMEN, 218 readers: THE SPONSOR IS NAMED ROTH and the filing prints the name 26 times. Protected only by the adjacency requirement"
+  },
+  {
+   "ack": "20260918110451NAL0012578674001",
+   "class": "roth-beside-tax-word-COUNTER",
+   "fixed": "v206",
+   "sponsor": "Whole Foods Market",
+   "was": "COUNTER-SPECIMEN, 123,250 readers: a SECURE 2.0 Sec.603 catch-up mandate ('required all participants aged 50 and older to make their catch-up contributions on a Roth (after-tax) basis') is not a statement that the plan offers Roth deferrals; the notes say nothing else about Roth"
+  },
+  {
+   "ack": "20261009101210NAL0029732481001",
+   "class": "tax-word-with-no-roth-REFUSED",
+   "fixed": "v206",
+   "sponsor": "The Giant Company",
+   "was": "COUNTER-SPECIMEN, 41,288 readers: 'up to 75% of their pretax or post tax annual compensation' names no arrangement, so it settles neither Roth nor voluntary after-tax. 7.3% of plans / 14.9% of readers in the cohort read exactly like this and must stay unresolved"
   }
  ]
 }
