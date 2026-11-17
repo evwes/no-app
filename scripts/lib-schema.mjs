@@ -167,7 +167,20 @@ export function loadFundFactsAsset(path = "fund-facts.js") {
     if (close < 0) throw new Error(`${path}: ${name} is not closed by a line-leading "};"`);
     return JSON.parse(src.slice(open, close + 2));
   };
-  return { facts: one("FUND_FACTS"), vehicles: one("FUND_VEHICLES") };
+  /* BANDS ARE RETURNED TOO, because a consumer that cannot see them reads a
+   * banded cell as a blank — which is what `completion.mjs` did for a day,
+   * under-stating the headline by 1.10 points, and what a Schwab delta script
+   * did an hour later by asking for a field this loader did not return and
+   * printing "NO BAND" about families that have one. Third consumer to go
+   * blind the same way, so the fix belongs HERE rather than in each caller.
+   *
+   * TOLERANT OF ABSENCE, unlike the other two: a caller legitimately reads an
+   * OLDER asset through `git show <ref>:fund-facts.js` to build a before-side,
+   * and the declaration did not exist before 2026-11-17. A missing FUND_FACTS
+   * or FUND_VEHICLES is still a hard error, because nothing valid lacks them. */
+  let bands = {};
+  try { bands = one("FUND_VEHICLE_BANDS"); } catch { bands = {}; }
+  return { facts: one("FUND_FACTS"), vehicles: one("FUND_VEHICLES"), bands };
 }
 
 /* ---- self-test: the three real bugs must all throw ------------------------ */

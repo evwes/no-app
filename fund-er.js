@@ -2302,6 +2302,87 @@ const VEHICLE_NAME_SAYS_TRUST = /\btrusts?\b|\bcit\b|\bcollective\b|\bnon-?lend/
 const VEHICLE_CUSTODIAN_PHRASE =
   /\btrust\s+(?:company|co\.?|bank|bank\s*,?\s*n\.?a\.?|services|svcs)\b|\bbank\s+(?:&|and)\s+trust\b|\bfiduciary\s+tr(?:ust)?\.?\s*(?:co\.?|company)?\b|\btrust\s*,?\s*n\.?a\.?\b/gi;
 
+/* ---- SCHWAB ---------------------------------------------------------------
+ * Schwab publishes a month-end workbook stating an expense ratio AND a full
+ * 1/3/5/10-year annualised return per NAMED UNIT CLASS for three CIT families:
+ * SMRT (Managed Retirement), SIRT (Indexed Retirement) and ITF (Institutional).
+ * `docs/sources/` carries the owner-supplied copy and `docs/sources/README.md`
+ * says why it is not fetched live — the site answers 403 to this client.
+ *
+ * ONLY SIRT AND SMRT ARE RESOLVED, and that is a measurement rather than
+ * laziness. ITF's five funds appear in the store once, as `SCHWAB INST LCP VAL
+ * TRUST CL I` (83,961 readers), and `CL I` is not one of ITF's three published
+ * class names — they are `Retirement`, `Institutional` and `Select`. Mapping
+ * `I` onto `Institutional` is a guess, so that row resolves nothing and keeps
+ * its blank. An ITF arm waits for a filed name that states a class ITF has.
+ *
+ * THE LOOK-ALIKES ARE THE WHOLE DESIGN PROBLEM, and all three are in the store:
+ *   SCHWAB TARGET 2045                 typed `Mutual fund`      the registered fund
+ *   SCHWAB CAPITAL TRUST TARGET 2045   typed `Exchange-traded`  the registered fund
+ *   Charles Schwab Trust Bank | Schwab Bank Savings             a bank deposit
+ * The first two are the same house's REGISTERED products at different prices,
+ * so pricing them from this workbook would put one vehicle's price on another.
+ * They are refused BY CONSTRUCTION rather than by a deny-list: the family word
+ * must be present (`Idx`/`Indexed`/`SIRT`, or `Managed`/`SMRT`), and neither
+ * `TARGET 2045` nor `CAPITAL TRUST TARGET 2045` carries one. The trust
+ * requirement is then the same shape as T. Rowe's — the NAME says trust, or
+ * the FILER'S OWN TYPE CELL does. */
+const SCHWAB_HOUSE = /\bschwab\b/i;
+/* `Idx` is how the largest filed cohort writes it — `Schwab Idx Ret Trust 2030 I`,
+ * 122,833 readers per vintage across twelve vintages. */
+/* `Mng` and `Mngd` are how two live SMRT Income cohorts spell Managed —
+ * `Schwab Mng Ret Income III`, `Schwab Mngd Ret Trust Income Cl IV`, 12,931
+ * readers — and they resolved nothing while the figure sat in the workbook.
+ * Safe only because `SCHWAB_NOT_OURS` above now refuses another house's name
+ * on its own: the neutering measurement showed this exact widening would
+ * otherwise have let a Vanguard row through. */
+const SCHWAB_LINE = [["sirt", /\bsirt\b|\bidx\b|\bindex(?:ed)?\b/i],
+                     ["smrt", /\bsmrt\b|\bmanaged\b|\bmngd?\b/i]];
+const SCHWAB_FAMILY = /\bretire(?:ment)?\b|\bret\b/i;
+const SCHWAB_VINTAGE = /\b(20(?:0[05]|[1-6][05]|70))\b/;
+const SCHWAB_INCOME = /\bincome\b|\binc\b/i;
+/* ALTERNATION IS FIRST-MATCH, so the longer roman numerals precede the shorter
+ * ones or `IV` is read as `I`. End-anchored, because a designator floating
+ * mid-name is not a class statement — the same anchor the other two arms need. */
+const SCHWAB_CLASS = /\b(?:unit\s+)?(?:class|cl)?\.?\s*(iii|iv|vi|ii|v|i|[1-6])\s*$/i;
+const SCHWAB_CLASS_SLUG = { i: "i", ii: "ii", iii: "iii", iv: "iv", v: "v", vi: "vi",
+  1: "i", 2: "ii", 3: "iii", 4: "iv", 5: "v", 6: "vi" };
+/* SCHWAB IN THE ISSUER CELL MEANS SCHWAB IS THE CUSTODIAN, NOT THE MANAGER —
+ * and this arm would have been unsafe without saying so. `SCHWAB_HOUSE` is
+ * tested against issuer-plus-name like the other arms, but `Charles Schwab
+ * Trust Bank` is a recordkeeper for plans holding EVERY house's funds, so the
+ * house test alone admits them. Found by neutering each guard over all 6,672
+ * distinct Schwab (name, issuer, type) triples in the store: removing the line
+ * word resolved `VGD TARGET RET INCOME GROWTH I` — a VANGUARD fund — to
+ * `schwab::sirt-income-trust-class-i`.
+ *
+ * Today the line word blocks it, which is the state this record calls
+ * incidental rather than designed: *a case protected by two conditions cannot
+ * fail for either*, and the moment the line word is widened (it is, below, for
+ * `Mng`) the Vanguard row becomes reachable. So the refusal is explicit and
+ * keyed on the NAME naming someone else's house. Same shape as T. Rowe's
+ * `TRP_VEH_NOT`, which refuses Great Gray's vehicle for the same reason. */
+const SCHWAB_NOT_OURS =
+  /vanguard|\bvgd\b|t\.?\s*rowe|\btrp\b|fidelity|blackrock|\bishares\b|state\s*street|\bssga\b|american\s*funds|capital\s*group|great\s*gray|\bggt\b|principal|invesco|\bsei\b|putnam|\bpimco\b|nuveen|\btiaa\b|j\.?p\.?\s*morgan|jpmorgan/i;
+function schwabVehicleParts(n, house, type) {
+  if (!SCHWAB_HOUSE.test(house)) return null;
+  if (SCHWAB_NOT_OURS.test(n)) return null;
+  const line = SCHWAB_LINE.find(([, re]) => re.test(n));
+  if (!line) return null;
+  if (!SCHWAB_FAMILY.test(n)) return null;
+  if (!TRP_TRUST_WORD.test(n) && !VEHICLE_TYPE_IS_TRUST.test(String(type || ""))) return null;
+  const yr = n.match(SCHWAB_VINTAGE);
+  const vintage = yr ? yr[1] : (SCHWAB_INCOME.test(n) ? "income" : null);
+  if (!vintage) return null;
+  /* a name stating two vintages names neither — the refusal both other arms
+   * carry, and it costs nothing to carry it here before a weld arrives */
+  if (yr && SCHWAB_INCOME.test(n)) return null;
+  const family = `schwab::${line[0]}-${vintage}`;
+  const cls = n.match(SCHWAB_CLASS);
+  const slug = cls ? SCHWAB_CLASS_SLUG[cls[1].toLowerCase()] : null;
+  return { family, classStated: !!cls, key: slug ? `${family}-trust-class-${slug}` : null };
+}
+
 /* A KEYED ANSWER WINS OVER A FAMILY-ONLY ONE, which is what preserves the old
  * fall-through EXACTLY. `vehicleKeyFor` used to read `if (trp) return trp` over
  * a KEY, so a T. Rowe name stating no class returned null and the Vanguard arm
@@ -2317,7 +2398,13 @@ function vehicleParts(name, iss, type) {
   if (trp && trp.key) return trp;
   const vg = vanguardVehicleParts(n, house);
   if (vg && vg.key) return vg;
-  return trp || vg;
+  /* Schwab is asked LAST and only for a keyed answer first, so adding it cannot
+   * move an answer either of the older arms already gives — the ordering is the
+   * safety argument, and `vehicleKeyFor` is asserted unchanged on every row of
+   * the store that does not newly resolve. */
+  const sch = schwabVehicleParts(n, house, type);
+  if (sch && sch.key) return sch;
+  return trp || vg || sch;
 }
 
 function vehicleKeyFor(name, iss, type) {

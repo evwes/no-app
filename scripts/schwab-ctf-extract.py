@@ -94,7 +94,15 @@ for key, fam in SHEETS.items():
                 except Exception:
                     pass
             out.append(rec)
-        elif not re.match(r"^(Unit Class|Annualized|Schwab|As of)", a) and len(a) < 60 and not vals.get("B"):
+        elif (not re.match(r"^(Unit Class|Annualized|As of)", a) and len(a) < 60
+              # A FUND LABEL CARRIES NO NUMBERS. The first version keyed on "no
+              # expense in column B", and a BENCHMARK row has no expense either
+              # — so `Russell 1000(R) Value Index` was read as a fund name on
+              # the ITF sheet, which the fund-facts agent caught by parsing the
+              # sheet itself rather than trusting this script. A benchmark has
+              # values in E..M; a label row has none.
+              and not any(vals.get(c) for c in ("B",) + tuple(COLS))
+              and not re.search(r"\bindex$", a, re.I)):
             fund = a
 print(json.dumps({"asOf": asof, "count": len(out), "rows": out}, indent=1)[:1400])
 print(f"\n... total {len(out)} unit-class rows, as of {asof}")

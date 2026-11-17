@@ -149,6 +149,48 @@ const CASES = [
    * whose income-ish word is its ONLY vintage and so states no second one */
   ["T. Rowe Price TRP Ret 2020 Active Trust K", "", "t-rowe-price::retirement-2020-trust-class-k"],
   ["T. Rowe Price Retirement Balanced Trust K", "", "t-rowe-price::retirement-balanced-trust-class-k"],
+
+  /* ---- SCHWAB (2026-11-17) -------------------------------------------------
+   * Schwab's own month-end workbook states a fee and a full trailing curve per
+   * named unit class; `docs/sources/` carries the owner-supplied copy, and
+   * `docs/sources/README.md` says why it is not fetched live. Only SIRT and
+   * SMRT are resolved — ITF's one filed appearance states `CL I`, which is not
+   * one of its three published class names (Retirement / Institutional /
+   * Select), and mapping it would be a guess.
+   *
+   * The must-resolve spellings are the live ones: `Schwab Idx Ret Trust 2030 I`
+   * carries 122,833 readers per vintage across twelve vintages. */
+  ["Schwab Idx Ret Trust 2030 I", "", "schwab::sirt-2030-trust-class-i"],
+  ["Schwab Idx Ret Trust 2065 I", "", "schwab::sirt-2065-trust-class-i"],
+  ["Collective Investment Funds Schwab Idx Ret Trust 2010 I", "", "schwab::sirt-2010-trust-class-i"],
+  ["Schwab Managed Retirement Trust 2040 Class IV", "", "schwab::smrt-2040-trust-class-iv"],
+  /* MUST NOT — the same house's REGISTERED products, at different prices. Both
+   * are in the store and both would be priced from a trust's workbook. They are
+   * refused by construction: the family word (Idx / Indexed / SIRT / Managed /
+   * SMRT) is absent from each, so no deny-list is doing the work. */
+  ["SCHWAB TARGET 2045", "", null],
+  ["SCHWAB CAPITAL TRUST TARGET 2045", "", null],
+  ["SCHWAB INST LCP VAL TRUST CL I", "", null],         // a class ITF does not have
+  ["Schwab Bank Savings", "Charles Schwab Trust Bank", null],        // a bank deposit
+  ["Personal Choice Brokerage Account", "Charles Schwab Trust Bank", null],
+  ["SCHWAB TRUST BANK", "", null],                      // the trustee, not a fund
+  /* THE LIVE SPELLINGS THE SIZING REGEX MISSED, each carrying real readers:
+   * `SCHWAB INDEX RET 2030 IV` (98,459 per vintage) and `Schwab Index Ret Tr Fd
+   * 2045 CL IV`, plus the `Mng`/`Mngd` contraction of Managed (12,931). */
+  ["SCHWAB INDEX RET 2030 IV", "", "schwab::sirt-2030-trust-class-iv", "Collective trust"],
+  ["Schwab Index Ret Tr Fd 2045 CL IV", "Charles Schwab Trust Bank", "schwab::sirt-2045-trust-class-iv", "Collective trust"],
+  /* ... and the SAME NAME with NO type cell resolves NOTHING: `Tr Fd` is not
+   * the word "Trust", so nothing licenses the trailing class. 5,246 readers
+   * sit in that shape; a named gap rather than a silent one. */
+  ["Schwab Index Ret Tr Fd 2045 CL IV", "Charles Schwab Trust Bank", null],
+  ["Schwab Mngd Ret Trust Income Cl IV", "", "schwab::smrt-income-trust-class-iv"],
+  /* SCHWAB IN THE ISSUER CELL IS THE CUSTODIAN. This is a VANGUARD fund held at
+   * Schwab Trust Bank, and neutering the line word over all 6,672 live Schwab
+   * triples resolved it to `schwab::sirt-income-trust-class-i` — another
+   * house's fund wearing Schwab's key. `SCHWAB_NOT_OURS` refuses it on the
+   * NAME, so the protection no longer depends on the line word. */
+  ["VGD TARGET RET INCOME GROWTH I", "Charles Schwab Trust Bank", null],
+  ["Schwab Managed Retirement Trust 2040 Class IV", "", "schwab::smrt-2040-trust-class-iv"],
   ["Vanguard Target Retirement 2050 Trust Flex", "", null],          // real class, no published fee
   /* A NAME STATING TWO VINTAGES NAMES NEITHER — found by a seeded draw, then
    * read as a class: these are two adjacent menu rows WELDED by the parser, so
@@ -165,10 +207,15 @@ const CASES = [
   ["Fidelity Freedom 2030 Trust Class K", "", null],                 // a house with no adapter
 ];
 
-for (const [n, iss, want] of CASES) {
-  const got = vk(n, iss);
+/* A FOURTH ELEMENT CARRIES THE TYPE CELL, because it is part of what the
+ * resolver reads and this loop could not express it. `SCHWAB INDEX RET 2030 IV`
+ * carries no trust WORD, so the filer's own type cell is the only thing that
+ * licenses reading its trailing `IV` as a unit class — exactly as for the T.
+ * Rowe arm. Omitting it means "no type stated", which is itself a real case. */
+for (const [n, iss, want, type] of CASES) {
+  const got = vk(n, iss, type);
   if (got === want) continue;
-  fail(`want ${want === null ? "no key" : want}\n        got  ${got === null ? "no key" : got}\n        for  ${JSON.stringify(n)}${iss ? ` [iss ${JSON.stringify(iss)}]` : ""}`);
+  fail(`want ${want === null ? "no key" : want}\n        got  ${got === null ? "no key" : got}\n        for  ${JSON.stringify(n)}${iss ? ` [iss ${JSON.stringify(iss)}]` : ""}${type ? ` [type ${JSON.stringify(type)}]` : ""}`);
 }
 if (!bad) ok(`${CASES.length} cases: ${CASES.filter((c) => c[2]).length} must-resolve, ${CASES.filter((c) => !c[2]).length} must-not`);
 
@@ -240,12 +287,26 @@ const MUTATIONS = [
     "Savings Trust III Vanguard Tgt Retire 2020", null],
   /* T. Rowe's own two-vintage refusal, whose case the Vanguard one cannot
    * cover: they are separate lines in separate arms. */
-  ["trp two-vintage refusal", (t) => t.replace(
+    ["trp two-vintage refusal", (t) => t.replace(
     '  if (yr && /\\bincome\\b|\\bbalanced\\b/i.test(n)) return null;', "  // refusal removed"),
     "T. Rowe Price TRP Ret 2020 Active Trust-Income K", null],
 ];
 /* the redundant three, asserted as REFUSALS rather than as mutations */
-for (const [label, n] of [["hybrid hold", "T. Rowe Price Retirement Hybrid 2030 Trust Class T5"],
+/* SCHWAB'S OTHER-HOUSE REFUSAL IS REDUNDANT TODAY AND SAYS SO. Its motivating
+ * row is `VGD TARGET RET INCOME GROWTH I` — a VANGUARD fund held at Charles
+ * Schwab Trust Bank, which reaches the Schwab arm at all because the house test
+ * reads the ISSUER CELL and that cell names the CUSTODIAN. Neutering the LINE
+ * WORD over all 6,672 live Schwab triples resolved it to
+ * `schwab::sirt-income-trust-class-i` — another house's fund on Schwab's key.
+ *
+ * With both conditions present the line word already blocks it, so mutating
+ * `SCHWAB_NOT_OURS` alone changes nothing and prints "protects nothing". That
+ * is true, and the reason it is asserted here rather than mutated. It stays
+ * because the redundancy belongs to the LINE WORD, not to it: the line word was
+ * widened to accept `Mng`/`Mngd` in this same commit, and every such widening
+ * is a fresh chance for another house's name to carry a token this arm reads. */
+for (const [label, n] of [["schwab other-house", "VGD TARGET RET INCOME GROWTH I"],
+                          ["hybrid hold", "T. Rowe Price Retirement Hybrid 2030 Trust Class T5"],
                           ["select / great gray", "T. Rowe Price Retirement Blend Select Trust Cl 5"],
                           ["FLX", "Vanguard Target Retirement 2050 Trust Flex"]]) {
   if (vk(n, "") !== null) fail(`${label}: ${JSON.stringify(n)} must resolve to nothing`);
@@ -296,6 +357,10 @@ if (!bad) ok(`${MUTATIONS.length} single-protection mutations, each with a case 
     ["Vanguard Target Retirement 2040 Trust II", "", null],   // states a class: exact wins
     ["T. Rowe Price Retirement 2040 Trust Class A", "", null],// ditto
     ["T. Rowe Price Retirement Hybrid 2030 Trust", "", null], // the held line
+    ["Schwab Indexed Retirement Trust Fund 2030", "", "schwab::sirt-2030"],
+    ["Collective Trust - Schwab Managed Retirement Trust 2040", "", "schwab::smrt-2040"],
+    ["SCHWAB TARGET 2045", "", null],                        // the registered fund
+    ["VGD TARGET RET INCOME GROWTH I", "Charles Schwab Trust Bank", null],
     ["T. Rowe Price Retire 2025 Trust Income Fund", "", null],// two vintages
     ["Fidelity Freedom 2030 Trust", "", null],                // a house with no adapter
   ];
