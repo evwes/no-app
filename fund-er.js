@@ -2151,7 +2151,7 @@ const TRP_VINTAGE = /\b(20(?:0[05]|[1-6][05]|70))\b/;
 const TRP_BALANCED = /\bbalanced\b/i;
 
 // eslint-disable-next-line no-unused-vars
-function trowePriceVehicleKey(n, house, type) {
+function trowePriceVehicleParts(n, house, type) {
   if (!TRP_HOUSE.test(house)) return null;
   if (!TRP_FAMILY.test(n)) return null;
   if (TRP_VEH_NOT.test(house)) return null;
@@ -2184,21 +2184,36 @@ function trowePriceVehicleKey(n, house, type) {
   /* "Class K" wins over a trailing bare letter: a name carrying both states
    * its class explicitly, and the explicit statement is the better evidence. */
   const cls = n.match(TRP_CLASS) || n.match(TRP_CLASS_TAIL) || n.match(TRP_CLASS_AFTER_VINTAGE);
-  if (!cls) return null;
   const yr = n.match(TRP_VINTAGE);
   const vintage = yr ? yr[1] : (TRP_BALANCED.test(n) ? "balanced" : null);
   if (!vintage) return null;
+  /* A NAME STATING TWO VINTAGES NAMES NEITHER — the refusal Vanguard's arm has
+   * carried since the weld census, now mirrored here because the hazard is the
+   * same and the arm never had it. Found by a seeded draw over the band rows,
+   * not by reading: `T. Rowe Price Retire 2025 Trust Income Fund`,
+   * `Retirement 2020 Trust Income - E`, 5 rows / 4 menus / 12,473 readers,
+   * each naming a dated vintage AND an income/balanced one.
+   *
+   * It would not have shown up in the FEE, which is why no fee check could
+   * catch it: every T. Rowe Retirement class band is 0.26–0.38% whatever the
+   * vintage. The RETURN is where it bites — 2020 reads 5.39–5.48% and Balanced
+   * 4.18–4.3% — so the row would have published a plausible return belonging
+   * to the other product. *A witness that a row is damaged is not a witness to
+   * which side the damage is on*, so neither vintage is chosen. */
+  if (yr && /\bincome\b|\bbalanced\b/i.test(n)) return null;
   const seg = line ? `retirement-${line[0]}` : "retirement";
   const tail = vintage === "balanced" ? "balanced" : vintage;
-  return `t-rowe-price::${seg}-${tail}-trust-class-${cls[1].toLowerCase()}`;
+  /* THE FAMILY IS RETURNED EVEN WHEN NO CLASS IS STATED, and the `!cls` refusal
+   * that used to sit above the vintage now lives in `vehicleKeyFor` as
+   * `parts.key`. The class key this produces is byte-identical to what the old
+   * function returned — asserted over every name in the store, not assumed —
+   * and the family is what a classless trust row needs for its fee BAND. */
+  const family = `t-rowe-price::${seg}-${tail}`;
+  return { family, classStated: !!cls, key: cls ? `${family}-trust-class-${cls[1].toLowerCase()}` : null };
 }
 
 // eslint-disable-next-line no-unused-vars
-function vehicleKeyFor(name, iss, type) {
-  const n = String(name || "");
-  const house = `${iss || ""} ${n}`;
-  const trp = trowePriceVehicleKey(n, house, type);
-  if (trp) return trp;
+function vanguardVehicleParts(n, house) {
   if (!VG_TRUST_FAMILY.test(house)) return null;
   if (!VG_TRUST_TARGET.test(n)) return null;
   if (VG_TRUST_UNPRICED.test(n)) return null;
@@ -2206,9 +2221,7 @@ function vehicleKeyFor(name, iss, type) {
   /* the explicit `Trust <class>` statement wins; the tail form is the fallback
    * for names that omit the word, exactly as TRP_CLASS_TAIL backs TRP_CLASS */
   const cls = n.match(VG_TRUST_CLASS) || n.match(VG_TRUST_CLASS_TAIL);
-  if (!cls) return null;
-  const slug = VG_CLASS_SLUG[cls[1].toLowerCase()];
-  if (!slug) return null;
+  const slug = cls ? VG_CLASS_SLUG[cls[1].toLowerCase()] : null;
   const yr = n.match(VG_TRUST_VINTAGE);
   const vintage = yr ? yr[1] : (VG_TRUST_INCOME.test(n) ? "income" : null);
   if (!vintage) return null;
@@ -2225,5 +2238,101 @@ function vehicleKeyFor(name, iss, type) {
    * Income, never both — so requiring that costs nothing real and refuses 35
    * rows that were each a coin flip. */
   if (yr && VG_TRUST_TWO_VINTAGE.test(n)) return null;
-  return `vanguard::target-retirement-${vintage}-trust-${slug}`;
+  /* `classStated` is TRUE whenever a class TOKEN matched, even if it mapped to
+   * no slug — a name that states its class and states one we cannot read is a
+   * blank cell, never a band. The band is for names that state NO class. */
+  const family = `vanguard::target-retirement-${vintage}`;
+  return { family, classStated: !!cls, key: slug ? `${family}-trust-${slug}` : null };
+}
+
+/* ONE DEFINITION OF THE FAMILY RELATION, called by both sides. The resolver
+ * derives a family from a filed NAME; the asset generator has to group
+ * PUBLISHED CLASS KEYS by family to build each band. Those are the same
+ * relation, and this project has already paid for implementing one relation
+ * twice: `tkExact`/`tkComparable` re-implement `lookupTicker` instead of
+ * calling it and went blind twice when an arm moved, because *nothing executes
+ * a comment asserting equivalence*. So the generator loads this file and calls
+ * this function rather than doing its own string surgery on the key. */
+function vehicleFamilyOfKey(key) {
+  const m = String(key || "").match(/^(.*?)-trust(?:-class)?-[a-z0-9]+$/);
+  return m ? m[1] : null;
+}
+
+/* THE NAME MUST SAY TRUST, and this is the narrowest of the three conditions a
+ * band could have used — chosen because it is the only one that settles WHICH
+ * VEHICLE the row is without a judgement call.
+ *
+ * Measured over the classless trust-typed population (26,027 rows):
+ *   name carries a trust word   5,309 rows / 4,402,080 readers  <- banded
+ *   name ends "Fund"            7,263 rows / 2,427,744 readers  <- refused
+ *   name states neither        13,455 rows / 6,649,948 readers  <- refused
+ *
+ * `Vanguard Target Retirement 2050 Fund` is the EXACT registered name of the
+ * mutual fund VFIFX, on a row whose type cell says collective trust. One of
+ * those two statements is wrong and nothing here says which, so putting the
+ * TRUST's fee band on it would launder one vehicle's price onto another — the
+ * same error, in the opposite direction, as putting a mutual fund's fee on a
+ * trust row. The "neither" group is the same question with weaker evidence on
+ * both sides. Both stay blank until the vehicle is settled. */
+const VEHICLE_NAME_SAYS_TRUST = /\btrusts?\b|\bcit\b|\bcollective\b|\bnon-?lend/i;
+/* AND THE WITNESS MUST BE THE VEHICLE, NOT THE TRUSTEE. The test above is
+ * satisfied by "Empower Trust Company, LLC", "Charles Schwab Trust Bank",
+ * "Fidelity Management Trust Company" and "Vanguard Fiduciary Trust Company" —
+ * the CUSTODIAN's corporate name, which says nothing about which vehicle the
+ * row is. Measured: 156 rows / 24 menus / 33,639 readers reach the band this
+ * way, and almost every one names its vehicle as a FUND:
+ *
+ *   Vanguard Fiduciary Trust Company Vanguard Target Retirement 2045 Fund
+ *   Fidelity Management Trust Company Vanguard Target Retirement 2030 Fund
+ *   T. Rowe Price Trust Company Retirement 2035 Fund
+ *   Empower Trust Company, LLC VANGUARD TARGET RETIREMENT 2040 INV
+ *
+ * So they are the very rows the band refuses — a name whose vehicle word is
+ * "Fund" — arriving through a name inside a name. The last of them states
+ * `INV`, an Investor share class, which belongs to the mutual fund and is not
+ * a trust unit class at all. *A classifier keyed on a name inside a name
+ * measures the name, not the vehicle*, met again.
+ *
+ * The phrase is STRIPPED before the question is asked, rather than used as a
+ * refusal, because a row can legitimately name both: "Vanguard Fiduciary Trust
+ * Company Vanguard Target Retirement 2045 Trust II" is the trustee AND the
+ * vehicle, and refusing on the trustee would cost it. Only used with
+ * `.replace()`; `.test()` on a /g regex is stateful and would answer
+ * differently on alternate calls. */
+const VEHICLE_CUSTODIAN_PHRASE =
+  /\btrust\s+(?:company|co\.?|bank|bank\s*,?\s*n\.?a\.?|services|svcs)\b|\bbank\s+(?:&|and)\s+trust\b|\bfiduciary\s+tr(?:ust)?\.?\s*(?:co\.?|company)?\b|\btrust\s*,?\s*n\.?a\.?\b/gi;
+
+/* A KEYED ANSWER WINS OVER A FAMILY-ONLY ONE, which is what preserves the old
+ * fall-through EXACTLY. `vehicleKeyFor` used to read `if (trp) return trp` over
+ * a KEY, so a T. Rowe name stating no class returned null and the Vanguard arm
+ * still got its turn. Now the T. Rowe arm returns a truthy object in that case,
+ * and a plain `||` would short-circuit it — silently changing the answer on a
+ * name that mentions BOTH houses, which in this store means a parser weld.
+ * Ordering on `key` keeps `vehicleKeyFor` byte-identical; asserted over all
+ * 1.78M rows rather than argued. */
+function vehicleParts(name, iss, type) {
+  const n = String(name || "");
+  const house = `${iss || ""} ${n}`;
+  const trp = trowePriceVehicleParts(n, house, type);
+  if (trp && trp.key) return trp;
+  const vg = vanguardVehicleParts(n, house);
+  if (vg && vg.key) return vg;
+  return trp || vg;
+}
+
+function vehicleKeyFor(name, iss, type) {
+  const p = vehicleParts(name, iss, type);
+  return p ? p.key : null;
+}
+
+/* The family whose BAND may be shown for this row, or null. A row that
+ * resolves a class key never reaches here — the exact figure outranks a range
+ * — and neither does one whose family is a deliberately withheld line, because
+ * `trowePriceVehicleParts` refuses Hybrid before it builds a family at all. */
+function vehicleFamilyKeyFor(name, iss, type) {
+  const n = String(name || "");
+  if (!VEHICLE_NAME_SAYS_TRUST.test(n.replace(VEHICLE_CUSTODIAN_PHRASE, " "))) return null;
+  const p = vehicleParts(name, iss, type);
+  if (!p || p.classStated || p.key) return null;
+  return p.family;
 }

@@ -369,6 +369,11 @@ main { max-width: 1060px; margin: 0 auto; padding: 0 20px 48px; }
    stated date, not estimated from the fund's name. Muted and small on purpose:
    it marks provenance, and should not read as a quality score or a warning. */
 .er-sourced { margin-left: 3px; font-size: 10px; color: var(--text-muted); cursor: help; }
+/* A RANGE, NOT A FIGURE. Dotted-underlined and help-cursored so it reads as a
+   hedge a reader can interrogate rather than as a number we are asserting;
+   it carries no asterisk, because the asterisk means "a comparable registered
+   fund" and this range is the trust's own classes. */
+.er-band { cursor: help; border-bottom: 1px dotted var(--text-muted); white-space: nowrap; }
 /* A RETURN IS SIGNED AND THE SIGN IS PRINTED, so these colours are
    reinforcement and never the only carrier of the fact -- a reader who cannot
    distinguish them still reads +12.73% against -2.85%. Both tones are picked

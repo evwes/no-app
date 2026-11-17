@@ -30,7 +30,7 @@
  *
  * Usage: node scripts/vehicle-key-test.mjs      (exit 1 on any failure)
  */
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import vm from "node:vm";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -40,11 +40,16 @@ const arg = (k) => { const i = process.argv.indexOf(k); return i > 0 ? process.a
 const SRC_FILE = arg("--file") || path.join(ROOT, "fund-er.js");
 const src = readFileSync(SRC_FILE, "utf8");
 
-const load = (text) => {
-  const c = { console: { log() {}, warn() {}, error() {} } };
+/* `which` defaults to vehicleKeyFor so every call written before the band
+ * existed keeps its meaning; the band block asks for vehicleFamilyKeyFor. A
+ * name the file does not define comes back null, and calling null throws
+ * loudly here rather than reading as a clean "no band". */
+const load = (text, which) => {
+  const fn = which || "vehicleKeyFor";
+  const c = { console: { log() {}, warn() {}, error() {} }, window: {} };
   vm.createContext(c);
-  vm.runInContext(text + "\nglobalThis.__vk = typeof vehicleKeyFor === 'function' ? vehicleKeyFor : null;", c);
-  return c.__vk;
+  vm.runInContext(text + `\nglobalThis.__fn = typeof ${fn} === 'function' ? ${fn} : null;`, c);
+  return c.__fn;
 };
 const vk = load(src);
 if (typeof vk !== "function") { console.log("FAIL vehicleKeyFor is not defined in fund-er.js"); process.exit(1); }
@@ -118,6 +123,32 @@ const CASES = [
    * It published nothing only because Trust III vintages are dormant. */
   ["Savings Trust III Vanguard Tgt Retire 2020", "", null],
   ["VANGUARD RETIREMENT SAVINGS TRUST III", "", null],               // no vintage either
+  /* ---- T. ROWE'S INCOME SERIES IS A DIFFERENT PRODUCT FROM THE DATED ONE,
+   * and the resolver published the dated one's fee and return on its rows
+   * until 2026-11-17. Found by a seeded draw over the band population, then
+   * CONFIRMED by reading whole menus: every affected menu carries BOTH rows,
+   * as separate line items with different values —
+   *
+   *   Costco   TRP Ret 2020 Active Trust K        $392,108,000
+   *            TRP Ret 2020 Active Trust-Income K   $9,809,000
+   *   AARP     Retire 2020 Fund TR B               $45,269,058
+   *            Retire 2020 Fund TR Income B           $429,476
+   *
+   * so they are not one product read two ways. Nothing in the sourced set is
+   * a dated T. Rowe income family (only retirement-balanced), so there is no
+   * figure to give these rows and the dated series' figure is another
+   * product's. 7 rows / 5 menus / 289,425 readers / $14.3M were showing one.
+   * The guard refuses a name stating a year AND an income/balanced word,
+   * which is the refusal the Vanguard arm has carried since its weld census. */
+  ["T. Rowe Price TRP Ret 2020 Active Trust-Income K", "", null],
+  ["T. Rowe Price Retire 2025 Fund TR Income B", "", null],
+  ["Retirement 2020 Trust Income F", "", null],
+  ["TRP RET 2025 TR-INCOME F", "", null],
+  ["Balanced Trust Class A T. Rowe Price Retirement 2010", "", null], // two products welded
+  /* and the siblings that must SURVIVE it — the plain vintage, and Balanced,
+   * whose income-ish word is its ONLY vintage and so states no second one */
+  ["T. Rowe Price TRP Ret 2020 Active Trust K", "", "t-rowe-price::retirement-2020-trust-class-k"],
+  ["T. Rowe Price Retirement Balanced Trust K", "", "t-rowe-price::retirement-balanced-trust-class-k"],
   ["Vanguard Target Retirement 2050 Trust Flex", "", null],          // real class, no published fee
   /* A NAME STATING TWO VINTAGES NAMES NEITHER — found by a seeded draw, then
    * read as a class: these are two adjacent menu rows WELDED by the parser, so
@@ -207,6 +238,11 @@ const MUTATIONS = [
    * the weld resolves to a real 2020 key. */
   ["vanguard other-product refusal", (t) => t.replace("  if (VG_TRUST_OTHER_PRODUCT.test(n)) return null;", "  // refusal removed"),
     "Savings Trust III Vanguard Tgt Retire 2020", null],
+  /* T. Rowe's own two-vintage refusal, whose case the Vanguard one cannot
+   * cover: they are separate lines in separate arms. */
+  ["trp two-vintage refusal", (t) => t.replace(
+    '  if (yr && /\\bincome\\b|\\bbalanced\\b/i.test(n)) return null;', "  // refusal removed"),
+    "T. Rowe Price TRP Ret 2020 Active Trust-Income K", null],
 ];
 /* the redundant three, asserted as REFUSALS rather than as mutations */
 for (const [label, n] of [["hybrid hold", "T. Rowe Price Retirement Hybrid 2030 Trust Class T5"],
@@ -222,6 +258,85 @@ for (const [label, mutate, name, want] of MUTATIONS) {
   if (mvk(name, "") === want) fail(`mutation "${label}" still answers ${want} for ${JSON.stringify(name)} — the condition protects nothing`);
 }
 if (!bad) ok(`${MUTATIONS.length} single-protection mutations, each with a case where it is the only protection`);
+
+/* ---- THE FEE/RETURN BAND ------------------------------------------------
+ * `vehicleFamilyKeyFor` answers a FAMILY for a row that names the trust and
+ * not the unit class, and the page prints a RANGE across that family's
+ * published classes. It is a published claim, so it gets the same treatment
+ * as the class keys above.
+ *
+ * THE MUST-NOT LIST IS AGAIN THE INTERESTING HALF, and all three refusals
+ * were measured over live rows rather than imagined:
+ *   - the trust word belongs to the CUSTODIAN ("Vanguard Fiduciary Trust
+ *     Company ... 2045 Fund"), which says nothing about the vehicle: 156 rows.
+ *   - the name states a CLASS, so an exact figure outranks any range.
+ *   - the name's vehicle word is "Fund", which is the registered mutual
+ *     fund's own name on a row whose type cell says trust. Nothing says which
+ *     cell is wrong, so neither figure may be published.
+ */
+{
+  const famKey = load(src, "vehicleFamilyKeyFor");
+  const BANDS = (() => {
+    const f = path.join(ROOT, "fund-facts.js");
+    if (!existsSync(f)) return null;
+    const c = vm.createContext({ window: {} });
+    vm.runInContext(readFileSync(f, "utf8") + ";globalThis.__b=typeof FUND_VEHICLE_BANDS===\"object\"?FUND_VEHICLE_BANDS:null;", c);
+    return c.__b;
+  })();
+  const BAND_CASES = [
+    ["T. Rowe Price Retirement 2050 Trust", "", "t-rowe-price::retirement-2050"],
+    ["Vanguard Target Retirement Income Trust", "", "vanguard::target-retirement-income"],
+    ["Retirement 2040 Active Trust", "T. Rowe Price Trust Company", "t-rowe-price::retirement-2040"],
+    ["T Rowe Price Retirement Blend 2035 Trust", "", "t-rowe-price::retirement-blend-2035"],
+    /* MUST NOT BAND */
+    ["Vanguard Fiduciary Trust Company Vanguard Target Retirement 2045 Fund", "", null],
+    ["Fidelity Management Trust Company Vanguard Target Retirement 2030 Fund", "", null],
+    ["Empower Trust Company, LLC - Vanguard Target Retirement 2040", "", null],
+    ["Vanguard Target Retirement 2050 Fund", "", null],
+    ["Vanguard Target Retirement 2040 Trust II", "", null],   // states a class: exact wins
+    ["T. Rowe Price Retirement 2040 Trust Class A", "", null],// ditto
+    ["T. Rowe Price Retirement Hybrid 2030 Trust", "", null], // the held line
+    ["T. Rowe Price Retire 2025 Trust Income Fund", "", null],// two vintages
+    ["Fidelity Freedom 2030 Trust", "", null],                // a house with no adapter
+  ];
+  for (const [n, iss, want] of BAND_CASES) {
+    const got = famKey(n, iss, "Collective trust");
+    if (got === want) continue;
+    fail(`band: want ${want === null ? "no band" : want}\n        got  ${got === null ? "no band" : got}\n        for  ${JSON.stringify(n)}${iss ? ` [iss ${JSON.stringify(iss)}]` : ""}`);
+  }
+  if (!bad) ok(`${BAND_CASES.length} band cases: ${BAND_CASES.filter((c) => c[2]).length} must-band, ${BAND_CASES.filter((c) => !c[2]).length} must-not`);
+
+  /* EVERY FAMILY THE RESOLVER CAN ANSWER MUST HAVE A BAND, or the page asks
+   * for a range nobody published and silently shows nothing. */
+  if (BANDS) {
+    const missing = BAND_CASES.filter(([, , w]) => w).map(([, , w]) => w).filter((k) => !BANDS[k]);
+    if (missing.length) fail(`${missing.length} expected band(s) absent from fund-facts.js: ${missing.join(", ")}`);
+    else ok(`every must-band family has a published band (${Object.keys(BANDS).length} families)`);
+    /* and NO band may exist for the held Hybrid line, by any route */
+    const hyb = Object.keys(BANDS).filter((k) => /hybrid/.test(k));
+    if (hyb.length) fail(`${hyb.length} Hybrid band(s) published though the line is held: ${hyb.slice(0, 3).join(", ")}`);
+    else ok("no Hybrid band is published, so the held line cannot be reached through a range");
+  }
+
+  /* SINGLE-PROTECTION MUTATIONS for the band's own conditions. */
+  const BAND_MUTATIONS = [
+    ["custodian strip", (t) => t.replace("n.replace(VEHICLE_CUSTODIAN_PHRASE, \" \")", "n"),
+      "Vanguard Fiduciary Trust Company Vanguard Target Retirement 2045 Fund"],
+    ["name must say trust", (t) => t.replace(
+      "  if (!VEHICLE_NAME_SAYS_TRUST.test(n.replace(VEHICLE_CUSTODIAN_PHRASE, \" \"))) return null;", "  // refusal removed"),
+      "Vanguard Target Retirement 2050 Fund"],
+    ["a stated class beats a band", (t) => t.replace("if (!p || p.classStated || p.key) return null;", "if (!p) return null;"),
+      "Vanguard Target Retirement 2040 Trust II"],
+  ];
+  for (const [label, mutate, name] of BAND_MUTATIONS) {
+    const m = mutate(src);
+    if (m === src) { fail(`band mutation "${label}" did not change the source — it is malformed`); continue; }
+    let mf;
+    try { mf = load(m, "vehicleFamilyKeyFor"); } catch (e) { fail(`band mutation "${label}" would not load: ${e.message}`); continue; }
+    if (mf(name, "", "Collective trust") === null) fail(`band mutation "${label}" still refuses ${JSON.stringify(name)} — the condition protects nothing`);
+  }
+  if (!bad) ok(`${BAND_MUTATIONS.length} band mutations, each with a case where it is the only protection`);
+}
 
 console.log(bad ? `\nvehicle-key-test: ${bad} FAILURE(S)` : "\nvehicle-key-test: the resolver names the right vehicle, and refuses the look-alikes");
 process.exit(bad ? 1 : 0);

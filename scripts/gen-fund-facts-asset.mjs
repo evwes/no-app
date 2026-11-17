@@ -26,6 +26,7 @@
  *   which is what lets `site-test` catch a hand-edited or stale asset.
  */
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import vm from "node:vm";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { shareClassToken } from "./lib-disclose.mjs";
@@ -33,6 +34,24 @@ import { shareClassToken } from "./lib-disclose.mjs";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CHECK = process.argv.includes("--check");
 const OUT = path.join(ROOT, "fund-facts.js");
+
+/* THE FAMILY RELATION IS CALLED, NOT REIMPLEMENTED. Grouping published class
+ * keys into families is the same relation `vehicleFamilyKeyFor` uses to turn a
+ * filed name into a family, and this project has already paid twice for
+ * implementing one relation in two places — `tkExact`/`tkComparable` re-derive
+ * `lookupTicker` instead of calling it and went blind whenever an arm moved,
+ * because nothing executes a comment asserting equivalence. So fund-er.js is
+ * loaded and asked. */
+const vehicleFamilyOfKey = (() => {
+  const ctx = vm.createContext({ window: {}, console });
+  vm.runInContext(readFileSync(path.join(ROOT, "fund-er.js"), "utf8") +
+    "\nglobalThis.__famOf = vehicleFamilyOfKey;", ctx);
+  if (typeof ctx.__famOf !== "function") {
+    console.log("fund-er.js does not export vehicleFamilyOfKey — refusing to guess the family relation");
+    process.exit(2);
+  }
+  return ctx.__famOf;
+})();
 
 const raw = JSON.parse(readFileSync(path.join(ROOT, "data", "fund-facts.json"), "utf8"));
 const funds = raw.funds || {};
@@ -144,6 +163,68 @@ for (const [key, f] of Object.entries(vehicles)) {
 const vkeys = Object.keys(vout).sort();
 const vbody = vkeys.map((k) => ` ${JSON.stringify(k)}:${JSON.stringify(vout[k])}`).join(",\n");
 
+/* ---- FEE AND RETURN BANDS, for a trust row that states no unit class -------
+ *
+ * 3,777 published rows / 375 menus / 3,397,331 readers / $166.6B name a
+ * collective trust and a vintage but no class: `T. Rowe Price Retirement 2050
+ * Trust`, `Vanguard Target Retirement Income Trust`. The vehicle is settled
+ * and the class is not, so no exact figure exists — but the classes we have
+ * span a narrow, sourced range, and a range is worth more to a reader than the
+ * blank these rows show today.
+ *
+ * BUILT FROM `vout`, WHICH IS THE PUBLISHED SET, NOT FROM `raw.vehicles`. A
+ * band built upstream of the gate above puts Vanguard's dormant Trust III fee
+ * — 0.4000 as of 2014-03-31, six times the live band — at the top of the
+ * range. Measured: from the raw store the Vanguard 2020 band reads
+ * 0.0375-0.4%; from `vout` it reads 0.0375-0.075%.
+ *
+ * `cls` IS EMITTED SO THE PAGE CAN NAME WHAT THE RANGE IS OVER. A band built
+ * from a SUBSET of a family's classes does not bound the family — an
+ * unsourced class could sit outside it — so the page may not claim "across the
+ * trust's unit classes". It says "across these N", named. That is the
+ * difference between a true statement and a plausible one.
+ *
+ * HYBRID IS EXCLUDED HERE AS WELL AS IN THE RESOLVER. `trowePriceVehicleParts`
+ * refuses the Hybrid line before it builds a family, so no row can ask for a
+ * Hybrid band today — but that makes the refusal accidental rather than
+ * designed, and this file's own rule is that a figure refused here cannot
+ * reach a reader by any route somebody adds later. The hold is real: T. Rowe
+ * publishes no reachable Hybrid fact sheet, so the "trustee fee = expense
+ * ratio" equivalence is carried over from a sibling product rather than stated
+ * for Hybrid. */
+const BAND_MIN_CLASSES = 2;
+const famAgg = new Map();
+for (const [k, e] of Object.entries(vout)) {
+  const fam = vehicleFamilyOfKey(k);
+  if (!fam) continue;                                   /* a classless vehicle */
+  if (/retirement-hybrid-/.test(fam)) continue;          /* held, see above */
+  let g = famAgg.get(fam);
+  if (!g) famAgg.set(fam, g = { ers: [], erAsOf: [], ytds: [], ytdAsOf: [], cls: [] });
+  if (e.er != null) { g.ers.push(e.er); g.erAsOf.push(e.erAsOf); g.cls.push(e.cls || "?"); }
+  if (e.ytd != null) { g.ytds.push(e.ytd); g.ytdAsOf.push(e.ytdAsOf); }
+}
+const fout = {};
+for (const [fam, g] of famAgg) {
+  if (g.ers.length < BAND_MIN_CLASSES) continue;
+  const b = {
+    erLo: Math.min(...g.ers), erHi: Math.max(...g.ers),
+    /* THE OLDEST DATE, not the newest: the band is only as current as its
+     * weakest figure, and quoting the newest would date a stale number with a
+     * fresh receipt — the defect that once wrote 91 month-end returns wearing
+     * same-day receipts. */
+    erAsOf: g.erAsOf.slice().sort()[0],
+    cls: g.cls.slice().sort(),
+  };
+  if (g.ytds.length >= BAND_MIN_CLASSES) {
+    b.ytdLo = Math.min(...g.ytds); b.ytdHi = Math.max(...g.ytds);
+    b.ytdAsOf = g.ytdAsOf.slice().sort()[0];
+    b.ytdN = g.ytds.length;
+  }
+  fout[fam] = b;
+}
+const fkeys = Object.keys(fout).sort();
+const fbody = fkeys.map((k) => ` ${JSON.stringify(k)}:${JSON.stringify(fout[k])}`).join(",\n");
+
 const keys = Object.keys(out).sort();
 const body = keys.map((k) => ` ${JSON.stringify(k)}:${JSON.stringify(out[k])}`).join(",\n");
 const text = `/* GENERATED by scripts/gen-fund-facts-asset.mjs — DO NOT EDIT.
@@ -167,6 +248,17 @@ ${body}
  */
 const FUND_VEHICLES = {
 ${vbody}
+};
+/* FEE AND RETURN BANDS for a trust row that names its vintage and NOT its unit
+ * class. Keyed by family, built only from the classes above — so a band is a
+ * range over NAMED, SOURCED classes and never over a class nobody priced.
+ * The cls field lists them, because a range over a subset does not bound the
+ * family and the page must say what it is quoting rather than imply more.
+ *
+ * ${fkeys.length} families · ${fkeys.filter((k) => fout[k].ytdLo != null).length} with a return band
+ */
+const FUND_VEHICLE_BANDS = {
+${fbody}
 };
 `;
 

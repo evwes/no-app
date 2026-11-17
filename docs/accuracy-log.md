@@ -7,6 +7,54 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-17 — WE PUBLISHED THE DATED T. ROWE TRUST'S FEE AND RETURN ON THE INCOME SERIES, A DIFFERENT PRODUCT
+
+**WHAT WAS WRONG.** `trowePriceVehicleParts` took the first dated vintage it
+found and ignored any income word beside it, so seven rows naming T. Rowe's
+**Retirement Income** series resolved to the plain dated trust's key and
+published its expense ratio and its year-to-date return. 7 rows / 5 menus /
+**289,425 readers** / $14.3M, every one of them showing a figure:
+
+```
+Costco   T. Rowe Price TRP Ret 2020 Active Trust-Income K   0.26%   (the 2020 trust's)
+AARP     T. Rowe Price Retire 2025 Fund TR Income B         0.36%  5.86%
+Kodak    Retirement 2020 Trust Income F                     0.37%  5.41%
+```
+
+**FOUND BY A SEEDED DRAW, NOT BY READING CODE, AND CONFIRMED BY READING WHOLE
+MENUS.** The draw was over the new band population and printed each row's filed
+type; `T. Rowe Price Retire 2025 Trust Income Fund` stood out as naming two
+vintages. Reading the affected menus settled what the name could not: **every
+one carries BOTH rows as separate line items with different values** — Costco
+holds `TRP Ret 2020 Active Trust K` at $392,108,000 *and* `TRP Ret 2020 Active
+Trust-Income K` at $9,809,000. They are two products, not one name read two
+ways, and the correct copy of the figures we published sat on the plain row in
+the same table.
+
+**NO FEE CHECK COULD HAVE SEEN IT.** Every T. Rowe Retirement class band is
+0.26–0.38% whatever the vintage, so the fee was plausible for any reading. The
+RETURN is where the two diverge — 2020 reads 5.39–5.48% and Balanced 4.18–4.3% —
+and nothing compares a row's return against the product its name states.
+
+**THE CHANGE.** A name stating a year AND an income/balanced word resolves
+nothing, which is the refusal the Vanguard arm has carried since its weld
+census; the arm simply never had it. Balanced survives, because its income-ish
+word IS its vintage and it states no second one. Nothing in the sourced set is a
+dated T. Rowe income family, so these rows correctly go blank rather than to
+another key: *a fee is SOURCED, never inferred*, and a wrong published claim
+outranks a missing one.
+
+**WHAT PREVENTS IT.** Five of the filed names are pinned in
+`vehicle-key-test.mjs` as must-not-resolve, the plain vintage and Balanced are
+pinned beside them as must-resolve, and the refusal carries its own
+single-protection mutation anchored on its own line.
+
+*A fix for one phrasing of a class is not a fix for the class — and a refusal
+written into one house's arm is not a refusal in the other's. Both arms resolve
+a vintage; only one of them doubted it.*
+
+---
+
 ## 2026-11-17 — I MIRRORED A COMMIT WHOSE CI JOB HAD STOPPED AT ITS THIRD GATE
 
 **WHAT WAS WRONG.** `site-test` #317 on `90604862` — the T. Rowe trust-class

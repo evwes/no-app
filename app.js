@@ -388,6 +388,15 @@
    * surface was already honest and this one was not.
    *
    * `window.__wampoMoney` is read by the smoke test only. */
+  /* A PERCENTAGE PRINTED AT ITS OWN PRECISION, for a figure whose exact value
+   * is also quoted to the reader in a tooltip. Four decimals is enough for
+   * every fee in the sourced set and trailing zeros are trimmed, so 0.0375
+   * reads "0.0375", 0.075 reads "0.075" and 0.26 reads "0.26". Used by the
+   * trust fee BAND; the estimate column keeps its own two/three-decimal
+   * rounding, where no receipt is shown to contradict. */
+  function pctExact(v) {
+    return v.toFixed(4).replace(/0+$/, "").replace(/\.$/, "");
+  }
   function money(m) {
     if (m == null) return "—";
     const sign = m < 0 ? "−" : "";
@@ -4316,6 +4325,16 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
      * worse than either state. `fund-note-test.mjs` pins the chain. */
     let sourcedAny = false;
     let vehicleAny = false;   // a row priced from the TRUST's own published figure
+    /* A SEPARATE FLAG, because the two cells make DIFFERENT CLAIMS and one
+     * sentence cannot serve both. `vehicleAny` licenses a note saying a check
+     * mark is "that class's own published number ... hover it to see which
+     * class" — true of an exact class figure and FALSE of a band, which has no
+     * check mark and whose whole point is that the filing does NOT name the
+     * class. A band row sets vehicleAny too (it is still the trust's own
+     * price), so without this the shipped sentence would be published over
+     * 3,500 rows it misdescribes. *A guard and the claim it licenses are one
+     * change.* */
+    let bandAny = false;      // a row showing a RANGE across the trust's classes
     /* The DISTINCT as-of dates of the returns this table actually prints, so
      * the note under it can state them rather than hedge. Collected from the
      * rows rendered — not from the whole `fund-facts` file — because a date
@@ -4867,6 +4886,44 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
           if (erSourced === vf || ytdSourced === vf) vehicleAny = true;
         }
       }
+      /* AND WHERE THE FILING NAMES THE TRUST BUT NOT THE UNIT CLASS, A BAND.
+       * 3,777 published rows / 375 menus / 3,397,331 readers / $166.6B name a
+       * trust and a vintage and no class — `T. Rowe Price Retirement 2050
+       * Trust`, `Vanguard Target Retirement Income Trust`. No exact figure
+       * exists for them, and today they show a blank; the sourced classes span
+       * a narrow range, so the range is what we can honestly say.
+       *
+       * THIS IS LAST, so an exact class figure always wins: the condition is
+       * `!erSourced && !ytdSourced`, and `vehicleFamilyKeyFor` independently
+       * refuses any name that states a class at all. A range never displaces a
+       * number.
+       *
+       * THE SAME TYPE-CONTRADICTION GUARD APPLIES. A row whose name says Trust
+       * while its type cell says Mutual fund is damaged, and nothing says which
+       * cell is wrong, so it keeps its blank rather than taking the trust's
+       * band.
+       *
+       * WHAT THE BAND MAY NOT CLAIM: it is a range over the classes we have
+       * SOURCED, which for some families is a subset of the classes that
+       * exist, so it does not bound the family. The cell therefore names the
+       * classes it is quoting and says the plan's own class is unstated — it
+       * never implies the plan's fee lies inside the range as a fact about the
+       * plan. */
+      let bandShown = null;
+      if (!erSourced && !ytdSourced && !typeContradictsTrust
+          && typeof FUND_VEHICLE_BANDS === "object" && FUND_VEHICLE_BANDS
+          && typeof vehicleFamilyKeyFor === "function") {
+        const fkey = vehicleFamilyKeyFor(f.nameRaw || f.name, f.iss, f.type);
+        const bf = fkey ? FUND_VEHICLE_BANDS[fkey] : null;
+        if (bf && bf.erLo != null) {
+          bandShown = bf; vehicleAny = true; bandAny = true;
+          /* the band's own as-of joins the dates the note states, so the dates
+           * printed under the table cover every figure the table shows. A date
+           * a reader can see a figure for and the note omits is the same defect
+           * as a date the note states and no figure carries. */
+          if (bf.ytdLo != null && bf.ytdAsOf) ytdDates.add(bf.ytdAsOf);
+        }
+      }
       const erShown = erSourced ? erSourced.er : er;
       if (erSourced) sourcedAny = true;
       if (ytdSourced) ytdDates.add(ytdSourced.ytdAsOf);
@@ -4950,6 +5007,20 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
              * on an estimate, because withdrawing it would upgrade a hedge into
              * a claim. */
             + (erSourced ? "" : (star ? "*" : ""))
+          /* A RANGE WHERE THE FILING NAMES THE TRUST AND NOT THE CLASS. Printed
+           * only when the cell would otherwise be a dash, so nothing is
+           * displaced, and the title names the exact classes it is quoting
+           * because a range over the SOURCED classes does not bound the family
+           * — some families have classes nobody has priced. The cell must not
+           * read as a fact about this plan's fee: the plan's class is unstated
+           * and the sentence says so. */
+          /* PRINTED AT THE DATA'S OWN PRECISION, not the column's. The column
+           * formats an estimate with toFixed(3) below 0.1, and on this data
+           * that ROUNDS A PUBLISHED FIGURE DOWN: Vanguard's Trust A fee is
+           * 0.0375% and the cell read "0.037" while its own tooltip said
+           * "0.0375" — a cell disagreeing with its own receipt. Trailing zeros
+           * are trimmed so 0.075 reads "0.075" and 0.26 reads "0.26". */
+          : bandShown ? `<span class="er-band" title="${esc(bandShown.cls.join(", "))} of this trust publish ${bandShown.erLo === bandShown.erHi ? "" : "fees from "}${bandShown.erLo}%${bandShown.erLo === bandShown.erHi ? "" : ` to ${bandShown.erHi}%`}, as of ${esc(bandShown.erAsOf)}. This filing names the trust but not which unit class the plan holds, so its own fee is one of these and we cannot say which.">${bandShown.erLo === bandShown.erHi ? pctExact(bandShown.erLo) + "%" : pctExact(bandShown.erLo) + "–" + pctExact(bandShown.erHi) + "%"}</span>`
           : "—"}${erSourced ? `<span class="er-sourced" title="${vehicleCls ? `The ${esc(vehicleCls)} unit class's own published expense ratio, as of ${esc(erSourced.erAsOf)} — the class this filing names, not the comparable fund marked *` : `Sourced figure, as of ${esc(erSourced.erAsOf)} — not an estimate`}">✓</span>` : ""}</td>
         <!-- THE SIGN CARRIES THE MEANING, the colour only reinforces it: a
              reader who cannot distinguish the two colours still reads +12.73%
@@ -4962,6 +5033,10 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
         ${tab !== "menu" ? "" : `<td class="num">${ytdSourced
           ? `<span class="${ytdSourced.ytd < 0 ? "ret-dn" : "ret-up"}" title="${vehicleCls ? `The ${esc(vehicleCls)} unit class's own year-to-date total return as of ${esc(isoDay(ytdSourced.ytdAsOf))} — the class this filing names, not the comparable fund marked *` : `Year-to-date total return as of ${esc(isoDay(ytdSourced.ytdAsOf))}, read from the fund's own published figure`}">`
             + (ytdSourced.ytd < 0 ? "−" : "+") + Math.abs(ytdSourced.ytd).toFixed(2) + "%</span>"
+          : bandShown && bandShown.ytdLo != null
+          ? `<span class="${bandShown.ytdHi < 0 ? "ret-dn" : "ret-up"}" title="${bandShown.ytdN} unit classes of this trust published year-to-date returns ${bandShown.ytdLo >= 0 ? "" : "of "}${bandShown.ytdLo}% to ${bandShown.ytdHi}% as of ${esc(isoDay(bandShown.ytdAsOf))}. The filing names the trust but not the class, so the plan holds one of these.">`
+            + (bandShown.ytdLo < 0 ? "−" : "+") + Math.abs(bandShown.ytdLo).toFixed(2) + "–"
+            + (bandShown.ytdHi < 0 ? "−" : "") + Math.abs(bandShown.ytdHi).toFixed(2) + "%</span>"
           : "—"}</td>`}
         <td class="num">${money(f.value / 1e6)}</td>
         <td class="num">${total ? ((f.value / total) * 100).toFixed(1) + "%" : "—"}</td>
@@ -5105,9 +5180,9 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
         <tbody>${rows}</tbody>
       </table>
     </div>
-    ${starred ? `<p class="fund-note"><strong>*Comparable fund.</strong> That holding is a collective trust, a separate account, or a fund whose share class the filing does not state — so it has no public ticker, expense ratio or return of its own, because its class is negotiated by the plan. The fund shown is its registered equivalent, so you can look up what it holds. We publish no fee or return beside it: those belong to the equivalent, not to the vehicle your plan actually owns, and a plan's trust class is normally <em>cheaper</em> than the retail fund.${vehicleAny ? ` <strong>Except where the trust publishes its own.</strong> Some providers state a fee and a return for each unit class of the trust itself, and where the filing names the class, a &#10003; figure in this table is that class's own published number &mdash; the vehicle your plan holds, not the fund marked *. Hover it to see which class and which date.` : ""}</p>` : ""}
+    ${starred ? `<p class="fund-note"><strong>*Comparable fund.</strong> That holding is a collective trust, a separate account, or a fund whose share class the filing does not state — so it has no public ticker, expense ratio or return of its own, because its class is negotiated by the plan. The fund shown is its registered equivalent, so you can look up what it holds. We publish no fee or return beside it: those belong to the equivalent, not to the vehicle your plan actually owns, and a plan's trust class is normally <em>cheaper</em> than the retail fund.${vehicleAny ? ` <strong>Except where the trust publishes its own.</strong> Some providers state a fee and a return for each unit class of the trust itself, and where the filing names the class, a &#10003; figure in this table is that class's own published number &mdash; the vehicle your plan holds, not the fund marked *. Hover it to see which class and which date.` : ""}${bandAny ? ` <strong>And where the filing names the trust but not the unit class</strong> &mdash; &ldquo;Retirement 2050 Trust&rdquo; with no class after it &mdash; this table shows a <em>range</em> instead of a figure: the fee and return of each unit class the provider publishes, lowest to highest. Your plan holds one of those classes and the filing does not say which, so the range is as precise as the filing allows. Hover it to see exactly which classes it covers.` : ""}</p>` : ""}
     ${classNote}
-    ${ytdDates.size ? `<p class="fund-note"><strong>YTD return.</strong> Year-to-date total return ${ytdDates.size === 1 ? `as of ${esc(isoDay([...ytdDates][0]))}` : `as of ${[...ytdDates].sort().map((d) => esc(isoDay(d))).join(" and ")}`}, read from each fund's own published figure rather than computed here — hover a figure for the date it was read. A holding shows no return when we have not sourced one, and <strong>a holding whose symbol is marked * usually shows none by design</strong>: that symbol is a comparable registered fund, and the plan holds a collective trust or separate account, whose return differs from the fund's.${vehicleAny ? " The exception is a trust whose provider publishes a return for the very unit class the filing names \u2014 that figure describes the vehicle the plan owns, so it is shown, and hovering it names the class." : ""} Past return is not a prediction, and a fund's return is not this plan's return — participants hold different mixes and buy at different times.</p>` : ""}
+    ${ytdDates.size ? `<p class="fund-note"><strong>YTD return.</strong> Year-to-date total return ${ytdDates.size === 1 ? `as of ${esc(isoDay([...ytdDates][0]))}` : `as of ${[...ytdDates].sort().map((d) => esc(isoDay(d))).join(" and ")}`}, read from each fund's own published figure rather than computed here — hover a figure for the date it was read. A holding shows no return when we have not sourced one, and <strong>a holding whose symbol is marked * usually shows none by design</strong>: that symbol is a comparable registered fund, and the plan holds a collective trust or separate account, whose return differs from the fund's.${vehicleAny ? " The exception is a trust whose provider publishes a return for the very unit class the filing names \u2014 that figure describes the vehicle the plan owns, so it is shown, and hovering it names the class." : ""}${bandAny ? " Where the filing names the trust and not the class, a RANGE is shown across the classes the provider publishes — the plan's own class is one of them and the filing does not say which." : ""} Past return is not a prediction, and a fund's return is not this plan's return — participants hold different mixes and buy at different times.</p>` : ""}
     ${sourcedAny ? `<p class="fund-note"><strong>&#10003; Sourced fee.</strong> That expense ratio was read from the fund's own published figure on the date shown when you hover it, not estimated — every other number in the column is an estimate from the fund's name, which is why the rest of the column is approximate and this one is not. The sourced figures and the page each was read from are recorded in <code>data/fund-facts.json</code>.</p>` : ""}
     ${tab === "menu" && list.filter((f) => /stable value|\bgic\b/i.test(f.type || "")).length >= 5 ? `<p class="fund-note">The many <strong>Stable value / GIC</strong> rows are one menu option, itemized: plans file each piece of the stable value fund — the insurance-company contracts that wrap it and the individual securities inside its synthetic GICs (agency pools, corporate notes, asset-backed trusts). Participants choose the stable value fund as a single option; these securities are not separate choices, which is why they carry no expense ratio or ticker.</p>` : ""}
     ${tab === "menu" && list.some((f) => !lookupTicker(f) && !/company stock|employer (security|stock)|brokerage|stable value|\bgic\b/i.test((f.type || "") + " " + f.name)) ? `<p class="fund-note">Holdings with no ticker are ones we can't identify from the filed name alone: many are pooled vehicles — collective trusts, separate accounts — that have no ticker at all, and others are registered funds our reference table doesn't yet carry. Naming one on a guess would be worse than leaving it blank.</p>` : ""}`;

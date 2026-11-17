@@ -159,6 +159,13 @@ ${loanRowRe}
      * star. NO BACKTICKS: this sits inside the src template literal. */
     let sourcedAny = false;
     let vehicleAny = false;
+    /* bandAny joins them for the same reason and was found the same way -- by a
+     * ReferenceError on the first row that resolved a band, not by reading.
+     * app.js declares it outside the slice, so the slice assigns to a name this
+     * context does not have. A real browser is unaffected; only a harness that
+     * runs the block in isolation needs it, which is why smoke-test cannot
+     * catch this class and a differential can. */
+    let bandAny = false;
     const ytdDates = new Set();
 ${rowBlock}
     /* NO BACKTICKS -- this comment sits inside the src template literal and
@@ -177,6 +184,12 @@ ${rowBlock}
        * that reads both. This is what a BEFORE side made of an older app.js
        * costs, and it is the point of having one. */
       vehicleCls: (typeof vehicleCls === "undefined" ? null : vehicleCls),
+      /* typeof for the same reason as vehicleCls: a BEFORE side built from an
+       * app.js predating the band does not declare it, and a bare reference is
+       * a ReferenceError. An instrument that omits this field cannot see a
+       * banded cell at all and would read a band as a blank -- *an omitted
+       * ANSWER field makes a hedged page look confident*. */
+      band: (typeof bandShown === "undefined" ? null : bandShown),
       value: f.value, pct: total ? (f.value / total) * 100 : null,
       iss: f.iss || "", type: f.type || "",
       flags: { loanRow, descLoanRow, namelessRow, stockRow, mistypedStock,

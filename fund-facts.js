@@ -15582,3 +15582,54 @@ const FUND_VEHICLES = {
  "vanguard::target-retirement-income-trust-plus":{"er":0.055,"erAsOf":"2026-03-31","ytd":3.03,"ytdAsOf":"2026-11-13","cls":"Trust Plus"},
  "vanguard::target-retirement-income-trust-select":{"er":0.045,"erAsOf":"2026-03-31","ytd":3.05,"ytdAsOf":"2026-11-13","cls":"Trust Select"}
 };
+/* FEE AND RETURN BANDS for a trust row that names its vintage and NOT its unit
+ * class. Keyed by family, built only from the classes above — so a band is a
+ * range over NAMED, SOURCED classes and never over a class nobody priced.
+ * The cls field lists them, because a range over a subset does not bound the
+ * family and the page must say what it is quoting rather than imply more.
+ *
+ * 41 families · 41 with a return band
+ */
+const FUND_VEHICLE_BANDS = {
+ "t-rowe-price::retirement-2005":{"erLo":0.26,"erHi":0.38,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class J","Class K"],"ytdLo":4.2,"ytdHi":4.29,"ytdAsOf":"2026-09-30","ytdN":8},
+ "t-rowe-price::retirement-2010":{"erLo":0.26,"erHi":0.38,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class J","Class K"],"ytdLo":4.68,"ytdHi":4.8,"ytdAsOf":"2026-09-30","ytdN":8},
+ "t-rowe-price::retirement-2015":{"erLo":0.26,"erHi":0.38,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class J","Class K"],"ytdLo":5.04,"ytdHi":5.16,"ytdAsOf":"2026-09-30","ytdN":8},
+ "t-rowe-price::retirement-2020":{"erLo":0.26,"erHi":0.38,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class J","Class K"],"ytdLo":5.39,"ytdHi":5.48,"ytdAsOf":"2026-09-30","ytdN":8},
+ "t-rowe-price::retirement-2025":{"erLo":0.26,"erHi":0.38,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class J","Class K"],"ytdLo":5.84,"ytdHi":5.94,"ytdAsOf":"2026-09-30","ytdN":8},
+ "t-rowe-price::retirement-2030":{"erLo":0.26,"erHi":0.38,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class J","Class K"],"ytdLo":7.02,"ytdHi":7.08,"ytdAsOf":"2026-09-30","ytdN":8},
+ "t-rowe-price::retirement-2035":{"erLo":0.26,"erHi":0.38,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class J","Class K"],"ytdLo":8.62,"ytdHi":8.72,"ytdAsOf":"2026-09-30","ytdN":8},
+ "t-rowe-price::retirement-2040":{"erLo":0.26,"erHi":0.38,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class J","Class K"],"ytdLo":10.07,"ytdHi":10.14,"ytdAsOf":"2026-09-30","ytdN":8},
+ "t-rowe-price::retirement-2045":{"erLo":0.26,"erHi":0.38,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class J","Class K"],"ytdLo":11.19,"ytdHi":11.27,"ytdAsOf":"2026-09-30","ytdN":8},
+ "t-rowe-price::retirement-2050":{"erLo":0.26,"erHi":0.38,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class J","Class K"],"ytdLo":11.63,"ytdHi":11.71,"ytdAsOf":"2026-09-30","ytdN":8},
+ "t-rowe-price::retirement-2055":{"erLo":0.26,"erHi":0.38,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class J","Class K"],"ytdLo":11.78,"ytdHi":11.88,"ytdAsOf":"2026-09-30","ytdN":8},
+ "t-rowe-price::retirement-2060":{"erLo":0.26,"erHi":0.38,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class J","Class K"],"ytdLo":11.8,"ytdHi":11.91,"ytdAsOf":"2026-09-30","ytdN":8},
+ "t-rowe-price::retirement-2065":{"erLo":0.26,"erHi":0.38,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class J","Class K"],"ytdLo":11.86,"ytdHi":11.94,"ytdAsOf":"2026-09-30","ytdN":8},
+ "t-rowe-price::retirement-2070":{"erLo":0.26,"erHi":0.38,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class J","Class K"],"ytdLo":11.77,"ytdHi":11.95,"ytdAsOf":"2026-09-30","ytdN":9},
+ "t-rowe-price::retirement-balanced":{"erLo":0.26,"erHi":0.38,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class J","Class K"],"ytdLo":4.18,"ytdHi":4.3,"ytdAsOf":"2026-09-30","ytdN":8},
+ "t-rowe-price::retirement-blend-2005":{"erLo":0.14,"erHi":0.21,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class I","Class J"],"ytdLo":4.43,"ytdHi":4.5,"ytdAsOf":"2026-09-30","ytdN":9},
+ "t-rowe-price::retirement-blend-2010":{"erLo":0.14,"erHi":0.21,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class I","Class J"],"ytdLo":4.88,"ytdHi":4.99,"ytdAsOf":"2026-09-30","ytdN":9},
+ "t-rowe-price::retirement-blend-2015":{"erLo":0.14,"erHi":0.21,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class I","Class J"],"ytdLo":5.23,"ytdHi":5.33,"ytdAsOf":"2026-09-30","ytdN":9},
+ "t-rowe-price::retirement-blend-2020":{"erLo":0.14,"erHi":0.21,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class I","Class J"],"ytdLo":5.59,"ytdHi":5.73,"ytdAsOf":"2026-09-30","ytdN":9},
+ "t-rowe-price::retirement-blend-2025":{"erLo":0.14,"erHi":0.21,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class I","Class J"],"ytdLo":6.07,"ytdHi":6.16,"ytdAsOf":"2026-09-30","ytdN":9},
+ "t-rowe-price::retirement-blend-2030":{"erLo":0.14,"erHi":0.21,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class I","Class J"],"ytdLo":7.26,"ytdHi":7.34,"ytdAsOf":"2026-09-30","ytdN":9},
+ "t-rowe-price::retirement-blend-2035":{"erLo":0.14,"erHi":0.21,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class I","Class J"],"ytdLo":8.87,"ytdHi":8.97,"ytdAsOf":"2026-09-30","ytdN":9},
+ "t-rowe-price::retirement-blend-2040":{"erLo":0.14,"erHi":0.21,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class I","Class J"],"ytdLo":10.3,"ytdHi":10.41,"ytdAsOf":"2026-09-30","ytdN":9},
+ "t-rowe-price::retirement-blend-2045":{"erLo":0.14,"erHi":0.21,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class I","Class J"],"ytdLo":11.48,"ytdHi":11.57,"ytdAsOf":"2026-09-30","ytdN":9},
+ "t-rowe-price::retirement-blend-2050":{"erLo":0.14,"erHi":0.21,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class I","Class J"],"ytdLo":11.93,"ytdHi":12,"ytdAsOf":"2026-09-30","ytdN":9},
+ "t-rowe-price::retirement-blend-2055":{"erLo":0.14,"erHi":0.21,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class I","Class J"],"ytdLo":12.12,"ytdHi":12.18,"ytdAsOf":"2026-09-30","ytdN":9},
+ "t-rowe-price::retirement-blend-2060":{"erLo":0.14,"erHi":0.21,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class I","Class J"],"ytdLo":12.13,"ytdHi":12.22,"ytdAsOf":"2026-09-30","ytdN":9},
+ "t-rowe-price::retirement-blend-2065":{"erLo":0.14,"erHi":0.21,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class I","Class J"],"ytdLo":12.08,"ytdHi":12.2,"ytdAsOf":"2026-09-30","ytdN":9},
+ "t-rowe-price::retirement-blend-2070":{"erLo":0.14,"erHi":0.21,"erAsOf":"2026-05-01","cls":["Class A","Class B","Class C","Class D","Class E","Class F","Class G","Class H","Class I","Class J"],"ytdLo":12.1,"ytdHi":12.21,"ytdAsOf":"2026-09-30","ytdN":9},
+ "vanguard::target-retirement-2020":{"erLo":0.0375,"erHi":0.075,"erAsOf":"2026-03-31","cls":["Trust A","Trust I","Trust II","Trust Plus","Trust Select"],"ytdLo":3.4,"ytdHi":3.44,"ytdAsOf":"2026-11-13","ytdN":5},
+ "vanguard::target-retirement-2025":{"erLo":0.0375,"erHi":0.075,"erAsOf":"2026-03-31","cls":["Trust A","Trust I","Trust II","Trust Plus","Trust Select"],"ytdLo":4.99,"ytdHi":5.05,"ytdAsOf":"2026-11-13","ytdN":5},
+ "vanguard::target-retirement-2030":{"erLo":0.0375,"erHi":0.075,"erAsOf":"2026-03-31","cls":["Trust A","Trust I","Trust II","Trust Plus","Trust Select"],"ytdLo":6.09,"ytdHi":6.13,"ytdAsOf":"2026-11-13","ytdN":5},
+ "vanguard::target-retirement-2035":{"erLo":0.0375,"erHi":0.075,"erAsOf":"2026-03-31","cls":["Trust A","Trust I","Trust II","Trust Plus","Trust Select"],"ytdLo":7.06,"ytdHi":7.12,"ytdAsOf":"2026-11-13","ytdN":5},
+ "vanguard::target-retirement-2040":{"erLo":0.0375,"erHi":0.075,"erAsOf":"2026-03-31","cls":["Trust A","Trust I","Trust II","Trust Plus","Trust Select"],"ytdLo":7.98,"ytdHi":8.04,"ytdAsOf":"2026-11-13","ytdN":5},
+ "vanguard::target-retirement-2045":{"erLo":0.0375,"erHi":0.075,"erAsOf":"2026-03-31","cls":["Trust A","Trust I","Trust II","Trust Plus","Trust Select"],"ytdLo":8.91,"ytdHi":8.95,"ytdAsOf":"2026-11-13","ytdN":5},
+ "vanguard::target-retirement-2050":{"erLo":0.0375,"erHi":0.075,"erAsOf":"2026-03-31","cls":["Trust A","Trust I","Trust II","Trust Plus","Trust Select"],"ytdLo":9.83,"ytdHi":9.89,"ytdAsOf":"2026-11-13","ytdN":5},
+ "vanguard::target-retirement-2055":{"erLo":0.0375,"erHi":0.075,"erAsOf":"2026-03-31","cls":["Trust A","Trust I","Trust II","Trust Plus","Trust Select"],"ytdLo":9.92,"ytdHi":9.94,"ytdAsOf":"2026-11-13","ytdN":5},
+ "vanguard::target-retirement-2060":{"erLo":0.0375,"erHi":0.075,"erAsOf":"2026-03-31","cls":["Trust A","Trust I","Trust II","Trust Plus","Trust Select"],"ytdLo":9.92,"ytdHi":9.97,"ytdAsOf":"2026-11-13","ytdN":5},
+ "vanguard::target-retirement-2065":{"erLo":0.0375,"erHi":0.075,"erAsOf":"2026-03-31","cls":["Trust A","Trust I","Trust II","Trust Plus","Trust Select"],"ytdLo":9.91,"ytdHi":9.95,"ytdAsOf":"2026-11-13","ytdN":5},
+ "vanguard::target-retirement-2070":{"erLo":0.0375,"erHi":0.075,"erAsOf":"2026-03-31","cls":["Trust A","Trust I","Trust II","Trust Plus","Trust Select"],"ytdLo":9.89,"ytdHi":9.95,"ytdAsOf":"2026-11-13","ytdN":5},
+ "vanguard::target-retirement-income":{"erLo":0.0375,"erHi":0.075,"erAsOf":"2026-03-31","cls":["Trust A","Trust I","Trust II","Trust Plus","Trust Select"],"ytdLo":3.01,"ytdHi":3.05,"ytdAsOf":"2026-11-13","ytdN":5}
+};
