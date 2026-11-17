@@ -299,6 +299,25 @@ export function isAssetWord(w) {
   return false;
 }
 
+/* Is `a` a SUBSEQUENCE of `b` — every token of `a` present in `b` IN THE SAME
+ * RELATIVE ORDER, gaps allowed? The superset pass already establishes the SET
+ * relation; this is the only thing it cannot see, and it is what separates
+ * `Vanguard LifeStrategy 20/80` from its 80/20 sibling. Exported so a test can
+ * pin it directly rather than only through `resolve`.
+ *
+ * GREEDY IS CORRECT HERE AND IS NOT CORRECT IN GENERAL: a greedy left-to-right
+ * walk can fail a pair that a backtracking matcher would accept when `a`
+ * repeats a token (`x y x` against `x x y`). The series keys this is asked
+ * about are token sets by construction — `tokens(series).join(" ")` over names
+ * that do not repeat a word — so the hazard is named rather than ignored, and
+ * the function is only ever a TIE-BREAK, so a false `false` costs nothing it
+ * was not already costing. */
+export function subseqOf(a, b) {
+  let i = 0;
+  for (let j = 0; j < b.length && i < a.length; j++) if (b[j] === a[i]) i++;
+  return i === a.length;
+}
+
 /* Share-class markers: words a filing adds that name a class, not a fund. */
 const CLASS_MARK = /^(?:r[1-6]|f[123]|k6|cl|cls|[akyzci]|inv|investor|adm|admrl|admiral|adv|advisor|institutional|instl|inst|premier|premium|retail|service|select|shares?)$/;
 /* …and the subset of those that also NAME A SEPARATE SERIES, which is the only
@@ -338,6 +357,133 @@ const hintsOf = (s) => {
  * so it covers every registrant in the file. A token counts as a manager word
  * when it leads an entity name and is not a generic finance word. */
 const MANAGERS = new Set();
+
+/* ---------- THE HOUSE A REGISTRANT SELLS UNDER, FROM ITS OWN N-CEN ----------
+ * 2026-11-17. The manager gate can only test `managerPhrase(REGISTRANT)` and
+ * `managerPhrase(SERIES)`, and `filedMgrs` is drawn from MANAGERS, which is
+ * built from REGISTRANT LEGAL NAMES alone — the fault the gate's own comment
+ * at `resolve` names as "unreachable BY CONSTRUCTION". PGIM is the largest
+ * live instance: every one of the 138 PGIM series is REGISTERED under an
+ * entity still legally named `PRUDENTIAL …` or `TARGET PORTFOLIO TRUST`, so
+ *
+ *   resolve("PGIM Total Return Bond Fund Class R6")            -> null
+ *   resolve("Prudential PGIM Total Return Bond Fund Class R6") -> PTRQX
+ *
+ * and a filing writes the brand, never the trust. 11,494 published+served rows
+ * / 9,465 plans / 10,807,278 readers publish no symbol for a PGIM holding.
+ *
+ * ***THE OBVIOUS ROUTE WAS MEASURED AND REFUTED, so it is recorded rather than
+ * retried: THERE IS NO REGISTRANT RENAME.*** `data.sec.gov/submissions/
+ * CIK<10>.json` carries `formerNames` as structured data, it was read for all
+ * 29 registrants, and **0 of them has ever been named PGIM** — the two that
+ * are (`PGIM ETF TRUST`, `PGIM Rock ETF Trust`) were incorporated that way and
+ * carry no former name at all. What renamed in 2019 was the SERIES, and the
+ * registry already carries the new names, so a former-NAME map of any shape is
+ * inert here BY CONSTRUCTION. *A queued prescription names a STAGE as well as a
+ * fix, and this one had the symptom right and the stage wrong.*
+ *
+ * SO THE SOURCED FACT IS NOT A RENAME BUT AN ADVISER. Each registrant states,
+ * on its own most recent **Form N-CEN** — the SEC's annual report for a
+ * registered fund, structured XML, one field —
+ *   <investmentAdviserName>PGIM INVESTMENTS LLC</investmentAdviserName>
+ *   <investmentAdviserCrdNo>000105670</investmentAdviserCrdNo>
+ *   <investmentAdviserFileNo>801-31104</investmentAdviserFileNo>
+ * and that is the whole claim: this registrant's funds are PGIM's. Read for
+ * all 29, **one adviser each, ONE CRD across all 29, no sub-adviser named on
+ * any of them**, filings dated 2025-12-11 .. 2026-11-16. Source URL per row is
+ *   https://www.sec.gov/Archives/edgar/data/<cik>/<accession-no-dashes>/primary_doc.xml
+ * and `data.sec.gov` plus `www.sec.gov/Archives` both answered 200 here.
+ *
+ * AND THE SAFETY PROPERTY IS A MEASUREMENT IN BOTH DIRECTIONS, over the whole
+ * 12,328-key registry, not an argument:
+ *   (a) PGIM-named series at a registrant OUTSIDE this list: **0**
+ *   (b) non-PGIM-named series AT a registrant IN this list:  **0**
+ * So `pgim` reaches exactly these 138 series and nothing else, and the bucket
+ * is SINGLE-HOUSE by the same standard `houseLeads` demands — which that test
+ * cannot see, because it asks whether each registrant is NAMED after the token
+ * and these are named after the parent company (`pgim` -> {prudential:66,
+ * target:3, pgim:69}, the cost its own comment names).
+ *
+ * `assertRegistrantHouses` throws if a key stops naming a live registrant, so a
+ * registry refresh that renames one reddens a gate instead of going quietly
+ * inert — the `assertFamily` precedent in `lib-af-abbrev.mjs`.
+ *
+ * ENUMERATED BY WHOLE REGISTRANT NAME, deliberately. A generic `pgim ->
+ * prudential` token rewrite is the "token added to a closed vocabulary"
+ * move this record warns about: it would also reach `PGIM Rock ETF Trust`'s 42
+ * buffer ETFs and any future registrant whose name merely contains the string,
+ * with no filing behind it. The blast radius of a line here is the registrant
+ * it names. Columns: registrant (as `sec-funds.json` spells it), house token,
+ * CIK, N-CEN accession, filing date. */
+export const REGISTRANT_HOUSES = [
+  ["PGIM ETF TRUST",                                   "pgim", "0001727074", "0000940400-26-042128", "2026-11-16"],
+  ["PGIM Rock ETF Trust",                              "pgim", "0001992104", "0000940400-26-000178", "2026-01-13"],
+  ["PRUDENTIAL GLOBAL TOTAL RETURN FUND, INC.",        "pgim", "0000793159", "0000940400-26-000153", "2026-01-13"],
+  ["PRUDENTIAL INVESTMENT PORTFOLIOS 12",              "pgim", "0001051562", "0000940400-26-023400", "2026-06-11"],
+  ["PRUDENTIAL INVESTMENT PORTFOLIOS 16",              "pgim", "0001067442", "0000940400-26-000154", "2026-01-13"],
+  ["PRUDENTIAL INVESTMENT PORTFOLIOS 18",              "pgim", "0001052118", "0000940400-26-002995", "2026-02-10"],
+  ["PRUDENTIAL INVESTMENT PORTFOLIOS 2",               "pgim", "0001099692", "0000940400-26-039269", "2026-10-13"],
+  ["PRUDENTIAL INVESTMENT PORTFOLIOS 3",               "pgim", "0001104631", "0000940400-26-016195", "2026-05-12"],
+  ["PRUDENTIAL INVESTMENT PORTFOLIOS 4",               "pgim", "0000807394", "0000940400-26-042134", "2026-11-16"],
+  ["PRUDENTIAL INVESTMENT PORTFOLIOS 5",               "pgim", "0001090155", "0000940400-26-039268", "2026-10-13"],
+  ["PRUDENTIAL INVESTMENT PORTFOLIOS 6",               "pgim", "0000746518", "0000940400-26-042129", "2026-11-16"],
+  ["PRUDENTIAL INVESTMENT PORTFOLIOS 7",               "pgim", "0000803191", "0000940400-26-042131", "2026-11-16"],
+  ["PRUDENTIAL INVESTMENT PORTFOLIOS 8",               "pgim", "0000887991", "0000940400-25-012227", "2025-12-11"],
+  ["PRUDENTIAL INVESTMENT PORTFOLIOS 9",               "pgim", "0001070287", "0000940400-26-000151", "2026-01-13"],
+  ["PRUDENTIAL INVESTMENT PORTFOLIOS, INC.",           "pgim", "0000949512", "0000940400-25-012226", "2025-12-11"],
+  ["PRUDENTIAL INVESTMENT PORTFOLIOS, INC. 10",        "pgim", "0001035018", "0000940400-26-000160", "2026-01-13"],
+  ["PRUDENTIAL INVESTMENT PORTFOLIOS, INC. 14",        "pgim", "0000717819", "0000940400-26-016196", "2026-05-12"],
+  ["PRUDENTIAL INVESTMENT PORTFOLIOS, INC. 15",        "pgim", "0000278187", "0000940400-26-042130", "2026-11-16"],
+  ["PRUDENTIAL INVESTMENT PORTFOLIOS, INC. 17",        "pgim", "0000929523", "0000940400-26-000155", "2026-01-13"],
+  ["PRUDENTIAL JENNISON BLEND FUND, INC.",             "pgim", "0000356683", "0000940400-26-042133", "2026-11-16"],
+  ["PRUDENTIAL JENNISON MID-CAP GROWTH FUND, INC.",    "pgim", "0001022624", "0000940400-26-042132", "2026-11-16"],
+  ["PRUDENTIAL JENNISON NATURAL RESOURCES FUND, INC.", "pgim", "0000816753", "0000940400-26-000152", "2026-01-13"],
+  ["PRUDENTIAL JENNISON SMALL CO FUND, INC.",          "pgim", "0000318531", "0000940400-25-012225", "2025-12-11"],
+  ["PRUDENTIAL NATIONAL MUNI FUND, INC.",              "pgim", "0000314612", "0000940400-26-042135", "2026-11-16"],
+  ["PRUDENTIAL SECTOR FUNDS, INC.",                    "pgim", "0000352665", "0000940400-26-002994", "2026-02-10"],
+  ["PRUDENTIAL SHORT-TERM CORPORATE BOND FUND, INC.",  "pgim", "0000834126", "0000940400-26-010051", "2026-03-13"],
+  ["PRUDENTIAL WORLD FUND, INC.",                      "pgim", "0000741350", "0000940400-26-000156", "2026-01-13"],
+  ["Prudential Government Money Market Fund, Inc.",    "pgim", "0000067590", "0000940400-26-039267", "2026-10-13"],
+  ["TARGET PORTFOLIO TRUST",                           "pgim", "0000890339", "0000940400-26-039264", "2026-10-13"],
+];
+const REGISTRANT_HOUSE = new Map(REGISTRANT_HOUSES.map(([reg, house]) => [reg, house]));
+
+/* THE GATE ON THE MAP, on `assertFamily`'s precedent: a sourced entry whose
+ * registrant the registry no longer carries is INERT, and an inert entry reads
+ * exactly like a working one. It also re-asserts, over whatever registry is
+ * loaded, the two-directional property the map's whole safety argument rests
+ * on — so a refresh that gives some OTHER house a `PGIM …` series reddens here
+ * rather than laundering one house's fund onto another's name.
+ *
+ * Returns the number of entries checked, so a caller printing it cannot report
+ * a silent zero. Called by `gen-sec-tickers.mjs` and `sec-tickers-test.mjs`,
+ * NOT by `buildIndex`: a throw inside the index builder would also stop
+ * `audit-data` and the merge, and the thing being protected is the published
+ * table, not the data pipeline. */
+export function assertRegistrantHouses(idx) {
+  if (!idx || !idx.entities) throw new Error("assertRegistrantHouses: index carries no entity set");
+  const missing = REGISTRANT_HOUSES.filter(([reg]) => !idx.entities.has(reg)).map(([reg]) => reg);
+  if (missing.length)
+    throw new Error(`assertRegistrantHouses: ${missing.length} sourced registrant(s) are absent from the registry, so their entry is INERT: ${missing.join(" | ")}`);
+  const byHouse = new Map();
+  for (const [, h] of REGISTRANT_HOUSES) byHouse.set(h, (byHouse.get(h) || 0) + 1);
+  for (const [house] of byHouse) {
+    const re = new RegExp(`\\b${house}\\b`, "i");
+    const outside = [], inside = [];
+    for (const [key, list] of idx.bySeries) for (const c of list) {
+      const named = re.test(c.series);
+      const sourced = REGISTRANT_HOUSE.get(c.entity) === house;
+      if (named && !sourced) outside.push(`${c.entity} :: ${c.series}`);
+      if (!named && sourced) inside.push(`${c.entity} :: ${c.series}`);
+      void key;
+    }
+    if (outside.length)
+      throw new Error(`assertRegistrantHouses: ${[...new Set(outside)].length} series NAME "${house}" at a registrant that is not sourced to it — the house no longer identifies one adviser: ${[...new Set(outside)].slice(0, 5).join(" | ")}`);
+    if (inside.length)
+      throw new Error(`assertRegistrantHouses: ${[...new Set(inside)].length} series at a sourced "${house}" registrant do NOT name it, so the key reaches series the source does not cover: ${[...new Set(inside)].slice(0, 5).join(" | ")}`);
+  }
+  return REGISTRANT_HOUSES.length;
+}
 const GENERIC_LEAD = new Set(["etf", "etfs", "variable", "insurance", "mutual", "funds",
   "american", "global", "national", "first", "us", "u", "core", "total",
   "government", "income", "growth", "value", "equity", "bond", "index", "international", "capital",
@@ -439,8 +585,17 @@ export function buildIndex(indexPath) {
      * mid-name ("Virtus DFA 2015 Target Date Retirement Income Fund"), and a
      * substring test read that as Dimensional's own fund. It is Virtus's, at
      * Virtus's fee. Same failure as "Empower T. Rowe Price Mid Cap Growth". */
+    /* The sourced house joins the registrant's own phrase rather than replacing
+     * it, so every answer the gate gives today still passes: `Prudential PGIM
+     * Total Return Bond R6` keeps working through `prudential` and `PGIM Total
+     * Return Bond R6` now works through `pgim`. It is NOT run through
+     * `managerPhrase`, which would return null for `pgim` — a four-letter
+     * single word fails its `p.length >= 5 || p.includes(" ")` floor, and that
+     * floor is about DERIVING a phrase from a legal name, not about a token a
+     * filing is sourced to state. */
+    const house = REGISTRANT_HOUSE.get(entity);
     list.push({ ticker, className: className || "", hint: hintOf(className || ""), entity, series,
-      mgrKeys: [managerPhrase(entity), managerPhrase(series)].filter(Boolean) });
+      mgrKeys: [managerPhrase(entity), managerPhrase(series), house].filter(Boolean) });
     bySeries.set(key, list);
   }
   // Inverted index on the series' LEADING token (the manager/family word).
@@ -455,6 +610,21 @@ export function buildIndex(indexPath) {
     byLead.set(st[0], arr);
   }
   for (const arr of byLead.values()) arr.sort((a, b) => b[0].length - a[0].length);
+  /* THE SUPERSET SCORE IS A PACKED INTEGER AND A FIELD THAT OVERFLOWS CHANGES
+   * THE RANKING SILENTLY. `(9-left)*1e9 + st.length*1e6 + chars*10 + inOrder`
+   * only means what it says while `chars*10 < 1e6` and `st.length*1e6 < 1e9`,
+   * so the two bounds are ASSERTED over the registry that is actually loaded
+   * rather than assumed from the names in it. A registry refresh that
+   * registers a 100,000-character series name reddens here instead of
+   * reordering two funds with nothing to see. */
+  let maxTok = 0, maxChars = 0;
+  for (const key of bySeries.keys()) {
+    const st = key.split(" ");
+    if (st.length > maxTok) maxTok = st.length;
+    if (key.length - st.length + 1 > maxChars) maxChars = key.length - st.length + 1;
+  }
+  if (maxTok >= 1000 || maxChars >= 100000)
+    throw new Error(`match-sec-tickers: a series key exceeds the superset score's field widths (max ${maxTok} tokens / ${maxChars} chars); widen the multipliers in resolve() before trusting any ranking`);
   // Series carrying a vintage year, bucketed by that year, for the year-pinned
   // pass in resolve(). Keeps that pass to a few dozen candidates instead of
   // every series in the file.
@@ -481,6 +651,12 @@ export function buildIndex(indexPath) {
     const p = managerPhrase(String(name).split(" :: ")[0]);
     if (p) MANAGERS.add(p);
   }
+  /* A SOURCED HOUSE IS ALSO A MANAGER THE FILED NAME MAY STATE. Without this
+   * the key added to `mgrKeys` above is unreachable — `filedMgrs` is drawn
+   * from MANAGERS alone, which is the very fault the map exists to repair, and
+   * adding the key without the vocabulary would have read as a working change
+   * with a 0-row delivery. */
+  for (const [reg, house] of REGISTRANT_HOUSES) if (REGISTRANT_HOUSE.has(reg)) MANAGERS.add(house);
   /* THE REGISTRY'S OWN WORDS, for the join repair below: every token of three or
    * more letters the SEC spells as ONE word anywhere in a registrant, series or
    * share-class name. It is the SAME witness v529's all-caps arm uses to REFUSE
@@ -561,7 +737,9 @@ export function buildIndex(indexPath) {
     const [entity, series] = String(name).includes(" :: ") ? String(name).split(" :: ") : ["", String(name)];
     byTicker.set(String(ticker).toUpperCase(), { ticker, entity, series, className: className || "" });
   }
-  return { bySeries, byLead, byYear, byTicker, words, houseLeads, managers: MANAGERS, memo: new Map(), generated: j.generated, source: j.source, rows: funds.length };
+  const entities = new Set();
+  for (const [name] of funds) if (String(name).includes(" :: ")) entities.add(String(name).split(" :: ")[0]);
+  return { bySeries, byLead, byYear, byTicker, words, houseLeads, entities, managers: MANAGERS, memo: new Map(), generated: j.generated, source: j.source, rows: funds.length };
 }
 
 /* THE FILING PRINTS THE TICKER, SO READING IT IS READING THE FILING.
@@ -1007,7 +1185,39 @@ function resolveUncached(idx, filedName, issuerWords) {
         const st1 = new Set(st);
         let left = 0;
         for (const w of ft) if (!st1.has(w) && !house.has(w) && !CLASS_MARK.test(w)) left++;
-        const score = (9 - Math.min(left, 9)) * 1e6 + st.length * 1000 + st.join("").length;
+        /* THE SUBSET TEST IS A SET TEST, SO IT IS ORDER-BLIND, AND FOUR
+         * VANGUARD FUNDS DIFFER ONLY BY TOKEN ORDER.
+         *
+         *   Vanguard LifeStrategy 20/80 Fund  VASIX    40/60  VSCGX
+         *   Vanguard LifeStrategy 60/40 Fund  VSMGX    80/20  VASGX
+         *
+         * `{vanguard, lifestrategy, 20, 80}` is the SAME SET as `{vanguard,
+         * lifestrategy, 80, 20}`, and the two keys also tie on token count and
+         * on character count — they are anagrams — so the winner was decided by
+         * iteration order over `byLead`, which is registry file order. Measured
+         * on the committed table: 67 published+served rows / 50 plans /
+         * 29,710 readers / $39.3M were handed the WRONG sibling's symbol, and
+         * because a sourced fee and a sourced YTD now hang off the symbol they
+         * read a conservative fund's row at the growth fund's return (20/80 at
+         * +8.66% where its own is +1.38%). One menu published VASGX twice, on
+         * its 80/20 row and on its 20/80 row.
+         *
+         * The repair is the LOWEST-SIGNIFICANCE term of the existing score, and
+         * that position is the whole safety argument: it can only break a tie
+         * that was previously broken by file order, so it cannot refuse a match
+         * or displace a strictly better one. The ORDER TEST ITSELF is deliberately
+         * not a condition — made one, it would reject `Fidelity Index 500`
+         * against the registered `Fidelity 500 Index`, a correct answer whose
+         * filer simply wrote the words the other way round, and there is no
+         * sibling there for the order to be evidence about.
+         *
+         * Permutation siblings are 11 groups in the whole 12,328-key registry
+         * (LifeStrategy x2, MassMutual Allocation x2, Defiance ETFs x2, equity/
+         * income, 500/index, tax-exempt/California, Ladenburg, Capital Advisors)
+         * so the term is almost always 0 on both sides and inert — which is why
+         * it is priced by a differential and not by argument. */
+        const inOrder = subseqOf(st, ft) ? 1 : 0;
+        const score = (9 - Math.min(left, 9)) * 1e9 + st.length * 1e6 + st.join("").length * 10 + inOrder;
         if (score <= bestScore) continue;
         best = list; bestLen = st.length; bestKey = st; bestScore = score;
       }
@@ -1320,6 +1530,22 @@ function resolveUncached(idx, filedName, issuerWords) {
  * hold every other. A guard whose negative control passes has not been tested.
  * `*` means comparable (the asterisk the page renders), `—` means refused. */
 const SELFTEST = [
+  /* ORDER IS THE ONLY DISCRIMINATOR BETWEEN FOUR VANGUARD FUNDS, and the
+   * superset pass compares SETS. All four vintages, in both directions, plus
+   * the two must-NOTs that keep the repair a tie-break rather than a condition
+   * (`Fidelity Index 500` is a transposed filed spelling with no sibling for
+   * the order to be evidence about, and refusing it is what a plausible wrong
+   * implementation does). Full table and the reader measurement are in
+   * `sec-tickers-test.mjs` (8d). */
+  ["Vanguard LifeStrategy 20/80 Investor", "VASIX"],
+  ["Vanguard LifeStrategy 40/60 Investor", "VSCGX"],
+  ["Vanguard LifeStrategy 60/40 Investor", "VSMGX"],
+  ["Vanguard LifeStrategy 80/20 Investor", "VASGX"],
+  ["Fidelity Index 500", "FXAIX"],
+  /* THE HOUSE A FILING WRITES IS NOT THE HOUSE A REGISTRANT IS NAMED AFTER.
+   * See REGISTRANT_HOUSES: sourced per registrant from its own N-CEN. */
+  ["PGIM Total Return Bond R6", "PTRQX"],
+  ["PGIM Stable Value Fund", "—"],
   // the institutional series published as the retail one, asserted as fact
   ["Vanguard Institutional Target Retirement 2070 Fund Institutional Shares", "—"],
   ["Vanguard Institutional Target Retire 2020", "—"],

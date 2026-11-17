@@ -63,7 +63,7 @@ import vm from "node:vm";
 import { loadPlans } from "./lib-schema.mjs";
 import { buildRenderer } from "./apppath.mjs";
 import { servedLineup } from "./lib-ledger.mjs";
-import { buildIndex, resolveHolding, norm, decodeEntities,
+import { buildIndex, resolveHolding, norm, decodeEntities, assertRegistrantHouses,
   STRUCTURAL, CLASS_WORDS, DESCRIPTIVE, isAssetWord } from "./match-sec-tickers.mjs";
 import { buildAfIndex, assertAfFamily, buildFidIndex, buildVgIndex, buildJhIndex,
   assertFamily, afAbbrevAsk, afToks, houseRun } from "./lib-af-abbrev.mjs";
@@ -103,6 +103,16 @@ if ("Vanguard 500 Index Fund N/R".replace(COST_MARKER, "").trim() !== "Vanguard 
 
 /* ---------- the matcher and the page's own chain ---------- */
 const idx = buildIndex(`${ROOT}/sec-funds.json`);
+/* THE SOURCED REGISTRANT-HOUSE MAP IS GATED HERE, on the `assertAfFamily`
+ * precedent below: a sourced entry whose registrant the registry no longer
+ * carries is INERT, and an inert entry reads exactly like a working one. It
+ * also re-asserts the two-directional property the map's safety rests on, so a
+ * registry refresh that hands some other adviser a `PGIM …` series stops this
+ * regeneration instead of laundering one house's fund onto another's name. */
+{
+  const n = assertRegistrantHouses(idx);
+  console.error(`registrant-house map OK  (${n} registrants sourced to a house by their own N-CEN)`);
+}
 /* `secTickers: false` IS NOT OPTIONAL HERE AND IT IS NOT A PERFORMANCE FLAG.
  * This script's gate is "the page's own chain resolves nothing", and the page's
  * chain now ENDS in the table this script writes. Loaded, the generator would

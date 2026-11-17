@@ -393,6 +393,97 @@ ok(/typeof pooledVehicleRow !== "function"\s*\n?\s*\|\|/.test(APP),
     `no key in the table is pooled by NAME alone, so the nameRaw call is decorative (${byName.length} would be: ${byName.slice(0, 3).map((x) => JSON.stringify(x)).join(", ")})`);
 }
 
+/* (8d) THE SUPERSET PASS IS ORDER-AWARE WHERE ORDER IS THE ONLY EVIDENCE, and
+ * THE ORDER TEST IS NOT A CONDITION. 2026-11-17.
+ *
+ * `resolve`'s superset pass tests SET membership, so for four Vanguard funds
+ * that differ only by token order it tied on every component of its score and
+ * the winner was registry file order: 67 published+served rows / 50 plans /
+ * 29,710 readers were handed the wrong sibling, with a SOURCED fee and a
+ * SOURCED YTD hanging off the symbol.
+ *
+ * BOTH DIRECTIONS, and the second half is the one that makes the fix narrow:
+ *   MUST CHANGE  — all four LifeStrategy vintages answer their own ticker, in
+ *                  both the raw and the hyphen-free spellings, and the two
+ *                  MassMutual 20/80 ↔ 80/20 siblings with them.
+ *   MUST NOT     — `Fidelity Index 500` still answers FXAIX against the
+ *                  registered `Fidelity 500 Index Fund`. It is a TRANSPOSED
+ *                  filed spelling with no sibling for the order to be evidence
+ *                  about, and a plausible wrong implementation — making the
+ *                  subsequence test a CONDITION of the superset match rather
+ *                  than its lowest tie-break — refuses it. So does
+ *                  `Vanguard Index 500`, the fund's own historical name.
+ * `subseqOf` is pinned directly too, because a greedy walk is only correct here
+ * on token SETS and the function says so. */
+{
+  const { buildIndex, resolveHolding, subseqOf, assertRegistrantHouses } =
+    await import("./match-sec-tickers.mjs");
+  const idx = buildIndex(`${ROOT}/sec-funds.json`);
+  ok(subseqOf(["a", "b"], ["a", "x", "b"]) === true
+    && subseqOf(["b", "a"], ["a", "x", "b"]) === false
+    && subseqOf(["a", "b"], ["a"]) === false
+    && subseqOf([], ["zzz"]) === true,
+    "subseqOf is order-sensitive, length-aware and vacuously true on an empty needle");
+  const must = [
+    // the permutation siblings — each must answer ITS OWN fund
+    ["Vanguard LifeStrategy 20/80 Investor", "VASIX"],
+    ["Vanguard LifeStrategy 40/60 Investor", "VSCGX"],
+    ["Vanguard LifeStrategy 60/40 Investor", "VSMGX"],
+    ["Vanguard LifeStrategy 80/20 Investor", "VASGX"],
+    ["Vanguard LifeStrategy 20/80 Fund Investor Shares", "VASIX"],
+    ["Vanguard LifeStrategy 80/20 Fund Investor Shares", "VASGX"],
+    ["MassMutual 20/80 Allocation Fund Class R5", "MRCSX"],
+    ["MassMutual 80/20 Allocation Fund Class R5", "MRRSX"],
+    /* must NOT be refused: a transposed filed spelling with no sibling. A
+     * subsequence CONDITION would null both of these. */
+    ["Fidelity Index 500", "FXAIX"],
+    ["Vanguard Index 500 Fund Admiral Shares", "VFIAX"],
+    /* and the ordinary superset answers the pass exists for, unmoved */
+    ["Vanguard 500 Index Fund Admiral Shares", "VFIAX"],
+    ["American Funds Growth Fund of America R6", "RGAGX"],
+  ];
+  for (const [n, want] of must) {
+    const got = resolveHolding(idx, n, "");
+    ok(!!got && got.ticker === want && !got.comparable,
+      `order tie-break: ${JSON.stringify(n)} -> ${want} (got ${got ? got.ticker + (got.comparable ? "*" : "") : "null"})`);
+  }
+
+  /* (8e) THE SOURCED REGISTRANT HOUSE. `pgim` is a brand no registrant's legal
+   * name carries, so the manager gate refused every PGIM holding — 11,494
+   * published+served rows / 10.8M readers. The map is sourced per registrant
+   * from its own N-CEN and `assertRegistrantHouses` is the gate that keeps a
+   * stale entry from going inert; it is called HERE as well as in the
+   * generator, so a registry refresh reddens a frontend push too.
+   *
+   * BOTH DIRECTIONS, each must-not being a case a plausible wrong
+   * implementation reaches: a generic `pgim -> prudential` token rewrite would
+   * answer the two non-registered vehicles and the un-renamed `Prudential Day
+   * One` series; a map keyed on a substring of the registrant name would reach
+   * `Prudential Series Fund`, the variable-annuity registrant, which is NOT in
+   * the sourced list. */
+  ok(assertRegistrantHouses(idx) === 29, "assertRegistrantHouses checks all 29 sourced registrants");
+  const pg = [
+    ["PGIM Total Return Bond Fund Class R6", "PTRQX"],
+    ["PGIM Total Return Bond R6", "PTRQX"],
+    ["PGIM High Yield R6", "PHYQX"],
+    ["PGIM Jennison Growth R6", "PJFQX"],
+    ["PGIM Quant Solutions Mid-Cap Index Fund", "PQCCX"],
+    // the house word alone names no product
+    ["PGIM", null],
+    ["PGIM Fund", null],
+    // a stable-value / guaranteed vehicle PGIM runs that the SEC does not register
+    ["PGIM Guaranteed Income Fund", null],
+    ["PGIM Stable Value Fund", null],
+    // and the long-standing route must be untouched
+    ["Prudential PGIM Total Return Bond Fund Class R6", "PTRQX"],
+  ];
+  for (const [n, want] of pg) {
+    const got = resolveHolding(idx, n, "");
+    const sym = got && !got.comparable ? got.ticker : null;
+    ok(sym === want, `pgim house: ${JSON.stringify(n)} -> ${want || "nothing"} (got ${got ? got.ticker + (got.comparable ? "*" : "") : "nothing"})`);
+  }
+}
+
 /* (7) THE BROWSER TWIN OF THE KEY. app.js must build the key from the same two
  * cells in the same order; a transposition would make every lookup miss and
  * nothing else would notice. Asserted against the SOURCE, because the shape of
