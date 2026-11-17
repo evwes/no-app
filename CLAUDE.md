@@ -935,9 +935,17 @@ the publish gate applied before any reader figure, and an accuracy-log entry.
   `r1y/r3y/r5y/r10y` with per-horizon plausibility bands, a required
   `returnBasis: "annualised"` and an optional `inception` that refuses a 10-year
   figure on a younger fund — the paste that would otherwise publish a
-  *cumulative* 10-year return (+159%) in an annualised field (+10%). **0 funds
-  carry one yet**: sourcing them is the `fund-facts` agent's work, and the
-  render is then the same shape as YTD. The YTD column SHIPPED 2026-11-06 —
+  *cumulative* 10-year return (+159%) in an annualised field (+10%).
+  **THE "0 FUNDS CARRY ONE YET" THAT STOOD HERE WAS TRUE ON 2026-11-13 AND
+  FALSE BY 2026-11-16, AND IT WAS QUOTED INTO docs/closed-classes.md AS FACT
+  BEFORE ANYONE RE-DERIVED IT.** Measured out of git on 2026-11-17: 308 entries
+  carried a trailing return at 2026-11-15 15:33 (144 a full curve), the
+  Fidelity screener took it to 9,216 on 2026-11-16, the ETF pass to 13,610, and
+  HEAD stands at **13,718 with any trailing return and 9,493 with the full
+  1/3/5/10-year curve**. Derive it with
+  `node -e` over `data/fund-facts.json`, never from this sentence. What is
+  still TRUE is that the RENDER does not exist: no trailing return reaches a
+  reader, and that is the remaining work — the same shape as the YTD column. The YTD column SHIPPED 2026-11-06 —
   `docs/accuracy-log.md` — and the lesson it carries forward is that *the
   largest plans hold collective trusts, so the lever is more sourced TICKERS,
   not more sourced returns*: Walmart fills 1 of 42 rows at 0.0% of value.

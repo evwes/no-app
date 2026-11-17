@@ -7383,9 +7383,19 @@ The precedent is `docs/form5500-instructions-2025.txt`.
 
 The `fund-facts` agent wrote **111 unit-class entries** (SMRT 78, SIRT 26, ITF 7),
 all `erBasis: class-published` with a `shareClass`, every figure dated
-2026-10-31, checker 0 failures. 107 carry a fee and a YTD; **100 carry trailing
-returns, and 76 the full 1/3/5/10-year curve — the first sourced trailing
-returns in the schema**, open since 2026-11-13 with 0 funds carrying one.
+2026-10-31, checker 0 failures. 107 carry a fee and a YTD; 100 carry trailing
+returns and 76 the full 1/3/5/10-year curve.
+
+**CORRECTED 2026-11-17, SAME DAY: these are NOT "the first sourced trailing
+returns in the schema", which is what this entry said when it was written.**
+That claim was taken from CLAUDE.md's "0 funds carry one yet" — written
+2026-11-13 and stale by the time I quoted it. Measured out of git: 308 entries
+already carried a trailing return at 2026-11-15 15:33, 144 of them a full
+curve; the Fidelity screener commit took it to 9,216 on 2026-11-16 18:40 and
+the ETF commit to 13,610. Schwab's 100 are a small late addition, and they are
+the first for a TRUST unit class rather than the first at all. *A contradicted
+number in the record is asserted again every time it is read* — and this one
+was asserted by me, hours after reading the rule.
 
 **DELIVERED**, enumerated per triple against all 1,781,478 rows: **794 triples
 newly resolve an exact class key, 4,387,845 reader-slots, every key priced**;
