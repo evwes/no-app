@@ -61,6 +61,19 @@ const z = () => ({ rows: 0, ppl: 0, val: 0 });
 const add = (b, ppl, val) => { b.rows++; b.ppl += ppl; b.val += val; };
 const all = z(), notPriceable = z(), priceable = z();
 const withFee = z(), withSourcedFee = z(), withReturn = z(), withBoth = z();
+/* A BAND IS AN ANSWER AND THIS METRIC COULD NOT SEE IT — found 2026-11-17, the
+ * day after the band shipped, by a separate instrument reporting 32.83% where
+ * this one reported 31.73%. `erShown` is null on a banded row, so every one of
+ * the 3,503 rows the page now answers with a range counted as a GAP here, and
+ * the headline under-stated the page by 1.10 points. Exactly the hazard this
+ * project records against `tkExact`: a scoreboard that RE-DERIVES what the page
+ * decides goes blind the moment the page gains an arm.
+ *
+ * COUNTED SEPARATELY, NOT FOLDED IN. A range is not a figure, so adding it to
+ * `withBoth` would over-state in the other direction and hide which kind of
+ * answer a reader gets. Two headlines are printed: exact figures, and exact
+ * plus banded. */
+const withBand = z();
 const gapNames = new Map();      // what is MISSING, by readers — the work list
 /* AND THE GAP BY FILED TYPE, which is the number that decides what work can
  * close it. A ticker is a mutual-fund lever; a collective trust has no ticker
@@ -103,10 +116,13 @@ for (const sh of readdirSync(`${ROOT}/data/lineups`).sort()) {
       if (src) add(withSourcedFee, ppl, val);
       if (ret) add(withReturn, ppl, val);
       if (fee && ret) add(withBoth, ppl, val);
+      const banded = !!r.band;
+      if (banded) add(withBand, ppl, val);
+      const answered = (fee && ret) || banded;
       const tkey = (raw.type && String(raw.type).trim()) || "(no type stated)";
       const tb = (m) => { let b = m.get(tkey); if (!b) m.set(tkey, b = z()); return b; };
-      add(tb(fee && ret ? haveType : gapType), ppl, val);
-      if (!fee || !ret) {
+      add(tb(answered ? haveType : gapType), ppl, val);
+      if (!answered) {
         const k = f.nameRaw.slice(0, 64);
         const g = gapNames.get(k) || { rows: 0, ppl: 0, val: 0, fee, ret, tk: r.tk || null, type: raw.type || "" };
         g.rows++; g.ppl += ppl; g.val += val;
@@ -128,6 +144,7 @@ const record = { at: new Date().toISOString(), menus,
   feePpl: withFee.ppl, sourcedFeePpl: withSourcedFee.ppl, retPpl: withReturn.ppl, bothPpl: withBoth.ppl,
   pctFee: +pc(withFee.ppl, priceable.ppl), pctReturn: +pc(withReturn.ppl, priceable.ppl),
   pctBoth: +pc(withBoth.ppl, priceable.ppl),
+  bandPpl: withBand.ppl, pctAnswered: +pc(withBoth.ppl + withBand.ppl, priceable.ppl),
   gapByType: Object.fromEntries([...gapType].map(([t, b]) => [t, b.ppl])) };
 if (APPEND) {
   appendFileSync(path.join(ROOT, "docs", "completion-history.jsonl"), JSON.stringify(record) + "\n");
@@ -146,7 +163,9 @@ if (JSONOUT) {
   console.log(line("  of which SOURCED", withSourcedFee, priceable));
   console.log(line("of priceable: has a RETURN", withReturn, priceable));
   console.log(line("of priceable: has BOTH", withBoth, priceable));
+  console.log(line("of priceable: a trust BAND (a range)", withBand, priceable));
   console.log(`\n  *** HEADLINE: ${pc(withBoth.ppl, priceable.ppl)}% of reader-weighted priceable rows carry BOTH a fee and a return ***`);
+  console.log(`      ANSWERED AT ALL (adding the banded rows, which give a RANGE and not a figure): ${pc(withBoth.ppl + withBand.ppl, priceable.ppl)}%`);
   console.log(`      fee only: ${pc(withFee.ppl, priceable.ppl)}%   return only: ${pc(withReturn.ppl, priceable.ppl)}%`);
   console.log(`\nTHE GAP BY FILED TYPE — what KIND of work can close it:`);
   const types = [...new Set([...gapType.keys(), ...haveType.keys()])]
