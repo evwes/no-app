@@ -17,6 +17,11 @@
  * JSON where the checker reads them and where anyone auditing a figure can find
  * it by ticker.
  *
+ * AND, SINCE 2026-11-17, THE TRAILING CURVE: r1y / r3y / r5y / r10y. See
+ * `trailingOut` below for every refusal it re-applies and for why the as-of
+ * date is written ONCE per entry when the horizons agree and PER HORIZON when
+ * they do not -- there is no shape in which a figure reaches the page undated.
+ *
  * NOTHING IS INVENTED HERE. A fund with no `er` is skipped rather than written
  * with a blank, and the generator refuses to emit a figure whose date the
  * checker would reject -- so the asset cannot carry a claim the JSON does not.
@@ -33,7 +38,24 @@ import { shareClassToken } from "./lib-disclose.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CHECK = process.argv.includes("--check");
-const OUT = path.join(ROOT, "fund-facts.js");
+/* `--out <path>` writes somewhere OTHER than the committed asset. It exists for
+ * one caller: a differential that needs an asset built from a candidate
+ * generator without writing the file another agent may be regenerating in the
+ * same tree. The default is unchanged, so `--check` still compares the real
+ * one, and a caller that passes `--out` is measuring, never shipping. */
+const OUT = (() => {
+  const i = process.argv.indexOf("--out");
+  return i > 0 && process.argv[i + 1] ? path.resolve(process.argv[i + 1]) : path.join(ROOT, "fund-facts.js");
+})();
+/* `--in <path>` reads a DIFFERENT source of truth, and it exists so this file's
+ * refusals can be TESTED. Every refusal below has a population of zero on the
+ * committed store — which is the good case and also means an inert arm and a
+ * broken arm read the same zero. `trailing-render-test.mjs` feeds crafted
+ * entries through this flag and requires each refusal to fire by name. */
+const SRC = (() => {
+  const i = process.argv.indexOf("--in");
+  return i > 0 && process.argv[i + 1] ? path.resolve(process.argv[i + 1]) : path.join(ROOT, "data", "fund-facts.json");
+})();
 
 /* THE FAMILY RELATION IS CALLED, NOT REIMPLEMENTED. Grouping published class
  * keys into families is the same relation `vehicleFamilyKeyFor` uses to turn a
@@ -53,10 +75,83 @@ const vehicleFamilyOfKey = (() => {
   return ctx.__famOf;
 })();
 
-const raw = JSON.parse(readFileSync(path.join(ROOT, "data", "fund-facts.json"), "utf8"));
+const raw = JSON.parse(readFileSync(SRC, "utf8"));
 const funds = raw.funds || {};
 const isDate = (s) => typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s);
 const today = new Date().toISOString().slice(0, 10);
+
+/* ---- THE TRAILING CURVE, AND EVERY REFUSAL IT RE-APPLIES ------------------
+ *
+ * `data/fund-facts.json` carries r1y / r3y / r5y / r10y for 13,302 tickers and
+ * 350-odd vehicles, every figure dated and sourced, and until today NOTHING
+ * READ THEM: this generator took `er` and `ytd` and dropped the curve on the
+ * floor, so the whole asset was shipped to every visitor without it. Same
+ * shape as the YTD defect of 2026-11-06, one layer earlier.
+ *
+ * THE REFUSALS ARE REPEATED HERE RATHER THAN TRUSTED, like `er` and `ytd`
+ * above, because this file is the publish gate: a figure refused here cannot
+ * reach a page by any route somebody adds later. Five of them, and each one is
+ * a claim the page would otherwise make:
+ *
+ *  - `returnBasis` MUST be "annualised", and the WHOLE curve is dropped when it
+ *    is not. A 10-year CUMULATIVE return is about 2.6x its annualised one
+ *    (10%/yr is +159% over a decade); the column is headed as an annual rate,
+ *    so a cumulative figure in it is not an imprecise number, it is a
+ *    different quantity wearing this one's name.
+ *  - the per-horizon PLAUSIBILITY BAND, copied from `fund-facts-check.mjs`'s
+ *    `HORIZON` — the band that exists to catch exactly that paste.
+ *  - a DATE, not in the future. A return with no visible date is not
+ *    publishable here, so an undated horizon is dropped rather than shipped
+ *    bare and left to the renderer's discretion.
+ *  - STALENESS, and this is the one the YTD path does NOT have. Vanguard serves
+ *    DORMANT unit classes with an orphaned fee — every Target Retirement Trust
+ *    III vintage reads 0.4000 as of 2014-03-31 — and the same hazard is worse
+ *    for a return, because a horizon is anchored at its as-of date: "10Y" dated
+ *    2014 describes 2004-2014 and is a true sentence about a decade no reader
+ *    is asking about. Two years, the same window the vehicle fee uses, so there
+ *    is one number here and not two. Nothing legitimate is near it: the oldest
+ *    curve in the store today is 2026-05-31, and quarterly fact sheets (T. Rowe)
+ *    land about four months back.
+ *  - INCEPTION, the checker's own rule: a 10-year figure on a fund that has not
+ *    lived ten years is refused, that horizon only.
+ *
+ * THE DATE IS WRITTEN ONCE WHEN THE HORIZONS AGREE AND PER HORIZON WHEN THEY DO
+ * NOT. Providers quote every horizon at one month-end and 0 of 13,302 entries
+ * disagree today, so a shared `rAsOf` saves roughly 330 KB of payload on a file
+ * every visitor downloads. But the checker only WARNS on a disagreement, so the
+ * shape must survive one: a horizon whose date differs carries its own
+ * `<h>AsOf`, and the page reads `f[h + "AsOf"] || f.rAsOf`. Dropping the
+ * mismatched entry instead would discard honest figures, and hoisting one date
+ * for the whole FILE would be how a stale figure gets a fresh receipt — the
+ * defect that once wrote 91 month-end returns wearing same-day dates.
+ */
+const HORIZON = { r1y: [-95, 200], r3y: [-70, 120], r5y: [-60, 100], r10y: [-50, 80] };
+const STALE_RETURN_YEARS = 2;
+const rRefused = [];
+function trailingOut(key, f) {
+  const present = Object.keys(HORIZON).filter((h) => f[h] != null);
+  if (!present.length) return null;
+  if (f.returnBasis !== "annualised") { rRefused.push(`${key}(basis:${f.returnBasis})`); return null; }
+  const e = {};
+  const dated = [];
+  for (const h of present) {
+    const v = f[h], d = f[`${h}AsOf`];
+    const [lo, hi] = HORIZON[h];
+    if (typeof v !== "number" || !(v >= lo && v <= hi)) { rRefused.push(`${key}.${h}(band:${v})`); continue; }
+    if (!isDate(d) || d > today) { rRefused.push(`${key}.${h}(date:${d})`); continue; }
+    if ((Date.parse(today) - Date.parse(d)) / 31557600000 > STALE_RETURN_YEARS) { rRefused.push(`${key}.${h}(stale:${d})`); continue; }
+    if (isDate(f.inception)) {
+      const age = (Date.parse(d) - Date.parse(f.inception)) / 31557600000;
+      if (age + 0.1 < +h.slice(1, -1)) { rRefused.push(`${key}.${h}(inception:${f.inception})`); continue; }
+    }
+    e[h] = v; dated.push([h, d]);
+  }
+  if (!dated.length) return null;
+  const uniq = [...new Set(dated.map(([, d]) => d))];
+  if (uniq.length === 1) e.rAsOf = uniq[0];
+  else for (const [h, d] of dated) e[`${h}AsOf`] = d;
+  return e;
+}
 
 /* ---- THE SHARE-CLASS WITHHOLDING ----------------------------------------
  *
@@ -110,7 +205,12 @@ for (const [tk, f] of Object.entries(funds)) {
   if (f.ytd != null && typeof f.ytd === "number" && isDate(f.ytdAsOf) && f.ytdAsOf <= today) {
     e.ytd = f.ytd; e.ytdAsOf = f.ytdAsOf;
   }
-  if (e.er == null && e.ytd == null) { skipped.push(tk); continue; }
+  Object.assign(e, trailingOut(tk, f) || {});
+  /* THE SKIP TEST ASKS WHETHER THE ENTRY CARRIES ANYTHING USABLE, not whether
+   * it carries a fee or a YTD. It used to name those two, which would have
+   * dropped an entry whose only publishable figure is the curve — and the
+   * curve is the thing this version exists to ship. */
+  if (e.er == null && e.ytd == null && e.r1y == null && e.r3y == null && e.r5y == null && e.r10y == null) { skipped.push(tk); continue; }
   /* the share class THIS SYMBOL is, so the page can refuse to price a row
    * whose filing names a different one. Absent where the fund's own name
    * states no class — which is not a conflict and must not be read as one. */
@@ -154,7 +254,14 @@ for (const [key, f] of Object.entries(vehicles)) {
   if (f.ytd != null && typeof f.ytd === "number" && isDate(f.ytdAsOf) && f.ytdAsOf <= today) {
     e.ytd = f.ytd; e.ytdAsOf = f.ytdAsOf;
   }
-  if (e.er == null && e.ytd == null) { vskipped.push(`${key}(stale)`); continue; }
+  /* The trust's OWN curve, held to the same refusals as a ticker's — the
+   * checker shares `checkReturns` between the two sections for exactly this
+   * reason, so a trust's return cannot be published on a weaker standard than
+   * a fund's. The entry has already passed the `class-published` basis test
+   * above, so a figure reaching here is the price of the unit class the filing
+   * names and not the provider's own house figure. */
+  Object.assign(e, trailingOut(key, f) || {});
+  if (e.er == null && e.ytd == null && e.r1y == null && e.r3y == null && e.r5y == null && e.r10y == null) { vskipped.push(`${key}(stale)`); continue; }
   /* the class the figure belongs to, so the page can SAY which unit class it
    * is quoting rather than leaving the reader to infer it from the filed name */
   if (typeof f.shareClass === "string" && f.shareClass.trim()) e.cls = f.shareClass.trim();
@@ -199,9 +306,21 @@ for (const [k, e] of Object.entries(vout)) {
   if (!fam) continue;                                   /* a classless vehicle */
   if (/retirement-hybrid-/.test(fam)) continue;          /* held, see above */
   let g = famAgg.get(fam);
-  if (!g) famAgg.set(fam, g = { ers: [], erAsOf: [], ytds: [], ytdAsOf: [], cls: [] });
+  if (!g) famAgg.set(fam, g = { ers: [], erAsOf: [], ytds: [], ytdAsOf: [], cls: [], r: {} });
   if (e.er != null) { g.ers.push(e.er); g.erAsOf.push(e.erAsOf); g.cls.push(e.cls || "?"); }
   if (e.ytd != null) { g.ytds.push(e.ytd); g.ytdAsOf.push(e.ytdAsOf); }
+  /* and the curve, per horizon rather than per entry: a family can publish a
+   * 5-year figure for four classes and a 10-year figure for two, and a band
+   * must say how many classes IT is a range over — `ytdN` exists for the same
+   * reason. The date travels with the figure through `rAsOf` or the horizon's
+   * own key, so a mixed-date entry cannot contribute an undated member. */
+  for (const h of Object.keys(HORIZON)) {
+    if (e[h] == null) continue;
+    const d = e[`${h}AsOf`] || e.rAsOf;
+    if (!isDate(d)) continue;
+    const a = g.r[h] || (g.r[h] = { v: [], d: [] });
+    a.v.push(e[h]); a.d.push(d);
+  }
 }
 const fout = {};
 for (const [fam, g] of famAgg) {
@@ -220,6 +339,13 @@ for (const [fam, g] of famAgg) {
     b.ytdAsOf = g.ytdAsOf.slice().sort()[0];
     b.ytdN = g.ytds.length;
   }
+  for (const h of Object.keys(HORIZON)) {
+    const a = g.r[h];
+    if (!a || a.v.length < BAND_MIN_CLASSES) continue;
+    b[`${h}Lo`] = Math.min(...a.v); b[`${h}Hi`] = Math.max(...a.v);
+    b[`${h}AsOf`] = a.d.slice().sort()[0];   /* the OLDEST, as above */
+    b[`${h}N`] = a.v.length;
+  }
   fout[fam] = b;
 }
 const fkeys = Object.keys(fout).sort();
@@ -234,7 +360,7 @@ const text = `/* GENERATED by scripts/gen-fund-facts-asset.mjs — DO NOT EDIT.
  * for each lives in that JSON, by ticker. A figure here is SOURCED, not
  * estimated, which is the whole reason the page may print it without "est.".
  *
- * ${keys.length} funds · ${keys.filter((k) => out[k].er != null).length} with an expense ratio · ${keys.filter((k) => out[k].ytd != null).length} with a YTD return
+ * ${keys.length} funds · ${keys.filter((k) => out[k].er != null).length} with an expense ratio · ${keys.filter((k) => out[k].ytd != null).length} with a YTD return · ${keys.filter((k) => out[k].r1y != null || out[k].r3y != null || out[k].r5y != null || out[k].r10y != null).length} with a trailing return (r1y/r3y/r5y/r10y, ANNUALISED, dated by rAsOf or by the horizon's own key)
  */
 const FUND_FACTS = {
 ${body}
@@ -244,7 +370,7 @@ ${body}
  * the unit class the figure is quoted for -- the page prints it, because "0.055%" means
  * nothing without saying which class of the trust it prices.
  *
- * ${vkeys.length} vehicles \u00b7 ${vkeys.filter((k) => vout[k].er != null).length} with an expense ratio \u00b7 ${vkeys.filter((k) => vout[k].ytd != null).length} with a YTD return
+ * ${vkeys.length} vehicles \u00b7 ${vkeys.filter((k) => vout[k].er != null).length} with an expense ratio \u00b7 ${vkeys.filter((k) => vout[k].ytd != null).length} with a YTD return \u00b7 ${vkeys.filter((k) => vout[k].r1y != null || vout[k].r3y != null || vout[k].r5y != null || vout[k].r10y != null).length} with a trailing return
  */
 const FUND_VEHICLES = {
 ${vbody}
@@ -255,7 +381,7 @@ ${vbody}
  * The cls field lists them, because a range over a subset does not bound the
  * family and the page must say what it is quoting rather than imply more.
  *
- * ${fkeys.length} families · ${fkeys.filter((k) => fout[k].ytdLo != null).length} with a return band
+ * ${fkeys.length} families · ${fkeys.filter((k) => fout[k].ytdLo != null).length} with a YTD band · ${fkeys.filter((k) => fout[k].r1yLo != null || fout[k].r3yLo != null || fout[k].r5yLo != null || fout[k].r10yLo != null).length} with a trailing-return band
  */
 const FUND_VEHICLE_BANDS = {
 ${fbody}
@@ -275,7 +401,17 @@ if (CHECK) {
 }
 
 writeFileSync(OUT, text);
-console.log(`wrote fund-facts.js: ${keys.length} funds, ${vkeys.length} vehicles, ${text.length} bytes`);
+console.log(`wrote ${path.relative(ROOT, OUT) || OUT}: ${keys.length} funds, ${vkeys.length} vehicles, ${text.length} bytes`);
+{
+  const nTrail = keys.filter((k) => out[k].r1y != null || out[k].r3y != null || out[k].r5y != null || out[k].r10y != null).length;
+  const vTrail = vkeys.filter((k) => vout[k].r1y != null || vout[k].r3y != null || vout[k].r5y != null || vout[k].r10y != null).length;
+  const fTrail = fkeys.filter((k) => fout[k].r1yLo != null || fout[k].r3yLo != null || fout[k].r5yLo != null || fout[k].r10yLo != null).length;
+  console.log(`trailing returns: ${nTrail} tickers, ${vTrail} vehicles, ${fTrail} family bands`);
+  /* A REFUSAL COUNT IS PART OF THE OUTPUT, not a silence. The dormant-class
+   * hazard is exactly the kind that shows up as a number here before anybody
+   * sees it on a page. */
+  if (rRefused.length) console.log(`trailing figures REFUSED: ${rRefused.length} — ${rRefused.slice(0, 6).join(" ")}`);
+}
 if (vskipped.length) console.log(`vehicles withheld (not class-published, or a fee older than ${STALE_YEARS}y): ${vskipped.length} — ${vskipped.slice(0, 6).join(" ")}`);
 console.log(`tickers carrying a share class for the per-row gate: ${withCls} of ${keys.length}`);
 if (skipped.length) console.log(`skipped ${skipped.length} with no usable dated figure: ${skipped.slice(0, 8).join(" ")}`);

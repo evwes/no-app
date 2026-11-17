@@ -3318,6 +3318,74 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
     if (!m || +m[2] < 1 || +m[2] > 12) return String(s || "");
     return `${+m[3]} ${ISO_MON[+m[2] - 1]} ${m[1]}`;
   }
+  /* ---- THE TRAILING RETURN CURVE: 1Y / 3Y / 5Y / 10Y -----------------------
+   *
+   * ON THIS SIDE OF `__wampoLookupTicker` FOR THE REASON `isoDay` IS: the
+   * region above is what `lib-sec-fingerprint.mjs` hashes, and a display cell
+   * cannot change one key of the generated ticker table. Only the two lines
+   * that RESOLVE the figure sit inside the hashed slice, because `apppath.mjs`
+   * must be able to see them — a harness that cannot observe a cell cannot
+   * measure it.
+   *
+   * EVERY FIGURE IS ANNUALISED AND EVERY FIGURE CARRIES ITS DATE, and neither
+   * is a preference. A 10-year CUMULATIVE return is about 2.6x its annualised
+   * one (10%/yr is +159% over a decade), so the two are different quantities
+   * and the column states which it is: the header cell says so, the cell's own
+   * title says so, and the note under the table says so. `fund-facts.json`
+   * requires `returnBasis: "annualised"` on any entry carrying one of these and
+   * `gen-fund-facts-asset.mjs` drops the whole curve when it is absent, so the
+   * three layers agree rather than trusting each other.
+   *
+   * THE DATE IS `src[k + "AsOf"] || src.rAsOf` AND THAT IS ONE EXPRESSION FOR
+   * TWO SHAPES. The generator writes a single `rAsOf` when every horizon of an
+   * entry shares one as-of date (13,302 of 13,302 today, because providers
+   * quote the whole curve at one month-end) and a per-horizon date when they do
+   * not. A figure whose date resolves to nothing prints NOTHING: an undated
+   * return is not publishable here, so there is no shape in which this cell can
+   * render bare.
+   *
+   * `dates` IS PASSED IN RATHER THAN RETURNED so the note under the table
+   * states exactly the dates the table actually prints. The precedence — exact
+   * figure, else the trust's band, else a dash — lives HERE, once, PER HORIZON,
+   * for the same reason: a second copy in the caller would be a
+   * re-implementation of a shipped expression and would drift from it. A band
+   * can fill a horizon the exact entry lacks (a fund younger than ten years
+   * beside a trust family that publishes ten), so the choice is per cell and
+   * not per row. */
+  const RET_H = [
+    { k: "r1y", label: "1Y", years: 1, phrase: "one year", adj: "one-year" },
+    { k: "r3y", label: "3Y", years: 3, phrase: "three years", adj: "three-year" },
+    { k: "r5y", label: "5Y", years: 5, phrase: "five years", adj: "five-year" },
+    { k: "r10y", label: "10Y", years: 10, phrase: "ten years", adj: "ten-year" },
+  ];
+  const retSign = (v) => (v < 0 ? "−" : "+") + Math.abs(v).toFixed(2) + "%";
+  function retHead() {
+    return RET_H.map((h) => `<th title="${h.years === 1 ? "Total return over the trailing year" : `Total return over the trailing ${h.phrase}, ANNUALISED — an average annual rate, not the cumulative change over the whole period`}. Hover a figure for the date it was read.">${h.label}</th>`).join("");
+  }
+  function retCell(h, src, cls, band, dates) {
+    const v = src ? src[h.k] : null;
+    const d = src ? (src[h.k + "AsOf"] || src.rAsOf) : null;
+    if (v != null && d) {
+      dates.add(d);
+      const basis = h.years === 1 ? "" : ", annualised (an average annual rate, not the cumulative change over the period)";
+      const title = cls
+        ? `The ${cls} unit class's own total return over the trailing ${h.phrase}${basis}, as of ${isoDay(d)} — the class this filing names, not the comparable fund marked *`
+        : `Total return over the trailing ${h.phrase}${basis}, as of ${isoDay(d)}, read from the fund's own published figure`;
+      return `<td class="num"><span class="${v < 0 ? "ret-dn" : "ret-up"}" title="${esc(title)}">${retSign(v)}</span></td>`;
+    }
+    /* THE TRUST'S BAND, on the same terms as the fee band: a range over the
+     * unit classes the provider publishes, named in the title, and never a
+     * claim that the plan's own class lies inside it. */
+    const lo = band ? band[h.k + "Lo"] : null, hi = band ? band[h.k + "Hi"] : null;
+    const bd = band ? band[h.k + "AsOf"] : null;
+    if (lo != null && hi != null && bd) {
+      dates.add(bd);
+      const title = `${band[h.k + "N"]} unit classes of this trust published ${h.years === 1 ? "" : "annualised "}${h.adj} total returns of ${lo}% to ${hi}% as of ${isoDay(bd)}. The filing names the trust but not the class, so the plan holds one of these.`;
+      return `<td class="num"><span class="${hi < 0 ? "ret-dn" : "ret-up"}" title="${esc(title)}">${retSign(lo)
+        .replace(/%$/, "")}–${hi < 0 ? "−" : ""}${Math.abs(hi).toFixed(2)}%</span></td>`;
+    }
+    return `<td class="num">—</td>`;
+  }
   function cleanCostMarkers(e) {
     if (!e || !e.funds || e._nameClean) return e;
     e._nameClean = true;
@@ -4340,6 +4408,17 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
      * rows rendered — not from the whole `fund-facts` file — because a date
      * the reader cannot see a figure for is not a fact about this page. */
     const ytdDates = new Set();
+    /* THE TRAILING CURVE'S DATES ARE A SECOND SET AND MUST NOT JOIN THE FIRST.
+     * A YTD figure is a DAILY number (2026-11-13 today) and a trailing curve is
+     * a MONTH-END one (2026-10-31), so one set would make the YTD note state a
+     * date no YTD figure carries and the curve note state one no curve figure
+     * carries — the same defect, twice, in the one place a reader can check us.
+     * Two notes, two sets, each stating only its own dates. */
+    const retDates = new Set();
+    /* a row whose curve is the TRUST's own, for the unit-class exception in the
+     * note. Separate from `vehicleAny` for the reason the row block says: that
+     * flag licenses a sentence about a check mark beside a fee. */
+    let retVehicleAny = false;
     const rows = list.map((f) => {
       // a holding Schedule D reports as a collective trust is NOT the
       // same-named mutual fund: CIT pricing is negotiated per plan and is not
@@ -4827,7 +4906,23 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
        * `shareClassToken` is the twin of lib-disclose's, written by
        * `gen-generic-twin.mjs` and tethered by the smoke test, so the page, the
        * publish gate and the screen answer from one definition. */
-      let erSourced = null, ytdSourced = null, vehicleCls = null;
+      /* `retSourced` IS THE TRAILING CURVE'S SOURCE AND IT IS A THIRD VARIABLE,
+       * not a widening of either of the two beside it. It inherits both gates
+       * that matter — `!star`, because a comparable's return is not this
+       * plan's, and the per-row share-class conflict, because a symbol that is
+       * the wrong class is the wrong fund's whole return history — and it adds
+       * nothing: the figure is refused upstream in
+       * `gen-fund-facts-asset.mjs` unless it is annualised, dated, in band,
+       * inside the freshness window and shorter than the fund's own life.
+       *
+       * `retVehicleCls` IS SEPARATE FROM `vehicleCls` DELIBERATELY. The two
+       * name the class behind DIFFERENT cells, and `vehicleCls` is read by the
+       * fee and YTD tooltips; writing to it from here would attach a class to a
+       * cell that did not come from the vehicle. The table-level `vehicleAny`
+       * is likewise NOT set from here: it licenses a sentence about a check
+       * mark beside a FEE, and a row with only a curve carries no check mark.
+       * *A guard and the claim it licenses are one change.* */
+      let erSourced = null, ytdSourced = null, retSourced = null, vehicleCls = null, retVehicleCls = null;
       if (!star && tk && typeof FUND_FACTS === "object" && FUND_FACTS) {
         const sf = FUND_FACTS[String(tk).toUpperCase()];
         const filedCls = sf && sf.cls ? shareClassToken(f && f.name) : null;
@@ -4835,6 +4930,7 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
         if (!classConflict) {
           if (sf && sf.er != null) erSourced = sf;
           if (sf && sf.ytd != null && sf.ytdAsOf) ytdSourced = sf;
+          if (sf && (sf.r1y != null || sf.r3y != null || sf.r5y != null || sf.r10y != null)) retSourced = sf;
         }
       }
       /* THE VEHICLE'S OWN PUBLISHED FIGURE — THE EXACT OPPOSITE OF THE ERROR
@@ -4883,6 +4979,17 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
         if (vf) {
           if (vf.er != null) { erSourced = vf; vehicleCls = vf.cls || null; }
           if (vf.ytd != null && vf.ytdAsOf) { ytdSourced = vf; vehicleCls = vf.cls || vehicleCls; }
+          /* `!retSourced` KEEPS THE EXISTING PRECEDENCE RATHER THAN INVENTING
+           * ONE. For the fee and the YTD a ticker answer makes this whole block
+           * unreachable, so the ticker already wins; a curve must not be the one
+           * figure where the vehicle displaces an exact symbol's answer. On
+           * today's asset the question is moot — 0 of 15,062 ticker entries
+           * carry a curve without also carrying a fee or a YTD, so no row can
+           * reach here with `retSourced` already set — and it is written this
+           * way so that stays true if one ever does. */
+          if (!retSourced && (vf.r1y != null || vf.r3y != null || vf.r5y != null || vf.r10y != null)) {
+            retSourced = vf; retVehicleCls = vf.cls || null;
+          }
           if (erSourced === vf || ytdSourced === vf) vehicleAny = true;
         }
       }
@@ -4992,6 +5099,7 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
        * loans` states what the filing's row IS; the value and the percentage
        * are untouched, so the money stays accounted for exactly as before. */
       const shownName = descLoanRow ? "Participant loans" : f.name;
+      if (retVehicleCls) retVehicleAny = true;
       return `
       <tr${brokRow || subtotalRow || loanRow ? ` class="row-brokerage"` : ""}>
         <td class="fund-name-col"><div class="fund-name">${f.iss && !descLoanRow && !isNonIssuerCell(f.iss.replace(/\*+/g, "")) ? `<span class="fund-issuer">${esc(f.iss.replace(/\*+/g, "").trim())} · </span>` : ""}${esc(shownName)}</div>${tk ? `<div class="fund-ticker">${esc(tk)}${star ? "*" : ""}</div>` : ""}</td>
@@ -5038,6 +5146,16 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
             + (bandShown.ytdLo < 0 ? "−" : "+") + Math.abs(bandShown.ytdLo).toFixed(2) + "–"
             + (bandShown.ytdHi < 0 ? "−" : "") + Math.abs(bandShown.ytdHi).toFixed(2) + "%</span>"
           : "—"}</td>`}
+        <!-- THE TRAILING CURVE, one cell per horizon, and DROPPED ON THE
+             BROKERAGE / MANAGED-ACCOUNT TAB for the reason the YTD column is:
+             the ticker resolver is gated on tab === "menu", so every cell there
+             would be a dash BY CONSTRUCTION, and an empty column states nothing
+             while costing width. Each cell is built by retCell, which owns the
+             precedence -- exact figure, else the trust's published band, else a
+             dash -- and records the date it printed so the note under the table
+             can state it. NO BACKTICKS in here: this comment sits inside a
+             template literal and one would end it. -->
+        ${tab !== "menu" ? "" : RET_H.map((h) => retCell(h, retSourced, retVehicleCls, bandShown, retDates)).join("")}
         <td class="num">${money(f.value / 1e6)}</td>
         <td class="num">${total ? ((f.value / total) * 100).toFixed(1) + "%" : "—"}</td>
       </tr>`;
@@ -5057,8 +5175,8 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
           ? "Securities held inside separately managed accounts — each account is a single menu choice for participants"
           : "Securities itemized in the filing — managed-account or participant-brokerage assets, not separate menu choices")
       : lu.fromTrust
-        ? `Holdings of ${esc(lu.trustName)} — this plan invests through the master trust${lu.sisters > 1 ? ` alongside ${lu.sisters - 1} sister plan${lu.sisters > 2 ? "s" : ""}` : ""}${lu.trustAssets ? ` · trust total ${money(lu.trustAssets / 1e6)}` : ""} · percentages are of the trust, not this plan · tickers shown where the filed name identifies a registered fund · expense ratios are estimates`
-        : `${esc(lu.source)} · values as filed · tickers are exact where the filed name identifies a registered fund, and marked * where a collective trust\u2019s registered equivalent is shown instead · expense ratios are estimates`;
+        ? `Holdings of ${esc(lu.trustName)} — this plan invests through the master trust${lu.sisters > 1 ? ` alongside ${lu.sisters - 1} sister plan${lu.sisters > 2 ? "s" : ""}` : ""}${lu.trustAssets ? ` · trust total ${money(lu.trustAssets / 1e6)}` : ""} · percentages are of the trust, not this plan · tickers shown where the filed name identifies a registered fund · expense ratios are estimates · returns beyond 1Y are annualised`
+        : `${esc(lu.source)} · values as filed · tickers are exact where the filed name identifies a registered fund, and marked * where a collective trust\u2019s registered equivalent is shown instead · expense ratios are estimates · returns beyond 1Y are annualised`;
     // Employer-directed money sits in the same 4i table as the menu. Where
     // the filing says so, say so — Swinerton's company stock is half the
     // table and no participant chose it, so a bare "% of holdings" column
@@ -5176,13 +5294,23 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
              -- an empty column states nothing and costs width. The table sits
              inside .fund-scroll, so a sixth column scrolls internally and
              cannot widen the plans table -- the detail-clamp rule. -->
-        <thead><tr><th class="fund-name-col">Holding</th><th>Type</th><th>Expense ratio</th>${tab === "menu" ? "<th>YTD return</th>" : ""}<th>Value</th><th>% of ${tab === "sma" ? "account" : (lu.fromTrust ? "trust" : "holdings")}</th></tr></thead>
+        <!-- "1Y / 3Y / 5Y / 10Y", beside YTD and before Value, because a
+             reader scanning a menu reads the returns together. The headings are
+             short BY NECESSITY in a ten-column table, so the thing a short
+             heading cannot say is said in three other places: each th carries a
+             title naming the horizon and the word ANNUALISED, each figure's own
+             title repeats it with the as-of date, and the note under the table
+             states it in full with the arithmetic. A "3Y" column of annualised
+             figures mistaken for cumulative ones would be wrong by about 1.3x,
+             and at 10Y by 2.6x, so the basis is not decoration. -->
+        <thead><tr><th class="fund-name-col">Holding</th><th>Type</th><th>Expense ratio</th>${tab === "menu" ? "<th>YTD return</th>" + retHead() : ""}<th>Value</th><th>% of ${tab === "sma" ? "account" : (lu.fromTrust ? "trust" : "holdings")}</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
     </div>
     ${starred ? `<p class="fund-note"><strong>*Comparable fund.</strong> That holding is a collective trust, a separate account, or a fund whose share class the filing does not state — so it has no public ticker, expense ratio or return of its own, because its class is negotiated by the plan. The fund shown is its registered equivalent, so you can look up what it holds. We publish no fee or return beside it: those belong to the equivalent, not to the vehicle your plan actually owns, and a plan's trust class is normally <em>cheaper</em> than the retail fund.${vehicleAny ? ` <strong>Except where the trust publishes its own.</strong> Some providers state a fee and a return for each unit class of the trust itself, and where the filing names the class, a &#10003; figure in this table is that class's own published number &mdash; the vehicle your plan holds, not the fund marked *. Hover it to see which class and which date.` : ""}${bandAny ? ` <strong>And where the filing names the trust but not the unit class</strong> &mdash; &ldquo;Retirement 2050 Trust&rdquo; with no class after it &mdash; this table shows a <em>range</em> instead of a figure: the fee and return of each unit class the provider publishes, lowest to highest. Your plan holds one of those classes and the filing does not say which, so the range is as precise as the filing allows. Hover it to see exactly which classes it covers.` : ""}</p>` : ""}
     ${classNote}
     ${ytdDates.size ? `<p class="fund-note"><strong>YTD return.</strong> Year-to-date total return ${ytdDates.size === 1 ? `as of ${esc(isoDay([...ytdDates][0]))}` : `as of ${[...ytdDates].sort().map((d) => esc(isoDay(d))).join(" and ")}`}, read from each fund's own published figure rather than computed here — hover a figure for the date it was read. A holding shows no return when we have not sourced one, and <strong>a holding whose symbol is marked * usually shows none by design</strong>: that symbol is a comparable registered fund, and the plan holds a collective trust or separate account, whose return differs from the fund's.${vehicleAny ? " The exception is a trust whose provider publishes a return for the very unit class the filing names \u2014 that figure describes the vehicle the plan owns, so it is shown, and hovering it names the class." : ""}${bandAny ? " Where the filing names the trust and not the class, a RANGE is shown across the classes the provider publishes — the plan's own class is one of them and the filing does not say which." : ""} Past return is not a prediction, and a fund's return is not this plan's return — participants hold different mixes and buy at different times.</p>` : ""}
+    ${retDates.size ? `<p class="fund-note"><strong>1Y / 3Y / 5Y / 10Y return.</strong> Total return over each trailing period, ${retDates.size === 1 ? `as of ${esc(isoDay([...retDates][0]))}` : `as of ${[...retDates].sort().map((d) => esc(isoDay(d))).join(" and ")}`}, read from each fund's own published figure rather than computed here — hover a figure for its horizon and the date it was read. <strong>Everything beyond 1Y is annualised</strong>: it is the average annual rate, not the change over the whole period — ten years at 10% a year is +159% cumulatively and reads as +10.00% here. A period shows nothing where the fund has not lived that long, or where we have not sourced it, and <strong>a holding whose symbol is marked * usually shows none by design</strong>: that symbol is a comparable registered fund, and the plan holds a collective trust or separate account, whose return differs from the fund's.${retVehicleAny ? " The exception is a trust whose provider publishes returns for the very unit class the filing names — those figures describe the vehicle the plan owns, and hovering one names the class." : ""}${bandAny ? " Where the filing names the trust and not the class, a RANGE is shown across the unit classes the provider publishes; the plan holds one of them and the filing does not say which." : ""} Past return is not a prediction, and a fund's return is not this plan's return — participants hold different mixes and buy at different times.</p>` : ""}
     ${sourcedAny ? `<p class="fund-note"><strong>&#10003; Sourced fee.</strong> That expense ratio was read from the fund's own published figure on the date shown when you hover it, not estimated — every other number in the column is an estimate from the fund's name, which is why the rest of the column is approximate and this one is not. The sourced figures and the page each was read from are recorded in <code>data/fund-facts.json</code>.</p>` : ""}
     ${tab === "menu" && list.filter((f) => /stable value|\bgic\b/i.test(f.type || "")).length >= 5 ? `<p class="fund-note">The many <strong>Stable value / GIC</strong> rows are one menu option, itemized: plans file each piece of the stable value fund — the insurance-company contracts that wrap it and the individual securities inside its synthetic GICs (agency pools, corporate notes, asset-backed trusts). Participants choose the stable value fund as a single option; these securities are not separate choices, which is why they carry no expense ratio or ticker.</p>` : ""}
     ${tab === "menu" && list.some((f) => !lookupTicker(f) && !/company stock|employer (security|stock)|brokerage|stable value|\bgic\b/i.test((f.type || "") + " " + f.name)) ? `<p class="fund-note">Holdings with no ticker are ones we can't identify from the filed name alone: many are pooled vehicles — collective trusts, separate accounts — that have no ticker at all, and others are registered funds our reference table doesn't yet carry. Naming one on a guess would be worse than leaving it blank.</p>` : ""}`;

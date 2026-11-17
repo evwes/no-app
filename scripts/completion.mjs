@@ -74,6 +74,21 @@ const withFee = z(), withSourcedFee = z(), withReturn = z(), withBoth = z();
  * answer a reader gets. Two headlines are printed: exact figures, and exact
  * plus banded. */
 const withBand = z();
+/* AND A TRAILING CURVE IS AN ANSWER TOO — added 2026-11-17 WITH the render
+ * rather than a day after it, because the band's lesson cost 1.10 points and
+ * the shape here is identical: 1,544 ticker entries carry a 1Y/3Y/5Y/10Y curve
+ * and NO YTD, so a row showing four figures would have counted as a gap in
+ * `withReturn` and reached the work list as missing. *Nothing executes a
+ * comment asserting equivalence* — a scoreboard that re-derives what the page
+ * decides goes blind the moment the page gains an arm, so the arm and the
+ * scoreboard ship together.
+ *
+ * `withReturn` KEEPS ITS OLD DEFINITION — YTD only — because
+ * `docs/completion-history.jsonl` carries it on every line and silently
+ * re-defining a trailed key makes the trend a comparison of two different
+ * questions. `withAnyReturn` is the new one, and `pctAnswered` moves to it,
+ * which is a real step up and is reported as such. */
+const withTrailing = z(), withAnyReturn = z(), withAnswered = z();
 const gapNames = new Map();      // what is MISSING, by readers — the work list
 /* AND THE GAP BY FILED TYPE, which is the number that decides what work can
  * close it. A ticker is a mutual-fund lever; a collective trust has no ticker
@@ -112,13 +127,31 @@ for (const sh of readdirSync(`${ROOT}/data/lineups`).sort()) {
       const fee = r.erShown != null && r.erShown !== "";
       const src = !!r.erSourced;
       const ret = !!(r.ytdSourced || (r.vehicleAny && r.vehicleYtd != null));
+      /* THE PAGE'S OWN PRECEDENCE, ASKED PER HORIZON: an exact figure off the
+       * resolved entry, else the trust's published band. `retSourced` is the
+       * field `renderRow` returns for exactly this, so this is a READ of the
+       * page's verdict and not a second resolver. */
+      const HOR = ["r1y", "r3y", "r5y", "r10y"];
+      const trailing = HOR.some((h) =>
+        (r.retSourced && r.retSourced[h] != null && (r.retSourced[h + "AsOf"] || r.retSourced.rAsOf))
+        || (r.band && r.band[h + "Lo"] != null && r.band[h + "AsOf"]));
       if (fee) add(withFee, ppl, val);
       if (src) add(withSourcedFee, ppl, val);
       if (ret) add(withReturn, ppl, val);
+      if (trailing) add(withTrailing, ppl, val);
+      if (ret || trailing) add(withAnyReturn, ppl, val);
       if (fee && ret) add(withBoth, ppl, val);
       const banded = !!r.band;
       if (banded) add(withBand, ppl, val);
-      const answered = (fee && ret) || banded;
+      const answered = (fee && (ret || trailing)) || banded;
+      /* COUNTED, NOT RE-SUMMED. `pctAnswered` used to be
+       * `withBoth + withBand`, which was exact while those two were disjoint
+       * and became WRONG the moment a third way to answer a row existed: a row
+       * with an estimated fee and a trailing curve but no YTD is answered and
+       * sits in neither bucket. A derived headline that re-states a predicate
+       * instead of counting it is the same defect as a scoreboard
+       * re-implementing a resolver. */
+      if (answered) add(withAnswered, ppl, val);
       const tkey = (raw.type && String(raw.type).trim()) || "(no type stated)";
       const tb = (m) => { let b = m.get(tkey); if (!b) m.set(tkey, b = z()); return b; };
       add(tb(answered ? haveType : gapType), ppl, val);
@@ -144,7 +177,13 @@ const record = { at: new Date().toISOString(), menus,
   feePpl: withFee.ppl, sourcedFeePpl: withSourcedFee.ppl, retPpl: withReturn.ppl, bothPpl: withBoth.ppl,
   pctFee: +pc(withFee.ppl, priceable.ppl), pctReturn: +pc(withReturn.ppl, priceable.ppl),
   pctBoth: +pc(withBoth.ppl, priceable.ppl),
-  bandPpl: withBand.ppl, pctAnswered: +pc(withBoth.ppl + withBand.ppl, priceable.ppl),
+  /* NEW KEYS, NOT REDEFINED ONES: `retPpl`/`pctReturn` stay YTD-only so the
+   * trail's history remains one question. `trailPpl` is the curve and
+   * `anyRetPpl` is either. */
+  trailPpl: withTrailing.ppl, anyRetPpl: withAnyReturn.ppl,
+  pctTrailing: +pc(withTrailing.ppl, priceable.ppl), pctAnyReturn: +pc(withAnyReturn.ppl, priceable.ppl),
+  bandPpl: withBand.ppl, answeredPpl: withAnswered.ppl,
+  pctAnswered: +pc(withAnswered.ppl, priceable.ppl),
   gapByType: Object.fromEntries([...gapType].map(([t, b]) => [t, b.ppl])) };
 if (APPEND) {
   appendFileSync(path.join(ROOT, "docs", "completion-history.jsonl"), JSON.stringify(record) + "\n");
@@ -161,11 +200,13 @@ if (JSONOUT) {
   console.log("");
   console.log(line("of priceable: has a FEE", withFee, priceable));
   console.log(line("  of which SOURCED", withSourcedFee, priceable));
-  console.log(line("of priceable: has a RETURN", withReturn, priceable));
+  console.log(line("of priceable: has a YTD RETURN", withReturn, priceable));
+  console.log(line("of priceable: has a 1/3/5/10Y CURVE", withTrailing, priceable));
+  console.log(line("of priceable: either kind of return", withAnyReturn, priceable));
   console.log(line("of priceable: has BOTH", withBoth, priceable));
   console.log(line("of priceable: a trust BAND (a range)", withBand, priceable));
-  console.log(`\n  *** HEADLINE: ${pc(withBoth.ppl, priceable.ppl)}% of reader-weighted priceable rows carry BOTH a fee and a return ***`);
-  console.log(`      ANSWERED AT ALL (adding the banded rows, which give a RANGE and not a figure): ${pc(withBoth.ppl + withBand.ppl, priceable.ppl)}%`);
+  console.log(`\n  *** HEADLINE: ${pc(withBoth.ppl, priceable.ppl)}% of reader-weighted priceable rows carry BOTH a fee and a YTD return ***`);
+  console.log(`      ANSWERED AT ALL (a fee plus EITHER kind of return, or a banded range): ${pc(withAnswered.ppl, priceable.ppl)}%`);
   console.log(`      fee only: ${pc(withFee.ppl, priceable.ppl)}%   return only: ${pc(withReturn.ppl, priceable.ppl)}%`);
   console.log(`\nTHE GAP BY FILED TYPE — what KIND of work can close it:`);
   const types = [...new Set([...gapType.keys(), ...haveType.keys()])]

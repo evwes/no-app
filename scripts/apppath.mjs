@@ -190,6 +190,21 @@ ${rowBlock}
        * banded cell at all and would read a band as a blank -- *an omitted
        * ANSWER field makes a hedged page look confident*. */
       band: (typeof bandShown === "undefined" ? null : bandShown),
+      /* THE TRAILING CURVE'S SOURCE, 2026-11-17, and typeof for the third time
+       * for the third reason that is the same reason: the BEFORE side of this
+       * ship's own differential is an app.js that does not declare these, and a
+       * bare reference under "use strict" is a ReferenceError on every row.
+       *
+       * retSourced is the ENTRY the 1Y/3Y/5Y/10Y cells read -- a ticker's
+       * FUND_FACTS entry or a trust unit class's FUND_VEHICLES entry -- and
+       * retVehicleCls is non-null exactly when it is the latter, which is the
+       * difference between "this fund's return" and "this trust class's own
+       * return". A caller measuring a published curve reads the horizons off
+       * retSourced (with the date at retSourced[h + "AsOf"] || retSourced.rAsOf)
+       * and falls back to band[h + "Lo"], which is the page's own per-horizon
+       * precedence. */
+      retSourced: (typeof retSourced === "undefined" ? null : retSourced),
+      retVehicleCls: (typeof retVehicleCls === "undefined" ? null : retVehicleCls),
       value: f.value, pct: total ? (f.value / total) * 100 : null,
       iss: f.iss || "", type: f.type || "",
       flags: { loanRow, descLoanRow, namelessRow, stockRow, mistypedStock,

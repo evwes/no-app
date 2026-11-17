@@ -106,6 +106,13 @@ on:
             # so both are listed: a figure can change in the JSON, and the
             # asset the browser downloads can go stale against it.
             "scripts/ytd-render-test.mjs", "fund-facts.js",
+            # ...and the TRAILING curve's gate, 2026-11-17. It has two halves
+            # and two input sets: the publish-gate refusals come from
+            # `gen-fund-facts-asset.mjs` (already listed above) fed crafted
+            # entries, and the page half reads `app.js` and `lib-schema.mjs`
+            # (both listed). Listed itself so an edit to the gate can start the
+            # job that runs it.
+            "scripts/trailing-render-test.mjs",
             # GATES THAT RAN IN NO JOB A CHANGE TO THEM COULD START.
             # Each of these is run by build-data.yml, whose paths filter is
             # deliberately the six files that justify a 1.5-to-4-hour re-parse
@@ -397,6 +404,16 @@ jobs:
       # VTWNX's fund return on 12 collective-trust rows, and the gate names it.
       - name: Sourced YTD returns render, dated, and never on a comparable
         run: node scripts/ytd-render-test.mjs
+      # The TRAILING curve, 2026-11-17. 13,302 tickers and 416 trust unit
+      # classes carried a dated, sourced, annualised 1/3/5/10-year return and
+      # the generator dropped it on the floor, so the figures never reached the
+      # asset every visitor downloads -- the YTD defect one layer earlier. Two
+      # halves: the publish gate's refusals, each fed a crafted entry because
+      # every one of them has a population of ZERO on the real store, and the
+      # page's claims, which are checked against BOTH the asset the generator
+      # produces now and the committed one.
+      - name: Trailing returns — annualised, dated, and refused where they would mislead
+        run: node scripts/trailing-render-test.mjs
       - name: Map view — draws, filters, and never misplaces a plan
         run: node scripts/map-test.mjs
       - name: Map zoom, pan and the dot card — marks shrink, drag slides, a dot names its plan

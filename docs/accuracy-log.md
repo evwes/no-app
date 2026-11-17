@@ -7,6 +7,54 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-17 — THE TRAILING CURVE WAS SOURCED, DATED, VALIDATED AND DROPPED BY THE GENERATOR, ONE LAYER BEFORE THE PAGE
+
+**WHAT WAS WRONG.** `data/fund-facts.json` carried annualised, dated, sourced
+`r1y/r3y/r5y/r10y` for **13,302 tickers and 450 trust unit classes**, every
+figure validated by `fund-facts-check` — and no reader could see one. The YTD
+defect of 2026-11-06 was `app.js` ignoring `sf.ytd`; this was one layer EARLIER
+and invisible to the same inspection: `gen-fund-facts-asset.mjs` copied `er` and
+`ytd` and dropped the curve, so it never reached the asset every visitor
+downloads. *A stored field is not a published one* — and neither is a CHECKED one.
+
+**THE CHANGE.** Four columns on the interactive report after YTD return: exact
+per-ticker figures, the trust unit class's own curve where the filing names the
+class, and a per-horizon RANGE where it names the trust and not the class.
+Through both copies of `renderRow` over all **1,781,478** published+served rows:
+**491,085 rows / 27.6% / 742,222,270 reader-slots** gain a cell, 51,438 menus /
+78.97M readers reach one, median 7 rows and 28% of menu value. **MOVED: 0.** The
+asset grows 1.29 → 2.13 MB (155 → 315 KB gzipped) on a blocking script — the
+real cost, reported rather than absorbed.
+
+**THE BASIS IS THE CLAIM, SO IT IS STATED FOUR TIMES** (header title, each
+figure's tooltip, the note, the visible sub-line): ten years at 10% a year is
++159% cumulative against +10.00% annualised. The generator drops the whole curve
+unless `returnBasis` is `annualised`, and drops a horizon out of the checker's
+band, undated, future-dated, older than two years (a "10Y" dated 2014 describes
+2004–2014) or longer than the fund's life. Each refusal has a population of ZERO
+on the real store, so `scripts/trailing-render-test.mjs` feeds each a crafted
+entry and requires it to fire BY NAME; inception also fires on live data (ESGU,
+2016 inception: 1Y/3Y/5Y print, 10Y blank).
+
+**THREE THINGS FOUND WRONG.** (1) `completion.mjs` would have gone blind exactly
+as it did the day the band shipped — 1,131 entries carry a curve and NO YTD — so
+it ships WITH the render, and `pctAnswered` is now COUNTED rather than re-summed
+from two buckets that stopped being exhaustive. (2) My own gate keyed the vehicle
+check on "unit class", which BOTH tooltips carry, so Dollar General's thirteen
+BANDED rows demanded a note about "the unit class the filing names" on filings
+that name none: *two claims sharing one row are told apart by what the cell
+SAYS*, and a band is a RANGE. (3) The first differential read shards 00–13 of the
+v205 store and the rest of v206 — run #861 rewrote all 64 MID-RUN. The A/B
+survived it, no absolute count does, so a long pass now snapshots the store.
+*An hourly pipeline is a moving denominator.*
+
+**NOT SHIPPED, AND SIZED.** The crawlable `p/` table is `Fund | Value` with no
+resolver behind it, so it publishes no per-fund figure at all; porting these
+columns would reach **3,637 of 5,000 pages / 36.0M readers** (30.2% of their
+top-12 rows) and would newly publish tickers, fees and returns there — a design
+decision, not a cleanup. Regenerating all 5,000 pages gave a byte-identical
+tree: the control that this ship does not touch them.
+
 ## 2026-11-17 — v206: ROTH BESIDE A TAX-BASIS WORD, AND THE AFTER-TAX HALF OF 2K THE NOTES CANNOT ANSWER
 
 **THE CEILING, MEASURED BEFORE THE PARSER CHANGE.** Of the 58,681 2K plans in
