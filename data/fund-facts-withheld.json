@@ -1,6 +1,6 @@
 {
- "generated": "2026-11-16",
- "reason": "the filing states a share class the sourced fund's own name contradicts; owner's standing decision 2026-11-05 is to correct the symbol and withdraw the fee, and until the resolver does that a sourced figure here would publish a confident wrong class",
+ "generated": "2026-11-17",
+ "reason": "A MEASUREMENT, NOT A GATE — the gate is per ROW and lives in app.js, which compares shareClassToken(filed name) against the sourced asset's `cls`. This file lists the tickers where at least one published row's filing states a class the symbol is not, so the class can be read and the resolver fixed; nothing reads it to decide what to publish. Withholding these tickers WHOLESALE was the first design and it cost 182,106 correctly-filed rows to protect 6,190.",
  "producedBy": "scripts/fund-facts-class-screen.mjs --emit",
  "tickers": {
   "VBTLX": {
@@ -40,9 +40,9 @@
    ]
   },
   "VIMAX": {
-   "rows": 640,
-   "readers": 3869819,
-   "plans": 639,
+   "rows": 641,
+   "readers": 3869934,
+   "plans": 640,
    "sourceName": "Vanguard Morningstar Mid-Cap Index Fund Admiral Shares",
    "filed": [
     {
@@ -324,6 +324,19 @@
      "n": 3,
      "cls": "a",
      "name": "PIMCO Income Fund Institutional Class a"
+    }
+   ]
+  },
+  "VWILX": {
+   "rows": 32,
+   "readers": 54331,
+   "plans": 32,
+   "sourceName": "Vanguard International Growth Fund Admiral Shares",
+   "filed": [
+    {
+     "n": 32,
+     "cls": "as",
+     "name": "VANGUARD INTL GRWT FD ADM CLAS"
     }
    ]
   },
