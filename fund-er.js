@@ -1951,7 +1951,24 @@ function fundTicker(name) {
  * vintage.
  */
 const VG_TRUST_FAMILY = /vanguard/i;
-const VG_TRUST_TARGET = /\btarget\s*(?:date|retirement|retire|ret\b|rmt\b)/i;
+/* THE FAMILY WORD IS NOT ALWAYS SPELLED "TARGET", AND FOR 730,320 READERS IT
+ * WAS NOT — found 2026-11-17. This demanded `target` spelled in full and sat
+ * directly before the retirement word, so three filed shapes resolved nothing
+ * while the issuer's own per-class figure sat in the store: the abbreviation
+ * (`Vanguard Tgt Retire 2055 Tr I`, `Vanguard Tar Ret 2070 Tr Plus`), the
+ * OCR typo (`Tat`, `Targel`, `Targ`), and the omission (`VANGUARD RET INCOME
+ * TRUST II`, `Retirement 2040 Trust II` with Vanguard in the ISSUER cell).
+ * 516 rows / 92 menus / $15.4B, every one of 127 distinct spellings READ
+ * before the widening shipped — which is the whole licence for widening a
+ * closed vocabulary — and 0 rows that already resolved changed key.
+ *
+ * THE VINTAGE IS WHAT MAKES THE BARE RETIREMENT WORD SAFE, not this token.
+ * `Vanguard Retirement Savings Trust III` is a stable-value fund, carries a
+ * retirement word and a class, and still resolves nothing because it states
+ * no year and no "retirement income"; it is additionally refused by name
+ * below, because a weld put it in front of a real vintage. */
+const VG_TRUST_TARGET =
+  /\b(?:target|tgt|tar|tat|targ|targe?l)\.?\s*(?:date|retirement|retire|ret\b|rmt\b)|\bretire(?:ment)?\b|\brmt\b|\bret\b/i;
 /* ALTERNATION IS FIRST-MATCH, NOT LONGEST-MATCH, so `iii` must precede `ii`
  * and `ii` precede `i` or every Trust III is silently filed as a Trust I.
  * The trailing \b is what keeps `TR 2060` from reading its `2` as a class:
@@ -2001,7 +2018,22 @@ const VG_TRUST_INCOME = /\b(?:retirement|retire|ret|rmt)\.?\s*(?:income|inc)\b/i
  * the name says growth anywhere, this is not the Income trust. Nothing is
  * sourced for Income and Growth, so null and a blank cell is the right answer
  * — and the real Income trust's name never contains the word. */
-const VG_TRUST_GROWTH = /\bgro?w?th\b/i;
+/* AND THE ABBREVIATIONS DEFEAT IT, which only mattered once the family gate
+ * above was relaxed: `\bgro?w?th\b` requires the letters `th`, so `Gr` and
+ * `Grow` walk straight past. Five newly reached rows were Income AND GROWTH
+ * filed as `Vanguard Tgt Ret Inc Gr Tr I`, `Vanguard Tgt Retire Inc & Grow Tr
+ * I` and `Vanguard TGT Ret Inc & Gr Trust I`, every one of which would have
+ * published the plain Income trust's fee and return — a DIFFERENT PRODUCT's
+ * price, which is the laundering this file refuses elsewhere. *A fix for one
+ * phrasing of a class is not a fix for the class*, met here on the GUARD
+ * rather than on the matcher: the guard had been written for the spelled-out
+ * word and the filings abbreviate everything.
+ *
+ * The blast radius is one vintage: this is consulted only when the vintage
+ * resolved to `income`, so `\bgr\b` cannot reach a dated trust. Income and
+ * Growth stays refused rather than redirected — only its Trust A is priced,
+ * so a key for it would point at nothing for every other class. */
+const VG_TRUST_GROWTH = /\bgro?w?th\b|\bgrow?\b|\bgr\b/i;
 /* The contradiction test needs a LOOSER income marker than the one that
  * ASSIGNS the income vintage. VG_TRUST_INCOME demands the family word right
  * before it ("Retirement Income"), which is correct for assigning — but in
@@ -2015,6 +2047,16 @@ const VG_TRUST_TWO_VINTAGE = /\bincome\b/i;
  * issuer publishes no expense ratio for it, so a key would point at nothing.
  * Named here so the refusal is visible rather than accidental. */
 const VG_TRUST_UNPRICED = /\bfle?x\b/i;
+/* A DIFFERENT VANGUARD PRODUCT, WELDED IN FRONT OF A REAL ONE. `Savings Trust
+ * III Vanguard Tgt Retire 2020` is Vanguard Retirement SAVINGS Trust — a
+ * stable-value fund — glued by the parser to a target-date row, and the class
+ * token it contributes (`Trust III`) is the savings trust's, not the target
+ * trust's. It published nothing only because Vanguard's Trust III vintages are
+ * dormant and the freshness gate drops them; the day that gate lets one
+ * through, the weld would price a stable-value fund as a 2020 target trust.
+ * *A witness that a row is damaged is not a witness to which side the damage
+ * is on*, so the row is refused rather than assigned to either side. */
+const VG_TRUST_OTHER_PRODUCT = /\bsavings\b/i;
 const VG_CLASS_SLUG = { i: "i", ii: "ii", iii: "iii", 1: "i", 2: "ii", 3: "iii", plus: "plus", select: "select" };
 
 /* ---- T. ROWE PRICE -------------------------------------------------------
@@ -2160,6 +2202,7 @@ function vehicleKeyFor(name, iss, type) {
   if (!VG_TRUST_FAMILY.test(house)) return null;
   if (!VG_TRUST_TARGET.test(n)) return null;
   if (VG_TRUST_UNPRICED.test(n)) return null;
+  if (VG_TRUST_OTHER_PRODUCT.test(n)) return null;
   /* the explicit `Trust <class>` statement wins; the tail form is the fallback
    * for names that omit the word, exactly as TRP_CLASS_TAIL backs TRP_CLASS */
   const cls = n.match(VG_TRUST_CLASS) || n.match(VG_TRUST_CLASS_TAIL);

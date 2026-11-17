@@ -65,6 +65,20 @@ const CASES = [
   ["Vanguard Target Retirement Inc Trust Plus", "", "vanguard::target-retirement-income-trust-plus"],
   ["VANGUARD TARGET RET 2070 TR I", "", "vanguard::target-retirement-2070-trust-i"],
   ["Target Retirement 2045 Trust 1", "Vanguard", "vanguard::target-retirement-2045-trust-i"],
+  /* ---- the family word ABBREVIATED, MISSPELLED or ABSENT (2026-11-17) ----
+   * 509 rows / 91 menus / 722,574 readers / $15.4B resolved nothing because
+   * the family gate demanded `target` spelled in full and adjacent to the
+   * retirement word. All 121 newly reached spellings were read; these are the
+   * distinct shapes among them. */
+  ["Vanguard Tgt Retire 2055 Tr I", "", "vanguard::target-retirement-2055-trust-i"],
+  ["Vanguard Tgt Retire Inc Tr II", "", "vanguard::target-retirement-income-trust-ii"],
+  ["VANGUARD RET INCOME TRUST II", "", "vanguard::target-retirement-income-trust-ii"],
+  ["Retirement 2040 Trust II", "Vanguard", "vanguard::target-retirement-2040-trust-ii"],
+  ["Vanguard Tar Ret 2070 Tr Plus", "", "vanguard::target-retirement-2070-trust-plus"],
+  ["Vanguard Targel Retirement 2030 II", "", "vanguard::target-retirement-2030-trust-ii"],
+  ["Vanguard Tat Retire 2060 Tr II", "", "vanguard::target-retirement-2060-trust-ii"],
+  ["Target 2045 Retirement Trust I", "Vanguard", "vanguard::target-retirement-2045-trust-i"],
+  ["VANGUARD FIDUCIARY TR CO RETIREMENT 2055 TR I", "", "vanguard::target-retirement-2055-trust-i"],
   /* ---- T. Rowe Price ---- */
   ["T. Rowe Price Retirement 2030 Trust Class A", "", "t-rowe-price::retirement-2030-trust-class-a"],
   ["Retirement 2035 Trust Class A", "T. Rowe Price", "t-rowe-price::retirement-2035-trust-class-a"],
@@ -88,6 +102,22 @@ const CASES = [
   ["Vanguard Target Retirement Income and Growth Trust I", "", null],// a DIFFERENT product
   ["Target retirement income growth trust II", "", null],            // ... with no connector
   ["Vanguard Target Retirement Income Trust II and Growth Trust II", "", null],
+  /* ... AND ABBREVIATED, which the spelled-out guard could not see. These
+   * five were reached by relaxing the family gate and every one would have
+   * published the plain INCOME trust's fee and return on an Income AND GROWTH
+   * holding: `\bgro?w?th\b` requires the letters `th`, so `Gr` and `Grow`
+   * walked past it. The guard was written for one phrasing of the word. */
+  ["Vanguard Tgt Ret Inc Gr Tr I", "", null],
+  ["Vanguard Tgt Retire Inc & Grow Tr I", "", null],
+  ["Vanguard TGT Ret Inc & Gr Trust I", "", null],
+  ["Vanguard Tgt Ret Inc Gr Tr II", "", null],
+  ["Vanguard Tgt Ret Inc & Grow TrI", "", null],
+  /* A DIFFERENT VANGUARD PRODUCT WELDED IN FRONT OF A REAL ONE. Vanguard
+   * Retirement SAVINGS Trust is a stable-value fund; the parser glued it to a
+   * target-date row and the class token `Trust III` is the savings trust's.
+   * It published nothing only because Trust III vintages are dormant. */
+  ["Savings Trust III Vanguard Tgt Retire 2020", "", null],
+  ["VANGUARD RETIREMENT SAVINGS TRUST III", "", null],               // no vintage either
   ["Vanguard Target Retirement 2050 Trust Flex", "", null],          // real class, no published fee
   /* A NAME STATING TWO VINTAGES NAMES NEITHER — found by a seeded draw, then
    * read as a class: these are two adjacent menu rows WELDED by the parser, so
@@ -147,12 +177,36 @@ else ok(`every must-resolve key exists in the sourced file (${Object.keys(VEH).l
  * the refusal holds — and the count above is re-measurable with the same
  * neutering if anyone doubts it. */
 const MUTATIONS = [
-  ["trp trust requirement", (t) => t.replace('  if (!/\\btrusts?\\b/i.test(n)) return null;\n', ""),
+  /* ANCHORED ON THE LINE AS IT NOW STANDS. This mutation was written against
+   * `if (!/\btrusts?\b/i.test(n)) return null;` and that line was rewritten
+   * when the filer's TYPE cell was threaded in, so the replace stopped
+   * matching and the test began reporting "malformed" — a RED gate, which is a
+   * gate that stopped rather than a gate that passed. The lesson is the one
+   * already on the record: anchor a mutation on the line it is meant to
+   * mutate, and a mutation that silently stops applying is indistinguishable
+   * from a condition that protects nothing. The test's own
+   * "did not change the source" branch is what caught it. */
+  ["trp trust requirement", (t) => t.replace(
+    '  if (!TRP_TRUST_WORD.test(n) && !VEHICLE_TYPE_IS_TRUST.test(String(type || ""))) return null;',
+    "  // refusal removed"),
     "T. Rowe Price Retirement 2040 Fund Class I", null],
   ["vanguard growth refusal", (t) => t.replace('  if (vintage === "income" && VG_TRUST_GROWTH.test(n)) return null;', "  // refusal removed"),
     "Vanguard Target Retirement Income and Growth Trust I", null],
   ["vanguard two-vintage refusal", (t) => t.replace("  if (yr && VG_TRUST_TWO_VINTAGE.test(n)) return null;", "  // refusal removed"),
     "Vanguard Target Retirement 2025 Income Trust II Fund", null],
+  /* THE WIDENED GROWTH GUARD, mutated back to the spelled-out-only pattern it
+   * had before 2026-11-17. The case is the ABBREVIATION, which is the only
+   * thing this widening buys: the mutation above neuters the whole refusal and
+   * so cannot tell the narrow pattern from the wide one. */
+  ["vanguard growth ABBREVIATION", (t) => t.replace(
+    "const VG_TRUST_GROWTH = /\\bgro?w?th\\b|\\bgrow?\\b|\\bgr\\b/i;",
+    "const VG_TRUST_GROWTH = /\\bgro?w?th\\b/i;"),
+    "Vanguard Tgt Ret Inc Gr Tr I", null],
+  /* and the other-product refusal, whose case the class matcher does NOT also
+   * refuse — `Trust III` is a class the matcher knows, so without this line
+   * the weld resolves to a real 2020 key. */
+  ["vanguard other-product refusal", (t) => t.replace("  if (VG_TRUST_OTHER_PRODUCT.test(n)) return null;", "  // refusal removed"),
+    "Savings Trust III Vanguard Tgt Retire 2020", null],
 ];
 /* the redundant three, asserted as REFUSALS rather than as mutations */
 for (const [label, n] of [["hybrid hold", "T. Rowe Price Retirement Hybrid 2030 Trust Class T5"],

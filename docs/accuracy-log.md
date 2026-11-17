@@ -7,6 +7,52 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-17 — I MIRRORED A COMMIT WHOSE CI JOB HAD STOPPED AT ITS THIRD GATE
+
+**WHAT WAS WRONG.** `site-test` #317 on `90604862` — the T. Rowe trust-class
+ship — concluded **failure**, and I mirrored that commit to main anyway, having
+read the gates as green because they were green *locally*. The failure was not
+the expected `sec-tickers-stamp-test` red: it was `vehicle-key-test` reporting
+`mutation "trp trust requirement" did not change the source — it is malformed`.
+That same commit had rewritten the line the mutation targets, from
+`if (!/\btrusts?\b/i.test(n)) return null;` to the type-threaded
+`if (!TRP_TRUST_WORD.test(n) && !VEHICLE_TYPE_IS_TRUST.test(String(type || ""))) return null;`,
+so `String.replace` matched nothing and the mutation silently stopped applying.
+
+**AND THE COST IS NOT THE ONE FAILURE.** `vehicle-key-test` is the third gate in
+a single-job workflow, so **every later step never ran**: `sec-tickers-stamp-test`,
+`house-core-test`, `sec-attest-test`, `fund-note-test`, `ticker-conflict-test`,
+`af-abbrev-test`, `gate-coverage`, `record-check`, `ledger-test`,
+`stamp-assets --check` and the smoke test. The smoke test is the only thing that
+catches a module/script mismatch taking the whole page down. I mirrored with all
+of those unverified, and nothing about the run said so beyond the word
+`failure` — which the record already names: *a red gate early in a job is not
+one failure, it is a job that stopped.* The three preceding push runs (#312,
+#313, #315) were red for the same malformed mutation; only the regen
+`workflow_dispatch` runs were green, and I had been reading those.
+
+**THE CHANGE.** The mutation is re-anchored on the line as it now stands. All
+twelve stopped gates were then run against the working tree and pass, the smoke
+test included (`CHROMIUM_PATH=/opt/pw-browsers/chromium`, the escape the test
+already carries for this sandbox).
+
+**WHAT PREVENTS IT.** The test's own `did not change the source — it is
+malformed` branch worked exactly as designed and reported the defect the first
+time it was run; what failed was that nobody ran it, and that I attributed a red
+conclusion to a cause I had not read. So the prevention is not new code: it is
+that **a red `site-test` must be opened and its failing step named before a
+mirror**, never explained by the most recently remembered cause. `mirror.sh`
+gates on the data stores and on main's in-flight runs, not on the branch's own
+CI conclusion, so this check has no automation behind it and is a reading.
+
+*A mutation that silently stops applying is indistinguishable from a condition
+that protects nothing — anchor a mutation on the line it is meant to mutate,
+and treat `String.replace` finding nothing as a test failure rather than a
+no-op. Both halves were already on the record; what was missing was reading the
+conclusion I had in hand.*
+
+---
+
 ## 2026-11-15 — I MADE THE CODE FINGERPRINT DATA-KEYED, WHICH THIS RECORD HAD ALREADY REFUSED IN WRITING
 
 **WHAT WAS WRONG.** `sec-tickers-stamp-test` failed on four consecutive site-test
