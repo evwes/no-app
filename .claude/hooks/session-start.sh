@@ -101,8 +101,20 @@ UNPUSHED=$(git log --oneline "$BR" --not "origin/$BR" 2>/dev/null | wc -l | tr -
 LAST_DATA=$(git log -1 --format=%ct origin/main -- plans-all.json 2>/dev/null || echo 0)
 if [ "$LAST_DATA" != "0" ]; then
   AGE_H=$(( ( $(date +%s) - LAST_DATA ) / 3600 ))
-  echo "  newest data commit on main is ${AGE_H}h old (pipeline cron: hourly at :23, daily 05:12Z)"
-  [ "$AGE_H" -gt 6 ] && echo "  >6h WITHOUT A DATA COMMIT — check Actions: the pipeline cron may be stalled"
+  # THE THRESHOLD IS 18h, NOT 6h, AND THAT IS THE FILE'S OWN MEASUREMENT.
+  # CLAUDE.md records the "hourly" cron delivering a median 3.60-4.36h and a
+  # mean 4.37-4.42h across two disjoint windows, with routine gaps of 7-8h and
+  # a recorded worst case of 44.2h. A 6h threshold therefore fires on NORMAL
+  # behaviour: it did so on 2026-11-17 at a 9h age, and the pipeline's previous
+  # eight runs had gaps of 1.9 / 3.7 / 4.3 / 4.6 / 5.1 / 7.4 / 7.7h — nothing
+  # whatsoever wrong. A warning that fires on the normal case trains a reader
+  # to skip it, which is worse than no warning, and this banner already carries
+  # one hardcoded line that was wrong for three wakes.
+  # 18h is above the observed spread and still well under the 44.2h worst case,
+  # so it flags a real stall without crying wolf. Re-derive if the cadence is
+  # measured again; never tighten it from an impression.
+  echo "  newest data commit on main is ${AGE_H}h old (cron is CONFIGURED hourly at :23 and DELIVERS every ~4.4h; see CLAUDE.md)"
+  [ "$AGE_H" -gt 18 ] && echo "  >18h WITHOUT A DATA COMMIT — past the measured spread; check Actions for a real stall"
 fi
 echo "  DURABLE SCHEDULER: MCP Routine 'wampo daily cycle (self-bind)'"
 echo "  (trig_017vdX5dSSYh5v68Cwe6EUBu) wakes THIS web session. The cadence was"
