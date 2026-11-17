@@ -279,6 +279,37 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   `scripts/trust-vehicle-size.mjs` ranks the ten families the owner named; it
   keys on `erShown`, never `er`, because the estimate column once made it count
   rows that already publish.
+- **SOURCING IS NO LONGER THE BINDING CONSTRAINT — THE RESOLVER IS (measured
+  2026-11-17, three passes in one afternoon).** 78 entries were sourced, dated,
+  checker-validated and committed into the browser asset — 66 Vanguard trust
+  unit classes and 12 PIMCO RealPath tickers — and they reach **0 PUBLISHED
+  ROWS**, because `vehicleKeyFor` builds Vanguard keys only for year-vintage and
+  Income Target Retirement classes (null for **Unit A-D, FLX, CT, Income and
+  Growth**) and `fundTickerInfo` has **no PIMCO or RealPath arm at all**. So
+  *extending a family is TWO jobs and the second is usually the one that moves
+  readers*: ask what arm would have to exist BEFORE spending a pass on sourcing.
+  Reachable once the Vanguard arm exists: 141 rows / 106 plans / 1.50M readers.
+- **THREE MORE SOURCES MEASURED THIS DAY, and two are refusals to keep.**
+  **PIMCO publishes NO per-class RealPath COLLECTIVE TRUST fee** — its
+  1,405-URL sitemap holds 20 RealPath URLs and all 20 are `/investments/
+  mutual-fund/` pages, and the DC / Retirement / Target Date pages contain zero
+  occurrences of "collective". That is the State Street result again, so Steel
+  Dynamics' nine RealPath CIT rows stay blank and the registered fund's fee must
+  NOT stand in for them. **SEI is an ACCESS GATE, not a network failure**:
+  `seic.com` answers 200 and lists ~150 trust names with zero percentage
+  figures; the fact sheets sit behind a `seitrustcompany.com` login, and no
+  form was filled in. **Invesco's page is a shell** fed by `dng-api.invesco.com`
+  (proxy-refused at the time, host NOW ALLOWLISTED and still unread); its
+  fallback page's five featured classes carry the footnote "shown with standard
+  management fee; share class is gross of fees and may vary by client", which is
+  not a price a plan pays. **NORTHERN TRUST IS THE OPEN PRIZE**: 2,686 rows /
+  802 plans / **7.54M readers** / $137.8B, filed as `NT Col S&P 500 Idx Fd DC NL
+  4` and similar; unlike SSGA and BlackRock it appears to publish on its own
+  site, and `www.northerntrust.com`, `cdn.northerntrust.com` and
+  `ntam.northerntrust.com` were allowlisted 2026-11-17. It needs sourcing AND a
+  `northerntrust::<fund>-<tier>` resolver arm — `vehicleKeyFor` returns null on
+  all 2,686 today. Note `fund-er.js:372` already prices any `northern trust …
+  index` name at an estimated 0.05.
 - **THE YTD IS REFRESHED DAILY AT 3 AM EASTERN (owner directive 2026-11-14),
   AND CITs AND TICKERS ARE TWO DIFFERENT STEPS.** `fund-facts.yml` runs
   `0 8 * * *` (03:00 ET under EST — **re-check at the 2026-03-08 transition**
@@ -348,6 +379,28 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   max(work/5500, ocr/600) cap 20. Entries carry ocr:1 and the source string
   discloses OCR. Trailing "**" (>5% marker) after values is stripped in
   parseRows — that alone recovered most OCR rows.
+- **A FULL RE-PARSE RE-ROLLS THE OCR POPULATION, AND THE STORE KEEPS WHICHEVER
+  ROLL CAME LAST (measured 2026-11-17, v206).** The rasteriser drops pages run
+  to run — `Too few characters. Skipping this page`, `Error during processing.`
+  — so Msk Group parsed to **32 rows at v205 and 3 rows now, on identical code
+  and an identical filing.** v206 withdrew 9 plans' menus that way; `mirror-gate`
+  refused on exactly those 9 while the audit's count-based tolerance called
+  `confident -7` noise. *It IS noise in aggregate and it is nine named plans
+  underneath.* **AND THE TRAP THAT MAKES IT PERMANENT: a filing whose DOWNLOAD
+  fails keeps its stored entry and a stale `pv`, so every later run retries it;
+  a filing that is fetched and parses BADLY is stamped at the CURRENT `pv` and
+  is thereafter invisible to the work list.** `ONLY_ACKS_4I` is the escape
+  hatch and it used to FILTER the already-pv-narrowed list rather than force
+  one, so naming ten such acks printed `restricted to 0 of 10`, wrote a delta of
+  0 entries and **exited 0** — a clean zero reporting on the query. It now
+  selects from the unfiltered `buildWorkList()` and **exits 1 on an empty forced
+  run**; it is opt-in and never set by the workflow. **A local forced re-parse
+  CANNOT reproduce a FALLBACK-served plan** — `fallbacks.json` is a prep-stage
+  artifact, so the log says `prior-year fallback disabled this run` and the
+  parse can only reach the newest filing's summary page. Repairing a
+  fallback-served ack needs a workflow dispatch, not a session. The real cure —
+  an OCR parse strictly WORSE than the stored one must not overwrite it — is
+  unbuilt and needs a `PARSER_VERSION` bump. `docs/accuracy-log.md` 2026-11-17.
 - Data-bot commits rebase before push; when force-moving branches, mirror
   `claude/wampo-401k-live-nx1t4o` → `main` (`git push --force-with-lease=main
   origin claude/wampo-401k-live-nx1t4o:main`). CAUTION: the weekly cron runs
@@ -941,25 +994,28 @@ the publish gate applied before any reader figure, and an accuracy-log entry.
 
 #### Paid for and not yet rendered — do these first
 
-- **The TRAILING returns (1Y / 5Y / 10Y) are the owner's next emphasis and the
-  schema is now open for them.** `fund-facts-check.mjs` accepts
-  `r1y/r3y/r5y/r10y` with per-horizon plausibility bands, a required
-  `returnBasis: "annualised"` and an optional `inception` that refuses a 10-year
-  figure on a younger fund — the paste that would otherwise publish a
-  *cumulative* 10-year return (+159%) in an annualised field (+10%).
-  **THE "0 FUNDS CARRY ONE YET" THAT STOOD HERE WAS TRUE ON 2026-11-13 AND
-  FALSE BY 2026-11-16, AND IT WAS QUOTED INTO docs/closed-classes.md AS FACT
-  BEFORE ANYONE RE-DERIVED IT.** Measured out of git on 2026-11-17: 308 entries
-  carried a trailing return at 2026-11-15 15:33 (144 a full curve), the
-  Fidelity screener took it to 9,216 on 2026-11-16, the ETF pass to 13,610, and
-  HEAD stands at **13,718 with any trailing return and 9,493 with the full
-  1/3/5/10-year curve**. Derive it with
-  `node -e` over `data/fund-facts.json`, never from this sentence. What is
-  still TRUE is that the RENDER does not exist: no trailing return reaches a
-  reader, and that is the remaining work — the same shape as the YTD column. The YTD column SHIPPED 2026-11-06 —
-  `docs/accuracy-log.md` — and the lesson it carries forward is that *the
-  largest plans hold collective trusts, so the lever is more sourced TICKERS,
-  not more sourced returns*: Walmart fills 1 of 42 rows at 0.0% of value.
+- **SHIPPED 2026-11-17 — the TRAILING return curve (1Y / 3Y / 5Y / 10Y) now
+  renders**, 490,980 rows / 742M reader-slots gaining a cell, 0 lost, 0 moved,
+  mirrored in `4ee89a12`. *This entry read "the RENDER does not exist" for a
+  day after it existed* — the third time a sentence in this block outlived its
+  truth, so derive the counts with `node -e` over `data/fund-facts.json` and the
+  render's state from `app.js`, never from here.
+  **THE DEFECT IT FOUND IS THE ONE WORTH KEEPING**: `gen-fund-facts-asset.mjs`
+  copied `er` and `ytd` into the asset and DROPPED the curve, so thousands of
+  sourced, dated, checker-validated figures never reached the file every visitor
+  downloads. That is one layer EARLIER than the YTD defect of 2026-11-06 (which
+  was `app.js` ignoring `sf.ytd`) and invisible to the same inspection. ***A
+  stored field is not a published one, and neither is a CHECKED one.***
+  The basis is the claim and is stated four times (header title, per-figure
+  tooltip, note under the table, and a visible sub-line) because ten years at
+  10%/yr is +159% cumulative against +10.00% annualised — a "10Y" column read as
+  cumulative is wrong by 2.6x. `scripts/trailing-render-test.mjs` gates it; four
+  mutations fail by name. **NOT on the crawlable `p/` pages** — their table is
+  Fund | Value with no resolver, so this is interactive-surface-only; porting it
+  is 3,637 of 5,000 pages / 36.0M readers and an OWNER decision.
+  The lesson that still stands: *the largest plans hold collective trusts, so
+  the lever is more sourced TICKERS, not more sourced returns* — Walmart fills
+  1 of 42 rows at 0.0% of value.
 - **CLOSED, BY MEASURING IT: the Schedule A CARRIER is worth 194,379 readers,
   not 9.45M.** This entry read "9.45M readers / 44,149 plans have no custodian
   answer where this names one" and ranked second among the paid-for items.
@@ -1028,6 +1084,17 @@ also retires the other hand-dispatch this file used to prescribe after every
 regen. A data-keyed FINGERPRINT stays refused, on `lib-sec-fingerprint.mjs`'s own
 measurement: it would redden on every hourly data commit with nothing wrong.
 *The watcher a gate cannot be is a schedule.* `docs/accuracy-log.md` 2026-11-12.
+**AND A REGEN IS NOW PRICED IN READERS, NOT KEYS — `scripts/sec-key-loss.mjs
+<before-ref> <after-ref>`.** Regen #27 removed **744 keys and added 8**, which
+reads like a large withdrawal and cost **0 rows / 0 readers**: `sec-tickers` is
+the LAST-RESORT arm, and 4,243 of the 4,251 narrowed rows take their ticker
+from an earlier arm in the chain, so the key was dead. Net **+8 rows / 8,344
+reader-slots, 0 symbols switched**. *A key count is not a coverage measure in
+either direction.* The narrowing is by construction (app.js builds the key as
+`(f.iss) NUL (f.nameRaw || f.name)`, asserted by `sec-tickers-test`, and the
+table is consulted by exact key), and the tool carries the control that makes
+its zero mean something: a synthetic row on a REMOVED key must move
+`RFVTX -> (nothing)`, because a broken arm and an inert arm read the same zero.
 **AND THEN IT BECAME DATA-KEYED BY ACCIDENT, THREE DAYS LATER, THROUGH A FILE
 THIS REFUSAL DOES NOT NAME.** `apppath.mjs` gained `fund-facts.js` loading on
 2026-11-14 so the vehicles differential could observe sourced cells;
