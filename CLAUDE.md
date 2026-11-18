@@ -302,14 +302,37 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   (proxy-refused at the time, host NOW ALLOWLISTED and still unread); its
   fallback page's five featured classes carry the footnote "shown with standard
   management fee; share class is gross of fees and may vary by client", which is
-  not a price a plan pays. **NORTHERN TRUST IS THE OPEN PRIZE**: 2,686 rows /
-  802 plans / **7.54M readers** / $137.8B, filed as `NT Col S&P 500 Idx Fd DC NL
-  4` and similar; unlike SSGA and BlackRock it appears to publish on its own
-  site, and `www.northerntrust.com`, `cdn.northerntrust.com` and
-  `ntam.northerntrust.com` were allowlisted 2026-11-17. It needs sourcing AND a
-  `northerntrust::<fund>-<tier>` resolver arm — `vehicleKeyFor` returns null on
-  all 2,686 today. Note `fund-er.js:372` already prices any `northern trust …
-  index` name at an estimated 0.05.
+  not a price a plan pays. **NORTHERN TRUST PUBLISHES, AND THAT IS NOW MEASURED
+  RATHER THAN HOPED (2026-11-18) — it is the THIRD publishing family against two
+  refusals.** 2,686 rows / 802 plans / **7.54M readers** / $137.8B, filed as
+  `NT Col S&P 500 Idx Fd DC NL 4` and similar.
+  `ntam.northerntrust.com` answers 200, and its
+  `/united-states/institutional/solutions/retirement/core-index-dc-funds` page
+  links **44 per-class fact sheets** under `/content/dam/ntam/us/en/documents/
+  funds/common-collective-funds/fact-sheet/`, named `nt-coll-<fund>-<l|nl>-tier-
+  <N>.pdf` — the TIER in the filename is the unit class our filed names carry.
+  Each sheet states a **`Total Fees and Expenses`** line (R1000 Value DC NL
+  Tier 2: admin cap 0.0100 + management 0.0400 = **0.0500%**), which is the
+  expense-ratio equivalent, exactly as T. Rowe's footnoted Trustee Fee is.
+  **THREE EXTRACTION HAZARDS, EACH MEASURED ON TWO SHEETS — do not start the
+  sourcing pass without them.** (1) *One of two spellings of a caption family is
+  worse than neither*: the R1000 sheet says `Administrative Fee Cap (%)` and the
+  bond sheet says `Operating Expense Cap %`, so a grep for the first reads **0**
+  on the second and looks exactly like "this sheet publishes no fee". Key on
+  `Total Fees and Expenses`, the one caption both carry, and note `(%)` vs `%`.
+  (2) **The as-of date is PER SHEET and the FORMAT varies** — `AS OF 1Q25`
+  against `AS OF 3Q2026`. Some linked sheets are ~20 months stale and sit right
+  at the edge of the two-year publish gate, so read each sheet's own date and
+  never assume the page's links are current. (3) The equity sheet's values carry
+  a trailing second column (`0.0100 0`); do not glue it into `0.01000`.
+  Hosts allowlisted 2026-11-17; `www.northerntrust.com` itself is a FOURTH shape
+  — HTTP/2 `INTERNAL_ERROR`, then a timeout on HTTP/1.1 — but it is not needed,
+  since `ntam.` serves the sheets. It still needs a
+  `northerntrust::<fund>-<tier>` resolver arm as well as sourcing —
+  `vehicleKeyFor` returns null on all 2,686 today, and *sourcing without the arm
+  reaches 0 readers*. Note `fund-er.js:372` already prices any `northern trust …
+  index` name at an estimated 0.05, so **diff the sourced figure against that
+  estimate: a disagreement is a ticker question, not a fee question.**
 - **THE YTD IS REFRESHED DAILY AT 3 AM EASTERN (owner directive 2026-11-14),
   AND CITs AND TICKERS ARE TWO DIFFERENT STEPS.** `fund-facts.yml` runs
   `0 8 * * *` (03:00 ET under EST — **re-check at the 2026-03-08 transition**
