@@ -835,31 +835,22 @@ old-version tail. A second large `pv` cohort means a PARTIAL store
 harsher threshold because a 403 PRESERVES the stored entry and an extraction
 failure DESTROYS it.
 
-**THE HIGH BASELINE IS 13 ON THE NEWEST LINE, AND 6 OF THEM ARE THE STANDING
-ONES — and it was 4, then 7, then 6, inside ten days.** v206 (run #861) appended
-`high: 13`: the 6 standing findings plus **7 self-clearing `reparse-loss`
-entries** raised from `losses-triage.txt`, a run artifact that exists only in
-CI. Those 7 are the OCR re-roll documented in `docs/accuracy-log.md`
-2026-11-17 and they clear on the next run, so **13 is what the trail says and 6
-is what persists** — `record-check` compares against the trail, which is why
-this sentence names 13. *Derive it from the trail's `high` key, never from this
-sentence.* This
-line read **4** (`3 contrib outliers + fabricated-name`) while
-`docs/coverage-history.jsonl` has carried `high: 7` on every recent line
-(2026-11-07 x2 and 2026-11-08 all read 7), so it was corrected to 7 — and by
-2026-11-10, after v205, the trail read **6**. ***A hand-corrected number goes
-stale exactly as fast as the one it replaced***, which is why
-`scripts/record-check.mjs` now derives this one and three others from the
-store on every frontend push. The 7 enumerated as **4 `contrib` +
-`lineup-overshoot` + `fair-value-note` + `fabricated-name`** (`audit-generic-names` sits above its 230 escalation
-threshold, so that HIGH is STANDING rather than absent). ***A stale baseline is
-worse than no baseline: a session comparing CI's 7 against a remembered 4 reads
-three NEW findings that do not exist, and the file's own preamble says why — a
-contradicted number here is asserted again every time it is read.*** Derive it
-from the trail's `high` key, never from this sentence. **CI can report MORE than the local audit** — the
-extra entries are self-clearing `reparse-loss` findings raised from
-`losses-triage.txt`, a run ARTIFACT that exists only in CI. *A metric that
-differs between CI and local is a question about the inputs, not the store.*
+**THE HIGH BASELINE IS 6, AND IT HAS BEEN 4, 7, 6 AND 13 INSIDE ELEVEN DAYS
+— SO DERIVE IT FROM THE TRAIL'S `high` KEY AND NEVER FROM THIS SENTENCE.** The
+6 standing findings are **4 `contrib` + `lineup-overshoot` + `fair-value-note`**
+plus `fabricated-name`, with `audit-generic-names` sitting above its 230
+escalation threshold so that HIGH is STANDING rather than absent.
+***A hand-corrected number goes stale exactly as fast as the one it replaced***,
+which is why `scripts/record-check.mjs` derives this one and three others from
+the store on every frontend push — and why this paragraph was cut from 25 lines
+to 12 after accruing four generations of corrections, each of which was itself
+re-asserted on every turn until the next one.
+**CI CAN REPORT MORE THAN THE LOCAL AUDIT, AND THE EXTRA ENTRIES SELF-CLEAR.**
+v206 appended `high: 13` — the 6 standing plus 7 `reparse-loss` findings raised
+from `losses-triage.txt`, a run artifact that exists only in CI. The very next
+scheduled run took it back to 6, exactly as predicted here, which is the one
+thing about this number that has proven stable. *A metric that differs between
+CI and local is a question about the inputs, not the store.*
 
 **READ EVERY PARTICIPANT-WEIGHTED FIGURE WITH A ~3% CAVEAT.** 28 plans claiming
 2.94% of the weighted universe have a participant count no other field supports
@@ -894,7 +885,7 @@ estimate: it refutes itself the moment a new import appears.
 **THE LEDGER IS THE QUEUE.** `node scripts/ledger-report.mjs` prints the one
 participant-weighted scalar and the addressable gap per field; it is DERIVED and
 must never be copied forward. Re-derived 2026-11-17 from run #861's own merge
-(v206): **115,641 plans / 119,907,098 participants / overall 79.28%**,
+(v206): **115,641 plans / 119,907,098 participants / overall 79.29%**,
 87,476,850 participant-cells addressable, with addressable gaps
 
 | field | shown | readers with no answer | owner agent |
