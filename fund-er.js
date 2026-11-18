@@ -827,6 +827,67 @@ const VG_IPLUS = String.raw`(?:institutional|inst'?l?)\s*(?:plus|\+)`;
 const vgIPlus = (fund) => new RegExp(
   String.raw`^(?!.*\b(?:admiral|investor)\b)(?=.*\bvanguard\b)(?=.*${fund})(?=.*${VG_IPLUS})`, "i");
 
+/* ---- PIMCO RealPath Blend: the builder, the two class tokens, and the veto --
+ * See the entries in FUND_TICKER for the placement argument (a pooled row never
+ * reaches that table, which is how the collective-trust rows stay blank) and
+ * for why `realpath` rather than `pimco` is the house token.
+ *
+ * `RP_INST` accepts `Institutional`, `Institutional Class`, the welded
+ * `InstitutionalClass` (a real filed spelling, 990 readers — `\s*` matching
+ * empty is what reaches it), `Inst` and `Instl`. `RP_A` wants the word `Class`
+ * before the letter: a bare trailing `A` after a vintage is a footnote marker
+ * in this corpus, measured on the Vanguard trusts the same day. */
+const RP_HOUSE = String.raw`(?=.*\brealpath\b)(?=.*\b(?:blend|bld)\b)`;
+const RP_INST = String.raw`\binstitutional(?:\s*class)?\b|\binstl?\b`;
+const RP_A = String.raw`\bclass\s*a\b|\bcl\.?\s*a\b`;
+const RP_VINTAGES = ["2030", "2035", "2040", "2045", "2050", "2055", "2060", "2065", "2070"];
+/* [vintage token, Institutional ticker, Class A ticker]. 2025 is ABSENT on
+ * purpose — PIMCO sells it and nobody has sourced either class, so a 2025 name
+ * matches no row here and publishes nothing. */
+const RP_TICKERS = {
+  income: ["PBRNX", "PBRAX"], 2030: ["PBPNX", "PBPAX"], 2035: ["PDGZX", "PDGAX"],
+  2040: ["PVPNX", "PVPAX"], 2045: ["PVQNX", "PVQAX"], 2050: ["PPQZX", "PPQAX"],
+  2055: ["PRQZX", "PRQAX"], 2060: ["PRBMX", "PRBAX"], 2065: ["PBLIX", "PBLLX"],
+  2070: ["PAJDX", "PAJEX"],
+};
+const rpVintageToken = (v) => v === "income" ? String.raw`\b(?:income|inc)\b` : String.raw`\b${v}\b`;
+/* THE CLASS MUST FOLLOW THE VINTAGE, AND THAT ORDERING IS A MEASURED REFUSAL
+ * RATHER THAN A STYLE CHOICE. Written as two independent lookaheads this arm
+ * reached three filed names in which the class token belongs to a DIFFERENT
+ * FUND — they are parser WELDS, two menu rows glued together:
+ *
+ *   Sec Instl PIMCO RealPath Blend 2030
+ *   Opportunities Fund Institutional Shares PIMCO RealPath Blend 2040 Fund
+ *   Strategies Fund Class R6 Institutional Fund PIMCO RealPath Blend - 2030
+ *
+ * Each would have published a RealPath Institutional ticker, fee and return off
+ * another product's share class. Requiring the class AFTER the vintage refuses
+ * all three and costs nothing: measured over every published+served RealPath
+ * row, the class-before-vintage shape is **3 names / 3 rows / 965 readers** and
+ * all three were read. *A resolver GAIN is evidence the string reaches a fund,
+ * not evidence it reaches THIS fund.* */
+const rpRe = (v, cls) => new RegExp(
+  `^${RP_HOUSE}(?=.*${rpVintageToken(v)}.*(?:${cls}))`, "i");
+/* Institutional FIRST, so that a name somehow carrying both class tokens takes
+ * the cheaper, more common one — though `rpTwoClaims` below refuses that name
+ * outright before this table is ever consulted, which is the real protection. */
+const rpBlendRows = () => Object.entries(RP_TICKERS).flatMap(([v, [inst, a]]) =>
+  [[rpRe(v, RP_INST), inst], [rpRe(v, RP_A), a]]);
+/* A NAME STATING TWO VINTAGES, OR TWO CLASSES, NAMES NEITHER — the refusal the
+ * Vanguard target-date arm has carried since its weld census, carried here
+ * before a weld arrives rather than after. It is asked through `hit()` so that
+ * ANY spelling revealing the problem can veto, which is the conservative
+ * direction and the reason the Vanguard veto is written the same way. */
+const RP_FAMILY_RE = /\brealpath\b/i;
+const rpVintages = (s) => {
+  const out = [];
+  for (const v of RP_VINTAGES) if (new RegExp(String.raw`\b${v}\b`).test(s)) out.push(v);
+  if (/\b(?:income|inc)\b/i.test(s)) out.push("income");
+  return out;
+};
+const rpTwoClaims = (s) => new Set(rpVintages(s)).size > 1
+  || (new RegExp(RP_INST, "i").test(s) && new RegExp(RP_A, "i").test(s));
+
 /* ---- ticker identification --------------------------------------------------
  * A ticker is attached ONLY when the filed name identifies a specific
  * registered fund (mutual fund/ETF). Institutional vehicles — collective
@@ -979,6 +1040,36 @@ const FUND_TICKER = [
   [/american funds.*growth fund of america.*r6/i, "RGAGX"],
   [/pimco income (inst|institutional)/i, "PIMIX"],
   [/pimco total return (inst|institutional)/i, "PTTRX"],
+  /* --- PIMCO RealPath Blend, the two classes that are SOURCED --------------
+   * 20 tickers were sourced on 2026-11-17 (ten vintages x Institutional and
+   * Class A) and this table had no PIMCO target-date arm at all.
+   *
+   * THESE SIT IN `FUND_TICKER` AND NOT IN `FUND_COMPARABLE`, AND THAT PLACEMENT
+   * IS THE WHOLE REFUSAL. `fundTickerInfo` consults this table only inside
+   * `if (!pooled)`, so a row the filing types as a collective trust — or whose
+   * name says trust, commingled, CTF or CIT — never reaches it and keeps its
+   * blank. That is required rather than tidy: **PIMCO publishes no per-class
+   * RealPath COLLECTIVE TRUST fee anywhere** (its 1,405-URL sitemap holds 20
+   * RealPath URLs and all 20 are `/investments/mutual-fund/` pages), so putting
+   * the registered fund's price on `PIMCO REALPATH BLEND 2045 TR` would launder
+   * one vehicle's price onto another. The refusal is by construction, not by a
+   * deny-list, and it costs the 330 collective-trust-typed RealPath rows
+   * nothing they could honestly have had.
+   *
+   * THE CLASS MUST BE STATED. `PIMCO Realpath Blend 2040` with no class word
+   * matches BOTH the Institutional (0.37%) and the A (0.82%) fund — a factor of
+   * 2.2 on the fee — so it resolves nothing. Same for `2025`, which PIMCO sells
+   * and nobody has sourced: there is no 2025 entry here and a 2025 name
+   * therefore matches nothing, which is a named gap rather than a near-miss.
+   * `Ins Fd` is refused too — `Inst` and `Instl` are accepted abbreviations of
+   * Institutional, `Ins` is a guess, and it is worth 608 readers across two
+   * plans.
+   *
+   * `realpath` RATHER THAN `pimco` IS THE HOUSE TOKEN, deliberately: two filed
+   * names drop the house (`RealPath Blend Inc Inst`, `RealPath Blend 2065
+   * Inst`) and `RealPath` is PIMCO's own product mark, not a word. Every name
+   * the pair reaches was read before this shipped. */
+  ...rpBlendRows(),
   [/metropolitan west total return|metwest total return/i, "MWTIX"],
   [/baird aggregate bond/i, "BAGIX"],
   [/baird core plus/i, "BCOIX"],
@@ -1880,6 +1971,12 @@ function fundTickerInfo(name, type) {
   if (hit(VGTD_FAMILY_RE)
       && (hit(VGTD_OTHER_HOUSE) || hit(VGTD_OTHER_PRODUCT)
           || new Set([name, ...vs].flatMap(vgTargetVintages)).size > 1)) return null;
+  /* THE SAME VETO FOR PIMCO REALPATH, and in the same place for the same
+   * reason: a rejection written as a lookahead inside an arm is defeated by any
+   * one spelling that happens not to contain the thing being excluded, where a
+   * veto asked through `hit()` cannot be dodged. Two vintages, or both class
+   * tokens, and the row names neither product. */
+  if (hit(RP_FAMILY_RE) && [name, ...vs].some(rpTwoClaims)) return null;
   if (!pooled) {
     for (const [re, tk] of FUND_TICKER) if (hit(re)) return { tk, comparable: false };
     if (wrapped) return null;
@@ -1973,7 +2070,31 @@ const VG_TRUST_TARGET =
  * and `ii` precede `i` or every Trust III is silently filed as a Trust I.
  * The trailing \b is what keeps `TR 2060` from reading its `2` as a class:
  * there is no word boundary inside `2060`. */
-const VG_TRUST_CLASS = /\b(?:trust|tr)\.?\s*(iii|ii|i|plus|select|[123])\b/i;
+/* `A`, `CT` AND THE ABBREVIATED `SEL` JOIN THE LIST (2026-11-18), and all three
+ * were already SOURCED and reaching nobody. 66 Vanguard unit classes were
+ * sourced, dated and checker-validated on 2026-11-17 and published 0 rows,
+ * because this alternation knew only the roman, Plus and Select spellings.
+ * Measured over the published+served store before the widening:
+ *
+ *   Trust A   77 names / 113 rows / 15 plans / 617,725 readers / $32.8B
+ *   Tr Sel    45 names /  54 rows / 13 plans / 189,879 readers / $11.1B
+ *   Trust CT  12 names /  12 rows /  1 plan  /   2,893 readers / $0.10B
+ *
+ * `ct` AND `a` ARE DELIBERATELY NOT IN `VG_TRUST_CLASS_TAIL` BELOW, and the
+ * reason is a measurement rather than caution: a BARE trailing `a` after a
+ * vintage takes **54 names / 71 rows / 23 plans / 128,761 readers**, and every
+ * one of them is a FOOTNOTE MARKER, not a class. `VANGUARD TARGET RETIRE TRUST
+ * PLUS 2035 a` states class PLUS and ends with the marker; `Vanguard Target
+ * Retirement 2040 a` carries a lowercase `a` on every vintage of the same menu.
+ * That is the recorded rule — a digit (and here a letter) after a VINTAGE is a
+ * footnote where a token after the word TRUST is a class — so only the
+ * `trust|tr` form may carry them. A bare `CT` after a vintage takes 0 rows, so
+ * adding it there would be machinery with no data behind it.
+ *
+ * ALTERNATION IS FIRST-MATCH, so `sel(?:ect)?` must be written with the
+ * optional tail greedy (it is) or `Trust Select` captures `sel` — harmless here
+ * only because VG_CLASS_SLUG maps both, which is the belt the brace needs. */
+const VG_TRUST_CLASS = /\b(?:trust|tr)\.?\s*(iii|ii|i|plus|sel(?:ect)?|ct|a|[123])\b/i;
 /* AND THE SPELLING THAT OMITS THE WORD "TRUST" ALTOGETHER — found 2026-11-16
  * on Black & Veatch, where ten rows worth $404M (25.7% of the master trust)
  * showed a blank fee and return while the issuer's own figures sat in the
@@ -2034,6 +2155,35 @@ const VG_TRUST_INCOME = /\b(?:retirement|retire|ret|rmt)\.?\s*(?:income|inc)\b/i
  * Growth stays refused rather than redirected — only its Trust A is priced,
  * so a key for it would point at nothing for every other class. */
 const VG_TRUST_GROWTH = /\bgro?w?th\b|\bgrow?\b|\bgr\b/i;
+/* AND NOW THE SAME TOKENS AS AN ASSIGNMENT RATHER THAN A REFUSAL — 2026-11-18,
+ * because Vanguard's `Target Retirement Income and Growth Trust` A / CT / I /
+ * II / Plus / Select were SOURCED on 2026-11-17 and the resolver still refused
+ * the whole family, so 0 of those rows published anything.
+ *
+ * THE REFUSAL ABOVE SURVIVES FOR EVERY NAME THAT IS NOT ADJACENT, and that is
+ * the whole safety case for turning a refusal into an answer. `VG_TRUST_GROWTH`
+ * is deliberately loose — `gr`, `grow`, `grwth` — which is the right shape for
+ * saying "this row might not be the plain Income trust" and the WRONG shape for
+ * saying "this row IS the Income and Growth trust". The two products' FEES are
+ * identical class for class (0.0375 / 0.045 / 0.055 / 0.065 / 0.075), so no fee
+ * check could ever catch a mis-assignment; the RETURNS are not (YTD 2.51 vs
+ * 4.25 on Trust A), so the whole cost of a loose token lands on the return.
+ *
+ * So the product is claimed only when the growth token IMMEDIATELY FOLLOWS the
+ * income token, with nothing between but a connector. Everything else keeps
+ * today's blank. The case that forces it is real and filed:
+ *
+ *   Vanguard Target Retirement Income Trust II and Growth Trust II
+ *
+ * which is two adjacent menu rows WELDED by the parser — the row's value
+ * belongs to one of two different products and nothing says which. Adjacency
+ * refuses it; the loose token alone would have priced it as Income and Growth.
+ * *A witness that a row is damaged is not a witness to which side the damage is
+ * on.* The accepted spellings were all read out of the store first:
+ * `Income and Growth`, `Income & Growth`, `income growth` (no connector),
+ * `Inc Gr`, `Inc & Grow`, `Income&Grwth`. */
+const VG_TRUST_INCOME_GROWTH =
+  /\b(?:income|inc)\b[\s.,&+/-]*(?:and\b[\s.,&+/-]*)?(?:gro?w?th|grow?|gr)\b/i;
 /* The contradiction test needs a LOOSER income marker than the one that
  * ASSIGNS the income vintage. VG_TRUST_INCOME demands the family word right
  * before it ("Retirement Income"), which is correct for assigning — but in
@@ -2057,7 +2207,13 @@ const VG_TRUST_UNPRICED = /\bfle?x\b/i;
  * *A witness that a row is damaged is not a witness to which side the damage
  * is on*, so the row is refused rather than assigned to either side. */
 const VG_TRUST_OTHER_PRODUCT = /\bsavings\b/i;
-const VG_CLASS_SLUG = { i: "i", ii: "ii", iii: "iii", 1: "i", 2: "ii", 3: "iii", plus: "plus", select: "select" };
+/* `sel` and `select` BOTH map, because the alternation above can capture
+ * either; a slug missing for a spelling the matcher accepts is a class the
+ * resolver "states" and cannot key, which reads as a blank cell rather than as
+ * a bug. `a` and `ct` are the two classes sourced 2026-11-17 that nothing
+ * could reach. */
+const VG_CLASS_SLUG = { i: "i", ii: "ii", iii: "iii", 1: "i", 2: "ii", 3: "iii",
+  plus: "plus", select: "select", sel: "select", a: "a", ct: "ct" };
 
 /* ---- T. ROWE PRICE -------------------------------------------------------
  * Its own quarterly fact sheets state a "Trustee Fee" per named unit class,
@@ -2225,7 +2381,14 @@ function vanguardVehicleParts(n, house) {
   const yr = n.match(VG_TRUST_VINTAGE);
   const vintage = yr ? yr[1] : (VG_TRUST_INCOME.test(n) ? "income" : null);
   if (!vintage) return null;
-  if (vintage === "income" && VG_TRUST_GROWTH.test(n)) return null;
+  /* INCOME AND GROWTH IS ITS OWN FAMILY, AND EVERYTHING SHORT OF ADJACENCY IS
+   * STILL REFUSED — see VG_TRUST_INCOME_GROWTH above for why the loose token
+   * may refuse and only the adjacent one may assign. */
+  let incomeGrowth = false;
+  if (vintage === "income" && VG_TRUST_GROWTH.test(n)) {
+    if (!VG_TRUST_INCOME_GROWTH.test(n)) return null;
+    incomeGrowth = true;
+  }
   /* A NAME STATING TWO VINTAGES NAMES NEITHER. A seeded draw turned up
    * "Vanguard Target Retirement 2025 Income Trust II Fund", published as the
    * 2025 trust (YTD 5.24) when it could as easily be the Income trust (YTD
@@ -2241,8 +2404,76 @@ function vanguardVehicleParts(n, house) {
   /* `classStated` is TRUE whenever a class TOKEN matched, even if it mapped to
    * no slug — a name that states its class and states one we cannot read is a
    * blank cell, never a band. The band is for names that state NO class. */
-  const family = `vanguard::target-retirement-${vintage}`;
+  const family = `vanguard::target-retirement-${incomeGrowth ? "income-and-growth" : vintage}`;
   return { family, classStated: !!cls, key: slug ? `${family}-trust-${slug}` : null };
+}
+
+/* ---- VANGUARD'S INSTITUTIONAL INDEX TRUSTS -------------------------------
+ * A SECOND VANGUARD PRODUCT LINE, AND A DIFFERENT MECHANISM FROM THE TARGET
+ * TRUSTS ABOVE — 2026-11-18. Vanguard publishes a dated fee and a return per
+ * named UNIT CLASS for six index collective trusts (500, Total Stock Market,
+ * Extended Market, Total Bond Market, Total International Stock Market,
+ * Developed Markets); 22 of those classes were sourced on 2026-11-17 and
+ * reached 0 published rows, because `vanguardVehicleParts` answers only for a
+ * target-date vintage and these have none.
+ *
+ * THE UNIT TOKEN IS WHAT SETTLES THE VEHICLE, and that is why this arm does not
+ * carry the "the name says Trust, or the filer's own TYPE cell does" conjunct
+ * that T. Rowe's and Schwab's arms need. Theirs read a BARE TRAILING LETTER,
+ * which a registered mutual fund also uses for its share classes — `Class A` is
+ * the reason that guard exists. `Unit A`..`Unit D` is not a mutual-fund share
+ * class at all: Vanguard's registered classes are Investor, Admiral,
+ * Institutional, Institutional Plus and ETF, and its CITs are the only Vanguard
+ * products sold in numbered UNIT classes. So the class token here IS the
+ * vehicle statement. It matters, because 2 of the live shapes state neither a
+ * trust word nor a type — `Vanguard Institutional 500 Index Unit D`, type blank
+ * — and those two rows publish VFIAX's pattern-estimated 0.03 today.
+ *
+ * `app.js` applies its own `typeContradictsTrust` guard on top, so a row whose
+ * filer typed it `Mutual fund` still publishes nothing from here.
+ *
+ * THE SIX LINES MUST BE MUTUALLY EXCLUSIVE OR THIS LAUNDERS ONE INDEX'S PRICE
+ * ONTO ANOTHER, and three of the six names are proper substrings of each other
+ * in token terms: "Total International STOCK MARKET" contains the Total Stock
+ * Market line's tokens, and "Extended MARKET" contains Total Bond MARKET's. So
+ * the list is ORDERED most-specific first and the two that need a conjunction
+ * get one. The YTDs are 9.42 / 9.56 / 8.73 / -1.41 / 8.02 / 10.16 — a bond
+ * trust priced as an equity trust is not a rounding error.
+ *
+ * AND THE BARE `BOND INDEX` IS REFUSED BY CONSTRUCTION, which costs 3 rows /
+ * 24,127 readers / $125.0M (`VANGUARD BOND INDEX UNIT D`). Only the TOTAL bond
+ * trust is sourced, and Vanguard's institutional bond CIT shelf is not one
+ * product — requiring the `total` token is what keeps a short-term or
+ * inflation-protected bond trust from taking Total Bond's fee. A named gap
+ * rather than a guess. */
+const VG_IDX_UNIT_CLASS = /\bunits?\s*(?:class\s*)?([a-d])\b/i;
+/* every live spelling states one of these two; requiring it stops a
+ * non-index Vanguard trust that happens to carry a unit class from being
+ * priced off an index trust's sheet */
+const VG_IDX_INDEX_WORD = /\bindex\b|\bidx\b/i;
+const VG_IDX_LINE = [
+  ["developed-markets-index", /\bdeveloped\b/i],
+  ["institutional-total-international-stock-market-index", /\binternational\b|\bintl\b|\bint'l\b|\bintrntl\b/i],
+  ["institutional-total-bond-market-index", /^(?=.*\bbonds?\b)(?=.*\b(?:total|ttl|tot)\b)/i],
+  ["institutional-extended-market-index", /\bextended\b|\bextnd\b|\bextd\b|\bext\b/i],
+  ["institutional-500-index", /\b500\b/],
+  ["institutional-total-stock-market-index", /^(?=.*\b(?:stock|stk)\b)(?=.*\b(?:total|ttl|tot)\b)/i],
+];
+// eslint-disable-next-line no-unused-vars
+function vanguardIndexVehicleParts(n, house) {
+  if (!VG_TRUST_FAMILY.test(house)) return null;
+  const cls = n.match(VG_IDX_UNIT_CLASS);
+  if (!cls) return null;                       /* only a STATED unit class */
+  if (!VG_IDX_INDEX_WORD.test(n)) return null;
+  const line = VG_IDX_LINE.find(([, re]) => re.test(n));
+  if (!line) return null;
+  /* NO FAMILY IS RETURNED. `vehicleFamilyOfKey` cannot parse a `-trust-unit-x`
+   * key into a family, so `gen-fund-facts-asset.mjs` builds no band for these
+   * lines, and a family this arm invented would ask the page for a range that
+   * does not exist. A classless index-trust row keeps its blank, which is the
+   * honest answer while only four of the unit classes are sourced. */
+  return { family: null, classStated: true,
+    key: `vanguard::${line[0]}-trust-unit-${cls[1].toLowerCase()}` };
 }
 
 /* ONE DEFINITION OF THE FAMILY RELATION, called by both sides. The resolver
@@ -2404,6 +2635,14 @@ function vehicleParts(name, iss, type) {
    * the store that does not newly resolve. */
   const sch = schwabVehicleParts(n, house, type);
   if (sch && sch.key) return sch;
+  /* The index-trust arm is asked LAST and answers a KEY or null — it never
+   * returns a family-only object, so it has nothing to contribute to the
+   * fallback below and is deliberately absent from it. Adding it there would be
+   * a branch unreachable by construction, which this record rates worse than an
+   * inert one. Asking it last also means it cannot move an answer any older arm
+   * already gives. */
+  const idx = vanguardIndexVehicleParts(n, house);
+  if (idx && idx.key) return idx;
   return trp || vg || sch;
 }
 

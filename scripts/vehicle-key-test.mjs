@@ -84,6 +84,53 @@ const CASES = [
   ["Vanguard Tat Retire 2060 Tr II", "", "vanguard::target-retirement-2060-trust-ii"],
   ["Target 2045 Retirement Trust I", "Vanguard", "vanguard::target-retirement-2045-trust-i"],
   ["VANGUARD FIDUCIARY TR CO RETIREMENT 2055 TR I", "", "vanguard::target-retirement-2055-trust-i"],
+  /* ---- THE CLASSES SOURCED 2026-11-17 THAT NOTHING COULD REACH (2026-11-18)
+   * `A`, `CT` and the abbreviated `Sel`. Measured over published+served rows
+   * before the widening: Trust A 113 rows / 617,725 readers / $32.8B, Tr Sel
+   * 54 rows / 189,879 readers / $11.1B, Trust CT 12 rows / 2,893 readers.
+   * The `Tr A` and `Tr Sel` spellings are the live ones, not invented. */
+  ["Vanguard Target Retirement 2040 Trust A", "", "vanguard::target-retirement-2040-trust-a"],
+  ["VANGUARD TARGET RET 2035 TR A", "", "vanguard::target-retirement-2035-trust-a"],
+  ["VANGUARD TARGET RET INC TR A", "", "vanguard::target-retirement-income-trust-a"],
+  ["Target Retirement 2050 Trust A of interest", "Vanguard Fiduciary Trust Company", "vanguard::target-retirement-2050-trust-a"],
+  ["Vanguard Target Retirement 2040 Trust CT", "", "vanguard::target-retirement-2040-trust-ct"],
+  ["Vanguard Target Retirement Income Trust CT", "", "vanguard::target-retirement-income-trust-ct"],
+  ["Vanguard Tgt Retire 2045 Tr Sel", "", "vanguard::target-retirement-2045-trust-select"],
+  ["MFO VANGUARD TARGET RET 2030 TR SEL CUSIP : 92204E605", "", "vanguard::target-retirement-2030-trust-select"],
+  /* ---- INCOME AND GROWTH IS ITS OWN FAMILY NOW, not a refusal (2026-11-18).
+   * Six of its unit classes were sourced on 2026-11-17 — A, CT, I, II, Plus,
+   * Select — so the resolver can name the product instead of refusing it. These
+   * five abbreviations were MUST-NOT entries until today for the right reason
+   * at the time (nothing was sourced, so the only available key was the plain
+   * Income trust's, which is a different product). */
+  ["Vanguard Target Retirement Income and Growth Trust I", "", "vanguard::target-retirement-income-and-growth-trust-i"],
+  ["Vanguard Target Retirement Income & Growth Trust II", "", "vanguard::target-retirement-income-and-growth-trust-ii"],
+  ["Target retirement income growth trust II", "Vanguard", "vanguard::target-retirement-income-and-growth-trust-ii"],
+  ["Vanguard Tgt Ret Inc Gr Tr I", "", "vanguard::target-retirement-income-and-growth-trust-i"],
+  ["Vanguard Tgt Retire Inc & Grow Tr I", "", "vanguard::target-retirement-income-and-growth-trust-i"],
+  ["Vanguard TGT Ret Inc & Gr Trust I", "", "vanguard::target-retirement-income-and-growth-trust-i"],
+  ["Vanguard Tgt Ret Inc Gr Tr II", "", "vanguard::target-retirement-income-and-growth-trust-ii"],
+  ["Vanguard Tgt Ret Inc & Grow TrI", "", "vanguard::target-retirement-income-and-growth-trust-i"],
+  ["Vanguard Target Retirement Income and Growth Trust A", "", "vanguard::target-retirement-income-and-growth-trust-a"],
+  ["Vanguard Tgt Retire Income & Gr Tr Sel", "", "vanguard::target-retirement-income-and-growth-trust-select"],
+  /* and the plain Income trust must still be the plain Income trust — the
+   * product whose name is a proper PREFIX of the one above */
+  ["Vanguard Tgt Retire Inc Tr II", "", "vanguard::target-retirement-income-trust-ii"],
+  /* ---- VANGUARD'S INSTITUTIONAL INDEX TRUSTS, a second product line with no
+   * vintage at all (2026-11-18). 22 unit classes sourced 2026-11-17, 0 rows
+   * published. Every spelling below is live; `Unit Class C`, `UNIT B`,
+   * `Unit D Fund` and the OCR-split `M arket` are each a filed shape. */
+  ["Vanguard Institutional 500 Index Trust Unit D", "", "vanguard::institutional-500-index-trust-unit-d"],
+  ["VANGUARD INST 500 IDX UNIT B", "", "vanguard::institutional-500-index-trust-unit-b"],
+  ["Institutional 500 Index Trust Unit Class C", "Vanguard", "vanguard::institutional-500-index-trust-unit-c"],
+  ["Vanguard Institutional 500 Index Unit D", "", "vanguard::institutional-500-index-trust-unit-d"],
+  ["Vanguard Institutional TTL Stock Market Index Unit B", "", "vanguard::institutional-total-stock-market-index-trust-unit-b"],
+  ["Institutional Total Stock Market Index Trust Unit C", "Vanguard", "vanguard::institutional-total-stock-market-index-trust-unit-c"],
+  ["Vanguard Instl Extnd Mkt Idx Unit C", "", "vanguard::institutional-extended-market-index-trust-unit-c"],
+  ["Vanguard Inst Extended M arket Index Unit D Fund", "", "vanguard::institutional-extended-market-index-trust-unit-d"],
+  ["Vanguard Instl Ttl Bond Mkt Idx Unit C", "", "vanguard::institutional-total-bond-market-index-trust-unit-c"],
+  ["Institutional Total International Stock Market Index Trust Unit Class C", "Vanguard", "vanguard::institutional-total-international-stock-market-index-trust-unit-c"],
+  ["Vanguard Developed Markets Index Trust Fund Unit D", "", "vanguard::developed-markets-index-trust-unit-d"],
   /* ---- T. Rowe Price ---- */
   ["T. Rowe Price Retirement 2030 Trust Class A", "", "t-rowe-price::retirement-2030-trust-class-a"],
   ["Retirement 2035 Trust Class A", "T. Rowe Price", "t-rowe-price::retirement-2035-trust-class-a"],
@@ -104,19 +151,29 @@ const CASES = [
   ["TRP RETIREMENT HYB 2025 TR-114", "", null],                      // a marker the issuer does not use
   ["T. Rowe Price Retirement Hybrid 2030 Trust Class T5", "", null], // HELD: fee equivalence not stated for Hybrid
   ["T. Rowe Price Target 2030 Trust Class A", "", null],             // the Target line, not Retirement
-  ["Vanguard Target Retirement Income and Growth Trust I", "", null],// a DIFFERENT product
-  ["Target retirement income growth trust II", "", null],            // ... with no connector
+  /* THE INCOME-AND-GROWTH WELD, which is what is left of that refusal once the
+   * product has its own sourced classes (2026-11-18). The loose growth token
+   * still refuses; only ADJACENCY assigns. This name is two menu rows glued by
+   * the parser, so its value belongs to one of two different products and
+   * nothing says which — and the two products' fees are IDENTICAL class for
+   * class, so only the return would have carried the error. */
   ["Vanguard Target Retirement Income Trust II and Growth Trust II", "", null],
-  /* ... AND ABBREVIATED, which the spelled-out guard could not see. These
-   * five were reached by relaxing the family gate and every one would have
-   * published the plain INCOME trust's fee and return on an Income AND GROWTH
-   * holding: `\bgro?w?th\b` requires the letters `th`, so `Gr` and `Grow`
-   * walked past it. The guard was written for one phrasing of the word. */
-  ["Vanguard Tgt Ret Inc Gr Tr I", "", null],
-  ["Vanguard Tgt Retire Inc & Grow Tr I", "", null],
-  ["Vanguard TGT Ret Inc & Gr Trust I", "", null],
-  ["Vanguard Tgt Ret Inc Gr Tr II", "", null],
-  ["Vanguard Tgt Ret Inc & Grow TrI", "", null],
+  ["Target retirement income growth trust II", "", null],            // no Vanguard token anywhere
+  /* A BARE TRAILING LETTER AFTER A VINTAGE IS A FOOTNOTE MARKER, NOT A CLASS,
+   * and that is measured: 54 names / 71 rows / 23 plans / 128,761 readers carry
+   * one, and the same menus repeat it on every vintage. The second case states
+   * class PLUS and carries the marker too — the explicit class must win. */
+  ["Vanguard Target Retirement 2040 a", "", null],
+  ["VANGUARD TARGET RETIRE TRUST PLUS 2035 a", "VANGUARD FIDUCIARY TRUST COMPANY",
+    "vanguard::target-retirement-2035-trust-plus"],
+  /* AN INDEX TRUST WHOSE LINE IS NOT SOURCED, and whose line word is a bare
+   * `Bond`: only the TOTAL bond trust is published, and Vanguard's
+   * institutional bond CIT shelf is not one product. 3 rows / 24,127 readers /
+   * $125.0M, refused by requiring the `total` token rather than by a list. */
+  ["VANGUARD BOND INDEX UNIT D", "", null],
+  ["Vanguard Russell 1000 Growth Index Trust Unit A", "", null],      // a line with no published fee
+  ["Vanguard Institutional 500 IDX Trust FLX", "", null],             // FLX states no unit class
+  ["Vanguard Institutional 500 Index Trust", "", null],               // states no class at all
   /* A DIFFERENT VANGUARD PRODUCT WELDED IN FRONT OF A REAL ONE. Vanguard
    * Retirement SAVINGS Trust is a stable-value fund; the parser glued it to a
    * target-date row and the class token `Trust III` is the savings trust's.
@@ -268,8 +325,24 @@ const MUTATIONS = [
     '  if (!TRP_TRUST_WORD.test(n) && !VEHICLE_TYPE_IS_TRUST.test(String(type || ""))) return null;',
     "  // refusal removed"),
     "T. Rowe Price Retirement 2040 Fund Class I", null],
-  ["vanguard growth refusal", (t) => t.replace('  if (vintage === "income" && VG_TRUST_GROWTH.test(n)) return null;', "  // refusal removed"),
-    "Vanguard Target Retirement Income and Growth Trust I", null],
+  /* RE-ANCHORED 2026-11-18. This mutation used to delete
+   * `if (vintage === "income" && VG_TRUST_GROWTH.test(n)) return null;`, and
+   * that line no longer exists — the growth branch now ASSIGNS the Income and
+   * Growth family instead of refusing. Neutering the branch's condition makes
+   * every Income and Growth row resolve to the plain INCOME trust's key, which
+   * is a different product with the same fees and a different return, so the
+   * case is "the answer must not be the Income trust's key". */
+  ["vanguard growth branch", (t) => t.replace(
+    '  if (vintage === "income" && VG_TRUST_GROWTH.test(n)) {',
+    "  if (false) {"),
+    "Vanguard Target Retirement Income and Growth Trust I",
+    "vanguard::target-retirement-income-and-growth-trust-i"],
+  /* AND THE ADJACENCY REQUIREMENT, which is the only thing standing between the
+   * weld and a published return belonging to one of two products. Without it
+   * `... Income Trust II and Growth Trust II` resolves. */
+  ["vanguard income-growth adjacency", (t) => t.replace(
+    "    if (!VG_TRUST_INCOME_GROWTH.test(n)) return null;", "    // refusal removed"),
+    "Vanguard Target Retirement Income Trust II and Growth Trust II", null],
   ["vanguard two-vintage refusal", (t) => t.replace("  if (yr && VG_TRUST_TWO_VINTAGE.test(n)) return null;", "  // refusal removed"),
     "Vanguard Target Retirement 2025 Income Trust II Fund", null],
   /* THE WIDENED GROWTH GUARD, mutated back to the spelled-out-only pattern it
@@ -279,7 +352,28 @@ const MUTATIONS = [
   ["vanguard growth ABBREVIATION", (t) => t.replace(
     "const VG_TRUST_GROWTH = /\\bgro?w?th\\b|\\bgrow?\\b|\\bgr\\b/i;",
     "const VG_TRUST_GROWTH = /\\bgro?w?th\\b/i;"),
-    "Vanguard Tgt Ret Inc Gr Tr I", null],
+    "Vanguard Tgt Ret Inc Gr Tr I", "vanguard::target-retirement-income-and-growth-trust-i"],
+  /* ---- THE INDEX-TRUST ARM'S OWN CONDITIONS (2026-11-18), one case each where
+   * the condition named is the ONLY protection. */
+  ["index arm needs a stated UNIT class", (t) => t.replace(
+    "  const cls = n.match(VG_IDX_UNIT_CLASS);\n  if (!cls) return null;                       /* only a STATED unit class */",
+    '  const cls = n.match(VG_IDX_UNIT_CLASS) || ["", "a"];'),
+    "Vanguard Institutional 500 Index Trust", null],
+  /* the bond line's `total` conjunct, which is what refuses a bare Bond Index
+   * — and it is the ONLY thing refusing it, since every other condition passes */
+  ["index bond line needs TOTAL", (t) => t.replace(
+    '["institutional-total-bond-market-index", /^(?=.*\\bbonds?\\b)(?=.*\\b(?:total|ttl|tot)\\b)/i]',
+    '["institutional-total-bond-market-index", /\\bbonds?\\b/i]'),
+    "VANGUARD BOND INDEX UNIT D", null],
+  /* AND THE LINE ORDER, which is the whole defence against laundering one
+   * index's price onto another: Total International Stock Market carries the
+   * Total Stock Market line's tokens, so if the international line stops being
+   * asked first this row takes the domestic trust's fee and return (YTD 8.02
+   * against 9.56). */
+  ["index line order: international before total-stock", (t) => t.replace(
+    '  ["institutional-total-international-stock-market-index", /\\binternational\\b|\\bintl\\b|\\bint\'l\\b|\\bintrntl\\b/i],\n', ""),
+    "Vanguard Institutional Total International Stock Market Index Unit D",
+    "vanguard::institutional-total-international-stock-market-index-trust-unit-d"],
   /* and the other-product refusal, whose case the class matcher does NOT also
    * refuse — `Trust III` is a class the matcher knows, so without this line
    * the weld resolves to a real 2020 key. */
@@ -305,13 +399,47 @@ const MUTATIONS = [
  * because the redundancy belongs to the LINE WORD, not to it: the line word was
  * widened to accept `Mng`/`Mngd` in this same commit, and every such widening
  * is a fresh chance for another house's name to carry a token this arm reads. */
+/* AND TWO MORE JOIN THEM 2026-11-18, both measured INERT on the live store
+ * rather than assumed to be load-bearing:
+ *
+ *  - the index arm's `VG_IDX_INDEX_WORD` requirement refuses **0 of the live
+ *    rows**: every Vanguard row carrying a unit class and one of the six line
+ *    words also spells `Index` or `Idx`. Mutating it would print "protects
+ *    nothing", which is true and useless. It stays because it is the only thing
+ *    that keeps a NON-index Vanguard trust sold in unit classes from being
+ *    priced off an index trust's sheet the day one is filed.
+ *  - the index arm carries NO other-house refusal at all, and that is this
+ *    measurement rather than an omission: of the live rows the arm can reach,
+ *    **0** also name BlackRock, State Street, Northern Trust, Fidelity, T. Rowe,
+ *    Schwab, PIMCO, Invesco, TIAA, JPMorgan or Dimensional, after the custodian
+ *    phrase is stripped. Schwab's arm needs such a refusal because `Charles
+ *    Schwab Trust Bank` is a RECORDKEEPER for every house's funds; Vanguard's
+ *    issuer cells here name Vanguard entities. A guard with a measured blocking
+ *    population of zero would also have cost the legitimate rows filed as
+ *    `Fidelity Management Trust Company - Vanguard …`. */
 for (const [label, n] of [["schwab other-house", "VGD TARGET RET INCOME GROWTH I"],
                           ["hybrid hold", "T. Rowe Price Retirement Hybrid 2030 Trust Class T5"],
                           ["select / great gray", "T. Rowe Price Retirement Blend Select Trust Cl 5"],
-                          ["FLX", "Vanguard Target Retirement 2050 Trust Flex"]]) {
+                          ["FLX", "Vanguard Target Retirement 2050 Trust Flex"],
+                          ["index arm needs the word Index", "Vanguard Institutional 500 Unit D"],
+                          ["index arm, Trust FLX", "Vanguard Extended Market Index Trust FLX"]]) {
   if (vk(n, "") !== null) fail(`${label}: ${JSON.stringify(n)} must resolve to nothing`);
 }
+/* THE PREMISE IS CHECKED BEFORE THE MUTATION, ADDED 2026-11-18, AND IT CAUGHT A
+ * DECORATIVE CONTROL THE SAME MINUTE. The loop below only ever asserted that the
+ * MUTANT stops answering `want`; it never asserted that the SHIPPED resolver
+ * answers `want` in the first place. Two index-arm mutations written that
+ * morning used an issuer-cell spelling, and this loop calls `vk(name, "")` with
+ * no issuer — so the unmutated resolver already answered null, the mutant also
+ * answered null, and the mutation "passed" while proving nothing. *A control
+ * that cannot fail is decorative*, and a mutation whose case the shipped code
+ * does not cover cannot fail. */
 for (const [label, mutate, name, want] of MUTATIONS) {
+  const base = vk(name, "");
+  if (base !== want) {
+    fail(`mutation "${label}" is VACUOUS: the shipped resolver answers ${base === null ? "no key" : base} for ${JSON.stringify(name)}, not the ${want === null ? "no key" : want} this case is written against`);
+    continue;
+  }
   const m = mutate(src);
   if (m === src) { fail(`mutation "${label}" did not change the source — it is malformed`); continue; }
   let mvk;
@@ -349,6 +477,21 @@ if (!bad) ok(`${MUTATIONS.length} single-protection mutations, each with a case 
     ["Vanguard Target Retirement Income Trust", "", "vanguard::target-retirement-income"],
     ["Retirement 2040 Active Trust", "T. Rowe Price Trust Company", "t-rowe-price::retirement-2040"],
     ["T Rowe Price Retirement Blend 2035 Trust", "", "t-rowe-price::retirement-blend-2035"],
+    /* INCOME AND GROWTH GAINS A BAND TOO (2026-11-18), because the resolver now
+     * answers a FAMILY for it where it used to refuse the product outright. The
+     * band is the sanctioned answer for a row that names the trust and not the
+     * unit class — six classes are sourced, so the range is over named,
+     * published figures. */
+    ["Vanguard Target Retirement Income and Growth Trust", "", "vanguard::target-retirement-income-and-growth"],
+    ["VANGUARD TARGET RETIREMENT INCOME AND GROWTH TRUST", "", "vanguard::target-retirement-income-and-growth"],
+    /* and a stated class on the SAME product still beats the range */
+    ["Vanguard Target Retirement Income and Growth Trust Select", "", null],
+    /* AN INDEX TRUST NEVER BANDS. `vehicleFamilyOfKey` cannot parse a
+     * `-trust-unit-x` key, so no band exists for those lines, and the arm
+     * deliberately returns no family rather than asking the page for a range
+     * that was never built. */
+    ["Vanguard Institutional 500 Index Trust", "", null],
+    ["Vanguard Institutional Extended Market Index Trust", "", null],
     /* MUST NOT BAND */
     ["Vanguard Fiduciary Trust Company Vanguard Target Retirement 2045 Fund", "", null],
     ["Fidelity Management Trust Company Vanguard Target Retirement 2030 Fund", "", null],
@@ -401,6 +544,127 @@ if (!bad) ok(`${MUTATIONS.length} single-protection mutations, each with a case 
     if (mf(name, "", "Collective trust") === null) fail(`band mutation "${label}" still refuses ${JSON.stringify(name)} — the condition protects nothing`);
   }
   if (!bad) ok(`${BAND_MUTATIONS.length} band mutations, each with a case where it is the only protection`);
+}
+
+/* ---- PIMCO REALPATH BLEND: A TICKER ARM WHOSE SAFETY IS A VEHICLE CLAIM ----
+ * These cases live in the VEHICLE test rather than in `fund-er-test.mjs`
+ * because the thing that has to hold is not "does the symbol resolve" — it is
+ * *which vehicle may be priced at all*. PIMCO publishes a dated fee and return
+ * for the registered RealPath Blend mutual funds and **nothing per class for
+ * the collective trust** (its 1,405-URL sitemap holds 20 RealPath URLs, all 20
+ * `/investments/mutual-fund/`). So the arm must answer a registered row and
+ * refuse a pooled one, and the refusal is structural: `fundTickerInfo` consults
+ * `FUND_TICKER` only inside `if (!pooled)`.
+ *
+ * THE TYPE CELL IS PART OF THE ARGUMENT, so it is passed here — a test that
+ * asked the name alone could not see the only guarantee that matters. */
+{
+  const ti = load(src, "fundTickerInfo");
+  if (typeof ti !== "function") fail("fundTickerInfo is not defined in fund-er.js");
+  else {
+    const tk = (n, iss, type) => { const r = ti(`${iss} ${n}`.trim(), type || ""); return r ? r.tk + (r.comparable ? "*" : "") : null; };
+    const RP_CASES = [
+      /* MUST resolve — a registered class, stated, on a row the filer typed as
+       * a mutual fund or left untyped. Every spelling is live. */
+      ["PIMCO RealPath Blend 2040 Fund Institutional Class", "", "Mutual fund", "PVPNX"],
+      ["PIMCO RealPath Blend 2070 Fund Institutional Class", "", "Mutual fund", "PAJDX"],
+      ["PIMCO Realpath Blend 2070 Fund InstitutionalClass", "", "Mutual fund", "PAJDX"],
+      ["Pimco Realpath Blend 2060 Fd Inst", "", "Mutual fund", "PRBMX"],
+      ["Pimco Realpath Blend 2035 Instl", "", "Mutual fund", "PDGZX"],
+      ["RealPath Blend Inc Inst", "", "Mutual fund", "PBRNX"],
+      ["RealPath Blend 2065 Inst", "", "Mutual fund", "PBLIX"],
+      ["PIMCO RealPath Blend 2040 Fund Class A", "", "Mutual fund", "PVPAX"],
+      ["PIMCO RealPath Blend Income Fund Class A", "", "", "PBRAX"],
+      /* MUST NOT — and each for its own reason, all six measured or read.
+       * The TRUST rows are the whole point: PIMCO publishes no per-class CIT
+       * fee, so the registered fund's price must not stand in for it. */
+      ["PIMCO REALPATH BLEND 2045 TR", "", "Collective trust", null],
+      ["PIMCO RealPath Blend 2050 Collective Trust - Class MM", "", "Collective trust", null],
+      ["PIMCO REALPATH BLEND 2065 CTF IGPS", "", "Collective trust", null],
+      ["PIMCO Realpath Blend 2040 CT CL MM", "", "Collective trust", null],
+      ["REALPATH Blend 2040", "", "Collective trust", null],
+      /* AND THE 20 THAT MATTER MOST: a POOLED row that DOES state the
+       * registered Institutional class. 20 names / 20 rows / 3 plans / 2,288
+       * readers / $18.0M, measured over published+served rows. Every other
+       * refusal in this list is satisfied by these names — they carry a house,
+       * a family, a vintage and a real class — so the vehicle is the only thing
+       * standing between them and a mutual fund's price. A pooled separate
+       * account that invests in PVPNX is not PVPNX, and it costs more. */
+      ["PIMCO RealPath Blend 2060 Inst", "", "Pooled separate account", null],
+      ["PIMCO RealPath Blend 2045 Institutional", "", "Pooled separate account", null],
+      ["PIMCO RealPath Blend 2035 Fund Inst. Class", "", "Collective trust", null],
+      ["PIMCO RealPath Blend Income Fund Inst. Class", "", "Collective trust", null],
+      /* ...and the SAME NAME typed as a registered fund resolves, which is what
+       * proves the type cell is doing the work rather than the name */
+      ["PIMCO RealPath Blend 2060 Inst", "", "Mutual fund", "PRBMX"],
+      /* ...and the registered rows that still may not be priced */
+      ["PIMCO Realpath Blend 2040", "", "Mutual fund", null],          // states no class
+      ["PIMCO RealPath Blend 2035", "", "Mutual fund", null],
+      ["PIMCO RealPath Blend 2025 INST", "", "Mutual fund", null],     // a vintage nobody sourced
+      ["PIMCO RealPath Bld 2025 Ins Fd", "", "Mutual fund", null],
+      ["PIMCO REALPATH BLD 2065 INS FD", "", "Mutual fund", null],     // `Ins` is a guess, not `Inst`
+      ["PIMCO REALPATH® Blend Completion Fund", "", "Collective trust", null],  // no vintage
+      ["PIMCO RealPath Blend 2040 Institutional Class A", "", "Mutual fund", null], // two classes
+      ["PIMCO RealPath Blend 2040 Income Institutional", "", "Mutual fund", null],  // two vintages
+      /* the look-alike that must keep its own answer: a DIFFERENT PIMCO fund
+       * whose name the arm must not reach, and which resolved before today */
+      ["PIMCO Income Fund Institutional Class", "", "Mutual fund", "PIMIX"],
+      ["PIMCO Total Return Fund Institutional Class", "", "Mutual fund", "PTTRX"],
+    ];
+    for (const [n, iss, type, want] of RP_CASES) {
+      const got = tk(n, iss, type);
+      if (got === want) continue;
+      fail(`realpath: want ${want === null ? "no ticker" : want}\n        got  ${got === null ? "no ticker" : got}\n        for  ${JSON.stringify(n)} [type ${JSON.stringify(type)}]`);
+    }
+    if (!bad) ok(`${RP_CASES.length} RealPath cases: ${RP_CASES.filter((c) => c[3]).length} must-resolve, ${RP_CASES.filter((c) => !c[3]).length} must-not`);
+
+    /* EVERY TICKER THE ARM CAN PRODUCE MUST BE SOURCED, or the symbol reaches a
+     * reader with no fee and no return behind it — the same assertion the
+     * vehicle keys get above, for the same reason. */
+    const FUNDS = JSON.parse(readFileSync(path.join(ROOT, "data", "fund-facts.json"), "utf8")).funds || {};
+    const absent = RP_CASES.filter(([, , , w]) => w).map(([, , , w]) => w).filter((t) => !FUNDS[t]);
+    if (absent.length) fail(`${absent.length} RealPath ticker(s) are absent from data/fund-facts.json: ${absent.join(", ")}`);
+    else ok("every RealPath ticker the arm answers is sourced");
+
+    /* SINGLE-PROTECTION MUTATIONS, derived from the refusals above. */
+    const RP_MUTATIONS = [
+      /* THE PLACEMENT ITSELF. Moving the rows into the pooled branch's table is
+       * the one change that would publish a mutual fund's fee on a collective
+       * trust, and nothing else in the file stops it. */
+      ["realpath rows reach a POOLED row", (t) => t.replace(
+        "  for (const [re, pair] of FUND_COMPARABLE) if (hit(re)) return { tk: pair[0], comparable: true, er: pair[1] };\n  return null;\n}",
+        "  for (const [re, pair] of FUND_COMPARABLE) if (hit(re)) return { tk: pair[0], comparable: true, er: pair[1] };\n  for (const [re, t2] of rpBlendRows()) if (hit(re)) return { tk: t2, comparable: true };\n  return null;\n}"),
+        "PIMCO RealPath Blend 2060 Inst", "Pooled separate account", null],
+      /* the class requirement: without it a classless name takes whichever
+       * class the table lists first, a factor of 2.2 on the fee */
+      ["realpath needs a stated class", (t) => t.replace(
+        "const rpRe = (v, cls) => new RegExp(\n  `^${RP_HOUSE}(?=.*${rpVintageToken(v)}.*(?:${cls}))`, \"i\");",
+        "const rpRe = (v) => new RegExp(`^${RP_HOUSE}(?=.*${rpVintageToken(v)})`, \"i\");"),
+        "PIMCO Realpath Blend 2040", "Mutual fund", null],
+      /* THE CLASS MUST FOLLOW THE VINTAGE, which is what refuses the three
+       * filed WELDS whose class token belongs to a different fund. Mutating the
+       * ordering back to two independent lookaheads must make the weld resolve. */
+      ["realpath class must follow the vintage", (t) => t.replace(
+        "`^${RP_HOUSE}(?=.*${rpVintageToken(v)}.*(?:${cls}))`",
+        "`^${RP_HOUSE}(?=.*${rpVintageToken(v)})(?=.*(?:${cls}))`"),
+        "Opportunities Fund Institutional Shares PIMCO RealPath Blend 2040 Fund", "Mutual fund", null],
+      /* the two-claims veto, whose cases nothing else refuses */
+      ["realpath two-claims veto", (t) => t.replace(
+        "  if (hit(RP_FAMILY_RE) && [name, ...vs].some(rpTwoClaims)) return null;", "  // veto removed"),
+        "PIMCO RealPath Blend 2040 Institutional Class A", "Mutual fund", null],
+    ];
+    for (const [label, mutate, n, type, want] of RP_MUTATIONS) {
+      const base = tk(n, "", type);
+      if (base !== want) { fail(`realpath mutation "${label}" is VACUOUS: the shipped resolver answers ${base} for ${JSON.stringify(n)}`); continue; }
+      const m = mutate(src);
+      if (m === src) { fail(`realpath mutation "${label}" did not change the source — it is malformed`); continue; }
+      let mti;
+      try { mti = load(m, "fundTickerInfo"); } catch (e) { fail(`realpath mutation "${label}" would not load: ${e.message}`); continue; }
+      const r = mti(n, type);
+      if ((r ? r.tk : null) === want) fail(`realpath mutation "${label}" still answers ${want} for ${JSON.stringify(n)} — the condition protects nothing`);
+    }
+    if (!bad) ok(`${RP_MUTATIONS.length} RealPath mutations, each with a case where it is the only protection`);
+  }
 }
 
 console.log(bad ? `\nvehicle-key-test: ${bad} FAILURE(S)` : "\nvehicle-key-test: the resolver names the right vehicle, and refuses the look-alikes");
