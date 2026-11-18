@@ -16,7 +16,7 @@
  * spelling absent from this table resolves to nothing, which is the honest
  * status quo and never a wrong symbol.
  *
- * 23,955 keys, covering 88,491 published rows across 23,447 plans
+ * 23,954 keys, covering 88,490 published rows across 23,447 plans
  * reaching 29,785,278 participants. Swaps 0, losses 0: a key is written only
  * where the page's chain returns nothing AND the row carries no `f.tk`.
  */
@@ -25,7 +25,6 @@ const SEC_TICKERS = {
 "\u0000(CL) American Century Small Cap Value R6":"ASVDX",
 "\u0000(CL)Victory Sycamore Established Val R6":"VEVRX",
 "\u0000(Continuation) JP Morgan Smart Retirement Blend 2065 R6":"JSBYX",
-"\u0000(Continuation) PIMCO RealPath Blend 2055 INST":"PRQZX",
 "\u0000(Continued) Vanguard Energy Index Fd Adm":"VENAX",
 "\u0000(continued) Fidelity Mid Cap Growth Index":"FMDGX",
 "\u0000(continued) Nuveen Lifecycle Index 2065 R6":"TFITX",
@@ -23989,4 +23988,4 @@ const SEC_TICKERS_PIN = {"key":"\u0000(*) Fidelity Freedom 2070","tk":"FRBDX"};
  * was not regenerated, so every key that change would add is silently
  * withheld — which is how 66 gain rows / 9,224 participants accumulated
  * unreported across five ships on 2026-10-11. */
-const SEC_TICKERS_CODE = "sha256:845de0cb551cd15e68f46370cbd83f09e26adfb2671bc190682a26a34ebd5500";
+const SEC_TICKERS_CODE = "sha256:65dcadfc08174dcabb6e6f1e71379f488f01b04a140734cd5042aef90a3cc87b";
