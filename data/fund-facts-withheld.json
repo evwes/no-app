@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-17",
+ "generated": "2026-11-18",
  "reason": "A MEASUREMENT, NOT A GATE — the gate is per ROW and lives in app.js, which compares shareClassToken(filed name) against the sourced asset's `cls`. This file lists the tickers where at least one published row's filing states a class the symbol is not, so the class can be read and the resolver fixed; nothing reads it to decide what to publish. Withholding these tickers WHOLESALE was the first design and it cost 182,106 correctly-filed rows to protect 6,190.",
  "producedBy": "scripts/fund-facts-class-screen.mjs --emit",
  "tickers": {
@@ -154,7 +154,7 @@
    "sourceName": "MFS Value Fund Class R6",
    "filed": [
     {
-     "n": 71,
+     "n": 72,
      "cls": "r3",
      "name": "MFS Value R3"
     },
@@ -377,9 +377,9 @@
    ]
   },
   "PBFKX": {
-   "rows": 29,
-   "readers": 26986,
-   "plans": 29,
+   "rows": 28,
+   "readers": 26817,
+   "plans": 28,
    "sourceName": "Victory Pioneer Bond Fund Class R6",
    "filed": [
     {
@@ -388,7 +388,7 @@
      "name": "Pioneer Bond Fund Class K"
     },
     {
-     "n": 9,
+     "n": 8,
      "cls": "k",
      "name": "Bond Fund Class K"
     }
@@ -1993,6 +1993,97 @@
      "n": 1,
      "cls": "r6",
      "name": "Principal Real Estate Securities Instl R6"
+    }
+   ]
+  },
+  "PDGZX": {
+   "rows": 1,
+   "readers": 264,
+   "plans": 1,
+   "sourceName": "PIMCO RealPath Blend 2035 Fund Institutional Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Realpath Blend 2035 Fund Institutional Class a"
+    }
+   ]
+  },
+  "PBPNX": {
+   "rows": 1,
+   "readers": 264,
+   "plans": 1,
+   "sourceName": "PIMCO RealPath Blend 2030 Fund Institutional Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Realpath Blend 2030 Fund Institutional Class a"
+    }
+   ]
+  },
+  "PVQNX": {
+   "rows": 1,
+   "readers": 264,
+   "plans": 1,
+   "sourceName": "PIMCO RealPath Blend 2045 Fund Institutional Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Realpath Blend 2045 Fund Institutional Class a"
+    }
+   ]
+  },
+  "PPQZX": {
+   "rows": 1,
+   "readers": 264,
+   "plans": 1,
+   "sourceName": "PIMCO RealPath Blend 2050 Fund Institutional Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Realpath Blend 2050 Fund Institutional Class a"
+    }
+   ]
+  },
+  "PVPNX": {
+   "rows": 1,
+   "readers": 264,
+   "plans": 1,
+   "sourceName": "PIMCO RealPath Blend 2040 Fund Institutional Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Realpath Blend 2040 Fund Institutional Class a"
+    }
+   ]
+  },
+  "PRQZX": {
+   "rows": 1,
+   "readers": 264,
+   "plans": 1,
+   "sourceName": "PIMCO RealPath Blend 2055 Fund Institutional Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Realpath Blend 2055 Fund Institutional Class a"
+    }
+   ]
+  },
+  "PBRNX": {
+   "rows": 1,
+   "readers": 264,
+   "plans": 1,
+   "sourceName": "PIMCO RealPath Blend Income Fund Institutional Class",
+   "filed": [
+    {
+     "n": 1,
+     "cls": "a",
+     "name": "Realpath Blend Income Fund Institutional Class a"
     }
    ]
   },
