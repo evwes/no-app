@@ -7,6 +7,83 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-20 — THE 2K AFTER-TAX COVERAGE QUESTION IS CLOSED BY MEASUREMENT, AND SIZING IT FOUND TWO DEFECTS THAT OUTRANK IT
+
+**WHAT WAS ASKED.** `contributions` is the largest addressable ledger gap —
+33,290,835 participant-cells PARTIAL plus 6,107,317 ABSENT — and the partial is
+the 2K disjunction (code 2K is 401(m): a match AND/OR after-tax, which cannot
+settle after-tax alone). CLAUDE.md recorded resolving it from the audited notes
+as parser-side and unsized. This is the sizing.
+
+**CLOSED, AND THE ANSWER IS NO.** The 2K-partial bucket re-derives as 57,167
+plans / 29,792,622 readers, of which only 16,315 plans / 22,194,785 readers have
+notes that can be read at all — 36,745 plans / 5,955,434 readers are SHORT FORM
+and have no attachment **by law**. Measured two ways: a seeded uniform draw of
+140 plans through the SHIPPED `extractPlanFeatures` (never a re-implementation),
+and a ranked read of the 60 largest cohort members covering 33% of its readers.
+**85–87% of the cohort says nothing about after-tax at all, by both plans and
+readers.** Resolvable to a YES: **~340,000 readers** (band 230K–900K). To a
+defensible NO: **no population at scale**. That is below the 500,000-reader floor
+on three separate narrow arms, each with its own false-positive surface sitting
+right beside the target (loan-repayment boilerplate, the SECURE 2.0 catch-up Roth
+mandate). ***33.3M readers keep the disjunction, and that is the honest answer.***
+*A sizing that cancels the deep dive is a success.*
+
+**AND THE SIZING FOUND A WRONG PUBLISHED CLAIM, WHICH OUTRANKS A MISSING ONE AT
+ANY SIZE.** ~44 plans / ~204,056 readers store `afterTax: true` on a quote whose
+own words DENY it, and `app.js:4080` renders that as **"✓ Available"** (the
+crawlable pages as *"Yes (per the filing)"*). Same bug on the Roth arm, ~86
+plans / ~105,702 readers. **Verified by hand against the filings, not taken on
+report:** Waste Management (`20261013121857NAL0004205171001`, 47,047 readers)
+files *"After-tax contributions are not permitted by the Plan."* with ZERO Roth
+mentions anywhere, and the store holds `afterTax: true`. Feeding the shipped
+extractor Cortech's denial paragraph alone returns `roth=true, afterTax=true` —
+so the negation is read as an affirmation on BOTH arms. The population figures
+are the sizing agent's and need re-deriving before a fix ships; the mechanism is
+reproduced here.
+
+**A SECOND DEFECT, AND IT IS WHY A NEGATION VETO ALONE WOULD NOT HAVE WORKED.**
+Cortech (`20261015073223NAL0008571632003`) contradicts itself: its Contributions
+note says *"The Plan does not allow for Roth or after-tax contributions"* while
+**Note 8 — Subsequent events** lists *"Participants are allowed to make Roth
+contributions"* under a restated adoption agreement **effective January 1,
+2026** — after the plan year reported. Asked each section ALONE, the extractor
+returns `roth=true` for the subsequent-events section **by itself**. So that
+row's Roth flag is **doubly caused**, a negation veto would have left it wrong,
+and the count of rows a veto fixes would have over-predicted. *A defect caused by
+two mechanisms is not fixed by repairing one* — the mirror image of this record's
+rule that a case protected by two conditions proves neither. **A future-effective
+amendment read as a current feature is its own class and is UNSIZED.**
+
+**THREE MISSES WITH THREE DIFFERENT MECHANISMS**, each proven by neutering the
+blamed token: Google (160,603) states automatic enrolment *"(pre-tax and, after
+the maximum deferral limit has been reached, after-tax)"* — money continuing past
+the deferral limit cannot be a Roth deferral — and **v206's own log entry names
+Google as naming no arrangement anywhere in the filing, which is false: the
+arrangement is two sentences below the one it quotes.** Pilgrim's Pride (49,903)
+is vetoed twice over, once because the sentence also mentions a pretax *deferral*
+and once because the removal veto's `permitt|allow` stems match the affirmative
+*"were permitted"*. Continental Aerospace is defeated by a **parenthesis**
+between `after-tax` and `contributions` — add PARENTHESIS to the recorded list of
+things a class also has (position, column, share class, form, decimal point,
+hyphen, space, intervening word).
+
+**WHAT IS REFUSED AND STAYS REFUSED.** Reading *"pretax or post tax annual
+compensation"* as voluntary after-tax is an inference, and in small plans Roth is
+the likelier referent (~1.45M readers). An *"after-tax deferral"* is a Roth
+deferral by definition. **But an inconsistency surfaced that is the owner's:** the
+shipped BASIS arm already accepts *"on a pre-tax or after-tax basis"* as a yes —
+907 plans / 1,951,891 readers of currently published yeses are that shape — while
+rejecting the *"pre-tax or post-tax compensation"* spelling of the same sentence.
+That is a spelling, not a semantic distinction, over ~2M published readers.
+
+**THE FORM-PAGE CONTROL HELD HERE AND BIT ELSEWHERE.** 101 of 116 valid filings
+carry zero occurrences of the after-tax vocabulary, so the blank Form 5500 pages
+contain none of it. A second vocabulary screened to prove the first was not
+merely measuring itself: `thrift` hits are plan NAMES on form pages and
+`voluntary contributions` is vesting language — both would have produced a clean,
+meaningless rate.
+
 ## 2026-11-20 — NORTHERN TRUST'S COLLECTIVE INDEX FEES: THE THIRD PUBLISHING FAMILY, AND THE ARM FOUND TWO DEFECTS IN ITSELF
 
 **WHAT WAS MISSING.** 2,505 published+served rows / 746 plans / $156.4B name a

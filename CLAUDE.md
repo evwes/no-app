@@ -1027,6 +1027,39 @@ the publish gate applied before any reader figure, and an accuracy-log entry.
 
 #### Paid for and not yet rendered — do these first
 
+- **WE PUBLISH THE OPPOSITE OF WHAT THE FILING SAYS, ON BOTH TAX ARMS — found
+  2026-11-20 while sizing the 2K question, and it outranks every gap because a
+  WRONG published claim beats a missing one at any size.** ~44 plans / ~204,056
+  readers store `afterTax: true` on a quote whose own words DENY it, rendered by
+  `app.js:4080` as **"✓ Available"** and by the crawlable pages as *"Yes (per the
+  filing)"*; ~86 plans / ~105,702 readers do the same on `roth`. **Verified by
+  hand against the filings:** Waste Management
+  (`20261013121857NAL0004205171001`, 47,047) files *"After-tax contributions are
+  not permitted by the Plan."* with ZERO Roth mentions and stores
+  `afterTax: true`. Feeding the shipped extractor Cortech's denial paragraph
+  ALONE returns `roth=true, afterTax=true`, so the negation reads as an
+  affirmation on both arms. The populations are the sizing agent's and **must be
+  re-derived before a fix ships**; the mechanism is reproduced in the log.
+  It lives in `scripts/lib-4i.mjs` (arms ~8220-8272, `DEFERRAL_ROTH` ~8216,
+  removal veto 8274-8277), so it needs a `PARSER_VERSION` bump and must ride the
+  single batched dispatch. **The gate work is the hard half and is NOT built:**
+  `--must-keep` pins over the 4,349 plans / 19.66M readers of existing after-tax
+  yeses, because *a guard that blocks a wrong answer must not discard the honest
+  evidence* — recorded six times. Correcting it will LOWER the scalar by ~66K
+  readers, which is accuracy working, exactly as the 2R withdrawal was.
+- **A FUTURE-EFFECTIVE AMENDMENT READ AS A CURRENT FEATURE — a SECOND defect,
+  UNSIZED, and the reason a negation veto alone is not the fix.** Cortech
+  (`20261015073223NAL0008571632003`) says *"The Plan does not allow for Roth or
+  after-tax contributions"* in its Contributions note while **Note 8 —
+  Subsequent events** lists *"Participants are allowed to make Roth
+  contributions"* under a restatement **effective January 1, 2026**, after the
+  plan year the page reports. Asked that section ALONE the extractor returns
+  `roth=true`, so this row's flag is **doubly caused** and a veto would have left
+  it wrong while the veto's own fix-count over-predicted. *A defect caused by two
+  mechanisms is not fixed by repairing one.* Size the subsequent-events class
+  before building either fix; the two must be priced together or the first will
+  claim rows the second owns.
+
 - **SHIPPED 2026-11-17 — the TRAILING return curve (1Y / 3Y / 5Y / 10Y) now
   renders**, 490,980 rows / 742M reader-slots gaining a cell, 0 lost, 0 moved,
   mirrored in `4ee89a12`. *This entry read "the RENDER does not exist" for a
@@ -1209,11 +1242,23 @@ because most carry a refuted route that must not be rebuilt.
 - **The CREF variable-annuity accounts** — 15,028 rows / **4.5M readers** /
   $81.8B, of which 4,672 publish a false `Mutual fund` type and 3,559 a
   pattern-table fee. Two halves, two decisions.
-- **The 2K AMBIGUITY** — code 2K is 401(m), meaning match AND/OR after-tax, so
-  it cannot settle whether a plan offers after-tax contributions: **55,408
-  plans / 25.0M readers** turn on how it is read. The largest single
-  cross-cutting question on the record and the reason `contributions` is the
-  biggest ledger gap.
+- **The 2K AMBIGUITY — the COVERAGE half is CLOSED BY MEASUREMENT, 2026-11-20.
+  Do not reopen it without a new source.** Code 2K is 401(m), meaning match
+  AND/OR after-tax, so it cannot settle after-tax; the literal-disjunction ship
+  landed 2026-11-05. The remaining question was whether the AUDITED NOTES can
+  resolve it to a real yes/no, and the answer is **no**: of the 2K-partial bucket
+  (57,167 plans / 29,792,622 readers) only 16,315 plans / 22,194,785 readers have
+  readable notes at all — 36,745 plans / 5,955,434 readers are SHORT FORM with no
+  attachment **by law** — and **85-87% of the cohort says nothing about after-tax,
+  by both plans and readers**. Resolvable to a YES: **~340,000 readers** (band
+  230K-900K), below the floor on three narrow arms. To a defensible NO: no
+  population at scale. ***33.3M readers keep the disjunction.***
+  **What the sizing found instead is in the queue above and outranks it.**
+  One owner question survives: the BASIS arm accepts *"on a pre-tax or after-tax
+  basis"* as a yes (907 plans / 1,951,891 readers of published yeses are that
+  shape) while rejecting *"pre-tax or post-tax compensation"* — a SPELLING, not a
+  semantic distinction, over ~2M published readers. `docs/accuracy-log.md`
+  2026-11-20.
 - **The RECORDKEEPER is wrong, not blank** — ~2,200 plans publish an auditor,
   consultant, advisor or broker as the recordkeeper, of which ~36 are
   unarguable (an accountant is never a recordkeeper). The fix needs no new
