@@ -21,9 +21,27 @@ family that does, after Vanguard and T. Rowe Price.
 **THE SHIP.** All 44 sheets sourced into `data/fund-facts.json` (`erBasis:
 class-published`, 42 as of 2026-09-30, stalest 2025-03-31), plus a
 `northernTrustVehicleParts` arm asked LAST so it cannot move an older arm's
-answer. Verified on the rendered page, not only through `renderRow`: Wand Newco
-reads `0.011%✓`, Allegis reads the range `0.0055–0.034%`, and Boeing's
-pre-existing `0.050%` estimate is correctly **not** displaced.
+answer. Measured through both renderers over one store, on what the ER cell
+DISPLAYS: **1,100 rows / 439 plans / 2,376,913 distinct readers gain a cell**
+(978 a RANGE, 122 an EXACT class figure), 3 fees move estimate -> sourced,
+**0 lost, 0 symbols changed**, and the narrowing discharged on 600 rows outside
+it. Verified on the rendered page, not only through `renderRow`: Wand Newco reads
+`0.011%✓`, Allegis reads `0.0055–0.034%`, and Boeing's `0.050%` estimate is
+correctly **not** displaced.
+
+**AND THE INSTRUMENT READ A FALSE ZERO FIRST, ON A FIELD NAME THE FILE WARNS
+ABOUT IN A COMMENT.** `renderRow` returns the band as `band`; my harness asked
+for `erBand`, so it reported **the band reaching 0 readers** and the differential
+counted 122 gains instead of 1,100. `scripts/apppath.mjs` says it in the return
+object itself — *"An instrument that omits this field cannot see a banded cell at
+all and would read a band as a blank"* — and the previous ship's harness had it
+right; I regressed it writing a new one. **Then the corrected field over-stated
+the other way**: `r.band` means a band was COMPUTED, while `app.js` prints
+`erShown != null ? number : band ? range : "—"`, so a row can carry a band and
+display an estimate. Counting `r.band` alone read 1,018 rows where 978 display a
+range — *a measurement of what a page PUBLISHES must apply every condition the
+page applies, in order*, and the display condition is a ternary ORDER, not a
+flag. Both errors were silent and both ran green.
 
 **SOURCING AND RESOLVING ARE TWO JOBS AND THE KEY SHAPE IS THE JOINT.** The
 sourcing brief first specified `northern-trust::<fund>-<lend>-tier-<N>`, which

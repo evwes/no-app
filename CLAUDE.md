@@ -329,8 +329,14 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   — HTTP/2 `INTERNAL_ERROR`, then a timeout on HTTP/1.1 — but it is not needed,
   since `ntam.` serves the sheets.
   **SHIPPED 2026-11-20 — all 44 sheets sourced AND the resolver arm built, which
-  is the two jobs this entry warned were two.** 82 rows get an EXACT class fee
-  and 1,006 rows a family RANGE; the key shape is
+  is the two jobs this entry warned were two.** Measured on what the ER cell
+  DISPLAYS, through both renderers over one store: **1,100 rows / 439 plans /
+  2,376,913 distinct readers gain a cell** (978 a RANGE, 122 an EXACT class
+  figure), 3 fees move estimate -> sourced, **0 lost and 0 symbols changed**.
+  40 rows / 764,227 readers compute a band that an existing estimate PRE-EMPTS,
+  because `app.js` prints a range only where the cell would otherwise be a dash;
+  whether a sourced range should outrank a fabricated point estimate is the
+  fee-pre-emption question and stays OWNER-GATED. The key shape is
   `northern-trust::<fund>-trust-class-<nl|l><tier>`, because
   `vehicleFamilyOfKey` parses a family only out of `-trust-class-<x>` and the
   shape first briefed would have shipped exact figures with NO BAND AT ALL.
