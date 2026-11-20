@@ -1,0 +1,358 @@
+{
+ "_schema": "ENUMERATED target set for the after-tax negation fix. The screen in scripts/tax-flag-contradiction.mjs proposed these candidates; EVERY ONE WAS READ BY HAND and the two it got wrong are in `excluded` with the sentence that rejected them. A withdrawal needs an enumerated, filing-verified set and not a predicate, so the fix targets THIS LIST and the gate asserts it. Readers are DISTINCT participants resolved through member plans. Re-derive with: node scripts/tax-flag-contradiction.mjs --all --field afterTax",
+ "derived": "2026-11-20",
+ "field": "afterTax",
+ "storedTrueAndServed": null,
+ "candidates": 38,
+ "targets": 36,
+ "targetReaders": 154058,
+ "excluded": [
+  {
+   "ack": "20260731111218NAL0021364547001",
+   "ein": "131102020",
+   "pn": "020",
+   "sponsor": "The New York Times Company",
+   "planYear": 2025,
+   "readers": 2813,
+   "quote": "Basic and additional contributions may be made on a Before-Tax, After-Tax, or Roth basis, provided, however, IAMAW Employees may not make contributions on an After-Tax basis. The",
+   "excludedBecause": "AFFIRMS after-tax and carves out one union: \"...may be made on a Before-Tax, After-Tax, or Roth basis, provided, however, IAMAW Employees may not make contribution...\" — the flag is CORRECT. The subset refusal missed it because \"IAMAW Employees\" carries no word in the subset vocabulary."
+  },
+  {
+   "ack": "20261006144329NAL0024224033001",
+   "ein": "770080465",
+   "pn": "002",
+   "sponsor": "Here North America, Llc",
+   "planYear": 2025,
+   "readers": 1571,
+   "quote": "The Plan does not allow for voluntary after-tax contributions for employees working in the United States.",
+   "excludedBecause": "SCOPED to a workforce, not the plan: \"...does not allow for voluntary after-tax contributions for employees working in the United States.\" Whether that is effectively plan-wide is not settled by the quote, and a withdrawal must be certain."
+  }
+ ],
+ "unsupportedNotContradicted": [],
+ "plans": [
+  {
+   "ack": "20261013121857NAL0004205171001",
+   "ein": "731309529",
+   "pn": "001",
+   "sponsor": "Waste Management, Inc.",
+   "planYear": 2025,
+   "readers": 47047,
+   "quote": "After-tax contributions are not permitted by the 6 Plan."
+  },
+  {
+   "ack": "20260724162125NAL0023714354001",
+   "ein": "042695240",
+   "pn": "001",
+   "sponsor": "Boston Scientific Corporation",
+   "planYear": 2025,
+   "readers": 34105,
+   "quote": "Participants are not permitted to make contributions on a traditional after-tax basis. Par"
+  },
+  {
+   "ack": "20261015073223NAL0008571632003",
+   "ein": "582449456",
+   "pn": "001",
+   "sponsor": "Cortech, Llc",
+   "planYear": 2025,
+   "readers": 16067,
+   "quote": "The Plan does not allow for Roth or after-tax contributions."
+  },
+  {
+   "ack": "20260811085510NAL0011218627001",
+   "ein": "851850812",
+   "pn": "001",
+   "sponsor": "Gainwell Acquisition Corp.",
+   "planYear": 2025,
+   "readers": 13019,
+   "quote": "After tax contributions are not permitted."
+  },
+  {
+   "ack": "20261002151127NAL0024713536001",
+   "ein": "133404508",
+   "pn": "066",
+   "sponsor": "Borgwarner Inc.",
+   "planYear": 2025,
+   "readers": 7277,
+   "quote": "No after-tax contributions are allowed."
+  },
+  {
+   "ack": "20261002095312NAL0028417906001",
+   "ein": "261561397",
+   "pn": "002",
+   "sponsor": "Quanex Building Products Corporation",
+   "planYear": 2025,
+   "readers": 6567,
+   "quote": "After-Tax Contributions are not permitted to be made to the Plan."
+  },
+  {
+   "ack": "20260810133340NAL0006995763001",
+   "ein": "520665775",
+   "pn": "002",
+   "sponsor": "Williams Scotsman, Inc.",
+   "planYear": 2025,
+   "readers": 5628,
+   "quote": "Participants are not permitted to make after-tax contributions."
+  },
+  {
+   "ack": "20261015123820NAL0013798546001",
+   "ein": "043466383",
+   "pn": "001",
+   "sponsor": "Imagine Schools, Inc.",
+   "planYear": 2025,
+   "readers": 4926,
+   "quote": "Roth elective deferrals and voluntary after-tax contributions were not permitted under the Plan as of December 31, 2025."
+  },
+  {
+   "ack": "20261015150740NAL0007917249001",
+   "ein": "751159462",
+   "pn": "002",
+   "sponsor": "Classic Chevrolet Buick Gmc, Inc.",
+   "planYear": 2025,
+   "readers": 3717,
+   "quote": "After-tax contributions are not allowed."
+  },
+  {
+   "ack": "20261015160740NAL0009249473001",
+   "ein": "271474708",
+   "pn": "001",
+   "sponsor": "Premium Transportation Group, Inc.",
+   "planYear": 2025,
+   "readers": 2971,
+   "quote": "No after-tax contributions, other than Roth contributions to the Plan are permitted."
+  },
+  {
+   "ack": "20261013104636NAL0004409330001",
+   "ein": "340778636",
+   "pn": "001",
+   "sponsor": "Myers Industries, Inc.",
+   "planYear": 2025,
+   "readers": 2729,
+   "quote": "Voluntary after-tax contributions to the Plan are not permitted."
+  },
+  {
+   "ack": "20261012110742NAL0000908211001",
+   "ein": "900728033",
+   "pn": "001",
+   "sponsor": "Form Technologies, Inc.",
+   "planYear": 2025,
+   "readers": 1508,
+   "quote": "After-tax contributions are not permitted."
+  },
+  {
+   "ack": "20261015195707NAL0010338896001",
+   "ein": "462001710",
+   "pn": "001",
+   "sponsor": "Coast Care",
+   "planYear": 2025,
+   "readers": 1141,
+   "quote": "Voluntary after-tax contributions are not permitted."
+  },
+  {
+   "ack": "20261012110503NAL0000906547001",
+   "ein": "132838238",
+   "pn": "001",
+   "sponsor": "Medco Enterprises, Inc.",
+   "planYear": 2025,
+   "readers": 1067,
+   "quote": "After-tax contributions are not allowed."
+  },
+  {
+   "ack": "20250904145007NAL0010097523001",
+   "ein": "522298425",
+   "pn": "001",
+   "sponsor": "Trouw Nutrition Usa, Llc",
+   "planYear": 2024,
+   "readers": 790,
+   "quote": "If participants previously made after-tax contributions, that money is still held in a frozen account which does not accept contributions, but will remain invested in the Plan and any earnings grow tax-deferred."
+  },
+  {
+   "ack": "20260709162930NAL0000529491001",
+   "ein": "751076930",
+   "pn": "333",
+   "sponsor": "Bepco, L.P.",
+   "planYear": 2025,
+   "readers": 640,
+   "quote": "Other after-tax contributions are not permitted."
+  },
+  {
+   "ack": "20261015183649NAL0015145138001",
+   "ein": "852433831",
+   "pn": "001",
+   "sponsor": "Xfl Properties Llc",
+   "planYear": 2025,
+   "readers": 402,
+   "quote": "The Plan does not provide for automatic enrollment or voluntary after-tax employee contributions."
+  },
+  {
+   "ack": "20260710141717NAL0001056771001",
+   "ein": "882242746",
+   "pn": "001",
+   "sponsor": "Uew Intermediate Holding, Llc",
+   "planYear": 2025,
+   "readers": 399,
+   "quote": "The plan allows for discretionary nonelective and matching contributions for compliance purposes, however, no after-tax employee contributions are permitted."
+  },
+  {
+   "ack": "20261006151327NAL0030940659001",
+   "ein": "430610813",
+   "pn": "001",
+   "sponsor": "Culver Stockton College",
+   "planYear": 2025,
+   "readers": 360,
+   "quote": "The Plan does not permit Roth or after-tax contributions."
+  },
+  {
+   "ack": "20260930113747NAL0023372131002",
+   "ein": "364623085",
+   "pn": "002",
+   "sponsor": "Jerry'S Gm, Llc",
+   "planYear": 2025,
+   "readers": 340,
+   "quote": "After-tax contributions are not allowed."
+  },
+  {
+   "ack": "20261015121901NAL0008619137001",
+   "ein": "361893300",
+   "pn": "002",
+   "sponsor": "Union League Club",
+   "planYear": 2025,
+   "readers": 315,
+   "quote": "No after-tax contributions may be made to the Plan."
+  },
+  {
+   "ack": "20261014113415NAL0006835040001",
+   "ein": "470979185",
+   "pn": "001",
+   "sponsor": "Gsi Service Group Inc.",
+   "planYear": 2025,
+   "readers": 308,
+   "quote": "The Plan does not allow participants to contribute on an after-tax basis. Par"
+  },
+  {
+   "ack": "20260922091338NAL0012039091001",
+   "ein": "920258941",
+   "pn": "001",
+   "sponsor": "Cvg Advisors Llc",
+   "planYear": 2025,
+   "readers": 262,
+   "quote": "The Plan does not permit after-tax contributions."
+  },
+  {
+   "ack": "20260710115727NAL0000949379001",
+   "ein": "752024816",
+   "pn": "001",
+   "sponsor": "Lmbi, L.P.",
+   "planYear": 2025,
+   "readers": 260,
+   "quote": "Other after-tax contributions are not permitted."
+  },
+  {
+   "ack": "20261005121229NAL0024850321001",
+   "ein": "130827620",
+   "pn": "005",
+   "sponsor": "Harvard Club Of New York City",
+   "planYear": 2025,
+   "readers": 248,
+   "quote": "No after-tax contributions may be made to the Plan."
+  },
+  {
+   "ack": "20250925104219NAL0003476627001",
+   "ein": "263390928",
+   "pn": "001",
+   "sponsor": "Camelot Venture Group Llc",
+   "planYear": 2024,
+   "readers": 238,
+   "quote": "The Plan does not permit after-tax contributions."
+  },
+  {
+   "ack": "20261015152755NAL0009775952005",
+   "ein": "202965578",
+   "pn": "001",
+   "sponsor": "Agreeya Solutions, Inc.",
+   "planYear": 2025,
+   "readers": 226,
+   "quote": "Plan does not permit Roth deferrals and after-tax contributions made by a Participant at his discretion."
+  },
+  {
+   "ack": "20261014145616NAL0003082083001",
+   "ein": "230868340",
+   "pn": "002",
+   "sponsor": "The Merion Cricket Club",
+   "planYear": 2025,
+   "readers": 220,
+   "quote": "No after-tax contributions may be made to this Plan."
+  },
+  {
+   "ack": "20260928153112NAL0019260032001",
+   "ein": "952225040",
+   "pn": "002",
+   "sponsor": "Lindsey Manufacturing Co. Dba Lindsey Systems",
+   "planYear": 2025,
+   "readers": 208,
+   "quote": "After-tax contributions are not accepted by the Plan."
+  },
+  {
+   "ack": "20261014160506NAL0007501616001",
+   "ein": "942656190",
+   "pn": "001",
+   "sponsor": "East Bay Tire Company",
+   "planYear": 2025,
+   "readers": 202,
+   "quote": "The Plan does not permit separate voluntary after-tax employee contributions."
+  },
+  {
+   "ack": "20260810134045NAL0008017729001",
+   "ein": "201463014",
+   "pn": "001",
+   "sponsor": "Gspann Technologies, Inc.",
+   "planYear": 2024,
+   "readers": 183,
+   "quote": "Plan does not permit Roth deferrals and after-tax contributions made by a Participant at his discretion."
+  },
+  {
+   "ack": "20261015101236NAL0008385234001",
+   "ein": "131423100",
+   "pn": "002",
+   "sponsor": "The Union League Club",
+   "planYear": 2025,
+   "readers": 160,
+   "quote": "No after-tax contributions may be made to this Plan."
+  },
+  {
+   "ack": "20261009123421NAL0016746675001",
+   "ein": "232043478",
+   "pn": "001",
+   "sponsor": "Berks Counseling Center, Inc.",
+   "planYear": 2025,
+   "readers": 150,
+   "quote": "No after-tax contributions may be contributed by participants to the Plan."
+  },
+  {
+   "ack": "20261007145726NAL0032443283001",
+   "ein": "208427442",
+   "pn": "001",
+   "sponsor": "Charles It, Llc",
+   "planYear": 2025,
+   "readers": 145,
+   "quote": "The Plan does not permit voluntary after-tax contributions."
+  },
+  {
+   "ack": "20261002142313NAL0023472496001",
+   "ein": "933402687",
+   "pn": "001",
+   "sponsor": "Compass Rail Services Llc",
+   "planYear": 2025,
+   "readers": 134,
+   "quote": "Voluntary after-tax contributions are not permitted."
+  },
+  {
+   "ack": "20250711120448NAL0009551504001",
+   "ein": "752328761",
+   "pn": "001",
+   "sponsor": "Group Services, Llc",
+   "planYear": 2024,
+   "readers": 99,
+   "quote": "Other after-tax contributions are not permitted."
+  }
+ ]
+}

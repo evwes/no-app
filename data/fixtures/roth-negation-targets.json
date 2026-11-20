@@ -1,0 +1,405 @@
+{
+ "_schema": "ENUMERATED target set for the after-tax negation fix. The screen in scripts/tax-flag-contradiction.mjs proposed these candidates; EVERY ONE WAS READ BY HAND and the two it got wrong are in `excluded` with the sentence that rejected them. A withdrawal needs an enumerated, filing-verified set and not a predicate, so the fix targets THIS LIST and the gate asserts it. Readers are DISTINCT participants resolved through member plans. Re-derive with: node scripts/tax-flag-contradiction.mjs --all --field afterTax",
+ "derived": "2026-11-20",
+ "field": "roth",
+ "storedTrueAndServed": null,
+ "candidates": 43,
+ "targets": 40,
+ "targetReaders": 41579,
+ "excluded": [
+  {
+   "ack": "20260731111218NAL0021364547001",
+   "ein": "131102020",
+   "pn": "020",
+   "sponsor": "The New York Times Company",
+   "planYear": 2025,
+   "readers": 2813,
+   "quote": "Basic and additional contributions may be made on a Before-Tax, After-Tax, or Roth basis, provided, however, IAMAW Employees may not make contributions on an After-Tax basis.",
+   "excludedBecause": "AFFIRMS a Roth basis and carves out one union — the flag is CORRECT, same sentence as the afterTax arm."
+  },
+  {
+   "ack": "20241015073939NAL0014203603001",
+   "ein": "460106838",
+   "pn": "002",
+   "sponsor": "Assoc. General Contractors Of Sd, Inc. Building",
+   "planYear": 2023,
+   "readers": 1486,
+   "quote": "Employee and Discretionary Match Contribution During our audit, we noted three instances where deferral and discretionary match contributions were calculated incorrectly:  It was noted that one participant elected for no Roth contribution from bonus check but still employee contributions were wi…",
+   "excludedBecause": "THE QUOTE IS AN AUDIT FINDING, not a plan term: it describes instances where deferral and discretionary match contributions were miscalculated. It denies nothing about Roth, so it is no evidence either way and cannot license a withdrawal."
+  }
+ ],
+ "unsupportedNotContradicted": [
+  {
+   "ack": "20261007101649NAL0032069539001",
+   "ein": "510275712",
+   "pn": "001",
+   "sponsor": "Bmo Financial Corp.",
+   "planYear": 2025,
+   "readers": 29119,
+   "quote": "Non-Roth after-tax contributions by participants are not permitted.",
+   "unsupportedBecause": "NOT CONTRADICTED — UNSUPPORTED, and that is a different claim. BMO files \"Non-Roth after-tax contributions by participants are not permitted.\" The roth arm matched \"Roth\" INSIDE \"Non-Roth\" and set roth:true; the sentence denies non-Roth AFTER-TAX and says nothing whatever about designated Roth. So the flag rests on no evidence rather than on contradicted evidence. 29,119 readers, the largest member of this arm, and it needs its own decision: withdrawing an unsupported claim is right, but it must not be reported as the filing saying the opposite."
+  }
+ ],
+ "plans": [
+  {
+   "ack": "20261015073223NAL0008571632003",
+   "ein": "582449456",
+   "pn": "001",
+   "sponsor": "Cortech, Llc",
+   "planYear": 2025,
+   "readers": 16067,
+   "quote": "The Plan does not allow for Roth or after-tax contributions."
+  },
+  {
+   "ack": "20261015123820NAL0013798546001",
+   "ein": "043466383",
+   "pn": "001",
+   "sponsor": "Imagine Schools, Inc.",
+   "planYear": 2025,
+   "readers": 4926,
+   "quote": "Roth elective deferrals and voluntary after-tax contributions were not permitted under the Plan as of December 31, 2025."
+  },
+  {
+   "ack": "20241014153003NAL0013539667001",
+   "ein": "941578272",
+   "pn": "002",
+   "sponsor": "Matheson Trucking, Inc.",
+   "planYear": 2023,
+   "readers": 4335,
+   "quote": "Roth contributions are not permitted."
+  },
+  {
+   "ack": "20260923094415NAL0013407539001",
+   "ein": "751423734",
+   "pn": "001",
+   "sponsor": "Elliott Equity Holdings, Inc.",
+   "planYear": 2025,
+   "readers": 2947,
+   "quote": "Roth elective deferral contributions are not permitted under the Plan."
+  },
+  {
+   "ack": "20261013133933NAL0004544913005",
+   "ein": "951945832",
+   "pn": "003",
+   "sponsor": "Valley Presbyterian Hospital",
+   "planYear": 2025,
+   "readers": 2101,
+   "quote": "Employer contributions and Roth contributions are not permitted."
+  },
+  {
+   "ack": "20261014154615NAL0006879137001",
+   "ein": "465705434",
+   "pn": "001",
+   "sponsor": "Homecentris Healthcare, Llc",
+   "planYear": 2025,
+   "readers": 1367,
+   "quote": "Participants are not permitted to make Roth elective contributions."
+  },
+  {
+   "ack": "20261013052504NAL0003699729001",
+   "ein": "752768694",
+   "pn": "001",
+   "sponsor": "Procom Services America, Inc.",
+   "planYear": 2025,
+   "readers": 1076,
+   "quote": "Roth elective deferrals are not permitted under the Plan."
+  },
+  {
+   "ack": "20261014143431NAL0007069760001",
+   "ein": "941375791",
+   "pn": "001",
+   "sponsor": "Marin Country Day School",
+   "planYear": 2025,
+   "readers": 461,
+   "quote": "Roth deferrals are not permitted under the Plan."
+  },
+  {
+   "ack": "20261014125217NAL0006462897001",
+   "ein": "133646536",
+   "pn": "001",
+   "sponsor": "Intercos America, Inc.",
+   "planYear": 2025,
+   "readers": 452,
+   "quote": "Roth deferral contributions are not permitted."
+  },
+  {
+   "ack": "20261015163331NAL0008679331001",
+   "ein": "750460390",
+   "pn": "001",
+   "sponsor": "Sandy Alexander, Inc.",
+   "planYear": 2025,
+   "readers": 451,
+   "quote": "Roth 401(k) contributions are not permitted."
+  },
+  {
+   "ack": "20261001104120NAL0024614371001",
+   "ein": "731185740",
+   "pn": "001",
+   "sponsor": "Midwest Hose & Specialty Inc.",
+   "planYear": 2025,
+   "readers": 413,
+   "quote": "The Plan does not permit Roth elective deferrals or after-tax voluntary employee contributions."
+  },
+  {
+   "ack": "20260415081105NAL0011664483001",
+   "ein": "132722983",
+   "pn": "001",
+   "sponsor": "The Churchill School And Center",
+   "planYear": 2024,
+   "readers": 365,
+   "quote": "Roth contributions are not allowed."
+  },
+  {
+   "ack": "20261006151327NAL0030940659001",
+   "ein": "430610813",
+   "pn": "001",
+   "sponsor": "Culver Stockton College",
+   "planYear": 2025,
+   "readers": 360,
+   "quote": "The Plan does not permit Roth or after-tax contributions."
+  },
+  {
+   "ack": "20260403145453NAL0005380450001",
+   "ein": "391098106",
+   "pn": "001",
+   "sponsor": "Hansens Iga Corporation, Inc.",
+   "planYear": 2024,
+   "readers": 347,
+   "quote": "The plan does not permit Roth elective deferral contributions."
+  },
+  {
+   "ack": "20261014121756NAL0005479921001",
+   "ein": "381671500",
+   "pn": "004",
+   "sponsor": "Southeastern Michigan Health Association",
+   "planYear": 2025,
+   "readers": 346,
+   "quote": "Participant salary reduction contributions are made on a pre-tax basis; designated Roth contributions are not permitted."
+  },
+  {
+   "ack": "20261015113309NAL0008939792001",
+   "ein": "010941577",
+   "pn": "001",
+   "sponsor": "Hinkle Holding Co., Llc",
+   "planYear": 2025,
+   "readers": 282,
+   "quote": "Roth elective deferrals are not permitted under the Plan."
+  },
+  {
+   "ack": "20261014140024NAL0005703329001",
+   "ein": "631028550",
+   "pn": "001",
+   "sponsor": "Mobile Lumber & Building Materials, Inc.",
+   "planYear": 2025,
+   "readers": 281,
+   "quote": "Roth contributions are not permitted."
+  },
+  {
+   "ack": "20260929195131NAL0024715714001",
+   "ein": "800361238",
+   "pn": "001",
+   "sponsor": "Dlmc, Inc. Dba Kamaaina Healthcare Services",
+   "planYear": 2025,
+   "readers": 277,
+   "quote": "Roth elective deferrals are not permitted under the Plan."
+  },
+  {
+   "ack": "20261013145744NAL0004985760001",
+   "ein": "952644713",
+   "pn": "001",
+   "sponsor": "Golden State Engineering, Inc.",
+   "planYear": 2025,
+   "readers": 276,
+   "quote": "The Plan does not permit Roth elective deferrals."
+  },
+  {
+   "ack": "20260727085947NAL0027668290001",
+   "ein": "112197886",
+   "pn": "001",
+   "sponsor": "Felix Storch Inc.",
+   "planYear": 2025,
+   "readers": 274,
+   "quote": "The Plan does not allow Roth contributions."
+  },
+  {
+   "ack": "20261002152109NAL0012839539001",
+   "ein": "390840476",
+   "pn": "004",
+   "sponsor": "Industries For The Blind And Visually Impaired, Inc.",
+   "planYear": 2025,
+   "readers": 266,
+   "quote": "The Plan does not allow Roth elective deferral contributions."
+  },
+  {
+   "ack": "20251014162306NAL0004511952001",
+   "ein": "208451513",
+   "pn": "002",
+   "sponsor": "Novelis Alr Aluminum, Llc",
+   "planYear": 2024,
+   "readers": 260,
+   "quote": "Roth contributions are not permitted under the Plan."
+  },
+  {
+   "ack": "20261014091403NAL0005967713004",
+   "ein": "522094777",
+   "pn": "001",
+   "sponsor": "Elsie Whitlow Stokes Community Freedom Public Charter School",
+   "planYear": 2025,
+   "readers": 260,
+   "quote": "Employee deferrals and Roth contributions are not permitted."
+  },
+  {
+   "ack": "20260413123426NAL0010374931001",
+   "ein": "756059993",
+   "pn": "001",
+   "sponsor": "The Lamplighter School",
+   "planYear": 2024,
+   "readers": 258,
+   "quote": "The Plan does not permit after-tax (Roth) contributions."
+  },
+  {
+   "ack": "20261015093251NAL0003732691001",
+   "ein": "562200417",
+   "pn": "001",
+   "sponsor": "Barrday Corp.",
+   "planYear": 2025,
+   "readers": 245,
+   "quote": "Roth deferrals are not permitted under the plan and contributions are subject to certain IRS limitations."
+  },
+  {
+   "ack": "20251010135430NAL0012719696001",
+   "ein": "262025812",
+   "pn": "001",
+   "sponsor": "Mega Contracting Group Llc",
+   "planYear": 2024,
+   "readers": 240,
+   "quote": "Roth contributions are not permitted under the Plan’s provisions."
+  },
+  {
+   "ack": "20250918051234NAL0001614050001",
+   "ein": "760535909",
+   "pn": "001",
+   "sponsor": "Drh & Associates, Inc.",
+   "planYear": 2024,
+   "readers": 236,
+   "quote": "The Plan does not allow for Roth elective deferrals."
+  },
+  {
+   "ack": "20260921083134NAL0005305555001",
+   "ein": "382201262",
+   "pn": "001",
+   "sponsor": "Miedema Produce, Inc.",
+   "planYear": 2025,
+   "readers": 233,
+   "quote": "The Plan does not permit Roth elective deferral contributions."
+  },
+  {
+   "ack": "20261015152755NAL0009775952005",
+   "ein": "202965578",
+   "pn": "001",
+   "sponsor": "Agreeya Solutions, Inc.",
+   "planYear": 2025,
+   "readers": 226,
+   "quote": "Plan does not permit Roth deferrals and after-tax contributions made by a Participant at his discretion."
+  },
+  {
+   "ack": "20261009141024NAL0016817283001",
+   "ein": "611384193",
+   "pn": "001",
+   "sponsor": "Pegatron Technology Service, Inc",
+   "planYear": 2025,
+   "readers": 220,
+   "quote": "After-tax Roth contributions are not permitted."
+  },
+  {
+   "ack": "20261002072342NAL0012553763001",
+   "ein": "351308171",
+   "pn": "001",
+   "sponsor": "Lakeshore Foods Corporation",
+   "planYear": 2025,
+   "readers": 198,
+   "quote": "Roth contributions are not permitted."
+  },
+  {
+   "ack": "20261008202349NAL0016364003001",
+   "ein": "996009889",
+   "pn": "002",
+   "sponsor": "Maui Economic Opportunity Inc",
+   "planYear": 2025,
+   "readers": 194,
+   "quote": "Roth deferrals are not permitted."
+  },
+  {
+   "ack": "20261006135216NAL0030808531001",
+   "ein": "680361600",
+   "pn": "001",
+   "sponsor": "Strategies To Empower People, Inc. (S.T.E.P.)",
+   "planYear": 2025,
+   "readers": 190,
+   "quote": "Roth elective deferrals are not permitted under the Plan."
+  },
+  {
+   "ack": "20260810134045NAL0008017729001",
+   "ein": "201463014",
+   "pn": "001",
+   "sponsor": "Gspann Technologies, Inc.",
+   "planYear": 2024,
+   "readers": 183,
+   "quote": "Plan does not permit Roth deferrals and after-tax contributions made by a Participant at his discretion."
+  },
+  {
+   "ack": "20261012181221NAL0003049139002",
+   "ein": "922543956",
+   "pn": "001",
+   "sponsor": "Priority Green Landscaping, Llc",
+   "planYear": 2025,
+   "readers": 179,
+   "quote": "The Plan does not permit participants to designate contributions as Roth contributions."
+  },
+  {
+   "ack": "20261015145337NAL0007874801001",
+   "ein": "910575954",
+   "pn": "001",
+   "sponsor": "Urban League Of Metropolitan Seattle",
+   "planYear": 2025,
+   "readers": 178,
+   "quote": "Roth contributions are not permitted."
+  },
+  {
+   "ack": "20260902084729NAL0011281346001",
+   "ein": "383023096",
+   "pn": "001",
+   "sponsor": "Lake State Railway Company",
+   "planYear": 2025,
+   "readers": 169,
+   "quote": "The Plan allows pre-tax deferrals but does not allow Roth deferrals. Roll"
+  },
+  {
+   "ack": "20261015073053NAL0007987313001",
+   "ein": "223721207",
+   "pn": "002",
+   "sponsor": "Englewood Orthopedic Associates",
+   "planYear": 2025,
+   "readers": 157,
+   "quote": "Roth deferrals are not permitted under the plan."
+  },
+  {
+   "ack": "20261006105946NAL0023906673001",
+   "ein": "911305863",
+   "pn": "001",
+   "sponsor": "Quality Sewing & Vacuum Inc",
+   "planYear": 2025,
+   "readers": 145,
+   "quote": "Roth contributions are not permitted."
+  },
+  {
+   "ack": "20261002050726NAL0024012096001",
+   "ein": "953442381",
+   "pn": "001",
+   "sponsor": "Cmc Rescue, Inc.",
+   "planYear": 2025,
+   "readers": 138,
+   "quote": "The Plan does not allow Roth deferral contributions."
+  }
+ ]
+}
