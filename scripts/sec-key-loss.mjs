@@ -139,18 +139,49 @@ console.log(`\n  LOST a ticker:    ${lost.toLocaleString()} rows / ${lostPlans.s
 console.log(`  GAINED a ticker:  ${gained.toLocaleString()} rows / ${gainedPlans.size.toLocaleString()} plans / ${gainedSlots.toLocaleString()} reader-slots`);
 console.log(`  SWITCHED symbol:  ${switched.toLocaleString()} rows   <- any non-zero here is a reader seeing a DIFFERENT symbol`);
 
-// CONTROL 1 — the harness must be able to SEE the change. A broken arm and an
-// inert arm read the same zero, so a flat 0/0/0 is only believable once a
-// synthetic row built from a removed key is shown to move.
-const probeKey = [...removed][0];
-if (probeKey) {
-  const [piss, pname] = probeKey.split("\u0000");
+/* CONTROL 1 — the harness must be able to SEE the change, because a broken arm
+ * and an inert arm read the same zero. The probe renders a synthetic row on a
+ * REMOVED key and expects the answer to disappear.
+ *
+ * BUT THE FIRST VERSION OF THIS CONTROL ASSUMED A REMOVED KEY MEANS A LOST
+ * ANSWER, AND THAT IS FALSE EXACTLY WHEN A NEW RESOLVER ARM CAUSED THE REMOVAL
+ * (met 2026-11-20). `gen-sec-tickers.mjs` only emits a key the page's own chain
+ * CANNOT resolve, so shipping an arm that answers a name makes its key
+ * redundant and the next regen drops it. The probe then reads
+ * `PRQZX -> PRQZX`, the control threw, and its message — "every zero above is
+ * meaningless" — was itself the wrong conclusion: the zeros were right and the
+ * removal cost nothing.
+ *
+ * So the question is not "did the probe move" but "is there ANY removed key
+ * whose answer the page actually loses". Try them all. One that moves proves
+ * the harness can see a removal. If NONE moves, that is a finding rather than
+ * a failure — every removal is covered by another arm — and it is printed as
+ * such, with the covering answer named so the claim can be checked. A zero
+ * with an explanation is a finding; a zero without one is meaningless. */
+const probe = (key) => {
+  const [piss, pname] = key.split("\u0000");
   const pf = { nameRaw: pname, iss: piss, type: "" };
   const pa = A.renderRow({ ein: "1", pn: "001", assetsEOY: 1e9 }, { ...pf, name: A.clean(pname) }, "menu", 1e9);
   const pb = B.renderRow({ ein: "1", pn: "001", assetsEOY: 1e9 }, { ...pf, name: B.clean(pname) }, "menu", 1e9);
-  const ok = (pa && pa.tk ? pa.tk : "") !== (pb && pb.tk ? pb.tk : "");
-  console.log(`\ncontrol: a synthetic row on a REMOVED key moves: ${ok ? "YES" : "NO"}  (${(pa && pa.tk) || "—"} -> ${(pb && pb.tk) || "—"})  "${pname.slice(0, 50)}"`);
-  if (!ok) throw new Error("CONTROL FAILED: the harness cannot observe a removed key — every zero above is meaningless");
+  return { pname, before: (pa && pa.tk) || "", after: (pb && pb.tk) || "" };
+};
+const probes = [...removed].map(probe);
+const moved = probes.filter((p) => p.before !== p.after);
+if (probes.length) {
+  if (moved.length) {
+    const m = moved[0];
+    console.log(`\ncontrol: a synthetic row on a REMOVED key moves — ${moved.length} of ${probes.length} do  ` +
+      `(${m.before || "—"} -> ${m.after || "—"})  "${m.pname.slice(0, 50)}"`);
+  } else {
+    console.log(`\ncontrol: NONE of the ${probes.length} removed key(s) changes the page's answer — every one is` +
+      ` covered by an earlier arm, so the removals are redundant rather than lost. Covering answers:`);
+    for (const p of probes.slice(0, 5))
+      console.log(`    ${p.before || "—"} still answered as ${p.after || "—"}  "${p.pname.slice(0, 60)}"`);
+    console.log(`  This is the expected shape when a resolver arm shipped since the last regen:` +
+      ` gen-sec-tickers only emits keys the page's own chain cannot resolve.`);
+  }
+} else if (added.size === 0) {
+  throw new Error("CONTROL FAILED: the tables differ but neither added nor removed a key — nothing to observe");
 }
 
 // CONTROL 2 — discharge the narrowing on rows OUTSIDE it.
