@@ -3,9 +3,9 @@
  "derived": "2026-11-20",
  "field": "roth",
  "storedTrueAndServed": null,
- "candidates": 43,
- "targets": 40,
- "targetReaders": 41579,
+ "candidates": 47,
+ "targets": 44,
+ "targetReaders": 42317,
  "excluded": [
   {
    "ack": "20260731111218NAL0021364547001",
@@ -294,6 +294,15 @@
    "quote": "The Plan does not permit Roth elective deferral contributions."
   },
   {
+   "ack": "20260929175020NAL0019736368001",
+   "ein": "951546240",
+   "pn": "002",
+   "sponsor": "Singapore Airlines Limited",
+   "planYear": 2025,
+   "readers": 232,
+   "quote": "Participants age 60 through 63 may make additional catch-up contributions of up to $11,250 annually in 2025 Roth contributions are not permitted."
+  },
+  {
    "ack": "20261015152755NAL0009775952005",
    "ein": "202965578",
    "pn": "001",
@@ -310,6 +319,15 @@
    "planYear": 2025,
    "readers": 220,
    "quote": "After-tax Roth contributions are not permitted."
+  },
+  {
+   "ack": "20261005140431NAL0047929458002",
+   "ein": "833411878",
+   "pn": "001",
+   "sponsor": "Aeci Charter Schools Network",
+   "planYear": 2025,
+   "readers": 200,
+   "quote": "Roth elective deferrals were not permitted under the Plan during the year ended December 31, 2025."
   },
   {
    "ack": "20261002072342NAL0012553763001",
@@ -366,6 +384,15 @@
    "quote": "Roth contributions are not permitted."
   },
   {
+   "ack": "20261015104559NAL0013379682001",
+   "ein": "520692249",
+   "pn": "002",
+   "sponsor": "Electrico, Inc.",
+   "planYear": 2025,
+   "readers": 177,
+   "quote": "The Plan does not currently permit Roth contributions."
+  },
+  {
    "ack": "20260902084729NAL0011281346001",
    "ein": "383023096",
    "pn": "001",
@@ -400,6 +427,15 @@
    "planYear": 2025,
    "readers": 138,
    "quote": "The Plan does not allow Roth deferral contributions."
+  },
+  {
+   "ack": "20261013161150NAL0007967554001",
+   "ein": "841177135",
+   "pn": "001",
+   "sponsor": "E-Z Excavating, Inc.",
+   "planYear": 2025,
+   "readers": 129,
+   "quote": "During 2025, the Plan did not permit Roth elective deferrals."
   }
  ]
 }

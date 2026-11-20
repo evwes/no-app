@@ -46,8 +46,20 @@ const SUBJECT = {
  * that shares its shape. */
 const NEGATION = new RegExp([
   String.raw`\b(?:are|is|was|were)\s+not\s+(?:permitted|allowed|available|offered|accepted|made)\b`,
-  String.raw`\bdoes\s+not\s+(?:allow|permit|provide|offer|accept)\b`,
-  String.raw`\bdo\s+not\s+(?:allow|permit|provide|offer|accept)\b`,
+  /* AN INTERVENING ADVERB AND THE PAST TENSE ARE BOTH THE SAME CLASS, and both
+   * were found by diffing this screen against an independent one: *"does not
+   * CURRENTLY permit participants to make after-tax contributions"* (Smithbucklin,
+   * 1,043 readers) and *"During 2025, the Plan DID not permit Roth elective
+   * deferrals"* (E-Z Excavating). A class has a POSITION, a TENSE and an
+   * INTERVENING WORD — this record's own list, met again. */
+  /* `elect` IS NOT IN THIS LIST, and it was, for one revision. Adding it reached
+   * *"Eligible employees who do not elect to make a contribution deferral..."* —
+   * auto-enrolment language where the negation governs the EMPLOYEE's election
+   * and not the plan's terms. The one case that seemed to need it, *"does not
+   * elect automatic enrollment and does not permit Roth elective deferrals"*,
+   * matches on `does not permit` anyway. A widening measured at +1 true member
+   * and +1 false one is not a widening worth having. */
+  String.raw`\b(?:does|do|did)\s+not\s+(?:\w+ly\s+)?(?:allow|permit|provide|offer|accept)\b`,
   String.raw`\bnot\s+permitted\s+to\s+make\b`,
   String.raw`\bmay\s+not\s+(?:make|elect|contribute)\b`,
   String.raw`\bcannot\s+(?:make|elect|contribute)\b`,
@@ -94,7 +106,18 @@ const MUST_NOT_FLAG = [
   ["Participants' pre-tax and/or Roth contributions were not permitted to exceed $23,500 for 2025.", "roth"],
   ["Participants may not make pre-tax and Roth contributions during the same plan year.", "roth"],
   ["However, participants may not make after-tax or Roth IRA contributions.", "roth"],
+  /* auto-enrolment: the negation governs the EMPLOYEE's election, not the plan */
+  ["Eligible employees who do not elect to make a contribution deferral are automatically enrolled at 3%.", "afterTax"],
 ];
+/* FOUR REPAIRS, each with the filed sentence that found it — these are
+ * MUST-FLAG cases, added to the list above after an independent screen reached
+ * members this one silently dropped. */
+MUST_FLAG.push(
+  ["The Plan does not currently permit participants to make after-tax contributions.", "afterTax"],
+  ["During 2025, the Plan did not permit Roth elective deferrals.", "roth"],
+  ["Roth elective deferrals were not permitted under the Plan during the year ended December 31, 2025.", "roth"],
+  ["Participants age 60 through 63 may make additional catch-up contributions of up to $11,250 annually in 2025 Roth contributions are not permitted.", "roth"],
+);
 /* CO-OCCURRENCE IS NOT GOVERNANCE, and the control below caught the first
  * version of this function doing exactly that. `Participants may make after-tax
  * contributions; loans are not permitted.` carries the subject and a negation
@@ -139,7 +162,12 @@ const REFUSE = [
   ["loan-or-withdrawal-source", /\bloans?\b|\bnotes?\b|\bborrow\w*\b|\bwithdrawals?\b|\bdistributions?\b|\bhardship\b/i],
   /* a LIMIT or a CAP is not a denial — it presupposes the contribution type:
    * *"pre-tax and/or Roth contributions were not permitted to exceed $23,500"* */
-  ["limit-not-denial", /\bexceed\b|\bin\s+excess\s+of\b|\blimited\s+to\b|\bmore\s+than\s+\$?\d|\bup\s+to\s+\$?\d/i],
+  /* THE LIMIT MUST BIND TO THE NEGATION, not merely share a clause with it.
+   * Singapore Airlines files *"...catch-up contributions of up to $11,250
+   * annually in 2025 Roth contributions are not permitted."* — two sentences
+   * welded with no period, so a clause-wide `up to $\d` refused a real denial.
+   * The refusal now requires the limit to be what is negated. */
+  ["limit-not-denial", /\bnot\s+(?:permitted|allowed|eligible)\s+to\s+exceed\b|\bnot\s+(?:permitted|allowed)\s+in\s+excess\s+of\b|\bmay\s+not\s+exceed\b|\bare\s+limited\s+to\b/i],
   /* a restriction on COMBINING two types presupposes both:
    * *"may not make pre-tax and Roth contributions during the same plan year"* */
   ["combining-restriction", /\bsame\s+plan\s+year\b|\bboth\b|\bsimultaneous\w*\b|\bconcurrent\w*\b|\bin\s+the\s+same\b/i],
@@ -151,7 +179,12 @@ const REFUSE = [
   /* a PAST prohibition, since lifted */
   ["temporal-prior", /\bprior\s+to\b|\beffective\s+(?:as\s+of\s+)?\w+\s+\d{1,2},?\s+\d{4}\b|\buntil\b|\bbeginning\b|\bbefore\s+\w+\s+\d{1,2},?\s+\d{4}\b/i],
   /* a statement about the YEAR'S ACTIVITY, not about the plan's terms */
-  ["zero-activity", /\bthere\s+(?:were|was)\s+no\b|\bno\s+such\s+contributions\s+were\b|\bduring\s+the\s+(?:plan\s+)?year\b/i],
+  /* `during the (plan) year` was a disjunct here and it was WRONG: in
+   * *"Roth elective deferrals were not permitted under the Plan during the year
+   * ended December 31, 2025"* it dates a real denial rather than describing
+   * activity, and refusing it silently dropped a true member. The refusal now
+   * requires the existential itself. */
+  ["zero-activity", /\bthere\s+(?:were|was)\s+no\b|\bno\s+such\s+contributions\s+were\b|\bno\s+\w+\s+contributions\s+were\s+made\b/i],
   /* the negated subject is a PRONOUN whose referent is some other feature */
   ["ambiguous-referent", /^\s*it\s+(?:is|was)\s+not\b/i],
 ];

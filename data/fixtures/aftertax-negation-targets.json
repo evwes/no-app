@@ -3,9 +3,9 @@
  "derived": "2026-11-20",
  "field": "afterTax",
  "storedTrueAndServed": null,
- "candidates": 38,
- "targets": 36,
- "targetReaders": 154058,
+ "candidates": 39,
+ "targets": 37,
+ "targetReaders": 155101,
  "excluded": [
   {
    "ack": "20260731111218NAL0021364547001",
@@ -155,6 +155,15 @@
    "planYear": 2025,
    "readers": 1067,
    "quote": "After-tax contributions are not allowed."
+  },
+  {
+   "ack": "20261014174629NAL0003300051001",
+   "ein": "412078828",
+   "pn": "003",
+   "sponsor": "Smithbucklin Corporation",
+   "planYear": 2025,
+   "readers": 1043,
+   "quote": "The Plan does not currently permit participants to make after-tax contributions."
   },
   {
    "ack": "20250904145007NAL0010097523001",
