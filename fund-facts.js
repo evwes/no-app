@@ -15088,9 +15088,53 @@ const FUND_FACTS = {
  * the unit class the figure is quoted for -- the page prints it, because "0.055%" means
  * nothing without saying which class of the trust it prices.
  *
- * 654 vehicles · 654 with an expense ratio · 443 with a YTD return · 450 with a trailing return
+ * 698 vehicles · 698 with an expense ratio · 443 with a YTD return · 450 with a trailing return
  */
 const FUND_VEHICLES = {
+ "northern-trust::acwi-ex-us-trust-class-nl1":{"er":0.19,"erAsOf":"2026-09-30","cls":"Tier 1 (Non-Lending)"},
+ "northern-trust::acwi-ex-us-trust-class-nl2":{"er":0.14,"erAsOf":"2026-09-30","cls":"Tier 2 (Non-Lending)"},
+ "northern-trust::acwi-ex-us-trust-class-nl3":{"er":0.08,"erAsOf":"2026-09-30","cls":"Tier 3 (Non-Lending)"},
+ "northern-trust::acwi-ex-us-trust-class-nl4":{"er":0.07,"erAsOf":"2026-09-30","cls":"Tier 4 (Non-Lending)"},
+ "northern-trust::acwi-ex-us-trust-class-nl5":{"er":0.06,"erAsOf":"2026-09-30","cls":"Tier 5 (Non-Lending)"},
+ "northern-trust::agg-bond-trust-class-l5":{"er":0.0225,"erAsOf":"2026-09-30","cls":"Tier 5 (Lending)"},
+ "northern-trust::agg-bond-trust-class-nl1":{"er":0.068,"erAsOf":"2026-09-30","cls":"Tier 1 (Non-Lending)"},
+ "northern-trust::agg-bond-trust-class-nl2":{"er":0.048,"erAsOf":"2026-09-30","cls":"Tier 2 (Non-Lending)"},
+ "northern-trust::agg-bond-trust-class-nl3":{"er":0.038,"erAsOf":"2026-09-30","cls":"Tier 3 (Non-Lending)"},
+ "northern-trust::agg-bond-trust-class-nl4":{"er":0.0255,"erAsOf":"2026-09-30","cls":"Tier 4 (Non-Lending)"},
+ "northern-trust::all-cntry-wrld-ex-us-imi-trust-class-nl3":{"er":0.091,"erAsOf":"2026-09-30","cls":"Tier 3 (Non-Lending)"},
+ "northern-trust::all-cntry-wrld-ex-us-imi-trust-class-nl4":{"er":0.071,"erAsOf":"2026-09-30","cls":"Tier 4 (Non-Lending)"},
+ "northern-trust::eafe-trust-class-nl2":{"er":0.093,"erAsOf":"2026-09-30","cls":"Tier 2 (Non-Lending)"},
+ "northern-trust::eafe-trust-class-nl3":{"er":0.043,"erAsOf":"2026-09-30","cls":"Tier 3 (Non-Lending)"},
+ "northern-trust::eafe-trust-class-nl4":{"er":0.033,"erAsOf":"2026-09-30","cls":"Tier 4 (Non-Lending)"},
+ "northern-trust::em-trust-class-nl3":{"er":0.13,"erAsOf":"2026-09-30","cls":"Tier 3 (Non-Lending)"},
+ "northern-trust::em-trust-class-nl4":{"er":0.1,"erAsOf":"2026-09-30","cls":"Tier 4 (Non-Lending)"},
+ "northern-trust::ext-equity-mkt-trust-class-l5":{"er":0.0185,"erAsOf":"2026-09-30","cls":"Tier 5 (Lending)"},
+ "northern-trust::ext-equity-mkt-trust-class-nl2":{"er":0.09,"erAsOf":"2026-09-30","cls":"Tier 2 (Non-Lending)"},
+ "northern-trust::ext-equity-mkt-trust-class-nl3":{"er":0.05,"erAsOf":"2026-09-30","cls":"Tier 3 (Non-Lending)"},
+ "northern-trust::ext-equity-mkt-trust-class-nl4":{"er":0.04,"erAsOf":"2026-09-30","cls":"Tier 4 (Non-Lending)"},
+ "northern-trust::lt-govt-bond-trust-class-nl4":{"er":0.038,"erAsOf":"2026-09-30","cls":"Tier 4 (Non-Lending)"},
+ "northern-trust::r1000-growth-trust-class-nl2":{"er":0.05,"erAsOf":"2026-09-30","cls":"Tier 2 (Non-Lending)"},
+ "northern-trust::r1000-growth-trust-class-nl3":{"er":0.03,"erAsOf":"2026-09-30","cls":"Tier 3 (Non-Lending)"},
+ "northern-trust::r1000-growth-trust-class-nl4":{"er":0.025,"erAsOf":"2026-09-30","cls":"Tier 4 (Non-Lending)"},
+ "northern-trust::r1000-value-trust-class-nl2":{"er":0.05,"erAsOf":"2025-03-31","cls":"Tier 2 (Non-Lending)"},
+ "northern-trust::r1000-value-trust-class-nl3":{"er":0.03,"erAsOf":"2026-09-30","cls":"Tier 3 (Non-Lending)"},
+ "northern-trust::r1000-value-trust-class-nl4":{"er":0.025,"erAsOf":"2026-09-30","cls":"Tier 4 (Non-Lending)"},
+ "northern-trust::r2000-trust-class-nl3":{"er":0.0425,"erAsOf":"2026-09-30","cls":"Tier 3 (Non-Lending)"},
+ "northern-trust::r2000-trust-class-nl4":{"er":0.0325,"erAsOf":"2026-09-30","cls":"Tier 4 (Non-Lending)"},
+ "northern-trust::sp400-trust-class-nl2":{"er":0.07,"erAsOf":"2026-09-30","cls":"Tier 2 (Non-Lending)"},
+ "northern-trust::sp400-trust-class-nl3":{"er":0.03,"erAsOf":"2026-09-30","cls":"Tier 3 (Non-Lending)"},
+ "northern-trust::sp400-trust-class-nl4":{"er":0.025,"erAsOf":"2026-09-30","cls":"Tier 4 (Non-Lending)"},
+ "northern-trust::sp500-trust-class-l5":{"er":0.0055,"erAsOf":"2026-09-30","cls":"Tier 5 (Lending)"},
+ "northern-trust::sp500-trust-class-nl1":{"er":0.034,"erAsOf":"2026-09-30","cls":"Tier 1 (Non-Lending)"},
+ "northern-trust::sp500-trust-class-nl2":{"er":0.024,"erAsOf":"2026-09-30","cls":"Tier 2 (Non-Lending)"},
+ "northern-trust::sp500-trust-class-nl3":{"er":0.014,"erAsOf":"2026-09-30","cls":"Tier 3 (Non-Lending)"},
+ "northern-trust::sp500-trust-class-nl4":{"er":0.0115,"erAsOf":"2026-09-30","cls":"Tier 4 (Non-Lending)"},
+ "northern-trust::sp500-trust-class-nl5":{"er":0.008,"erAsOf":"2026-09-30","cls":"Tier 5 (Non-Lending)"},
+ "northern-trust::sp600-trust-class-nl4":{"er":0.04,"erAsOf":"2026-09-30","cls":"Tier 4 (Non-Lending)"},
+ "northern-trust::tips-trust-class-nl1":{"er":0.0725,"erAsOf":"2026-09-30","cls":"Tier 1 (Non-Lending)"},
+ "northern-trust::tips-trust-class-nl2":{"er":0.0525,"erAsOf":"2025-09-30","cls":"Tier 2 (Non-Lending)"},
+ "northern-trust::tips-trust-class-nl3":{"er":0.0325,"erAsOf":"2026-09-30","cls":"Tier 3 (Non-Lending)"},
+ "northern-trust::tips-trust-class-nl4":{"er":0.03,"erAsOf":"2026-09-30","cls":"Tier 4 (Non-Lending)"},
  "schwab::institutional-core-plus-fixed-income-trust-class-iii":{"er":0.35,"erAsOf":"2026-10-31","ytd":-0.5734,"ytdAsOf":"2026-10-31","r1y":-0.0758,"r3y":5.9655,"r5y":-0.058,"r10y":1.7305,"rAsOf":"2026-10-31","cls":"Unit Class III"},
  "schwab::institutional-diversified-international-trust-class-institutional":{"er":0.79,"erAsOf":"2026-10-31","ytd":8.7443,"ytdAsOf":"2026-10-31","r1y":12.6093,"r3y":19.3164,"r5y":6.5232,"r10y":8.006,"rAsOf":"2026-10-31","cls":"Institutional"},
  "schwab::institutional-large-cap-growth-trust-class-institutional":{"er":0.42,"erAsOf":"2026-10-31","ytd":1.2217,"ytdAsOf":"2026-10-31","r1y":-2.42,"r3y":21.1956,"r5y":7.0832,"r10y":16.5653,"rAsOf":"2026-10-31","cls":"Institutional"},
@@ -15752,9 +15796,21 @@ const FUND_VEHICLES = {
  * The cls field lists them, because a range over a subset does not bound the
  * family and the page must say what it is quoting rather than imply more.
  *
- * 69 families · 68 with a YTD band · 68 with a trailing-return band
+ * 81 families · 68 with a YTD band · 68 with a trailing-return band
  */
 const FUND_VEHICLE_BANDS = {
+ "northern-trust::acwi-ex-us":{"erLo":0.06,"erHi":0.19,"erAsOf":"2026-09-30","cls":["Tier 1 (Non-Lending)","Tier 2 (Non-Lending)","Tier 3 (Non-Lending)","Tier 4 (Non-Lending)","Tier 5 (Non-Lending)"]},
+ "northern-trust::agg-bond":{"erLo":0.0225,"erHi":0.068,"erAsOf":"2026-09-30","cls":["Tier 1 (Non-Lending)","Tier 2 (Non-Lending)","Tier 3 (Non-Lending)","Tier 4 (Non-Lending)","Tier 5 (Lending)"]},
+ "northern-trust::all-cntry-wrld-ex-us-imi":{"erLo":0.071,"erHi":0.091,"erAsOf":"2026-09-30","cls":["Tier 3 (Non-Lending)","Tier 4 (Non-Lending)"]},
+ "northern-trust::eafe":{"erLo":0.033,"erHi":0.093,"erAsOf":"2026-09-30","cls":["Tier 2 (Non-Lending)","Tier 3 (Non-Lending)","Tier 4 (Non-Lending)"]},
+ "northern-trust::em":{"erLo":0.1,"erHi":0.13,"erAsOf":"2026-09-30","cls":["Tier 3 (Non-Lending)","Tier 4 (Non-Lending)"]},
+ "northern-trust::ext-equity-mkt":{"erLo":0.0185,"erHi":0.09,"erAsOf":"2026-09-30","cls":["Tier 2 (Non-Lending)","Tier 3 (Non-Lending)","Tier 4 (Non-Lending)","Tier 5 (Lending)"]},
+ "northern-trust::r1000-growth":{"erLo":0.025,"erHi":0.05,"erAsOf":"2026-09-30","cls":["Tier 2 (Non-Lending)","Tier 3 (Non-Lending)","Tier 4 (Non-Lending)"]},
+ "northern-trust::r1000-value":{"erLo":0.025,"erHi":0.05,"erAsOf":"2025-03-31","cls":["Tier 2 (Non-Lending)","Tier 3 (Non-Lending)","Tier 4 (Non-Lending)"]},
+ "northern-trust::r2000":{"erLo":0.0325,"erHi":0.0425,"erAsOf":"2026-09-30","cls":["Tier 3 (Non-Lending)","Tier 4 (Non-Lending)"]},
+ "northern-trust::sp400":{"erLo":0.025,"erHi":0.07,"erAsOf":"2026-09-30","cls":["Tier 2 (Non-Lending)","Tier 3 (Non-Lending)","Tier 4 (Non-Lending)"]},
+ "northern-trust::sp500":{"erLo":0.0055,"erHi":0.034,"erAsOf":"2026-09-30","cls":["Tier 1 (Non-Lending)","Tier 2 (Non-Lending)","Tier 3 (Non-Lending)","Tier 4 (Non-Lending)","Tier 5 (Lending)","Tier 5 (Non-Lending)"]},
+ "northern-trust::tips":{"erLo":0.03,"erHi":0.0725,"erAsOf":"2025-09-30","cls":["Tier 1 (Non-Lending)","Tier 2 (Non-Lending)","Tier 3 (Non-Lending)","Tier 4 (Non-Lending)"]},
  "schwab::institutional-large-cap-value":{"erLo":0.38,"erHi":0.63,"erAsOf":"2026-10-31","cls":["Institutional","Retirement","Select"],"ytdLo":9.9374,"ytdHi":10.166,"ytdAsOf":"2026-10-31","ytdN":3,"r1yLo":13.4863,"r1yHi":13.7696,"r1yAsOf":"2026-10-31","r1yN":3,"r3yLo":18.0962,"r3yHi":18.3908,"r3yAsOf":"2026-10-31","r3yN":3,"r5yLo":9.899,"r5yHi":10.1734,"r5yAsOf":"2026-10-31","r5yN":3,"r10yLo":12.6578,"r10yHi":12.9391,"r10yAsOf":"2026-10-31","r10yN":2},
  "schwab::sirt-2010":{"erLo":0.044,"erHi":0.07,"erAsOf":"2026-10-31","cls":["Unit Class I","Unit Class IV"],"ytdLo":3.688,"ytdHi":3.7157,"ytdAsOf":"2026-10-31","ytdN":2,"r1yLo":4.2883,"r1yHi":4.3208,"r1yAsOf":"2026-10-31","r1yN":2,"r3yLo":10.7789,"r3yHi":10.8051,"r3yAsOf":"2026-10-31","r3yN":2,"r5yLo":3.9006,"r5yHi":3.924,"r5yAsOf":"2026-10-31","r5yN":2},
  "schwab::sirt-2015":{"erLo":0.044,"erHi":0.07,"erAsOf":"2026-10-31","cls":["Unit Class I","Unit Class IV"],"ytdLo":4.2272,"ytdHi":4.2498,"ytdAsOf":"2026-10-31","ytdN":2,"r1yLo":4.8579,"r1yHi":4.8847,"r1yAsOf":"2026-10-31","r1yN":2,"r3yLo":11.4676,"r3yHi":11.4941,"r3yAsOf":"2026-10-31","r3yN":2,"r5yLo":4.3021,"r5yHi":4.3255,"r5yAsOf":"2026-10-31","r5yN":2},

@@ -7,6 +7,74 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-20 — NORTHERN TRUST'S COLLECTIVE INDEX FEES: THE THIRD PUBLISHING FAMILY, AND THE ARM FOUND TWO DEFECTS IN ITSELF
+
+**WHAT WAS MISSING.** 2,505 published+served rows / 746 plans / $156.4B name a
+Northern Trust collective index fund and **2,148 of them showed no fee**, because
+the page correctly withholds a pattern estimate on a collective trust whose price
+is negotiated per class. `ntam.northerntrust.com` publishes 44 per-class fact
+sheets, each stating a `Total Fees and Expenses` line, so those blanks were
+sourceable. Against State Street, BlackRock and PIMCO — all measured NOT to
+publish per-class CIT fees on their own sites — Northern Trust is the third
+family that does, after Vanguard and T. Rowe Price.
+
+**THE SHIP.** All 44 sheets sourced into `data/fund-facts.json` (`erBasis:
+class-published`, 42 as of 2026-09-30, stalest 2025-03-31), plus a
+`northernTrustVehicleParts` arm asked LAST so it cannot move an older arm's
+answer. Verified on the rendered page, not only through `renderRow`: Wand Newco
+reads `0.011%✓`, Allegis reads the range `0.0055–0.034%`, and Boeing's
+pre-existing `0.050%` estimate is correctly **not** displaced.
+
+**SOURCING AND RESOLVING ARE TWO JOBS AND THE KEY SHAPE IS THE JOINT.** The
+sourcing brief first specified `northern-trust::<fund>-<lend>-tier-<N>`, which
+`vehicleFamilyOfKey` (`/^(.*?)-trust(?:-class)?-[a-z0-9]+$/`) cannot parse a
+family out of — so it would have produced exact figures for ~129 rows and **no
+band at all** for the 1,006 rows / 2.64M readers that need a range. Corrected to
+`<fund>-trust-class-<lend><tier>` mid-flight. *A key shape is part of the
+resolver, not a naming convention.*
+
+**TWO DEFECTS THE ARM FOUND IN ITSELF, both by measurement rather than review.**
+(1) `\blending\b` for the lending class **also matches the LENDING inside NON
+LENDING**, so all 35 numeric-tier non-lending rows tripped the weld refusal and
+were withheld. Reading all 29 spellings settled it: not one was a weld, and two
+spell it `Non- lending` — a space after the hyphen — which a one-character
+separator misses. Fixed with a negative lookbehind and `[\s-]{0,4}` on both
+tests; exact coverage went 48 → 82 rows. (2) Requiring `NT Col…` missed every
+abbreviated spelling (`NT AGG BOND INDEX FUND NL T4`). The bare `\bnt\b` token
+newly reaches 91 names that also carry a vehicle witness and a sheet line, and
+**all 91 were read**: every one is a Northern Trust collective index fund, two
+rescued from a misspelt house cell (`Nothern Trust`, `Northem Trust`). Reading
+them also found the one name that must NOT resolve — a weld of a Fidelity
+commingled pool and an NT bond trust — so `NT_OTHER_HOUSE` shipped WITH the
+widening rather than after it.
+
+**WHAT IS REFUSED, each a measured population.** Tier **CT** (192 rows), J, H and
+C state a class Northern Trust publishes no sheet for: 182 rows / 586,573 readers
+are withheld with `classStated: true, key: null` and must NOT fall back to a
+range over the classes they are not. A numeric tier with **no lending status** is
+only partly determined, and the sheets prove lending moves the fee (sp500 tier 5
+is 0.0055 lending against 0.0080 non-lending), so those rows get the family range
+rather than a guessed class. `All Country World Investable Market` without an
+ex-US qualifier is a different index from the ACWI ex-US IMI one that has a sheet
+and is deliberately unmapped. `lt-govt-bond` and `sp600` have one sourced class
+each, and the generator correctly refuses a "range" over one class.
+
+**AND THE ESTIMATE IT REPLACES WAS NOT CLOSE.** `fund-er.js:372` priced any
+`northern trust … index` name at a flat 0.05 and `:499` prices any name
+containing `index` at 0.10. The sourced figures run **0.008% to 0.19%** and
+disagree with 0.05 on 41 of 44 classes — tiers 3–5 below it, tiers 1–2 and the
+international lines above. This record's rule says a disagreement between
+estimate and sourced figure is a TICKER question; here it is not, because the
+tier IS the fee-bearing dimension and a flat guess cannot track it. *The rule
+holds for a share class of one fund; it does not transfer to a family whose price
+varies by unit class.*
+
+**STILL OPEN, measured and named rather than left implicit.** Tier spellings
+`T4`, `NLT4`, `CL 3` and `NL II` are not read as tiers, so those rows take the
+band instead of an exact figure — honest but less precise, and the largest filed
+spellings (`NT AGG BOND INDEX FUND NL T4`) are among them. Extending tier parsing
+multiplies claims with every spelling added, so it is a separate ship.
+
 ## 2026-11-17 — A FULL RE-PARSE RE-ROLLS THE OCR POPULATION, AND THE STORE KEEPS WHICHEVER ROLL CAME LAST
 
 **WHAT WAS WRONG.** Run #861 (v206) withdrew the published menus of 9 plans /

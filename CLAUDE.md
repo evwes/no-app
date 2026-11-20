@@ -327,12 +327,25 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   a trailing second column (`0.0100 0`); do not glue it into `0.01000`.
   Hosts allowlisted 2026-11-17; `www.northerntrust.com` itself is a FOURTH shape
   — HTTP/2 `INTERNAL_ERROR`, then a timeout on HTTP/1.1 — but it is not needed,
-  since `ntam.` serves the sheets. It still needs a
-  `northerntrust::<fund>-<tier>` resolver arm as well as sourcing —
-  `vehicleKeyFor` returns null on all 2,686 today, and *sourcing without the arm
-  reaches 0 readers*. Note `fund-er.js:372` already prices any `northern trust …
-  index` name at an estimated 0.05, so **diff the sourced figure against that
-  estimate: a disagreement is a ticker question, not a fee question.**
+  since `ntam.` serves the sheets.
+  **SHIPPED 2026-11-20 — all 44 sheets sourced AND the resolver arm built, which
+  is the two jobs this entry warned were two.** 82 rows get an EXACT class fee
+  and 1,006 rows a family RANGE; the key shape is
+  `northern-trust::<fund>-trust-class-<nl|l><tier>`, because
+  `vehicleFamilyOfKey` parses a family only out of `-trust-class-<x>` and the
+  shape first briefed would have shipped exact figures with NO BAND AT ALL.
+  **AND THE 7.54M READER FIGURE ABOVE UNIONS THREE BANDS THAT NEED UNRELATED
+  MACHINERY** — re-derived: exact 174,071, band 2,640,580, tier-CT-and-kin
+  withheld 586,573, and 6.19M on rows naming NO fund, which is a RECONSTRUCTION
+  question and not a fee one. *Do not quote one number for a family whose rows
+  need three mechanisms.* Still open and measured: the tier spellings `T4`,
+  `NLT4`, `CL 3` and `NL II` are not read as tiers, so those rows take the band
+  instead of an exact figure.
+  The estimate note that used to end this entry is **refuted as stated**:
+  `fund-er.js:372` prices these at a flat 0.05 and the sourced figures run
+  **0.008% to 0.19%**, disagreeing on 41 of 44 classes. A disagreement is a
+  ticker question for a share class of ONE fund; it is not for a family whose
+  price varies by unit class, where a flat guess simply cannot track the tier.
 - **THE YTD IS REFRESHED DAILY AT 3 AM EASTERN (owner directive 2026-11-14),
   AND CITs AND TICKERS ARE TWO DIFFERENT STEPS.** `fund-facts.yml` runs
   `0 8 * * *` (03:00 ET under EST — **re-check at the 2026-03-08 transition**

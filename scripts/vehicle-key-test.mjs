@@ -667,5 +667,253 @@ if (!bad) ok(`${MUTATIONS.length} single-protection mutations, each with a case 
   }
 }
 
+/* ---- NORTHERN TRUST'S COLLECTIVE INDEX FUNDS -----------------------------
+ * The third index-CIT house measured to publish per-class fees on its own site.
+ * Its arm answers BOTH a class key and a family, so it gets both treatments.
+ *
+ * EVERY NAME BELOW IS A LIVE SPELLING, copied from the store rather than
+ * invented — which is what made the lending trap visible. The arm's first
+ * version tested `\blending\b` for the lending class, and that also matches the
+ * LENDING inside NON LENDING, so all 35 numeric-tier non-lending rows tripped
+ * the weld refusal and were withheld. Reading the 29 distinct spellings is what
+ * settled it: not one was a weld, and two of them (`Non- lending`, with a space
+ * after the hyphen) survived a one-character separator. Both appear here.
+ *
+ * THE REFUSALS, each a measured population rather than a worry:
+ *   - TIER CT / J / H / C: a class IS stated and Northern Trust publishes no
+ *     sheet for it, so the row is withheld and must NOT fall back to a range
+ *     over the classes it is not. 182 rows / 586,573 readers.
+ *   - LENDING STATUS UNSTATED beside a numeric tier: the class is only partly
+ *     determined, and lending moves the fee (sp500 tier 5 is 0.0055 lending
+ *     against 0.0080 non-lending), so the honest answer is the family range.
+ *   - `All Country World Investable Market` with no ex-US qualifier is a
+ *     DIFFERENT index from the ACWI ex-US IMI one that has a sheet.
+ *   - the vehicle witness must not be the HOUSE's own `Trust`.
+ */
+{
+  const famKey = load(src, "vehicleFamilyKeyFor");
+  const TRUST = "Collective trust";
+  /* [filed name, issuer cell, type cell, expected key or null] */
+  const NT_CASES = [
+    /* MUST RESOLVE — a numeric tier and a lending status */
+    ["Northern Trust S&P 500 Index NL Tier 4", "", TRUST, "northern-trust::sp500-trust-class-nl4"],
+    ["Northern Trust Aggregate Bond Index NL Tier 4", "", TRUST, "northern-trust::agg-bond-trust-class-nl4"],
+    ["Northern Trust S&P 400 Index NL Tier 4", "", TRUST, "northern-trust::sp400-trust-class-nl4"],
+    ["Northern Trust Russell 2000 Index NL Tier 4", "", TRUST, "northern-trust::r2000-trust-class-nl4"],
+    ["NT Collective S&P 500 Index Fund - Non Lending Tier 3", "", TRUST, "northern-trust::sp500-trust-class-nl3"],
+    ["NT Aggregate Bond Index Non-Lending Fund-Tier 3", "", TRUST, "northern-trust::agg-bond-trust-class-nl3"],
+    ["NT EAFE Index Fund - DC - Non-Lending Fund-Tier 3", "", TRUST, "northern-trust::eafe-trust-class-nl3"],
+    ["NT S&P MidCap 400 Index DC Non-Lending Fund-Tier 3", "", TRUST, "northern-trust::sp400-trust-class-nl3"],
+    /* the two `Non- lending` spellings that a one-character separator missed */
+    ["Northern Trust Collective S&P 500 Index Fund - DC - Non- lending - Tier 4", "", TRUST,
+      "northern-trust::sp500-trust-class-nl4"],
+    ["Northern Trust Collective Extended Equity Market Index Fund - DC - Non-lending- Tier 4", "", TRUST,
+      "northern-trust::ext-equity-mkt-trust-class-nl4"],
+    /* the IMI line must beat the plain ACWI-ex-US line: alternation is
+     * first-match, so the longer branch is asked first or every IMI row is
+     * priced off the non-IMI sheet */
+    ["NT Collective ACWI ExUS Investable Mkt Idx – Non Lending Tier 4", "", TRUST,
+      "northern-trust::all-cntry-wrld-ex-us-imi-trust-class-nl4"],
+    ["Northern Trust Collective ACWI EX-US IMI Fund DC Non-Lending Tier 3", "", TRUST,
+      "northern-trust::all-cntry-wrld-ex-us-imi-trust-class-nl3"],
+    ["Northern Trust Collective All Country World Ex-Us Index Fund - DC - Non-lending - Tier 4", "", TRUST,
+      "northern-trust::acwi-ex-us-trust-class-nl4"],
+    /* a LENDING class, the one direction with its own sheet */
+    ["MFB NT COLLECTIVE S&P 500 INDEX FUND - LENDING - TIER 5", "", TRUST, "northern-trust::sp500-trust-class-l5"],
+    /* the issuer cell may carry the house instead of the name */
+    ["S&P 500 Index Fund - Non-Lending - Tier 4", "Northern Trust Company", TRUST,
+      "northern-trust::sp500-trust-class-nl4"],
+
+    /* MUST NOT RESOLVE A KEY */
+    /* tier CT is the largest filed tier and has no sheet */
+    ["NT Collective S&P 500 DC NL Tier CT", "", TRUST, null],
+    ["Nt Collective Aggregate Bond Index Dc Non Lending Tier Ct", "", TRUST, null],
+    ["NT COLLECTIVE S&P500 INDEX FUND-DC-NON LENDING (TIER J)", "", TRUST, null],
+    ["MFB NT COLLECTIVE AGGREGATE BOND INDEX FUND - LENDING - TIER H", "", TRUST, null],
+    /* a numeric tier with NO lending status: partly determined, so no key */
+    ["Northern Trust S&P 500 Index Tier 3", "", TRUST, null],
+    ["Northern Trust Aggregate Bond Index Tier 3", "", TRUST, null],
+    /* ACWI *including* the US is a different index from the sheet's ACWI ex-US */
+    ["NT COLLECTIVE ALL COUNTRY WORLD INVESTABLE MARKET INDEX FUND - DC - TIER J", "", TRUST, null],
+    /* no tier at all -> the band's job, never a key */
+    ["Northern Trust S&P 500 Index Fund", "", TRUST, null],
+    ["MFB NT COLLECTIVE AGGREGATE BOND INDEX FUND-NON LENDING", "", TRUST, null],
+    /* an index Northern Trust publishes no sheet for */
+    ["NT COLLECTIVE SHORT TERM INVT FD", "", TRUST, null],
+    ["MFB NT Coltv MB Sec Idx Fd", "", TRUST, null],
+    /* the vehicle witness is the HOUSE's own `Trust`, and the type says fund */
+    ["Northern Trust S&P 500 Index Fund NL Tier 4", "", "Mutual fund", null],
+    /* another house entirely, custodied by Northern Trust — the issuer cell
+     * naming the custodian must not make this a Northern Trust vehicle */
+    ["The First Sentier Global Listed Infrastructure Fund", "The Northern Trust Company", TRUST, null],
+    ["Vanguard Total Bond Market Index Fund", "Northern Trust Company", TRUST, null],
+  ];
+  for (const [n, iss, type, want] of NT_CASES) {
+    const got = vk(n, iss, type);
+    if (got === want) continue;
+    fail(`northern trust: want ${want === null ? "no key" : want}\n        got  ${got === null ? "no key" : got}\n        for  ${JSON.stringify(n)}${iss ? ` [iss ${JSON.stringify(iss)}]` : ""} [type ${JSON.stringify(type)}]`);
+  }
+  if (!bad) ok(`${NT_CASES.length} Northern Trust key cases: ${NT_CASES.filter((c) => c[3]).length} must-resolve, ${NT_CASES.filter((c) => !c[3]).length} must-not`);
+
+  /* EVERY KEY THE ARM ANSWERS MUST BE SOURCED — with one enumerated exception.
+   * `NORTHERN TRUST COLLECTIVE ACWI EX-US IMI FUND - DC LENDING TIER 4` names a
+   * real lending class for which the issuer links only the two non-lending
+   * sheets. The arm names it truthfully, nothing is published, and the row must
+   * keep its blank; the band must NOT cover it, because lending moves the fee.
+   * That is asserted below rather than left as a comment. */
+  const NTV = JSON.parse(readFileSync(path.join(ROOT, "data", "fund-facts.json"), "utf8")).vehicles || {};
+  const ntAbsent = NT_CASES.filter(([, , , w]) => w).map(([, , , w]) => w).filter((k) => !NTV[k]);
+  if (ntAbsent.length) fail(`${ntAbsent.length} Northern Trust key(s) absent from data/fund-facts.json: ${ntAbsent.join(", ")}`);
+  else ok(`every Northern Trust must-resolve key is sourced (${Object.keys(NTV).filter((k) => k.startsWith("northern-trust::")).length} NT classes)`);
+
+  const UNPRICED = "NORTHERN TRUST COLLECTIVE ACWI EX-US IMI FUND - DC LENDING TIER 4";
+  const upKey = vk(UNPRICED, "", TRUST);
+  if (upKey !== "northern-trust::all-cntry-wrld-ex-us-imi-trust-class-l4")
+    fail(`the unpriced lending class should still be NAMED, got ${upKey === null ? "no key" : upKey}`);
+  else if (NTV[upKey]) fail(`${upKey} is now sourced — update this assertion, it is written against an UNpublished class`);
+  else if (famKey(UNPRICED, "", TRUST) !== null)
+    fail(`a row stating the unpriced lending class is offered a band — a range over the non-lending classes would launder one class's price onto another`);
+  else ok("a class the issuer does not publish is named, unpriced, and gets no band");
+
+  /* THE BAND HALF */
+  const NT_BANDS = (() => {
+    const f = path.join(ROOT, "fund-facts.js");
+    if (!existsSync(f)) return null;
+    const c = vm.createContext({ window: {} });
+    vm.runInContext(readFileSync(f, "utf8") + ";globalThis.__b=typeof FUND_VEHICLE_BANDS===\"object\"?FUND_VEHICLE_BANDS:null;", c);
+    return c.__b;
+  })();
+  const NT_BAND_CASES = [
+    /* MUST BAND — the fund is named, no tier is stated */
+    ["Northern Trust S&P 500 Index Fund", "", TRUST, "northern-trust::sp500"],
+    ["Northern Trust Collective S&P 500 Index Fund", "", TRUST, "northern-trust::sp500"],
+    ["Northern Trust Aggregate Bond Index Fund", "", TRUST, "northern-trust::agg-bond"],
+    ["MFB NT COLLECTIVE EAFE INDEX FUND-NON LENDING", "", TRUST, "northern-trust::eafe"],
+    ["Northern Trust Extended Equity Market Index", "", TRUST, "northern-trust::ext-equity-mkt"],
+    ["NORTHERN TRUST COLLECTIVE MSCI ACWI EX-US INDEX FUND", "", TRUST, "northern-trust::acwi-ex-us"],
+    /* a numeric tier with no lending status ALSO bands: the class is only
+     * partly determined, so a range over the sourced classes is the honest
+     * answer and a guessed lending class is not */
+    ["Northern Trust S&P 500 Index Tier 3", "", TRUST, "northern-trust::sp500"],
+    ["Northern Trust Aggregate Bond Index Tier 3", "", TRUST, "northern-trust::agg-bond"],
+
+    /* MUST NOT BAND */
+    /* a fully stated class: the exact figure outranks any range */
+    ["Northern Trust S&P 500 Index NL Tier 4", "", TRUST, null],
+    /* a tier the issuer does not publish: the class is pinned and unpriceable,
+     * and a range over the classes it is NOT is not information */
+    ["NT Collective S&P 500 DC NL Tier CT", "", TRUST, null],
+    ["MFB NT COLLECTIVE AGGREGATE BOND INDEX FUND - LENDING - TIER H", "", TRUST, null],
+    /* the vehicle witness is the house's own `Trust` and the type says fund */
+    ["Northern Trust S&P 500 Index Fund", "", "Mutual fund", null],
+    /* a fund with only ONE sourced class gets no band: a "range" over one class
+     * is an exact figure for a class we have not established the row is in, and
+     * the generator refuses to build it */
+    ["Northern Trust Collective Long-Term Government Bond Index Fund", "", TRUST, "northern-trust::lt-govt-bond"],
+    /* another house's fund, custodied by Northern Trust */
+    ["The First Sentier Global Listed Infrastructure Fund", "The Northern Trust Company", TRUST, null],
+    /* an index with no sheet */
+    ["NT COLLECTIVE SHORT TERM INVT FD", "", TRUST, null],
+  ];
+  for (const [n, iss, type, want] of NT_BAND_CASES) {
+    const got = famKey(n, iss, type);
+    if (got === want) continue;
+    fail(`northern trust band: want ${want === null ? "no band" : want}\n        got  ${got === null ? "no band" : got}\n        for  ${JSON.stringify(n)} [type ${JSON.stringify(type)}]`);
+  }
+  if (!bad) ok(`${NT_BAND_CASES.length} Northern Trust band cases: ${NT_BAND_CASES.filter((c) => c[3]).length} must-band, ${NT_BAND_CASES.filter((c) => !c[3]).length} must-not`);
+
+  /* A FAMILY THE ARM OFFERS MUST HAVE A PUBLISHED BAND, or the page asks for a
+   * range nobody built and silently shows nothing. `lt-govt-bond` is the
+   * enumerated exception and is asserted as such: one sourced class, so the
+   * generator builds no band, and that row keeps its blank BY DESIGN. */
+  if (NT_BANDS) {
+    const want = NT_BAND_CASES.filter(([, , , w]) => w).map(([, , , w]) => w);
+    const singles = ["northern-trust::lt-govt-bond", "northern-trust::sp600"];
+    const absent = want.filter((k) => !NT_BANDS[k] && !singles.includes(k));
+    if (absent.length) fail(`${absent.length} Northern Trust band(s) absent from fund-facts.js: ${absent.join(", ")}`);
+    else ok(`every multi-class Northern Trust family has a published band (${Object.keys(NT_BANDS).filter((k) => k.startsWith("northern-trust::")).length} NT families)`);
+    for (const s of singles)
+      if (NT_BANDS[s]) fail(`${s} has only one sourced class but a band was published — a range over one class is not a range`);
+  }
+
+  /* SINGLE-PROTECTION MUTATIONS, derived from the refusals above and anchored on
+   * the line each is meant to mutate. Every case is one where the named
+   * condition is the ONLY protection — a case guarded twice proves neither. */
+  const NT_MUTATIONS = [
+    /* THE VEHICLE WITNESS. Without it the house's own `Trust` is the witness and
+     * a Northern Trust MUTUAL fund takes a collective trust's price — the
+     * laundering this project refuses. Nothing else in the file stops it: the
+     * name states a fund line and the band gate already passed on "Trust". */
+    ["vehicle witness is not the house name", (t) => t.replace(
+      "  if (!NT_IS_TRUST_NAME.test(n) && !VEHICLE_TYPE_IS_TRUST.test(String(type || \"\"))) return null;",
+      "  // witness removed"),
+      "Northern Trust S&P 500 Index Fund", "Mutual fund", "band", null],
+    /* NUMERIC TIERS ONLY. Flipping the CT/J/H/C refusal to a family hands those
+     * rows a range over the classes they are not. */
+    ["an unpublished tier must not band", (t) => t.replace(
+      "  if (!num) return { family, classStated: true, key: null };",
+      "  if (!num) return { family, classStated: false, key: null };"),
+      "NT Collective S&P 500 DC NL Tier CT", "Collective trust", "band", null],
+    /* THE LENDING LOOKBEHIND. Reverting it to a bare `\blending\b` makes every
+     * non-lending name trip the weld refusal — the 35-row defect this section
+     * documents. The case must stop resolving its key. */
+    ["lending lookbehind", (t) => t.replace(
+      "const NT_LEND = /(?<!\\bnon[\\s-]{0,4})\\blending\\b/i;",
+      "const NT_LEND = /\\blending\\b/i;"),
+      "NT Collective S&P 500 Index Fund - Non Lending Tier 3", "Collective trust", "key",
+      "northern-trust::sp500-trust-class-nl3"],
+    /* THE SEPARATOR WIDTH, which is a separate claim from the lookbehind: with
+     * one optional character, `Non- lending` reads as LENDING again. */
+    ["lending separator width", (t) => t.replace(
+      "const NT_LEND = /(?<!\\bnon[\\s-]{0,4})\\blending\\b/i;",
+      "const NT_LEND = /(?<!\\bnon[\\s-]?)\\blending\\b/i;"),
+      "Northern Trust Collective S&P 500 Index Fund - DC - Non- lending - Tier 4", "Collective trust", "key",
+      "northern-trust::sp500-trust-class-nl4"],
+    /* THE IMI BRANCH ORDER. Asking the plain ACWI-ex-US line first prices every
+     * IMI row off the non-IMI sheet — a different index, same house. */
+    /* ANCHORED ON A PATTERN, NOT A LITERAL, because the literal changed under it
+     * once already: the IMI entry was rewritten to accept the `Investable Mkt`
+     * spelling and this mutation silently stopped matching, which the harness
+     * reported as "malformed" rather than as a pass — the one failure mode a
+     * literal anchor has that a pattern does not. */
+    ["IMI is asked before plain ACWI ex-US",
+      (t) => t.replace(/\n  \["all-cntry-wrld-ex-us-imi",[\s\S]*?\/i\],/, ""),
+      "Northern Trust Collective ACWI EX-US IMI Fund DC Non-Lending Tier 3", "Collective trust", "key",
+      "northern-trust::all-cntry-wrld-ex-us-imi-trust-class-nl3"],
+  ];
+  /* THE LOOP CARRIES BOTH POLARITIES, which the first version did not and which
+   * cost two decorative passes before its own premise check caught it. A guard
+   * is load-bearing in one of two directions: either the shipped resolver
+   * ANSWERS and the mutant must stop (the lending and IMI cases), or the shipped
+   * resolver REFUSES and the mutant must start (the vehicle-witness and
+   * unpublished-tier cases). Asserting only the first makes every refusal
+   * mutation pass while proving nothing, because `base === null` reads as
+   * "vacuous" exactly where the refusal IS the thing being tested.
+   *
+   * So each case declares the shipped answer it is written against, the premise
+   * check asserts the shipped code really gives it, and the mutation must CHANGE
+   * it. That is one assertion covering both directions, and a `base` of null is
+   * a legitimate expectation rather than a failure. */
+  for (const [label, mutate, n, type, kind, base] of NT_MUTATIONS) {
+    const which = kind === "key" ? vk : famKey;
+    const got = which(n, "", type);
+    if (got !== base) {
+      fail(`northern trust mutation "${label}" is VACUOUS: the shipped resolver answers ` +
+        `${got === null ? "no " + kind : got} for ${JSON.stringify(n)}, not the ` +
+        `${base === null ? "no " + kind : base} this case is written against`);
+      continue;
+    }
+    const m = mutate(src);
+    if (m === src) { fail(`northern trust mutation "${label}" did not change the source — it is malformed`); continue; }
+    let mv;
+    try { mv = load(m, kind === "key" ? "vehicleKeyFor" : "vehicleFamilyKeyFor"); }
+    catch (e) { fail(`northern trust mutation "${label}" would not load: ${e.message}`); continue; }
+    if (mv(n, "", type) === base)
+      fail(`northern trust mutation "${label}" leaves the answer at ` +
+        `${base === null ? "no " + kind : base} for ${JSON.stringify(n)} — the condition protects nothing`);
+  }
+  if (!bad) ok(`${NT_MUTATIONS.length} Northern Trust mutations, each with a case where it is the only protection`);
+}
+
 console.log(bad ? `\nvehicle-key-test: ${bad} FAILURE(S)` : "\nvehicle-key-test: the resolver names the right vehicle, and refuses the look-alikes");
 process.exit(bad ? 1 : 0);

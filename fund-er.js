@@ -2614,6 +2614,146 @@ function schwabVehicleParts(n, house, type) {
   return { family, classStated: !!cls, key: slug ? `${family}-trust-class-${slug}` : null };
 }
 
+/* NORTHERN TRUST'S COLLECTIVE INDEX FUNDS — the THIRD index-CIT house measured
+ * to publish per-class fees on its own site, against two that do not (State
+ * Street and BlackRock both circulate their per-class sheets through
+ * recordkeepers, and every recordkeeper host tried refused this client).
+ * `ntam.northerntrust.com` answers 200 and its core-index-dc-funds page links 44
+ * per-class fact sheets, each stating a `Total Fees and Expenses` line — the
+ * expense-ratio equivalent, exactly as T. Rowe's footnoted Trustee Fee is.
+ *
+ * THE VEHICLE WITNESS IS NOT THE HOUSE NAME, and here that distinction is
+ * load-bearing rather than decorative. `VEHICLE_NAME_SAYS_TRUST` is satisfied by
+ * the word `Trust` inside `Northern Trust` itself, and
+ * `VEHICLE_CUSTODIAN_PHRASE` strips only `trust company|co|bank`, so every row
+ * of this family passes the band's gate on the HOUSE's name while saying nothing
+ * about which vehicle it is. So this arm requires its own witness: the filed
+ * TYPE is a trust, or the NAME carries a collective/lending word. Leaning on
+ * that accidental pass would price a Northern Trust MUTUAL fund off a collective
+ * trust's sheet — the laundering two earlier runs correctly refused.
+ *
+ * THE TIER IN THE FILED NAME IS THE UNIT CLASS, and only NUMERIC tiers are
+ * published. Measured over the store: tier CT appears on 192 rows, J on 11, H on
+ * 2 and C on 5, and NO sheet exists for any of them — so those rows state a
+ * class we cannot price and are REFUSED with `classStated: true, key: null`,
+ * the shape T. Rowe's Hybrid line already uses. 182 rows / 586,573 readers keep
+ * a blank on that account. A band would be the wrong answer there: the filing
+ * pins a class, and a range over the classes it is NOT is not information. */
+/* THE HOUSE TOKEN INCLUDES A BARE `NT`, and that widening was measured before it
+ * was made rather than after. Requiring `NT Col…` missed every filed spelling
+ * that abbreviates the product without the word Collective — `NT AGG BOND INDEX
+ * FUND NL T4`, `NT ACWI EX US IMI FD DC NL TIER 4`, `NT CIT S&P 500 INDEX DC
+ * NL T4` — and three of the test's own must-resolve cases failed on it.
+ *
+ * The widening newly reaches 91 distinct names that also carry a vehicle witness
+ * AND one of the sheet lines, and ALL 91 WERE READ: every one is a Northern
+ * Trust collective index fund, two of them rescued from a misspelt house cell
+ * (`Nothern Trust`, `Northem Trust`) that no `northern trust` pattern can match.
+ * A bare two-letter token is safe here only because it is one conjunct of three
+ * — house AND vehicle witness AND a published index line — and that is the
+ * reason it is stated as a conjunction rather than widened alone. */
+const NT_HOUSE = /\bnorthern\s+trust\b|\bnt\s+col(?:l|lv|lective|tv)?\b|\bmfb\s+nt\b|\bnt\b/i;
+/* AND THE ONE NAME IN THOSE 91 THAT MUST NOT RESOLVE, found by reading them:
+ *   INVESTMENT OPTION | FIAM Core Plus Commingled Pool Class I 1NTBIT4
+ *   NT Agg Bond Index Fund NL T
+ * a parser weld of a Fidelity commingled pool and a Northern Trust bond trust.
+ * It names two houses' vehicles, so it names neither, and pricing it off either
+ * sheet puts one manager's fee on another's product. Same refusal the RealPath
+ * arm carries for the same reason; `\bnt\b` is what made this row reachable, so
+ * the veto ships WITH the widening rather than after it. */
+const NT_OTHER_HOUSE = /\bfiam\b|\bfidelity\b|\bvanguard\b|\bblackrock\b|\bstate\s+street\b|\bssga\b|\bt\.?\s*rowe\b|\bschwab\b|\bpimco\b|\bgalliard\b|\binvesco\b/i;
+/* The vehicle witness, asked of the NAME. `nl` is deliberately absent: it is two
+ * letters that collide with ordinary words, and the lending status is read
+ * separately by NT_LEND_* where a false positive costs a wrong class rather than
+ * a wrong vehicle. */
+const NT_IS_TRUST_NAME = /\bcollective\b|\bcoltv\b|\bcol\b|\bnon-?lend\w*\b|\bnonlen\b|\blending\b/i;
+const NT_TIER_ANY = /\btier\s*[-:(]?\s*([0-9a-z]{1,2})\b/i;
+const NT_TIER_NUM = /\btier\s*[-:(]?\s*(\d)\b/i;
+/* LENDING STATUS, AND THE TRAP THAT COST 35 ROWS AN EXACT FIGURE BEFORE IT WAS
+ * MEASURED. The first version read `\blending\b` for the lending class, which
+ * also matches the LENDING inside NON LENDING — so every ordinary non-lending
+ * name tripped both tests, hit the weld refusal below, and was withheld. The
+ * population was 35 rows across 29 spellings and READING them is what settled
+ * it: not one was a weld. A count alone would have looked like a guard working.
+ *
+ * So the lending test carries a negative lookbehind, and the separator is
+ * `[\s-]{0,4}` rather than one optional character on BOTH tests, because the
+ * filings spell it `Non-Lending`, `Non- lending`, `Non lending`, `Non-lending-`
+ * and `NON- LENDING`. Two of the 29 survived a one-character version — *a fix
+ * for one phrasing of a class is not a fix for the class.* */
+const NT_NONLEND = /\bnon[\s-]{0,4}lend\w*\b|\bnonlen\b|\bnl\b/i;
+const NT_LEND = /(?<!\bnon[\s-]{0,4})\blending\b/i;
+/* The index lines Northern Trust publishes a sheet for, each slug spelled as the
+ * fact sheet's own filename spells it so a key is traceable to its source.
+ * LONGEST-FIRST, because alternation is first-match and not longest-match: the
+ * ACWI-ex-US *IMI* branch must be asked before the plain ACWI-ex-US one, or
+ * every IMI row is priced off the non-IMI sheet.
+ *
+ * `All Country World Investable Market` WITHOUT an ex-US qualifier is
+ * DELIBERATELY ABSENT. It is ACWI *including* the US — a different index from
+ * ACWI ex-US IMI, which is the only one with a sheet — and mapping it would put
+ * one index's price on another. One row / 209,633 readers keeps its blank for
+ * that reason, and that is the correct trade. */
+const NT_LINE = [
+  /* THE IMI MARKER IS SPELLED TWO WAYS and one of them is not an abbreviation:
+   * `NT Collective ACWI ExUS Investable Mkt Idx – Non Lending Tier 4` carries no
+   * `IMI` token at all, and an IMI branch keyed only on that token handed the
+   * row to the plain ACWI-ex-US sheet — a different index. */
+  ["all-cntry-wrld-ex-us-imi",
+    /\ball\s+country\s+world\b(?=.*\bex[\s-]*us\b)(?=.*\b(?:imi|investable\s+(?:market|mkt))\b)|\bacwi\s*ex[\s-]*us\b(?=.*\b(?:imi|investable\s+(?:market|mkt))\b)/i],
+  ["acwi-ex-us", /\ball\s+country\s+world\b(?=.*\bex[\s-]*us\b)|\bacwi\s*ex[\s-]*us\b|\bacwi\s+ex\s+us\b|\bmsci\s+acwi\s+ex[\s-]*us\b/i],
+  ["r1000-growth", /\brussell\s*1000\s*growth\b|\br1000\s*growth\b/i],
+  ["r1000-value", /\brussell\s*1000\s*value\b|\br1000\s*value\b/i],
+  ["r2000", /\brussell\s*2000\b|\br2000\b/i],
+  /* THE CAP-SIZE SPELLINGS SHIP TOGETHER. `NT S&P MidCap 400 Index DC
+   * Non-Lending Fund-Tier 3` puts a size word between the `S&P` and the index
+   * number, which a `s&p\s*400` pattern cannot reach — and `S&P SmallCap 600
+   * Index Fund` does the same to the 600. Adding one and not the other is the
+   * failure mode this record names as worse than adding neither, so both are
+   * here. The index NUMBER is still required: `Northern Mid Cap Index` with no
+   * 400 is a Northern Funds MUTUAL fund and must not reach a trust's sheet. */
+  ["sp400", /\bs\s*&?\s*p\s*400\b|\bsp\s*400\b|\bmid\s?cap\s*400\b/i],
+  ["sp500", /\bs\s*&?\s*p\s*500\b|\bsp\s*500\b|\bs&p500\b/i],
+  ["sp600", /\bs\s*&?\s*p\s*600\b|\bsp\s*600\b|\bsmall\s?cap\s*600\b/i],
+  ["agg-bond", /\baggregate\s+bond\b|\bagg\s+bond\b/i],
+  ["eafe", /\beafe\b/i],
+  ["em", /\bemerging\s+market\w*\b/i],
+  ["ext-equity-mkt", /\bextended\s+equity\s+(?:market|mkt)\b|\bext\s+eq\s+mkt\b|\bextended\s+equity\b/i],
+  ["lt-govt-bond", /\blong-?\s?term\s+gov\w*\b/i],
+  ["tips", /\btips\b|\binflation-?\s?protected\b/i],
+];
+// eslint-disable-next-line no-unused-vars
+function northernTrustVehicleParts(n, house, type) {
+  if (!NT_HOUSE.test(house)) return null;
+  /* a name carrying another manager's vehicle names neither */
+  if (NT_OTHER_HOUSE.test(n)) return null;
+  /* the witness must be the VEHICLE, never the house's own `Trust` */
+  if (!NT_IS_TRUST_NAME.test(n) && !VEHICLE_TYPE_IS_TRUST.test(String(type || ""))) return null;
+  const line = NT_LINE.find(([, re]) => re.test(n));
+  if (!line) return null;
+  const family = `northern-trust::${line[0]}`;
+  const anyTier = n.match(NT_TIER_ANY);
+  if (!anyTier) return { family, classStated: false, key: null };
+  const num = n.match(NT_TIER_NUM);
+  /* a tier is stated but it is not one Northern Trust publishes (CT / J / H / C)
+   * — the class is pinned and unpriceable, so withhold rather than range */
+  if (!num) return { family, classStated: true, key: null };
+  const nonlend = NT_NONLEND.test(n), lend = NT_LEND.test(n);
+  /* A NAME CANNOT BE BOTH, and one that reads as both names neither — that shape
+   * is a parser weld of two menu rows, not a class. Reads 0 rows on the store
+   * today, by construction of the lookbehind above rather than by luck: it is
+   * reachable only by a name carrying a second, independent `lending` not
+   * preceded by `non`, which is exactly the weld it is here to refuse. */
+  if (nonlend && lend) return { family, classStated: true, key: null };
+  /* LENDING STATUS UNSTATED leaves the class only partly determined, so the
+   * honest answer is the family RANGE and not a guessed class: 42 rows /
+   * 387,653 readers. `classStated` is false here on purpose — it means "the
+   * filing pins the class", and a tier without a lending status does not. */
+  if (!nonlend && !lend) return { family, classStated: false, key: null };
+  return { family, classStated: true,
+    key: `${family}-trust-class-${nonlend ? "nl" : "l"}${num[1]}` };
+}
+
 /* A KEYED ANSWER WINS OVER A FAMILY-ONLY ONE, which is what preserves the old
  * fall-through EXACTLY. `vehicleKeyFor` used to read `if (trp) return trp` over
  * a KEY, so a T. Rowe name stating no class returned null and the Vanguard arm
@@ -2643,7 +2783,16 @@ function vehicleParts(name, iss, type) {
    * already gives. */
   const idx = vanguardIndexVehicleParts(n, house);
   if (idx && idx.key) return idx;
-  return trp || vg || sch;
+  /* Northern Trust is asked AFTER every older arm, keyed-answer-first like the
+   * rest, so it cannot move an answer any of them already gives. Unlike the
+   * Vanguard index arm it DOES return family-only objects — a band over its
+   * sourced tiers is the designed answer for a name that states no tier — so it
+   * must also join the fallback below, or `vehicleFamilyKeyFor` would never see
+   * it and 1,465 rows / 2.98M readers would keep a blank the sourcing paid for.
+   * It is placed LAST in that chain for the same reason it is asked last. */
+  const nt = northernTrustVehicleParts(n, house, type);
+  if (nt && nt.key) return nt;
+  return trp || vg || sch || nt;
 }
 
 function vehicleKeyFor(name, iss, type) {
