@@ -23988,4 +23988,4 @@ const SEC_TICKERS_PIN = {"key":"\u0000(*) Fidelity Freedom 2070","tk":"FRBDX"};
  * was not regenerated, so every key that change would add is silently
  * withheld — which is how 66 gain rows / 9,224 participants accumulated
  * unreported across five ships on 2026-10-11. */
-const SEC_TICKERS_CODE = "sha256:65dcadfc08174dcabb6e6f1e71379f488f01b04a140734cd5042aef90a3cc87b";
+const SEC_TICKERS_CODE = "sha256:b170392c3f1f8004384d9c7fc587b0b74d07b05dbe4f733a940d3f02c526745a";
