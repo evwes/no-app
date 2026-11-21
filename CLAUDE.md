@@ -1081,6 +1081,26 @@ the publish gate applied before any reader figure, and an accuracy-log entry.
   exact over all 4,349: **114 plans / 213,306 readers** where a subsequent-events
   or plan-amendment section is the SOLE cause and its effective date falls after
   the plan-year end; roth is sampled at 668-1,147 plans / ~1.36M.
+  **RE-DERIVED 2026-11-21 OVER THE POST-v207 STORE (4,306 after-tax yeses /
+  19.50M readers) AND THE AFTER-TAX FIGURE REPRODUCES EXACTLY: 114 / 213,306**,
+  as the measured 0 overlap with the negation class predicted. 78 of the 114 are
+  dated from the quote's OWN sentence and 36 from a NEIGHBOUR in the section;
+  39 plans / 81,018 readers are in-year and must NOT be withdrawn.
+  **AND 114 IS A FLOOR, NOT A CEILING.** The `CAUSAL + only the evaluation date`
+  bucket (9 plans / 10,402 readers, held OUT of the headline) contains **three
+  real defects the date extractor cannot see**: Simpson Manufacturing (3,516),
+  Ultra Clean (2,666) and Arcturus (226) each file *"On January 1, 2026, the
+  Company amended the Plan to allow after-tax…"* — the amendment date carried by
+  **"On ⟨date⟩, the Plan was amended"** rather than "effective ⟨date⟩", so `eff`
+  parses empty and the bucket's own name is wrong for them. *A fix for one
+  phrasing of a class is not a fix for the class*, met again, and here it costs
+  the SIZING rather than the repair.
+  **A WARNING ABOUT READING THIS SIZER'S OUTPUT, paid for the same night:** I
+  read nine members, found six that must not be withdrawn, and reported the
+  headline as a contaminated upper bound. All nine were from the QUARANTINE
+  buckets the script already excludes — evaluation-date-only and in-year — so
+  the contamination claim was about the bins, not the count. ***Check which
+  bucket a member came from before pricing it against the headline.***
   `scripts/subsequent-events-size.mjs` separates cause from coincidence by
   blanking the section length-preservingly and re-asking, so CAUSAL and LATENT
   are distinguished rather than assumed. **Two things the fix must not do, both
