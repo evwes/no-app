@@ -7,6 +7,70 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-21 (05:xxZ) — THE "OCR RE-ROLL" IS NOT AN OCR PHENOMENON: FOUR OF SIX DEGRADED FILINGS WERE PLAIN TEXT, AND A BADLY-PARSED FILING IS STAMPED CURRENT AND NEVER RETRIED
+
+**WHAT HAPPENED.** v207's re-parse (run #875) delivered its registered figures
+exactly — `aftertax` 4,349 → 4,306, `roth` 44,624 → 44,551, scalar 79.29 →
+79.25 — and also withdrew six lineups, which the merge raised as `reparse-loss`.
+Resolved through member plans with the SERVING condition applied: **7 plans /
+6,145 readers** lost a published fund menu (Hexcel 3,981, WD Management 826,
+St. Vincent De Paul Village 566, Impact Wellness 350, Belay 271, Sorinex 151).
+
+**THE SHIP CANNOT BE THE CAUSE, BY CONSTRUCTION.** `ce30127e` touches one
+pipeline-executed file; its single deletion is the `PARSER_VERSION` line and its
+203 added lines assign only `out.afterTax` and `out.roth`. Nothing in it reaches
+lineup confidence.
+
+**AND THE RECORDED CAUSE DOES NOT COVER IT.** `docs/accuracy-log.md` 2026-11-17
+attributes this class to the OCR rasteriser dropping pages. **Two of the six
+were OCR; FOUR were `ocr=0`** — plain `pdftotext` parses that fell 23→6, 35→2,
+25→3 and 30→2 rows — and `trace-filing.mjs` at that very HEAD parses Belay's
+filing to its full **35 rows, ratio 0.990, CONFIDENT**. So the re-roll lives in
+**what the run READS**, not in the rasteriser, and a cure keyed on OCR would
+miss two thirds of it. `dl` rose 163 → 214 on the same run: the nearest
+available witness, not proof.
+
+**WHY IT WOULD HAVE BEEN PERMANENT.** A filing whose DOWNLOAD fails keeps its
+entry and a stale `pv`, so later runs retry it. A filing that is fetched and
+parses BADLY is stamped at the CURRENT `pv` and is thereafter invisible to the
+work list. `confident -6` sits far inside the −200 reparse tolerance, so no
+coverage key, no audit threshold and no mirror count would ever have named these
+seven plans. **Only the merge's own `reparse-loss` triage did**, which is the
+check earning its keep.
+
+**THE REPAIR WORKS IN-SESSION.** `ONLY_ACKS_4I` over the six, at the same v207,
+restored all six to their exact prior counts (30, 35, 23, 25, 3, 9, every one
+`ok=true`); the audit's verdict inverted to `confident +6, vesting +1,
+lineups +5`, HIGH 12 → 6, READ-BEFORE-MIRRORING 8 → 2. Committed `1fd0e2c1`,
+mirrored `13a445fb` as a FAST-FORWARD, pages run 1309 success.
+
+**TWO MEASUREMENT ERRORS OF MINE, BOTH FLATTERING THE SHIP.**
+1. *The first loss count was circular and read a clean zero.* I asked
+   `servedLineup` against the POST-run index: all six acks returned `served: 0`,
+   i.e. no reader affected. The loss IS that index changing. Against the
+   before-index it is 7 plans / 6,145 readers. **Six of six reading zero is a
+   both-sided zero over a whole population**, which this record already says
+   reports on the query. The repaired figure is the PAIR of runs (index
+   disagreement 7 → 0); one run printing 0 cannot distinguish "repaired" from
+   "never measured", so that control now prints in the script itself.
+2. *"Nothing else moves" was derived from the change and asserted about the
+   run.* The write-set argument is sound and is not a claim about a universe-wide
+   re-parse.
+
+**AND A THIRD, on the convergence that followed:** `Object.keys(mtias.json)` is
+`{generated, count, trusts}`, so a trust comparison reported "main 3, branch 3,
+0 differences" where the real figure is **511**. `j.rows` on `plans-all.json`
+threw in seconds and named the real key; `3` survived as a plausible census of
+master trusts. *A guessed SHAPE is worse than a guessed field NAME, and worse
+still when the wrong number looks like the right kind of number.*
+
+**PREVENTION.** CLAUDE.md's re-roll entry is retitled away from OCR with the
+four text cases named; the before/after-index rule, the wrapper-key rule and the
+change-versus-run pre-registration rule are added to the method rules. The real
+cure — *a parse strictly WORSE than the stored one must not overwrite it* — is
+still unbuilt, still needs a `PARSER_VERSION` bump, and is now known to need a
+TEXT-path test and not only an OCR one.
+
 ## 2026-11-21 — v207: WE PUBLISHED "✓ AVAILABLE" ON FILINGS THAT SAY "NOT PERMITTED", AND THE STORE HELD THE REFUTATION ONE KEY AWAY
 
 **WHAT WAS WRONG.** 76 plans / 175,656 published readers saw `after-tax` or

@@ -443,6 +443,24 @@ official Form 5500 instructions in `docs/form5500-instructions-2025.txt`
   fallback-served ack needs a workflow dispatch, not a session. The real cure —
   an OCR parse strictly WORSE than the stored one must not overwrite it — is
   unbuilt and needs a `PARSER_VERSION` bump. `docs/accuracy-log.md` 2026-11-17.
+  **AND THE NAME OF THIS ENTRY IS WRONG: IT IS NOT AN OCR PHENOMENON. MEASURED
+  2026-11-21 ON v207's RUN #875.** Six acks degraded, costing 7 plans / 6,145
+  readers a published menu (Hexcel 3,981, WD Management 826, St. Vincent De Paul
+  566, Impact Wellness 350, Belay 271, Sorinex 151). **Two were OCR. FOUR WERE
+  `ocr=0`** — plain text parses that fell 23->6, 35->2, 25->3 and 30->2 rows —
+  and `trace-filing.mjs` at that same HEAD parses Belay's filing to its full
+  **35 rows, ratio 0.990, CONFIDENT**. The ship cannot be the cause BY
+  CONSTRUCTION: its one pipeline file deletes only the `PARSER_VERSION` line and
+  its 203 added lines assign only `out.afterTax` and `out.roth`. So the re-roll
+  is in **what the run READS**, it reaches the TEXT path as well as the raster
+  path, and the cure must be keyed on that rather than on OCR. `dl` rose
+  163 -> 214 the same run, which is the nearest available witness and not proof.
+  **THE REPAIR IS A FORCED RE-PARSE AND IT WORKS IN-SESSION**: `ONLY_ACKS_4I`
+  over the six restored all six to their exact prior counts (30, 35, 23, 25, 3,
+  9, every one `ok=true`) and the audit's verdict inverted to `confident +6,
+  vesting +1, lineups +5`, HIGH 12 -> 6. *So the loss is recoverable the moment
+  it is NOTICED* — and `confident -6` sits far inside the -200 tolerance, so
+  nothing but the merge's own `reparse-loss` triage would ever name it.
 - Data-bot commits rebase before push; when force-moving branches, mirror
   `claude/wampo-401k-live-nx1t4o` → `main` (`git push --force-with-lease=main
   origin claude/wampo-401k-live-nx1t4o:main`). CAUTION: the weekly cron runs
@@ -1050,6 +1068,12 @@ the publish gate applied before any reader figure, and an accuracy-log entry.
   four refusals it earned: *"Except for Roth contributions, the Plan does not
   allow for after-tax contributions"* must withdraw after-tax and KEEP Roth, so
   one sentence is right for one arm and wrong for the other.
+  **DELIVERED AND MIRRORED:** run #875 landed the registration EXACTLY
+  (`aftertax` 4,349 -> 4,306, `roth` 44,624 -> 44,551, `pv` 207, scalar
+  79.29 -> 79.25, `contributions_shown` 67.14 -> 66.96); mirrored `13a445fb` as
+  a fast-forward, pages run 1309 success. **The run ALSO degraded six unrelated
+  acks** (7 plans / 6,145 readers), repaired in `1fd0e2c1` — see the re-roll
+  entry in the gotchas, whose OCR framing that finding refutes.
   `docs/accuracy-log.md` 2026-11-21.
 - **A FUTURE-EFFECTIVE AMENDMENT READ AS A CURRENT FEATURE — SIZED 2026-11-20 at
   ~780-1,260 plans / ~1.5-1.6M readers, NINE TIMES the negation class, and NOT
@@ -1141,11 +1165,19 @@ measures cancellations* — but **two failures in one day with two causes is a
 CLUSTER, which a 30-day rate is the wrong shape to describe**, and the rate I
 committed was stale within the hour. **The cost was real: for twenty minutes the
 ship was mirrored, verified on the tree, and SERVED TO NOBODY.** *A verified
-mirror is not a served page.* Remedy, cheap and unbuilt: after a mirror, read
-`conclusion` on the run whose `head_sha` IS main's HEAD — already one of the two
-recorded ways to verify a deployment, and no scheduled job does it. It is also a
-SCALING signal: 5,287 crawlable pages plus a 12.17 MB `plans-list.json` grow
-every refresh. `docs/accuracy-log.md` 2026-11-06 (18:2xZ).
+mirror is not a served page.* It is also a SCALING signal: 5,287 crawlable pages
+plus a 12.17 MB `plans-list.json` grow every refresh.
+`docs/accuracy-log.md` 2026-11-06 (18:2xZ).
+**THE REMEDY IS BUILT AND THIS ENTRY CALLED IT "cheap and unbuilt" FOR A
+FORTNIGHT.** `mirror.sh:253` runs `scripts/deploy-check.mjs --wait` after the
+push and prints the verdict — the v207 mirror ended `deploy-check: DEPLOYED —
+pages run 1309 on 13a445fb concluded success in 1.8 min (attempt 1)`, which is
+exactly the prescribed check (read `conclusion` on the run whose `head_sha` IS
+main's HEAD) done automatically. So **a mirror through `mirror.sh` needs no
+hand deployment check**; only a push that bypasses it does. *A procedure note
+can be made false by a shipped automation, and nothing fails to tell you* —
+this file already records that lesson about the merge job's fast-forward step,
+one section away, and the same sentence shape outlived its truth here.
 
 **THE TICKER TABLE DRIFTS WITH THE STORE AND NO GATE SEES IT — found
 2026-11-12 by getting the opposite wrong first.** `sec-tickers.js` is keyed on
@@ -1460,6 +1492,18 @@ reason the queue was — it is re-read at the start of every turn.
   ROW. A guessed SHAPE fails as a clean zero where a guessed field NAME throws,
   and *a count that omits its own motivating case looks exactly like a count that
   includes it.* **Pin the expected COUNT, not merely presence.**
+  **AND A WRAPPER-KEY COUNT READS AS A DATA COUNT.** `Object.keys(mtias.json)`
+  is `{generated, count, trusts}`, so a trust comparison reported "main 3,
+  branch 3, 0 differences" where the real figure is **511** — `j.rows` on
+  `plans-all.json` threw in seconds and named the real key, while `3` survived
+  as a plausible census of master trusts and nearly licensed a mirror.
+- **A BEFORE/AFTER SCREEN MUST ASK THE *BEFORE* SIDE'S INDEX.** v207's six
+  losses read `served: 0` on all six — no reader affected — because
+  `servedLineup` was handed the POST-run `lineups-index.json`, and the loss IS
+  that index changing. Against the before-index it is 7 plans / 6,145 readers.
+  Same shape as the rule below, and *the repaired figure is the PAIR of runs*
+  (index disagreement 7 -> 0): one run printing 0 cannot tell "repaired" from
+  "never measured", so the control belongs in the script's own output.
 - **A SCREEN KEYED ON THE PAGE'S OWN VERDICT CANNOT SEE A DEFECT THAT CONSISTS
   OF THAT VERDICT BEING WRONG** — re-keying one structurally made a class 85x
   larger.
@@ -1651,6 +1695,13 @@ reason the queue was — it is re-read at the start of every turn.
   delivered against 122 registered as a ceiling), and **a projection measured
   with a MORE GENEROUS instrument than production OVER-states** (3.6x). Ask
   which fields the harness reads are inputs and which the change rewrites.
+  **AND "NOTHING ELSE MOVES" IS A CLAIM ABOUT THE CHANGE THAT CANNOT BE MADE
+  ABOUT THE RUN.** v207's write set is provably `out.afterTax` and `out.roth`
+  and nothing else — and its run moved `confident -6`, `lineups -5`,
+  `vesting -1`, `dl +51`, because a `PARSER_VERSION` bump re-parses the UNIVERSE
+  and the re-roll moves what it moves. v206 did the same and this file predicted
+  it; v207 registered it wrongly anyway. Register the change's keys, then say
+  separately what a full re-parse is expected to jitter.
 - **A SAFETY ARGUMENT BELONGS TO A MECHANISM, NOT TO A FILE.** Reusing one
   verbatim on a change in the same function mispredicted by 15x, because the new
   arm fired on a different disjunct. Name the disjunct. **And adding a WRITER to
