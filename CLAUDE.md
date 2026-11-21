@@ -895,13 +895,19 @@ old-version tail. A second large `pv` cohort means a PARTIAL store
 harsher threshold because a 403 PRESERVES the stored entry and an extraction
 failure DESTROYS it.
 
-**THE HIGH BASELINE IS 12 ON THE NEWEST TRAIL LINE AND THE STANDING SET IS 6,
-AND IT HAS BEEN 4, 7, 6, 13 AND 12 INSIDE A FORTNIGHT — SO DERIVE IT FROM THE
-TRAIL'S `high` KEY AND NEVER FROM THIS SENTENCE.** The newest line is v207's CI
-merge: the 6 standing plus 6 `reparse-loss` findings raised from the run
-artifact, and the local audit over the REPAIRED store reads 6 again, so this is
-the predicted self-clearing split and not a new defect. The
-6 standing findings are **4 `contrib` + `lineup-overshoot` + `fair-value-note`**
+**THE HIGH BASELINE IS 6 — SO DERIVE IT FROM THE TRAIL'S `high` KEY AND NEVER
+FROM THIS SENTENCE.** It has read 4, 7, 6, 13 and 12 inside a fortnight, and
+**the 13 and the 12 each appear on EXACTLY ONE LINE** — v206's and v207's CI
+merges, where `reparse-loss` findings are raised from a run artifact that exists
+only in CI — each cleared by the very next scheduled run. Measured over the 25
+lines before 2026-11-21: **6 on 23 of them.** So `record-check` derives this
+claim from the **MODE of recent lines, not the newest one**, which it had been
+doing until 2026-11-21 and which made the check a TREADMILL — two edits to this
+file per re-parse, each stale within hours, and site-test red on the dev branch
+every time it rebased onto a main whose data had moved. *A habitually red gate
+teaches its reader to ignore it*, which is the thing this check exists to
+prevent. The mode still FOLLOWS a real change, since the cron delivers every
+~4.4h. The 6 standing findings are **4 `contrib` + `lineup-overshoot` + `fair-value-note`**
 plus `fabricated-name`, with `audit-generic-names` sitting above its 230
 escalation threshold so that HIGH is STANDING rather than absent.
 ***A hand-corrected number goes stale exactly as fast as the one it replaced***,

@@ -52,6 +52,36 @@ if (!ledger || ledger.overall == null) { console.error("DERIVATION CONTROL FAILE
 
 const num = (s) => Number(String(s).replace(/,/g, ""));
 
+/* THE HIGH BASELINE IS DERIVED FROM THE MODE OF RECENT LINES, NOT THE NEWEST
+ * ONE, AND THAT IS A MEASUREMENT RATHER THAN A CONVENIENCE.
+ *
+ * Keyed on the newest line this claim is a TREADMILL: a PARSER_VERSION bump's
+ * CI merge raises `reparse-loss` findings from a run artifact that exists only
+ * in CI, so the line reads 6+k, and the very next scheduled run clears it back
+ * to 6. Over the 25 lines before 2026-11-21 the value is **6 on 23 of them**,
+ * with 12 and 13 appearing exactly ONCE each — both on a re-parse line, both
+ * self-cleared by the next run. So the newest-line derivation demands TWO edits
+ * to CLAUDE.md per re-parse, each of which is stale within hours, and it turns
+ * site-test red on the dev branch every time the branch rebases onto a main
+ * whose data moved. *A habitually red gate teaches its reader to ignore it* —
+ * this record's own rule, and the thing this check exists to prevent.
+ *
+ * The MODE is right for the word "baseline": it is the standing value, it
+ * ignores a single-line excursion, and it still FOLLOWS a genuine change —
+ * the cron delivers every ~4.4h, so a real new standing value becomes the mode
+ * within a couple of days. Both figures are printed so a reader sees the
+ * excursion as well as the baseline. */
+const HIGH_WINDOW = 25;
+function modalHigh() {
+  const vals = trailLines.slice(-HIGH_WINDOW).map((l) => l.high).filter((h) => h != null);
+  if (!vals.length) return null;
+  const counts = new Map();
+  for (const v of vals) counts.set(v, (counts.get(v) || 0) + 1);
+  let best = null, bestN = -1;
+  for (const [v, n] of counts) if (n > bestN || (n === bestN && v < best)) { best = v; bestN = n; }
+  return { mode: best, n: bestN, of: vals.length, newest: vals[vals.length - 1] };
+}
+
 /* Each claim: a PIN that must exist, a way to read the claimed value out of
  * the text just after it, and the derivation it must equal. */
 const CLAIMS = [
@@ -59,8 +89,11 @@ const CLAIMS = [
     label: "HIGH baseline",
     pin: "THE HIGH BASELINE IS",
     read: () => { const m = /THE HIGH BASELINE IS \*{0,2}(\d+)/.exec(flat); return m && num(m[1]); },
-    derive: () => trail.high,
-    note: "docs/coverage-history.jsonl `high` on the newest line",
+    derive: () => { const h = modalHigh(); return h && h.mode; },
+    note: (() => { const h = modalHigh(); return h
+      ? `docs/coverage-history.jsonl \`high\`: MODE of the last ${h.of} lines = ${h.mode} (${h.n}/${h.of}); newest line reads ${h.newest}` +
+        (h.newest !== h.mode ? " — a re-parse excursion that self-clears, see the derivation note in this file" : "")
+      : "docs/coverage-history.jsonl `high`"; })(),
   },
   {
     label: "universe plans",
