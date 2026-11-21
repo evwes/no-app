@@ -103,7 +103,14 @@ const CONTROL_REFUSE_ABOVE = +one("--control-max", 0.25);
  * ------------------------------------------------------------------------- */
 async function loadExtractor(spec, label) {
   if (!spec) throw new Error(`${label}: no extractor given`);
-  const looksLikePath = spec.endsWith(".mjs") || spec.startsWith(".") || spec.startsWith("/") || spec.includes("/");
+  /* `origin/main` is a REF that contains a slash, and treating every slash as
+   * a path made the most natural baseline unusable. A spec counts as a path
+   * when it is spelled like one — .mjs, ./, / — or when it actually EXISTS;
+   * everything else goes to the ref branch, which resolves through git and
+   * throws when git cannot. The pin is untouched: a MISSPELLED .mjs path still
+   * throws rather than falling back to the working tree. */
+  const looksLikePath = spec.endsWith(".mjs") || spec.startsWith(".") || spec.startsWith("/") ||
+    (spec.includes("/") && existsSync(path.resolve(ROOT, spec)));
   if (looksLikePath && !/^[0-9a-f]{7,40}$/i.test(spec)) {
     const abs = path.resolve(ROOT, spec);
     /* THE PIN. A non-existent path must throw here and not fall back to the
@@ -155,7 +162,11 @@ function buildPopulation() {
   return pop;
 }
 
-const FIX = JSON.parse(readFileSync(path.join(ROOT, "scripts/tax-flag-fixtures.json"), "utf8"));
+/* TAX_FLAG_FIXTURES exists for ONE purpose: to let the arm-scoping check above
+ * be given a fixture the store does not satisfy, so that its refusal can be
+ * SEEN rather than asserted. Same shape as MIRROR_GATE_MAIN_REF. The workflow
+ * never sets it and the default is the tracked file. */
+const FIX = JSON.parse(readFileSync(process.env.TAX_FLAG_FIXTURES || path.join(ROOT, "scripts/tax-flag-fixtures.json"), "utf8"));
 
 /* ---------------------------------------------------------------------------
  * one run of the comparison
@@ -332,12 +343,31 @@ function pins(R, unexpected, mustKeep) {
   const untested = new Set(R.untested.map((x) => `${x.ack}:${x.arm}`));
 
   for (const c of FIX.cases) {
+    /* ARM SCOPING, and it is the gate's own bookkeeping rather than a loss.
+     * A fixture declares in `expect` the arms it IS a fixture for. Waste
+     * Management stores afterTax:true and no roth key at all, so on
+     * `--arm roth` it is CORRECTLY absent from the published-yes population —
+     * and asserting its presence there failed the roth gate with a clean
+     * substantive verdict behind it (0 unexpected losses, 0/2596 in the tail).
+     * A gate that fails for a reason that is not a loss teaches its reader to
+     * pass it flags, so the presence checks are PER ARM. A fixture with no arm
+     * in this run is REPORTED as out of scope and not silently skipped: a pin
+     * that quietly disappears proves nothing either. */
+    const armsHere = Object.keys(c.expect).filter((a) => ARMS.includes(a));
+    if (!armsHere.length) {
+      console.log(`  NOTE: fixture ${c.id} declares ${Object.keys(c.expect).join("/")} only — out of scope for this ${ARMS.join("/")} run`);
+      continue;
+    }
     const inPop = R.pop.find((x) => x.ack === c.ack);
-    if (!inPop) { fails.push(`fixture ${c.id} (${c.ack}): not in the published-yes population — the store changed under this fixture, or the population query is wrong`); continue; }
+    const absent = armsHere.filter((a) => !inPop || !inPop[a]);
+    if (absent.length) {
+      fails.push(`fixture ${c.id} (${c.ack}): declares ${armsHere.join("/")} and the store publishes no yes on ${absent.join("/")} — the store changed under this fixture, or the population query is wrong`);
+      continue;
+    }
     if (!R.chosen.some((x) => x.ack === c.ack)) { fails.push(`fixture ${c.id}: not selected by this run — a pin the run never reaches proves nothing`); continue; }
     if (!read(c.ack)) { fails.push(`fixture ${c.id}: no text available — run with --download`); continue; }
-    for (const [arm, roles] of Object.entries(c.expect)) {
-      if (!ARMS.includes(arm)) continue;
+    for (const arm of armsHere) {
+      const roles = c.expect[arm];
       const key = `${c.ack}:${arm}`;
       if (untested.has(key)) {
         /* the baseline could not reproduce the store here: report, never pass
