@@ -1788,6 +1788,18 @@ reason the queue was — it is re-read at the start of every turn.
   commit messages about CI mechanics constantly, so the trap is live on every
   one. Same shape as a character class written for a concept, and as the form's
   own printed questions defeating a text-level screen.
+  **AND IT BIT AGAIN ON 2026-11-21 WITH THIS RULE ON SCREEN, in the worst
+  place: the commit that FIXED a red gate.** `29220c17` allowlisted the
+  `tax-flag-gate.mjs` orphan and its message said *"created under ⟦the
+  bracketed token⟧ (92e5ddba)"* in prose, so GitHub suppressed the very run
+  that would have proved `gate-coverage` green — the same shape as the regen
+  entry's "the commit that FIXES the gate creates no run to prove it", reached
+  by a different route. *Reading the rule is not obeying it; the check is a
+  `grep -n skip` of the message before `git commit`.*
+  **THE REMEDY, once tripped:** do NOT amend and force-push over a verification
+  gap — `site-test.yml` carries `workflow_dispatch`, so dispatch it on the ref
+  and read the `conclusion`. That leaves the suppressed commit honest in history
+  and still gets the verdict.
 - **Write scripts to a FILE, never inline in `node -e` or a heredoc** — backticks
   and parens trigger shell command substitution. **A Python heredoc needs a RAW
   string**, or every `\b` becomes a backspace and the arm silently matches
