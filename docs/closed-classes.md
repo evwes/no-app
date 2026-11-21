@@ -7431,3 +7431,47 @@ Pages run 1288 success.
 - **`schwabassetmanagement.com` is allowlisted and still unusable** — 403 with a
   real body, the site refusing after the proxy allowed it. Do not re-probe it
   expecting a live fetch.
+
+## 2026-11-21 — REFUTED: a sibling-consensus date gate on the fund-facts YTD
+
+**The motivating observation was real and my first framing of it was wrong.**
+Today's daily refresh moved 7,387 YTD figures with their dates together and
+**two entries changed VALUE while keeping the same as-of date** — IWN 13.1% ->
+10.84% and CGGG -11.57% -> -16.89%, both dated 2026-11-20. A YTD as of a fixed
+date cannot be two numbers, so one copy is wrong. Six prior daily refreshes
+produced **0** such pairs against 7,889-8,240 healthy moves each, so the
+same-date value change IS a one-off. (The 43-entry burst of 2026-11-16 is the
+manual Fidelity batch, a different mechanism.)
+
+**I then wrote that yesterday's pair was the defect and today's refresh had
+corrected it. That claim was not measured and is false as stated.** Walking all
+37 committed assets: **IWN has been dated one day AHEAD of the sibling median on
+every asset since 2026-11-04, and CGGG since 2026-11-16.** Today is the first
+day they are NOT ahead — because the median caught up to 2026-11-20 while they
+stayed there. So the date offset is a STANDING property of those two entries,
+not yesterday's anomaly, and the two screens answer different questions: *a
+same-date value change* and *an ahead-of-median date* are not the same class.
+
+**THE GATE IS REFUTED BY ITS OWN FIRING RATE.** The proposed refusal — withhold
+a YTD whose as-of is later than the file's own median, which needs no market
+calendar and found the pair — **would have withheld a figure on 24 of 37
+committed assets**, including the 91-entry Fidelity batch (FXAIX, FSSNX, …
+@11-13 against a median of 11-12) and the Vanguard batch (VFIAX, VIMAX, …
+@11-11 against 11-03). Those were genuinely FRESHER, not wrong. Shipping it
+would withdraw true answers from two thirds of versions to catch one pair:
+*a guard that withdraws a TRUE answer because it is INCOMPLETE makes the page
+less honest, not more.* Do not rebuild it keyed on sibling dates.
+
+**What the existing guard cannot see, stated precisely so a later route starts
+from it.** `gen-fund-facts-asset.mjs:205`/`:254` refuse a YTD unless
+`f.ytdAsOf <= today`, measured against the RUN's own clock — so on a 03:00 ET
+run on 2026-11-20 the date 2026-11-20 is not future and passes. The hazard is
+"dated ahead of the last SETTLED close", which needs a market calendar this repo
+does not have. *A cheap proxy for a calendar was the whole appeal of the median,
+and the median is what the rate refutes.*
+
+**STILL OPEN, and it is a SOURCING question, not a gate one:** which of IWN's
+two figures for 2026-11-20 is right, and the same for CGGG. Only the issuer page
+settles it, so it belongs to the `fund-facts` agent, the sole writer of
+`data/fund-facts.json`. Reader impact is UNSIZED — 16 filed names across the two
+entries, which is rows, not readers, and the renderRow differential was not run.
