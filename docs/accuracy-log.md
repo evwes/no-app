@@ -7,6 +7,72 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-21 (21:xxZ) — THE DAILY YTD REFRESH HAS NEVER ONCE RUN AT 3 AM, SO AN ETF'S PAGE DATES A MID-SESSION READING WITH THAT DAY'S RECEIPT
+
+**WHAT WAS WRONG.** Two published entries changed VALUE under an UNCHANGED
+as-of date between consecutive refreshes — IWN 13.1 -> 10.84 and CGGG -11.57 ->
+-16.89, both dated 2026-11-20. A YTD as of a fixed date cannot be two numbers,
+so one copy was published wrong. The `fund-facts` agent re-read both pages: the
+detail blocks state 10.84% and -16.89% *as of 11/20/2026* exactly, and the
+discarded values match NEITHER page's header (19.59, -5.37), so the known
+header/detail confusion was ruled out and the extractor was cleared by running
+the shipped slice over the fetched text.
+
+**THE CAUSE IS THE SCHEDULE.** The cron is `0 8 * * *` — 03:00 ET, chosen on the
+owner's requirement that the figure be *the previous day's*. All EIGHT scheduled
+runs to date started **6h51m to 10h05m late**: 09:51 to 13:05 Eastern, every one
+inside the 09:30–16:00 session. A mutual fund's page carries the prior NAV
+strike, so most entries are unaffected; an ETF's page rolls its detail block to
+the current session's date while the session is still running. The run stored a
+mid-session reading wearing that day's receipt, and the next day's run read the
+same date and wrote the real close.
+
+**SIZE, ENUMERATED RATHER THAN INFERRED.** The at-risk set is exactly "entries
+whose `ytdAsOf` equals the date its own refresh ran": 2 of 13,540 after the
+11-20 run, **0 of 13,540 after the 11-21 run**, and over all 39 committed states
+of the store it fires on 9, never more than 2, always those same two tickers.
+*The change-of-value signature is NOT the size* — it appears only when the next
+run happens to re-read the same date; had it read a newer one, the stale
+intraday figure would have been replaced silently. So the population must be
+enumerated by date equality, never by the symptom that revealed it.
+
+**THE CHANGE.** `scripts/fund-facts-issuer.mjs` refuses a YTD dated on or after
+the Eastern day when the page is read before 16:15 ET, holding it under
+`_unsettled` like every other read-but-dropped figure. The merge keeps the
+stored entry when nothing is written, so the reader keeps the last SETTLED
+close — this withholds a non-final figure, it does not blank a cell. The report
+prints the held count **even at zero**: a guard that speaks only when it fires
+is indistinguishable from a guard that is not there.
+
+**WHY NOT THE PUBLISH GATE.** `gen-fund-facts-asset.mjs` cannot know whether the
+figure it is handed was read before or after a close, so tightening its
+`f.ytdAsOf <= today` to `<` would blank a figure an agent sourced legitimately
+in the evening — withdrawing a TRUE answer, the failure mode this record keeps
+paying for. *The fetch knows; the gate belongs where the knowledge is.*
+
+**WHAT PREVENTS IT.** Four clock cases in `scripts/fund-facts-extract-test.mjs`
+over ONE page text, varying only the clock, asserting BOTH directions (held
+mid-session; published after the close; published when dated yesterday) with the
+fee required to survive all of them. Three mutations — guard deleted, pre-close
+condition dropped, `>=` loosened to `>` — each break exactly one case, so both
+conditions are load-bearing and neither is inert. The future-dated case is
+labelled OUT OF SCOPE and asserted to pass through, because the checker and the
+publish gate refuse it: *naming a case "future dates are refused" while
+asserting a pass is a comment that contradicts its own assertion.*
+
+**AND THE FIRST FIX WAS WRONG, WHICH IS WHY THIS ONE IS KEYED WHERE IT IS.** The
+same symptom was first attacked with a sibling-consensus date gate — withhold a
+figure dated later than the file's median. It found the pair and it was REFUTED
+the same day by its own firing rate: 24 of 37 committed assets, including the
+Fidelity and Vanguard batches, which were genuinely fresher
+(`docs/closed-classes.md` 2026-11-21). The key that works is not a consensus
+across funds but **the run's own clock**, which needs no market calendar and
+fires on 2 entries where the median gate fired on two thirds of versions.
+*A guard must be priced by its firing rate over the live data before it is
+written.*
+
+---
+
 ## 2026-11-21 (05:xxZ) — THE "OCR RE-ROLL" IS NOT AN OCR PHENOMENON: FOUR OF SIX DEGRADED FILINGS WERE PLAIN TEXT, AND A BADLY-PARSED FILING IS STAMPED CURRENT AND NEVER RETRIED
 
 **WHAT HAPPENED.** v207's re-parse (run #875) delivered its registered figures

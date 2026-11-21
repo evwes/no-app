@@ -134,6 +134,54 @@ for (const r of REFUSE) {
   }
 }
 
+/* THE CLOCK CASES: ONE PAGE, FOUR CLOCKS, so the only thing varying is the
+ * question "has today's close happened in Eastern time?".
+ *
+ * The defect these pin, measured 2026-11-21: the daily refresh is CONFIGURED
+ * for 03:00 ET and all eight scheduled runs started 6h51m-10h05m late, inside
+ * the 09:30-16:00 session. An ETF page (IWN, CGGG) rolls its DETAIL BLOCK to
+ * the current session's date while the session is still running, so the run
+ * stored a mid-session reading wearing that day's receipt and the real close
+ * replaced it the next day — visible only as a value that changed under an
+ * unchanged as-of date.
+ *
+ * Both directions are asserted on purpose. `held` fails if the guard is too
+ * narrow; the two `publish` cases fail if it is too wide, which is the
+ * dangerous direction — withdrawing a TRUE answer is the failure mode this
+ * project keeps paying for, and a median-based version of this gate was
+ * refuted the same day for firing on 24 of 37 committed assets. The fee must
+ * survive every case: the guard withholds a YTD, not an entry. */
+const IWN_PAGE = "Net Expense Ratio YTD Return x. $198.99 -4.08 (-2.01%) 0.24% 19.59% "
+  + "Quote data as of close 11/20/2026 As of 10/31/2026 Prospectus ... "
+  + "YTD Return is adjusted for possible sales charges. 13.10% as of 11/20/2026";
+const CLOCKS = [
+  { why: "dated today, read MID-SESSION (the real 11-20 run, 11:47 ET) — HELD",
+    now: { day: "2026-11-20", min: 11 * 60 + 47 }, ytd: null },
+  { why: "dated today, read AFTER the close — published, it IS a close",
+    now: { day: "2026-11-20", min: 16 * 60 + 30 }, ytd: 13.1 },
+  { why: "dated yesterday, read mid-session — published (the normal path, 13,538 of 13,540 entries)",
+    now: { day: "2026-11-21", min: 10 * 60 + 57 }, ytd: 13.1 },
+  /* SCOPE, stated rather than implied: a date in the FUTURE is not this
+   * guard's job. fund-facts-check.mjs refuses an unsourced or future-dated
+   * figure and gen-fund-facts-asset.mjs re-applies that refusal at the publish
+   * gate (`f.ytdAsOf <= today`), so this one is expected to pass through here
+   * and be stopped there. Naming the case "future dates are refused" and
+   * asserting a pass would be a comment that contradicts its own assertion. */
+  { why: "dated ahead of the ET day — OUT OF SCOPE here; the checker and the publish gate refuse it",
+    now: { day: "2026-11-19", min: 20 * 60 }, ytd: 13.1 },
+];
+for (const c of CLOCKS) {
+  const e = extract(IWN_PAGE, "https://example.invalid/x", c.now);
+  const okYtd = (e.ytd ?? null) === c.ytd;
+  const okHeld = c.ytd === null ? e._unsettled === "2026-11-20" : e._unsettled === undefined;
+  const okEr = e.er === 0.24 && e.erAsOf === "2026-10-31";
+  if (okYtd && okHeld && okEr) console.log(`ok   clock ${c.now.day} ${String(Math.floor(c.now.min / 60)).padStart(2, "0")}:${String(c.now.min % 60).padStart(2, "0")} ET — ${c.why}`);
+  else {
+    bad++;
+    console.log(`MISMATCH clock ${c.now.day} ${c.now.min}m: ${c.why}\n         ytd=${e.ytd ?? "null"} (want ${c.ytd}) _unsettled=${e._unsettled} er=${e.er}@${e.erAsOf}`);
+  }
+}
+
 /* AND THE CONTROL THAT THE CONTROLS CAN FAIL: feed the first case's own correct
  * text and assert it is NOT refused, so a change that rejects everything cannot
  * satisfy every must-refuse case above and read as a pass. */

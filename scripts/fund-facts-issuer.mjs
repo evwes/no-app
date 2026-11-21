@@ -178,7 +178,47 @@ function isoDate(m) {
   return null;
 }
 
-function extract(text, url) {
+/* "IS THIS A SETTLED CLOSE?" IS A QUESTION IN EASTERN TIME AND NOWHERE ELSE.
+ *
+ * MEASURED 2026-11-21. The owner's requirement is that this refresh run at
+ * 3 AM Eastern so the figure it stores is the PREVIOUS day's close. The cron
+ * says 08:00 UTC and all eight scheduled runs to date started 6h51m-10h05m
+ * LATE — 09:51 to 13:05 Eastern, every one of them INSIDE the 09:30-16:00
+ * session. Free public runners de-prioritise cron, which this record already
+ * calls "fiction", so the intended 3 AM slot has never once been met and
+ * nothing says so: every run reports success.
+ *
+ * Most pages are unaffected because a mutual fund's page carries the prior NAV
+ * strike. An ETF's does not: IWN and CGGG rolled their DETAIL BLOCK to the
+ * current session's date mid-session, so the refresh stored a mid-session
+ * reading wearing that day's receipt. Over all 39 committed states of the
+ * store the shape appears on 9, NEVER more than 2 entries, always those same
+ * two tickers — each silently replaced by the real close the next day, which
+ * is the only reason it was visible at all (a value that changed under an
+ * unchanged as-of date).
+ *
+ * Keyed on the only two facts that settle it: the date the page states, and
+ * whether the close has happened in Eastern time. NOT on a sibling consensus
+ * or a median — that gate was built and REFUTED the same day for firing on 24
+ * of 37 committed assets, withdrawing genuinely fresher figures
+ * (docs/closed-classes.md 2026-11-21).
+ *
+ * It deliberately does NOT live in gen-fund-facts-asset.mjs's publish gate.
+ * The generator cannot know whether the figure it is handed was read before or
+ * after a close, so a `< today` rule there would blank a figure an agent
+ * sourced legitimately in the evening — withdrawing a TRUE answer, the failure
+ * mode this project keeps paying for. The fetch knows; the gate belongs where
+ * the knowledge is. */
+const SETTLED_AFTER_ET = 16 * 60 + 15;      // 4:15pm ET: the 4pm close, plus a cushion
+function etNow(d = new Date()) {
+  const p = new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York",
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", hour12: false }).formatToParts(d);
+  const g = (t) => p.find((x) => x.type === t).value;
+  return { day: `${g("year")}-${g("month")}-${g("day")}`, min: +g("hour") * 60 + +g("minute") };
+}
+
+function extract(text, url, now = etNow()) {
   const out = { src: url };
   const g = QUOTE_GROUP.exec(text);
   if (!g) {
@@ -224,6 +264,17 @@ function extract(text, url) {
    * "read it but dropped it", which is a different finding from "the page does
    * not carry it" -- the two have different remedies. */
   if (erDate) { out.er = er; out.erAsOf = erDate; }
+
+  /* A FIGURE DATED TODAY, READ BEFORE TODAY'S CLOSE, IS NOT A CLOSE. Held
+   * under `_` like every other read-but-dropped figure, so the report can tell
+   * "unsettled" from "the page does not carry it" — different remedies. And
+   * because the merge below keeps the stored entry when nothing is written,
+   * the reader keeps the last SETTLED close rather than watching a cell go
+   * blank: this withdraws a non-final figure, it does not withdraw an answer. */
+  if (ytd != null && ytdDate && ytdDate >= now.day && now.min < SETTLED_AFTER_ET) {
+    out._unsettled = ytdDate;
+    return out;
+  }
   if (ytd != null && ytdDate) { out.ytd = ytd; out.ytdAsOf = ytdDate; }
   return out;
 }
@@ -233,6 +284,7 @@ const rep = { names: 0, noTicker: 0, tried: 0, reached: 0, blocked: 0,
   er: 0, ytd: 0, erNoDate: 0, ytdNoDate: 0, rejected: 0, wrote: 0, byGrade: {} };
 const today = new Date().toISOString().slice(0, 10);
 const misses = [];
+const unsettled = [];   // tickers whose page gave a same-day figure before the close
 
 const QUEUE = ONLY
   ? ONLY.map((tk) => ({ name: `(--tickers ${tk})`, readers: 0, _tk: tk }))
@@ -260,7 +312,11 @@ for (const w of QUEUE) {
   const text = detag(r.body);
   const e = extract(text, url);
   if (e._er != null) { if (e.er != null) rep.er++; else rep.erNoDate++; }
-  if (e._ytd != null) { if (e.ytd != null) rep.ytd++; else rep.ytdNoDate++; }
+  if (e._ytd != null) {
+    if (e.ytd != null) rep.ytd++;
+    else if (e._unsettled) { rep.ytdUnsettled = (rep.ytdUnsettled || 0) + 1; unsettled.push(`${t.tk}=${e._ytd}@${e._unsettled}`); }
+    else rep.ytdNoDate++;
+  }
 
   if (e._reject) rep.rejected++;
   if (VERBOSE) {
@@ -325,6 +381,11 @@ console.log(`\nnames ${rep.names} · no usable ticker ${rep.noTicker} · fetched
 console.log(`match grades: ${Object.entries(rep.byGrade).map(([k, v]) => `${k} ${v}`).join(" · ")}`);
 console.log(`extracted WITH a date: er ${rep.er} · ytd ${rep.ytd}`);
 console.log(`read but DROPPED for having no date: er ${rep.erNoDate} · ytd ${rep.ytdNoDate}`);
+/* Printed even at zero, and named. A guard that only speaks when it fires is
+ * indistinguishable from a guard that is not there. */
+console.log(`HELD as not-yet-settled (dated today, read before the 4pm ET close): ${rep.ytdUnsettled || 0}`
+  + (unsettled.length ? `  ${unsettled.slice(0, 8).join(" ")}` : "")
+  + `\n   each keeps its last settled close in the store — nothing is blanked.`);
 console.log(`REFUSED by the column controls: ${rep.rejected}`);
 console.log(`wrote ${rep.wrote} entries${DRY ? " (DRY — nothing written)" : " to data/fund-facts.json"}`);
 if (rep.blocked) {
