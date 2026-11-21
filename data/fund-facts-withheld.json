@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-20",
+ "generated": "2026-11-21",
  "reason": "A MEASUREMENT, NOT A GATE — the gate is per ROW and lives in app.js, which compares shareClassToken(filed name) against the sourced asset's `cls`. This file lists the tickers where at least one published row's filing states a class the symbol is not, so the class can be read and the resolver fixed; nothing reads it to decide what to publish. Withholding these tickers WHOLESALE was the first design and it cost 182,106 correctly-filed rows to protect 6,190.",
  "producedBy": "scripts/fund-facts-class-screen.mjs --emit",
  "tickers": {
