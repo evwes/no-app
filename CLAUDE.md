@@ -895,8 +895,12 @@ old-version tail. A second large `pv` cohort means a PARTIAL store
 harsher threshold because a 403 PRESERVES the stored entry and an extraction
 failure DESTROYS it.
 
-**THE HIGH BASELINE IS 6, AND IT HAS BEEN 4, 7, 6 AND 13 INSIDE ELEVEN DAYS
-— SO DERIVE IT FROM THE TRAIL'S `high` KEY AND NEVER FROM THIS SENTENCE.** The
+**THE HIGH BASELINE IS 12 ON THE NEWEST TRAIL LINE AND THE STANDING SET IS 6,
+AND IT HAS BEEN 4, 7, 6, 13 AND 12 INSIDE A FORTNIGHT — SO DERIVE IT FROM THE
+TRAIL'S `high` KEY AND NEVER FROM THIS SENTENCE.** The newest line is v207's CI
+merge: the 6 standing plus 6 `reparse-loss` findings raised from the run
+artifact, and the local audit over the REPAIRED store reads 6 again, so this is
+the predicted self-clearing split and not a new defect. The
 6 standing findings are **4 `contrib` + `lineup-overshoot` + `fair-value-note`**
 plus `fabricated-name`, with `audit-generic-names` sitting above its 230
 escalation threshold so that HIGH is STANDING rather than absent.
@@ -944,9 +948,12 @@ estimate: it refutes itself the moment a new import appears.
 
 **THE LEDGER IS THE QUEUE.** `node scripts/ledger-report.mjs` prints the one
 participant-weighted scalar and the addressable gap per field; it is DERIVED and
-must never be copied forward. Re-derived 2026-11-17 from run #861's own merge
-(v206): **115,641 plans / 119,907,098 participants / overall 79.29%**,
-87,476,850 participant-cells addressable, with addressable gaps
+must never be copied forward. Re-derived 2026-11-21 from run #875's own merge
+(v207): **115,641 plans / 119,907,098 participants / overall 79.25%**,
+87,692,493 participant-cells addressable, with addressable gaps
+(v207 withdrew a false after-tax/Roth yes from 76 plans, so `contributions`
+fell 67.14% -> 66.96% and the scalar 79.29 -> 79.25 ON PURPOSE; the per-field
+figures below are the v206 line and are re-derived, never read, from here)
 
 | field | shown | readers with no answer | owner agent |
 |---|---|---|---|
