@@ -27,191 +27,100 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { loadPlans } from "./lib-schema.mjs";
 import { servedLineup } from "./lib-ledger.mjs";
+import { taxFlagDenialClause } from "./lib-4i.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const arg = (k) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : ""; };
 const ONLY = arg("--field");
 const SHOW_ALL = process.argv.includes("--all");
 
-/* The tax noun phrase, per field. `roth` must also match inside `Non-Roth`,
- * which is itself a DENIAL of non-Roth after-tax and an affirmation of nothing
- * — that spelling is why the roth arm fires on BMO. */
-const SUBJECT = {
-  afterTax: /\bafter[\s-]?tax\b|\bpost[\s-]?tax\b|\bnondeductible\b|\bnon-?deductible\b/i,
+/* THE PREDICATE IS THE PARSER'S, IMPORTED, NOT A COPY. It used to be defined
+ * here, and that is the duplicate-definition trap this record names: nothing
+ * executes a comment asserting two regex sets are equivalent, and one
+ * re-implementation of a shipped lookup published 65% false findings into a
+ * watched metric. `taxFlagDenialClause` now lives in scripts/lib-4i.mjs beside
+ * the veto that uses it, so this screen measures exactly what the parser will
+ * do — and the controls below are therefore controls on the SHIPPED code. */
+const pick = (text, field) => taxFlagDenialClause(text, field);
+const flags = (text, field) => !!pick(text, field);
+/* the reason a quote was refused is no longer introspectable from outside the
+ * parser, so this reports only WHETHER it was refused, by asking the predicate
+ * about the clause that would otherwise have matched. A refusal nobody can read
+ * is indistinguishable from a screen that never reached the row, so the shape
+ * breakdown is derived by re-testing each clause against the subject and a
+ * generic negation rather than by naming the refusal that fired. */
+const GENERIC_NEG = /\bnot\b|\bno\b|\bcannot\b|\bineligible\b/i;
+const refusalOf = (text, field) => {
+  if (pick(text, field)) return "";
+  for (const c of String(text || "").split(/[.;:]/))
+    if (TAX_SUBJECT_PROBE[field].test(c) && GENERIC_NEG.test(c)) return "refused-by-shape";
+  return "";
+};
+const TAX_SUBJECT_PROBE = {
+  afterTax: /\bafter[\s-]?tax\b|\bpost[\s-]?tax\b|\bnon-?deductible\b/i,
   roth: /\broth\b/i,
 };
-/* NEGATION, as a presence test. Each alternative is a form seen in this corpus;
- * `\bno\b` is deliberately absent because it matches "no later than" and every
- * other ordinary use — a character- or word-shaped screen picks up everything
- * that shares its shape. */
-const NEGATION = new RegExp([
-  String.raw`\b(?:are|is|was|were)\s+not\s+(?:permitted|allowed|available|offered|accepted|made)\b`,
-  /* AN INTERVENING ADVERB AND THE PAST TENSE ARE BOTH THE SAME CLASS, and both
-   * were found by diffing this screen against an independent one: *"does not
-   * CURRENTLY permit participants to make after-tax contributions"* (Smithbucklin,
-   * 1,043 readers) and *"During 2025, the Plan DID not permit Roth elective
-   * deferrals"* (E-Z Excavating). A class has a POSITION, a TENSE and an
-   * INTERVENING WORD — this record's own list, met again. */
-  /* `elect` IS NOT IN THIS LIST, and it was, for one revision. Adding it reached
-   * *"Eligible employees who do not elect to make a contribution deferral..."* —
-   * auto-enrolment language where the negation governs the EMPLOYEE's election
-   * and not the plan's terms. The one case that seemed to need it, *"does not
-   * elect automatic enrollment and does not permit Roth elective deferrals"*,
-   * matches on `does not permit` anyway. A widening measured at +1 true member
-   * and +1 false one is not a widening worth having. */
-  String.raw`\b(?:does|do|did)\s+not\s+(?:\w+ly\s+)?(?:allow|permit|provide|offer|accept)\b`,
-  String.raw`\bnot\s+permitted\s+to\s+make\b`,
-  String.raw`\bmay\s+not\s+(?:make|elect|contribute)\b`,
-  String.raw`\bcannot\s+(?:make|elect|contribute)\b`,
-  String.raw`\bno\s+(?:after[\s-]?tax|roth|post[\s-]?tax)\b`,
-  String.raw`\bineligible\s+to\s+make\b`,
-  String.raw`\bis\s+not\s+a\s+feature\b`,
-  String.raw`\bnot\s+eligible\s+to\s+make\b`,
-].join("|"), "i");
 
-/* CONTROLS, above the loop that uses them, so a broken screen costs one minute
- * rather than a whole pass — and each case is one where the named condition is
- * the ONLY protection. */
+/* CONTROLS ON THE SHIPPED PREDICATE, above the loop that uses it so a broken
+ * screen costs one minute rather than a whole pass. Every sentence here is a
+ * real filed one, and each refusal has a case where it is the ONLY protection —
+ * a case protected twice proves neither. */
 const MUST_FLAG = [
   ["After-tax contributions are not permitted by the 6 Plan.", "afterTax"],
   ["Participants are not permitted to make contributions on a traditional after-tax basis.", "afterTax"],
   ["The Plan does not allow for Roth or after-tax contributions.", "afterTax"],
   ["The Plan does not allow for Roth or after-tax contributions.", "roth"],
   ["Voluntary after-tax contributions to the Plan are not permitted.", "afterTax"],
-  ["Non-Roth after-tax contributions by participants are not permitted.", "roth"],
+  ["No after-tax contributions may be made to the Plan.", "afterTax"],
+  /* the four repairs an independent screen found in this one */
+  ["The Plan does not currently permit participants to make after-tax contributions.", "afterTax"],
+  ["During 2025, the Plan did not permit Roth elective deferrals.", "roth"],
+  ["Roth elective deferrals were not permitted under the Plan during the year ended December 31, 2025.", "roth"],
+  ["Participants age 60 through 63 may make additional catch-up contributions of up to $11,250 annually in 2025 Roth contributions are not permitted.", "roth"],
+  /* AND THE SAME TWO QUOTES MUST STILL WITHDRAW ON THE OTHER ARM — one sentence
+   * that is right for one field and wrong for the other is the sharpest case in
+   * this class, and a control that checked only the roth side would have let a
+   * silent loss of both through. */
+  ["Except for Roth contributions, the Plan does not allow for after-tax contributions.", "afterTax"],
+  ["Except for the Roth contributions, after-tax contributions are not allowed.", "afterTax"],
+  ["The Plan does not permit Roth or after-tax contributions.", "afterTax"],
+  ["The Plan does not permit Roth or after-tax contributions.", "roth"],
 ];
 const MUST_NOT_FLAG = [
   /* affirmative, and the whole correct-yes population looks like these */
   ["Participants may elect to make after-tax contributions to the Plan.", "afterTax"],
   ["The Plan permits Roth elective deferrals.", "roth"],
   ["Participants may contribute on a pre-tax or after-tax basis.", "afterTax"],
-  /* a negation that governs something ELSE in a sentence that mentions the tax
-   * word — the screen keys on co-occurrence, so this is its sharpest risk */
+  /* a negation governing something ELSE in a sentence that mentions the tax
+   * word — co-occurrence is not governance, and this is the sharpest risk */
   ["Participants may make after-tax contributions; loans are not permitted.", "afterTax"],
-  /* the loan boilerplate that must never fire on either arm */
   ["Principal and interest is paid through after-tax payroll deductions.", "afterTax"],
-  /* ONE CASE PER REFUSAL, each the real filed sentence, and each a case where
-   * that refusal is the ONLY thing standing between the row and the fix — a
-   * case protected twice proves neither. */
+  /* one per clause-level refusal */
   ["The Plan does not accept a rollover of after-tax contributions.", "afterTax"],
   ["Loans are not available from a participant's after-tax contribution.", "afterTax"],
   ["Hourly union participants employed at the Company's Browntown facility are not permitted to make after-tax contributions.", "afterTax"],
   ["Prior to May 1, 2025, participants were not allowed to contribute after-tax contributions.", "afterTax"],
   ["There were no after-tax contributions to the Plan for the year ended December 31, 2025.", "afterTax"],
   ["It is not available for after-tax Contributions.", "afterTax"],
-  /* and one per refusal added after reading the ROTH arm's own members */
   ["Roth deferrals are not permitted to be used for notes.", "roth"],
   ["Participants are not permitted to borrow from their Roth deferrals and earnings.", "roth"],
   ["Roth deferrals are not allowed for in-service distributions in accordance with the Plan document provisions.", "roth"],
   ["Participants' pre-tax and/or Roth contributions were not permitted to exceed $23,500 for 2025.", "roth"],
   ["Participants may not make pre-tax and Roth contributions during the same plan year.", "roth"],
   ["However, participants may not make after-tax or Roth IRA contributions.", "roth"],
-  /* auto-enrolment: the negation governs the EMPLOYEE's election, not the plan */
   ["Eligible employees who do not elect to make a contribution deferral are automatically enrolled at 3%.", "afterTax"],
+  /* FIVE EARNED BY THE GATE, which refused the ship and named them. Each sits
+   * on a superseded or unserved entry, so no enumeration of what READERS see
+   * could have found them — a predicate is judged over the whole population it
+   * runs on, not over the rows a reader happens to see today. */
+  ["Contributions to the Plan include (i) pre-tax salary reduction contributions (or in some cases, after-tax contributions if employed in a foreign jurisdiction that does not permit pre-tax contributions), (ii) matching contributions", "afterTax"],
+  ["Employees may not contribute more than 50% of their total base compensation in pre-tax and after-tax contributions subject to the IRS dollar limits described above.", "afterTax"],
+  ["Such employees are not eligible to make pre-tax elective contributions or Roth contributions to the Plan.", "roth"],
+  ["Except for Roth contributions, the Plan does not allow for after-tax contributions.", "roth"],
+  ["Except for the Roth contributions, after-tax contributions are not allowed.", "roth"],
+  /* the audit finding, whose denying clause carries none of the audit framing */
+  ["It was noted that one participant elected for no Roth contribution from bonus check but still employee contributions were withheld.", "roth"],
 ];
-/* FOUR REPAIRS, each with the filed sentence that found it — these are
- * MUST-FLAG cases, added to the list above after an independent screen reached
- * members this one silently dropped. */
-MUST_FLAG.push(
-  ["The Plan does not currently permit participants to make after-tax contributions.", "afterTax"],
-  ["During 2025, the Plan did not permit Roth elective deferrals.", "roth"],
-  ["Roth elective deferrals were not permitted under the Plan during the year ended December 31, 2025.", "roth"],
-  ["Participants age 60 through 63 may make additional catch-up contributions of up to $11,250 annually in 2025 Roth contributions are not permitted.", "roth"],
-);
-/* CO-OCCURRENCE IS NOT GOVERNANCE, and the control below caught the first
- * version of this function doing exactly that. `Participants may make after-tax
- * contributions; loans are not permitted.` carries the subject and a negation
- * and means the OPPOSITE of a denial — the negation governs LOANS. A screen
- * keyed on "both tokens appear in the quote" would have published that row as a
- * wrong claim and, worse, would have inflated the population with affirmative
- * rows, which is the direction that makes a withdrawal look justified.
- *
- * So the test is per CLAUSE: some single clause must contain BOTH the tax noun
- * phrase and a negation. Clause boundaries are `.` `;` and `:` — the corpus
- * writes these denials as whole sentences or as semicolon-separated list items,
- * and a comma is NOT a boundary because `after-tax contributions, however, are
- * not permitted` is one clause for this purpose. */
-const CLAUSE = /[.;:]/;
-
-/* SIX SHAPES REACH THE SCREEN AND ONLY ONE IS THE DEFECT. Reading all 71 members
- * of the first version refuted most of its own count — the largest member was
- * Dick's Sporting Goods at 64,943 readers on *"The Plan does not accept a
- * rollover of after-tax contributions"*, which denies a ROLLOVER of after-tax
- * money and says nothing about whether the plan offers after-tax. *A screen that
- * finds its own conclusion in every member it reads has not been shown the
- * members that would refute it* — so these are refusals, each keyed on the
- * PRESENCE of its own shape, each with a case below where it is the only
- * protection.
- *
- * Two of them are the more interesting kind, because they point the other way:
- *  - a LOAN or WITHDRAWAL sourced from after-tax money PRESUPPOSES after-tax
- *    money, so the clause is evidence FOR the flag, not against it.
- *  - a PRIOR-TO prohibition that has since been lifted is the mirror image of
- *    the subsequent-events defect: the flag may be correct for the reported
- *    year and wrong only about history. */
-const REFUSE = [
-  /* the negated verb governs a ROLLOVER / TRANSFER of after-tax money in */
-  ["rollover-only", /\broll(?:over|ing)?s?\b|\btransfers?\s+(?:of|from)\b|\bdirect\s+rollover\b/i],
-  /* the negated verb governs a LOAN, WITHDRAWAL or DISTRIBUTION taken FROM it.
-   * `notes`, `borrow` and `in-service distributions` were added after reading
-   * the roth arm's own members: *"Roth deferrals are not permitted to be used
-   * for notes"*, *"not permitted to borrow from their Roth deferrals"* and
-   * *"not allowed for in-service distributions"* each PRESUPPOSE Roth money and
-   * were being counted as denials of it. A fix for one phrasing of a class is
-   * not a fix for the class. */
-  ["loan-or-withdrawal-source", /\bloans?\b|\bnotes?\b|\bborrow\w*\b|\bwithdrawals?\b|\bdistributions?\b|\bhardship\b/i],
-  /* a LIMIT or a CAP is not a denial — it presupposes the contribution type:
-   * *"pre-tax and/or Roth contributions were not permitted to exceed $23,500"* */
-  /* THE LIMIT MUST BIND TO THE NEGATION, not merely share a clause with it.
-   * Singapore Airlines files *"...catch-up contributions of up to $11,250
-   * annually in 2025 Roth contributions are not permitted."* — two sentences
-   * welded with no period, so a clause-wide `up to $\d` refused a real denial.
-   * The refusal now requires the limit to be what is negated. */
-  ["limit-not-denial", /\bnot\s+(?:permitted|allowed|eligible)\s+to\s+exceed\b|\bnot\s+(?:permitted|allowed)\s+in\s+excess\s+of\b|\bmay\s+not\s+exceed\b|\bare\s+limited\s+to\b/i],
-  /* a restriction on COMBINING two types presupposes both:
-   * *"may not make pre-tax and Roth contributions during the same plan year"* */
-  ["combining-restriction", /\bsame\s+plan\s+year\b|\bboth\b|\bsimultaneous\w*\b|\bconcurrent\w*\b|\bin\s+the\s+same\b/i],
-  /* a Roth IRA is a different vehicle from a designated Roth account, so
-   * *"may not make after-tax or Roth IRA contributions"* settles nothing here */
-  ["roth-ira-not-designated", /\broth\s+ira\b/i],
-  /* the prohibition is scoped to a NAMED SUBSET, so the plan offers it to others */
-  ["subset-population", /\bemployees\s+of\b|\bhighly\s+compensated\b|\bunion\b|\bbargaining\b|\bfacility\b|\blocation\b|\bdivision\b|\bemployed\s+at\b|\beligible\s+for\s+the\b/i],
-  /* a PAST prohibition, since lifted */
-  ["temporal-prior", /\bprior\s+to\b|\beffective\s+(?:as\s+of\s+)?\w+\s+\d{1,2},?\s+\d{4}\b|\buntil\b|\bbeginning\b|\bbefore\s+\w+\s+\d{1,2},?\s+\d{4}\b/i],
-  /* a statement about the YEAR'S ACTIVITY, not about the plan's terms */
-  /* `during the (plan) year` was a disjunct here and it was WRONG: in
-   * *"Roth elective deferrals were not permitted under the Plan during the year
-   * ended December 31, 2025"* it dates a real denial rather than describing
-   * activity, and refusing it silently dropped a true member. The refusal now
-   * requires the existential itself. */
-  ["zero-activity", /\bthere\s+(?:were|was)\s+no\b|\bno\s+such\s+contributions\s+were\b|\bno\s+\w+\s+contributions\s+were\s+made\b/i],
-  /* the negated subject is a PRONOUN whose referent is some other feature */
-  ["ambiguous-referent", /^\s*it\s+(?:is|was)\s+not\b/i],
-];
-
-/* the surviving shape: a clause carrying the subject AND a negation AND none of
- * the six refusals */
-const flags = (text, field) => !!pick(text, field);
-const pick = (text, field) => {
-  for (const c of String(text).split(CLAUSE)) {
-    if (!SUBJECT[field].test(c) || !NEGATION.test(c)) continue;
-    const r = REFUSE.find(([, re]) => re.test(c));
-    if (r) continue;                      /* this clause is one of the six */
-    return c.trim();
-  }
-  return null;
-};
-/* and the reason a quote was refused, for the audit trail — a refusal nobody can
- * read is indistinguishable from a screen that never reached the row */
-const refusalOf = (text, field) => {
-  const hits = new Set();
-  for (const c of String(text).split(CLAUSE)) {
-    if (!SUBJECT[field].test(c) || !NEGATION.test(c)) continue;
-    const r = REFUSE.find(([, re]) => re.test(c));
-    if (r) hits.add(r[0]);
-  }
-  return [...hits].join("+");
-};
 
 let bad = 0;
 for (const [t, f] of MUST_FLAG)

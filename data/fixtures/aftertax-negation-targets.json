@@ -1,33 +1,16 @@
 {
  "_schema": "ENUMERATED target set for the after-tax negation fix. The screen in scripts/tax-flag-contradiction.mjs proposed these candidates; EVERY ONE WAS READ BY HAND and the two it got wrong are in `excluded` with the sentence that rejected them. A withdrawal needs an enumerated, filing-verified set and not a predicate, so the fix targets THIS LIST and the gate asserts it. Readers are DISTINCT participants resolved through member plans. Re-derive with: node scripts/tax-flag-contradiction.mjs --all --field afterTax",
- "derived": "2026-11-20",
+ "derived": "2026-11-21",
  "field": "afterTax",
  "storedTrueAndServed": null,
- "candidates": 39,
+ "candidates": 37,
  "targets": 37,
  "targetReaders": 155101,
- "excluded": [
-  {
-   "ack": "20260731111218NAL0021364547001",
-   "ein": "131102020",
-   "pn": "020",
-   "sponsor": "The New York Times Company",
-   "planYear": 2025,
-   "readers": 2813,
-   "quote": "Basic and additional contributions may be made on a Before-Tax, After-Tax, or Roth basis, provided, however, IAMAW Employees may not make contributions on an After-Tax basis. The",
-   "excludedBecause": "AFFIRMS after-tax and carves out one union: \"...may be made on a Before-Tax, After-Tax, or Roth basis, provided, however, IAMAW Employees may not make contribution...\" — the flag is CORRECT. The subset refusal missed it because \"IAMAW Employees\" carries no word in the subset vocabulary."
-  },
-  {
-   "ack": "20261006144329NAL0024224033001",
-   "ein": "770080465",
-   "pn": "002",
-   "sponsor": "Here North America, Llc",
-   "planYear": 2025,
-   "readers": 1571,
-   "quote": "The Plan does not allow for voluntary after-tax contributions for employees working in the United States.",
-   "excludedBecause": "SCOPED to a workforce, not the plan: \"...does not allow for voluntary after-tax contributions for employees working in the United States.\" Whether that is effectively plan-wide is not settled by the quote, and a withdrawal must be certain."
-  }
- ],
+ "excluded": [],
+ "handExclusionsRetiredIntoThePredicate": {
+  "20260731111218NAL0021364547001": "AFFIRMS after-tax and carves out one union: \"...may be made on a Before-Tax, After-Tax, or Roth basis, provided, however, IAMAW Employees may not make contribution...\" — the flag is CORRECT. The subset refusal missed it because \"IAMAW Employees\" carries no word in the subset vocabulary.",
+  "20261006144329NAL0024224033001": "SCOPED to a workforce, not the plan: \"...does not allow for voluntary after-tax contributions for employees working in the United States.\" Whether that is effectively plan-wide is not settled by the quote, and a withdrawal must be certain."
+ },
  "unsupportedNotContradicted": [],
  "plans": [
   {

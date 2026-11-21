@@ -7,6 +7,143 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-21 — v207: WE PUBLISHED "✓ AVAILABLE" ON FILINGS THAT SAY "NOT PERMITTED", AND THE STORE HELD THE REFUTATION ONE KEY AWAY
+
+**WHAT WAS WRONG.** 76 plans / 175,656 published readers saw `after-tax` or
+`Roth` reported as offered where the plan's own audited note denies it. Waste
+Management (47,047) stored
+
+    afterTax:     true
+    afterTaxText: "After-tax contributions are not permitted by the 6 Plan."
+
+and `app.js:4080` rendered that as **"✓ Available"**, the crawlable page as
+*"Yes (per the filing)"*. The quote shown to the reader was the sentence
+refuting the claim beside it. **No new source was needed and no download: the
+flag and its own evidence sit one key apart in every lineup entry**, which is
+why `scripts/tax-flag-contradiction.mjs` is a store-side screen and exact.
+
+**THE CHANGE (v207).** A post-hoc veto beside the existing after-tax REMOVAL
+veto, keyed on the quote the arms already chose — so the arms are untouched, no
+row that does not already publish a flag can move, and the only rows that can
+are ones whose displayed evidence contradicts their displayed claim. Plus a
+subject-level lookbehind: **`Roth` inside `Non-Roth` is not Roth.** BMO
+(29,119, the largest member of that arm) files *"Non-Roth after-tax
+contributions by participants are not permitted"*; arm 1 matched the hyphenated
+form and published designated Roth as available on a sentence that never
+mentions it. That flag is **UNSUPPORTED, not contradicted** — a weaker claim —
+so it is withdrawn by its own test and reported as its own class.
+
+**THIRTEEN REFUSALS, FOUR OF THEM EARNED BY THE GATE REFUSING THE SHIP.** Reading refuted most of the first screen's count, and its largest
+member: Dick's Sporting Goods, 64,943 readers, on *"The Plan does not accept a
+rollover of after-tax contributions"* — a refusal of after-tax money coming IN,
+silent on whether the plan offers after-tax. ***Co-occurrence of a tax word and
+a negation is not governance***, so the test is per CLAUSE: *"Participants may
+make after-tax contributions; loans are not permitted"* carries both and means
+the opposite. Two refusals point the OPPOSITE way to the defect — a loan or note
+taken FROM after-tax money presupposes it exists, and a *"prior to May 1, 2025"*
+prohibition since lifted may make the flag right. One more is directional:
+a clause that AFFIRMS the subject and then carves out a group is ambiguous, and
+*ambiguity must not withdraw* — the New York Times grants a
+Before-Tax/After-Tax/Roth basis and excludes one union, so its flag is correct.
+The affirmation test reaches FORWARD to the subject, which is what spares the
+real denial *"No after-tax contributions may be made to the Plan."*
+
+**AN INDEPENDENT SCREEN FOUND FOUR GAPS IN MINE, AND MY REPAIR ADDED A FIFTH.**
+Diffing against the gate agent's screen surfaced 20 acks mine never considered:
+an intervening adverb (*"does not CURRENTLY permit"*), the past tense (*"the
+Plan DID not permit"*), a `zero-activity` refusal so wide it swallowed *"were
+not permitted … during the year ended December 31, 2025"*, and a
+`limit-not-denial` refusal that refused a Roth denial welded to a *"up to
+$11,250"* sentence with no period between. Repairing them, I added `elect` to
+the verb list and it reached auto-enrolment language — *"employees who do not
+elect to make a contribution deferral"* — where the negation governs the
+EMPLOYEE's choice. **A widening measured at +1 true and +1 false is not a
+widening worth having**, so it was dropped. The agent's screen has its own gap
+and it is the one this record names most: it does not apply the SERVING
+condition, so it counts superseded filings — Quanex appears twice, under an old
+ack and its current one. *Neither count was right; the enumeration is.*
+
+**THE EVIDENCE.** The veto reproduces the hand-read enumeration exactly —
+37/37 after-tax and 44/44 roth targets reached, 2/2 and 2/2 read-and-rejected
+spared, 0 of 5 pinned correct yeses withdrawn. `scripts/tax-flag-gate.mjs`
+holds the must-keep set; its `--selftest` proves the pin three ways (missing
+path, bad ref, wrong-exports module all throw) and then shows an over-wide
+mutant veto losing **370 of 1,027 judged flags, 9,235,260 readers**, naming
+Walmart, Target on both arms, Kroger, FedEx, UPS and Mayo — so the harness is
+demonstrably able to see a loss before being trusted to report none. The ten-
+specimen `parser-gate` is green, including both v206 Roth controls.
+
+**PRE-REGISTERED:** `aftertax` 4,349 → 4,306 (−43) and `roth` 44,624 → 44,551
+(−73, 22 of them by the non-Roth test alone). Those are CEILINGS, not point
+estimates — a filing re-fetched to a different quote can move either way. The
+parser-side counts exceed the 37/44 reader-facing enumeration because the trail
+counts PLANS and my enumeration counted SERVED plans; unserved entries publish
+nothing, so readers see the smaller figure. **Nothing else moves**: the veto
+reads only `afterTaxText`/`rothText` and writes only `afterTax`/`roth`. **The
+ledger scalar must go DOWN** — as it did when 2R stopped being read as Roth,
+which withdrew a false yes from 8,549,974 readers. *A number that only ever
+rises is not measuring anything.*
+
+**THE GATE REFUSED THE SHIP ONCE, AND THAT IS THE WHOLE REASON IT EXISTS.** Run
+exhaustively over all 4,349 after-tax flags it reported **41 withdrawals /
+158,222 readers with no `--expect-loss`** and told me to read every one against
+its filing. Five were wrong, and every one sits on a SUPERSEDED or UNSERVED
+entry — so no enumeration of what READERS see could have found them. *A
+predicate is judged over the whole population it runs on, not over the rows a
+reader happens to see today.* The four new refusals: the negation's object is
+the OTHER tax type (Cleary Gottlieb, 3,100 readers — *"after-tax contributions
+if employed in a foreign jurisdiction that does not permit PRE-TAX
+contributions"*, where the negation governs a foreign jurisdiction's law and the
+sentence AFFIRMS after-tax); a cap phrased as a combined limit (*"may not
+contribute more than 50% … in pre-tax and after-tax contributions"*); a subset
+named with `such`, which carries no group noun; and EXCEPT-FOR-THE-SUBJECT,
+which is the sharpest of the four because **the same sentence is right for one
+arm and wrong for the other** — *"Except for Roth contributions, the Plan does
+not allow for after-tax contributions"* must withdraw after-tax and KEEP Roth,
+which no clause-only test can express. The object test is span-local and
+subject-aware, which is what leaves the real target *"The Plan does not permit
+Roth or after-tax contributions"* intact: there the subject IS inside the
+negated object.
+
+**AND THEN THE GATE FAILED FOR A REASON THAT WAS NOT A LOSS, WHICH IS ITS OWN
+DEFECT.** The roth arm came back `GATE FAILED` on top of a clean substantive
+verdict — 0 unexpected losses on the exact top-150, 0 of 2,596 in the tail draw
+— because `pins()` asserted every fixture's ack is in the published-yes
+population without consulting the ARM. Waste Management stores `afterTax: true`
+and no roth key, so on `--arm roth` it is CORRECTLY absent, and the fixture that
+motivated the whole ship read as a broken pin. ***A gate that fails for a reason
+that is not a loss teaches its reader to pass it flags***, so the presence
+checks are now per arm, keyed on the `expect` the fixture already declares, and
+a fixture with no arm in the run is REPORTED as out of scope rather than
+silently skipped — a pin that quietly disappears proves nothing either. Shown
+failing by name: `TAX_FLAG_FIXTURES` (the same lever shape as
+`MIRROR_GATE_MAIN_REF`) points it at a copy where Waste Management declares
+`roth`, and it refuses. The same read found `--vs origin/main` unusable — the
+path/ref test counted any slash as a path — so the most natural baseline threw
+while the pin it protects still throws on a misspelled `.mjs`.
+
+**AND THE HAND EXCLUSIONS ARE NOW RETIRED INTO THE CODE.** The four rows I had
+excluded by reading them — the New York Times affirming a
+Before-Tax/After-Tax/Roth basis, Here North America scoping to "employees
+working in the United States", the audit finding — are refused by
+`taxFlagDenialClause` itself, so the predicate now proposes EXACTLY the
+enumerated 37 and 44 with no hand filtering at all. The fixture keeps them under
+`handExclusionsRetiredIntoThePredicate`, because the reason a row is spared is
+worth more than the fact that it is. The screen also stopped carrying its own
+copy of the predicate and now IMPORTS the parser's: *nothing executes a comment
+asserting two regex sets are equivalent.*
+
+**WHAT THIS DOES NOT FIX, and it is nine times larger.** A future-effective
+amendment read as a current feature: ~780–1,260 plans / ~1.5–1.6M readers,
+sized the same day. It is a separate decision and is NOT in v207. One claim
+about it in the queue was refuted here by measurement: Cortech's roth flag was
+said to be doubly caused, so that a negation veto would leave the headline case
+wrong. Its stored `rothText` IS the denial sentence, so the veto fixes it — the
+double causation is real as an isolated experiment and irrelevant to the shipped
+parser, because the arm that won kept the denial and the subsequent-events
+sentence never became the quote. *An experiment on a fragment is not an
+experiment on the path.*
+
 ## 2026-11-20 — THE 2K AFTER-TAX COVERAGE QUESTION IS CLOSED BY MEASUREMENT, AND SIZING IT FOUND TWO DEFECTS THAT OUTRANK IT
 
 **WHAT WAS ASKED.** `contributions` is the largest addressable ledger gap —

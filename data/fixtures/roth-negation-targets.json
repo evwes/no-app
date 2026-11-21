@@ -1,45 +1,17 @@
 {
  "_schema": "ENUMERATED target set for the after-tax negation fix. The screen in scripts/tax-flag-contradiction.mjs proposed these candidates; EVERY ONE WAS READ BY HAND and the two it got wrong are in `excluded` with the sentence that rejected them. A withdrawal needs an enumerated, filing-verified set and not a predicate, so the fix targets THIS LIST and the gate asserts it. Readers are DISTINCT participants resolved through member plans. Re-derive with: node scripts/tax-flag-contradiction.mjs --all --field afterTax",
- "derived": "2026-11-20",
+ "derived": "2026-11-21",
  "field": "roth",
  "storedTrueAndServed": null,
- "candidates": 47,
+ "candidates": 44,
  "targets": 44,
  "targetReaders": 42317,
- "excluded": [
-  {
-   "ack": "20260731111218NAL0021364547001",
-   "ein": "131102020",
-   "pn": "020",
-   "sponsor": "The New York Times Company",
-   "planYear": 2025,
-   "readers": 2813,
-   "quote": "Basic and additional contributions may be made on a Before-Tax, After-Tax, or Roth basis, provided, however, IAMAW Employees may not make contributions on an After-Tax basis.",
-   "excludedBecause": "AFFIRMS a Roth basis and carves out one union — the flag is CORRECT, same sentence as the afterTax arm."
-  },
-  {
-   "ack": "20241015073939NAL0014203603001",
-   "ein": "460106838",
-   "pn": "002",
-   "sponsor": "Assoc. General Contractors Of Sd, Inc. Building",
-   "planYear": 2023,
-   "readers": 1486,
-   "quote": "Employee and Discretionary Match Contribution During our audit, we noted three instances where deferral and discretionary match contributions were calculated incorrectly:  It was noted that one participant elected for no Roth contribution from bonus check but still employee contributions were wi…",
-   "excludedBecause": "THE QUOTE IS AN AUDIT FINDING, not a plan term: it describes instances where deferral and discretionary match contributions were miscalculated. It denies nothing about Roth, so it is no evidence either way and cannot license a withdrawal."
-  }
- ],
- "unsupportedNotContradicted": [
-  {
-   "ack": "20261007101649NAL0032069539001",
-   "ein": "510275712",
-   "pn": "001",
-   "sponsor": "Bmo Financial Corp.",
-   "planYear": 2025,
-   "readers": 29119,
-   "quote": "Non-Roth after-tax contributions by participants are not permitted.",
-   "unsupportedBecause": "NOT CONTRADICTED — UNSUPPORTED, and that is a different claim. BMO files \"Non-Roth after-tax contributions by participants are not permitted.\" The roth arm matched \"Roth\" INSIDE \"Non-Roth\" and set roth:true; the sentence denies non-Roth AFTER-TAX and says nothing whatever about designated Roth. So the flag rests on no evidence rather than on contradicted evidence. 29,119 readers, the largest member of this arm, and it needs its own decision: withdrawing an unsupported claim is right, but it must not be reported as the filing saying the opposite."
-  }
- ],
+ "excluded": [],
+ "handExclusionsRetiredIntoThePredicate": {
+  "20260731111218NAL0021364547001": "AFFIRMS a Roth basis and carves out one union — the flag is CORRECT, same sentence as the afterTax arm.",
+  "20241015073939NAL0014203603001": "THE QUOTE IS AN AUDIT FINDING, not a plan term: it describes instances where deferral and discretionary match contributions were miscalculated. It denies nothing about Roth, so it is no evidence either way and cannot license a withdrawal."
+ },
+ "unsupportedNotContradicted": [],
  "plans": [
   {
    "ack": "20261015073223NAL0008571632003",

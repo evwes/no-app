@@ -1027,38 +1027,56 @@ the publish gate applied before any reader figure, and an accuracy-log entry.
 
 #### Paid for and not yet rendered — do these first
 
-- **WE PUBLISH THE OPPOSITE OF WHAT THE FILING SAYS, ON BOTH TAX ARMS — found
-  2026-11-20 while sizing the 2K question, and it outranks every gap because a
-  WRONG published claim beats a missing one at any size.** ~44 plans / ~204,056
-  readers store `afterTax: true` on a quote whose own words DENY it, rendered by
-  `app.js:4080` as **"✓ Available"** and by the crawlable pages as *"Yes (per the
-  filing)"*; ~86 plans / ~105,702 readers do the same on `roth`. **Verified by
-  hand against the filings:** Waste Management
-  (`20261013121857NAL0004205171001`, 47,047) files *"After-tax contributions are
-  not permitted by the Plan."* with ZERO Roth mentions and stores
-  `afterTax: true`. Feeding the shipped extractor Cortech's denial paragraph
-  ALONE returns `roth=true, afterTax=true`, so the negation reads as an
-  affirmation on both arms. The populations are the sizing agent's and **must be
-  re-derived before a fix ships**; the mechanism is reproduced in the log.
-  It lives in `scripts/lib-4i.mjs` (arms ~8220-8272, `DEFERRAL_ROTH` ~8216,
-  removal veto 8274-8277), so it needs a `PARSER_VERSION` bump and must ride the
-  single batched dispatch. **The gate work is the hard half and is NOT built:**
-  `--must-keep` pins over the 4,349 plans / 19.66M readers of existing after-tax
-  yeses, because *a guard that blocks a wrong answer must not discard the honest
-  evidence* — recorded six times. Correcting it will LOWER the scalar by ~66K
-  readers, which is accuracy working, exactly as the 2R withdrawal was.
-- **A FUTURE-EFFECTIVE AMENDMENT READ AS A CURRENT FEATURE — a SECOND defect,
-  UNSIZED, and the reason a negation veto alone is not the fix.** Cortech
-  (`20261015073223NAL0008571632003`) says *"The Plan does not allow for Roth or
-  after-tax contributions"* in its Contributions note while **Note 8 —
-  Subsequent events** lists *"Participants are allowed to make Roth
-  contributions"* under a restatement **effective January 1, 2026**, after the
-  plan year the page reports. Asked that section ALONE the extractor returns
-  `roth=true`, so this row's flag is **doubly caused** and a veto would have left
-  it wrong while the veto's own fix-count over-predicted. *A defect caused by two
-  mechanisms is not fixed by repairing one.* Size the subsequent-events class
-  before building either fix; the two must be priced together or the first will
-  claim rows the second owns.
+- **SHIPPED as v207, 2026-11-21 — "✓ Available" published on filings that say
+  "not permitted".** 76 plans / 175,656 published readers; the store held the
+  refutation ONE KEY AWAY (`afterTax: true` beside `afterTaxText: "After-tax
+  contributions are not permitted by the Plan."`), so the screen is store-side
+  and exact: `scripts/tax-flag-contradiction.mjs`, targets enumerated in
+  `data/fixtures/{aftertax,roth}-negation-targets.json`. **Eleven refusals, all
+  eighty-one candidates READ** — the first screen's largest member was a false
+  positive at 64,943 readers (*"does not accept a ROLLOVER of after-tax"*), and
+  *co-occurrence of a tax word and a negation is not governance*. Two refusals
+  point the other way (a loan FROM after-tax money presupposes it), one is
+  directional (a clause that affirms then carves out is ambiguous, and
+  *ambiguity must not withdraw*). Also `Roth` inside `Non-Roth` is not Roth —
+  BMO, 29,119 readers, UNSUPPORTED rather than contradicted. Gated by
+  `scripts/tax-flag-gate.mjs`, whose `--selftest` proves the pin three ways and
+  then shows an over-wide mutant losing 370 of 1,027 flags / 9,235,260 readers.
+  Pre-registered `aftertax` 4,349 -> 4,306 (-43), `roth` 44,624 -> 44,551 (-73),
+  nothing else moving, scalar DOWN. **The gate REFUSED the ship once**, naming 41
+  withdrawals to read; five were wrong and all five sat on SUPERSEDED or UNSERVED
+  entries, so no enumeration of what readers see could have found them — *a
+  predicate is judged over the whole population it runs on.* The sharpest of the
+  four refusals it earned: *"Except for Roth contributions, the Plan does not
+  allow for after-tax contributions"* must withdraw after-tax and KEEP Roth, so
+  one sentence is right for one arm and wrong for the other.
+  `docs/accuracy-log.md` 2026-11-21.
+- **A FUTURE-EFFECTIVE AMENDMENT READ AS A CURRENT FEATURE — SIZED 2026-11-20 at
+  ~780-1,260 plans / ~1.5-1.6M readers, NINE TIMES the negation class, and NOT
+  shipped. It is the largest open accuracy defect on this record.** After-tax is
+  exact over all 4,349: **114 plans / 213,306 readers** where a subsequent-events
+  or plan-amendment section is the SOLE cause and its effective date falls after
+  the plan-year end; roth is sampled at 668-1,147 plans / ~1.36M.
+  `scripts/subsequent-events-size.mjs` separates cause from coincidence by
+  blanking the section length-preservingly and re-asking, so CAUSAL and LATENT
+  are distinguished rather than assumed. **Two things the fix must not do, both
+  measured:** it must be DATE-driven, not section-driven — a blanket
+  "ignore subsequent-events" veto destroys **39 plans / 81,018 readers** whose
+  amendment was effective INSIDE the reported year; and it must not withdraw the
+  LATENT population (~90 plans / 634K readers) whose yes stands on other
+  evidence. **Headings are enumerated over 1,137 filings, not guessed**, and the
+  trap is that Schedule R's printed `Part III   Amendments` appears in ALL 1,137,
+  so keying on `amend` sections the blank form; likewise the evaluation date
+  every such note carries is always after year end, so "a future date in the
+  section" fires almost everywhere — a clean, meaningless rate.
+  **AND ONE CLAIM HERE WAS REFUTED BY MEASUREMENT 2026-11-21:** this entry said
+  Cortech's roth flag is doubly caused, so a negation veto alone would leave the
+  headline case wrong. Its stored `rothText` IS the denial sentence, so v207's
+  veto fixes it. The double causation is real as an isolated experiment and
+  irrelevant to the shipped parser, because the arm that won kept the denial and
+  the subsequent-events sentence never became the quote. *An experiment on a
+  fragment is not an experiment on the path.* Overlap with the negation class is
+  2 roth plans / 20,993 readers and 0 after-tax.
 
 - **SHIPPED 2026-11-17 — the TRAILING return curve (1Y / 3Y / 5Y / 10Y) now
   renders**, 490,980 rows / 742M reader-slots gaining a cell, 0 lost, 0 moved,
@@ -1463,6 +1481,10 @@ reason the queue was — it is re-read at the start of every turn.
   it describes.** A staleness note comparing `PARSER_VERSION` to the store's
   dominant `pv` is blind to merge-side code, where the equality holds by
   construction. *And a check wrong on the normal path is worse than no check.*
+- **A gate that fails for a reason that is NOT A LOSS teaches its reader to pass
+  it flags.** v207's roth arm refused on a fixture correctly absent from the arm
+  it declares, with 0 losses behind it: scope a pin by the arm it is a pin FOR,
+  and REPORT an out-of-scope pin rather than skipping it silently.
 - **A red gate early in a job is not one failure, it is a job that stopped** —
   every later step is unverified rather than passing. **And a gate the file it
   guards cannot trigger is indistinguishable from no gate: the workflow's

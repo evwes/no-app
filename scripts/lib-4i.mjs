@@ -14,7 +14,196 @@ import { dirname, join } from "node:path";
 import { vestingQuoteOk, accelerationOnlyVesting } from "./lib-quote.mjs";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 206;
+export const PARSER_VERSION = 207;
+
+/* v207: THE QUOTE'S OWN WORDS CAN DENY WHAT THE FLAG ASSERTS, and 76 plans /
+ * 175,656 readers were published that way — `afterTax: true` or `roth: true`
+ * sitting one key away from `afterTaxText: "After-tax contributions are not
+ * permitted by the Plan."`, rendered as "✓ Available" and, on the crawlable
+ * pages, "Yes (per the filing)". The store carried its own refutation, so this
+ * needed no new source: `scripts/tax-flag-contradiction.mjs` enumerates it.
+ *
+ * THIS IS A WITHDRAWAL, AND IT IS KEYED ON THE QUOTE THE ARMS ALREADY CHOSE,
+ * not on the filing text. That is deliberate and it is what makes the blast
+ * radius knowable: the arms are untouched, so no row that does not already
+ * publish a flag can be affected, and the only rows that can move are ones
+ * whose own displayed evidence contradicts their own displayed claim.
+ *
+ * NINE REFUSALS, each a shape that reached the first version of the screen and
+ * is NOT a denial of the contribution type. They were found by reading all 81
+ * candidates, which refuted most of that version's count — its largest member
+ * was Dick's Sporting Goods, 64,943 readers, on "The Plan does not accept a
+ * rollover of after-tax contributions", which denies a ROLLOVER of after-tax
+ * money coming in and says nothing about whether the plan offers after-tax.
+ * Two of the nine point the OPPOSITE way to the defect: a loan or note taken
+ * FROM after-tax money presupposes that money exists, and a "prior to May 1,
+ * 2025" prohibition since lifted may make the flag correct rather than wrong.
+ *
+ * CO-OCCURRENCE IS NOT GOVERNANCE, which is why the test is per CLAUSE:
+ * "Participants may make after-tax contributions; loans are not permitted"
+ * carries the subject and a negation and means the opposite of a denial. */
+const TAX_SUBJECT = {
+  afterTax: /\bafter[\s-]?tax\b|\bpost[\s-]?tax\b|\bnon-?deductible\b/i,
+  /* `Roth` INSIDE `Non-Roth` IS NOT THE SUBJECT, and excluding it here rather
+   * than letting the veto fire anyway is the difference between reaching the
+   * right answer and reaching it for the wrong reason. BMO's clause DOES deny
+   * something — non-Roth after-tax — so a subject that matches the hyphenated
+   * form makes the veto report a Roth denial that the sentence never states.
+   * With the lookbehind, BMO falls to `rothOnlyInNonRoth` below, which says
+   * what is actually true of it: the flag is unsupported, not contradicted. */
+  roth: /(?<!\bnon-?\s?)\broth\b/i,
+};
+const TAX_NEGATION = new RegExp([
+  String.raw`\b(?:are|is|was|were)\s+not\s+(?:permitted|allowed|available|offered|accepted|made)\b`,
+  /* an INTERVENING ADVERB and the PAST TENSE are the same class, and both were
+   * found by diffing the screen against an independent one: "does not CURRENTLY
+   * permit participants to make after-tax contributions" and "During 2025, the
+   * Plan DID not permit Roth elective deferrals". `elect` is deliberately NOT
+   * in the verb list — it reaches auto-enrolment language, where the negation
+   * governs the EMPLOYEE's election and not the plan's terms. */
+  String.raw`\b(?:does|do|did)\s+not\s+(?:\w+ly\s+)?(?:allow|permit|provide|offer|accept)\b`,
+  String.raw`\bnot\s+permitted\s+to\s+make\b`,
+  String.raw`\bmay\s+not\s+(?:make|elect|contribute)\b`,
+  String.raw`\bcannot\s+(?:make|elect|contribute)\b`,
+  String.raw`\bno\s+(?:after[\s-]?tax|roth|post[\s-]?tax)\b`,
+  String.raw`\b(?:ineligible|not\s+eligible)\s+to\s+make\b`,
+  String.raw`\bis\s+not\s+a\s+feature\b`,
+].join("|"), "i");
+/* THE GATE EARNED THESE FOUR, and it is the reason it exists: run exhaustively
+ * over all 4,349 after-tax flags it refused the ship and named 41 withdrawals,
+ * of which five were wrong. Each is a shape my hand enumeration could not see,
+ * because it measured only the SERVED subset and these sit on superseded or
+ * unserved entries — a predicate is judged over the whole population it will
+ * run on, not over the rows a reader happens to see today. */
+const TAX_DENIAL_REFUSALS = [
+  ["rollover-only", /\broll(?:over|ing)?s?\b|\btransfers?\s+(?:of|from)\b/i],
+  ["loan-or-withdrawal-source", /\bloans?\b|\bnotes?\b|\bborrow\w*\b|\bwithdrawals?\b|\bdistributions?\b|\bhardship\b/i],
+  /* `employees WORKING IN` joins this list from Here North America, whose
+   * denial is scoped to "employees working in the United States" — whether that
+   * is effectively plan-wide is not settled by the sentence, and a withdrawal
+   * must be certain. */
+  ["subset-population", /\bemployees\s+of\b|\bemployees\s+\w+ing\s+(?:in|at)\b|\bhighly\s+compensated\b|\bunion\b|\bbargaining\b|\bfacility\b|\blocation\b|\bdivision\b|\bemployed\s+at\b|\beligible\s+for\s+the\b/i],
+  /* AN AUDIT FINDING IS NOT A PLAN TERM. The Associated General Contractors
+   * filing stores "During our audit, we noted three instances where deferral
+   * and discretionary match contributions were calculated incorrectly: … one
+   * participant elected for no Roth contribution from bonus check …" — the
+   * `no roth` negation is one participant's own election inside a payroll
+   * error, and the plan's Roth feature is not in question.
+   *
+   * THE CLAUSE SPLIT IS WHY THIS NEEDS BOTH HALVES OF THE VOCABULARY: the
+   * colon after "calculated incorrectly:" splits the audit framing away from
+   * the sentence that carries the negation, so a refusal keyed only on "we
+   * noted" / "during our audit" sits in the wrong clause and the finding still
+   * fires. `was noted that` and `one participant` are the tokens the DENYING
+   * clause actually carries — and a single participant's own election is never
+   * a statement of the plan's terms. */
+  ["audit-finding", /\bwe\s+noted\b|\bduring\s+our\s+audit\b|\binstances\s+where\b|\bcalculated\s+incorrectly\b|\bin\s+error\b|\bwas\s+noted\s+that\b|\bone\s+participant\b/i],
+  ["temporal-prior", /\bprior\s+to\b|\beffective\s+(?:as\s+of\s+)?\w+\s+\d{1,2},?\s+\d{4}\b|\buntil\b|\bbeginning\b/i],
+  ["zero-activity", /\bthere\s+(?:were|was)\s+no\b|\bno\s+such\s+contributions\s+were\b|\bno\s+\w+\s+contributions\s+were\s+made\b/i],
+  ["ambiguous-referent", /^\s*it\s+(?:is|was)\s+not\b/i],
+  ["limit-not-denial", /\bnot\s+(?:permitted|allowed|eligible)\s+to\s+exceed\b|\bnot\s+(?:permitted|allowed)\s+in\s+excess\s+of\b|\bmay\s+not\s+exceed\b|\bare\s+limited\s+to\b/i],
+  ["combining-restriction", /\bsame\s+plan\s+year\b|\bsimultaneous\w*\b|\bconcurrent\w*\b/i],
+  ["roth-ira-not-designated", /\broth\s+ira\b/i],
+  /* A LIMIT ON HOW MUCH, phrased as a cap on a combined figure. Washington Gas
+   * Light (1,318 readers): "Employees may not contribute more than 50% of their
+   * total base compensation in pre-tax and after-tax contributions" — the
+   * negation caps a percentage and presupposes both types. */
+  ["limit-more-than", /\bnot\s+(?:contribute|defer|elect|make)\s+more\s+than\b|\bnot\s+exceed\b/i],
+  /* A SUBSET NAMED WITH `SUCH`, which carries no group noun for the
+   * subset-population vocabulary to match: "Such employees are not eligible to
+   * make pre-tax elective contributions or Roth contributions to the Plan." */
+  ["subset-such", /\bsuch\s+(?:employees|participants|individuals|persons)\b/i],
+];
+/* TWO MORE REFUSALS THAT NEED THE FIELD, so they cannot be clause-only regexes.
+ *
+ * EXCEPT-FOR-THE-SUBJECT. Fellers and Labcon file "Except for Roth
+ * contributions, the Plan does not allow for after-tax contributions." For the
+ * AFTER-TAX arm that is a real denial and withdraws correctly; for the ROTH arm
+ * the subject is carved OUT of the denial, i.e. AFFIRMED, and withdrawing it
+ * would have published the opposite of the sentence. The same quote is right
+ * for one arm and wrong for the other, which no clause-only test can express.
+ *
+ * THE NEGATION'S OBJECT IS THE OTHER TAX TYPE. Cleary Gottlieb (2,482 + 618)
+ * files "...after-tax contributions if employed in a foreign jurisdiction that
+ * does not permit PRE-TAX contributions..." — the negation governs a foreign
+ * jurisdiction's law and its object is pre-tax, while the sentence AFFIRMS
+ * after-tax. The test is span-local and subject-aware: the other type appears
+ * within ~45 characters after the negation and the field's own subject does
+ * NOT. That is what keeps the real target "The Plan does not permit Roth or
+ * after-tax contributions" (Culver Stockton) intact — there the subject IS
+ * inside the negated object. */
+const TAX_OTHER_TYPE = {
+  afterTax: /\bpre-?\s?tax\b|\bbefore-?\s?tax\b|\broth\b/i,
+  roth: /\bpre-?\s?tax\b|\bbefore-?\s?tax\b|\bafter-?\s?tax\b|\bpost-?\s?tax\b/i,
+};
+const EXCEPT_FOR = {
+  afterTax: /\bexcept\s+(?:for\s+)?(?:the\s+)?(?:\w+\s+){0,2}?(?:after-?\s?tax|post-?\s?tax)\b/i,
+  roth: /\bexcept\s+(?:for\s+)?(?:the\s+)?(?:\w+\s+){0,2}?roth\b/i,
+};
+const NEG_HEAD = /\b(?:not\s+(?:permit|allow|accept|offer|provide)\w*|(?:does|do|did)\s+not\s+(?:\w+ly\s+)?(?:permit|allow|accept|offer|provide)\w*)\s+/gi;
+const negatesOtherTypeOnly = (clause, field) => {
+  const other = TAX_OTHER_TYPE[field], subj = TAX_SUBJECT[field];
+  NEG_HEAD.lastIndex = 0;
+  let sawAny = false;
+  for (let m; (m = NEG_HEAD.exec(clause)); ) {
+    const span = clause.slice(m.index + m[0].length, m.index + m[0].length + 45);
+    sawAny = true;
+    if (subj.test(span)) return false;        /* the subject IS what is denied */
+    if (!other.test(span)) return false;      /* object is neither type — not this shape */
+  }
+  return sawAny;
+};
+/* the clause that denies the flag, or null. Exported so the screen that
+ * enumerated this class measures the PARSER's predicate and not a copy of it —
+ * one re-implementation of a shipped lookup once published 65% false findings
+ * into a watched metric. */
+/* A CLAUSE THAT AFFIRMS THE SUBJECT AND THEN CARVES OUT A GROUP IS AMBIGUOUS,
+ * AND AMBIGUITY MUST NOT WITHDRAW. The New York Times files "Basic and
+ * additional contributions may be made on a Before-Tax, After-Tax, or Roth
+ * basis, provided, however, IAMAW Employees may not make contributions on an
+ * After-Tax basis." — commas only, so it is ONE clause that both grants and
+ * restricts, and the flag is CORRECT.
+ *
+ * THE TEST IS DIRECTIONAL, and that is what makes it safe: the affirmation must
+ * REACH FORWARD to the subject. "No after-tax contributions may be made to the
+ * Plan." also contains `may be made`, but its subject sits BEFORE the phrase and
+ * nothing follows it, so that real denial is untouched — as is Uew Intermediate's
+ * "The plan allows for discretionary nonelective and matching contributions …,
+ * however, no after-tax employee contributions are permitted", where the
+ * affirmation is about EMPLOYER money and never reaches the tax subject. */
+const TAX_AFFIRM = /\bmay\s+be\s+made\b|\bmay\s+(?:make|elect|contribute|designate)\b|\bare\s+(?:allowed|permitted|eligible)\s+to\b|\bpermits\s+participants\b/gi;
+const affirmsSubjectForward = (clause, subj) => {
+  TAX_AFFIRM.lastIndex = 0;
+  for (let m; (m = TAX_AFFIRM.exec(clause)); )
+    if (subj.test(clause.slice(m.index + m[0].length, m.index + m[0].length + 70))) return true;
+  return false;
+};
+
+export function taxFlagDenialClause(quote, field) {
+  const subj = TAX_SUBJECT[field];
+  if (!subj) throw new Error(`taxFlagDenialClause: unknown field ${field}`);
+  for (const c of String(quote || "").split(/[.;:]/)) {
+    if (!subj.test(c) || !TAX_NEGATION.test(c)) continue;
+    if (TAX_DENIAL_REFUSALS.some(([, re]) => re.test(c))) continue;
+    if (affirmsSubjectForward(c, subj)) continue;
+    if (EXCEPT_FOR[field].test(c)) continue;
+    if (negatesOtherTypeOnly(c, field)) continue;
+    return c.trim();
+  }
+  return null;
+}
+/* AND "ROTH" INSIDE "NON-ROTH" IS NOT ROTH. BMO Financial (29,119 readers, the
+ * largest member of the roth arm) files "Non-Roth after-tax contributions by
+ * participants are not permitted." Arm 1 matches `\broth\b` inside `Non-Roth`
+ * — the hyphen is a word boundary — and publishes designated Roth as available
+ * on a sentence that denies non-Roth AFTER-TAX and says nothing whatever about
+ * Roth. That flag is UNSUPPORTED rather than contradicted, which is a weaker
+ * claim than the veto above makes and so gets its own test: the quote's only
+ * occurrences of "roth" must ALL be inside "non-roth". A quote that says both
+ * keeps its flag. */
+export const rothOnlyInNonRoth = (q) =>
+  /\broth\b/i.test(String(q || "")) &&
+  !/\broth\b/i.test(String(q || "").replace(/\bnon-?\s?roth\b/gi, " "));
 /* v138: the displayed row cap, and what it cuts. parseRows kept the largest
  * 80 rows and totalValue kept every row, so confidence judged the whole
  * schedule while the page showed a prefix of it — with no trace that
@@ -8275,6 +8464,19 @@ export function extractPlanFeatures(text, sponsorName = "") {
       /(?:remov\w+|eliminat\w+|discontinu\w+|no longer (?:permits?|allows?|offers?))[^.]{0,80}after[- ]tax|after[- ]tax[^.]{0,60}(?:was|were|has been|have been|is no longer) (?:remov|eliminat|discontinu|permitt|allow|offer)/i.test(out.afterTaxText || "")) {
     out.afterTax = false; // quote stays — it documents the removal
   }
+
+  /* v207: the same shape as the removal veto above, and placed beside it on
+   * purpose — a quote whose own clause DENIES the contribution type cannot
+   * license a flag asserting it. The quote stays in both cases, because it is
+   * the evidence for the withdrawal and the page's own explanation row reads
+   * it. 76 plans / 175,656 readers; enumerated in
+   * data/fixtures/{aftertax,roth}-negation-targets.json and gated by
+   * scripts/tax-flag-gate.mjs, whose must-keep set is the 3,896 after-tax and
+   * 41,172 roth flags that are CORRECT — a guard that blocks a wrong answer
+   * must not discard the honest evidence. */
+  if (out.afterTax && taxFlagDenialClause(out.afterTaxText, "afterTax")) out.afterTax = false;
+  if (out.roth && taxFlagDenialClause(out.rothText, "roth")) out.roth = false;
+  if (out.roth && rothOnlyInNonRoth(out.rothText)) out.roth = false;
 
   // ---- affirmative no-employer-contribution statements ----
   // "The Plan does not provide for employer contributions." (Amphenol) is
