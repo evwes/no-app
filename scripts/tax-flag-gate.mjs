@@ -359,6 +359,17 @@ function pins(R, unexpected, mustKeep) {
       continue;
     }
     const inPop = R.pop.find((x) => x.ack === c.ack);
+    /* must-stay-withdrawn: the shipped fix already withdrew this arm, so being
+     * absent from the published-yes population IS the pin holding, and being
+     * present is a regression. Without this the gate goes red on the two cases
+     * that motivated the fix it is guarding, every run from now on. */
+    const withdrawn = armsHere.filter((a) => c.expect[a].includes("must-stay-withdrawn"));
+    if (withdrawn.length) {
+      const back = withdrawn.filter((a) => inPop && inPop[a]);
+      if (back.length) fails.push(`fixture ${c.id} ${back.join("/")}: PUBLISHED again — the shipped withdrawal has been undone. REGRESSION.`);
+      else console.log(`  NOTE: fixture ${c.id} ${withdrawn.join("/")} stays withdrawn — pin holds`);
+      if (withdrawn.length === armsHere.length) continue;
+    }
     const absent = armsHere.filter((a) => !inPop || !inPop[a]);
     if (absent.length) {
       fails.push(`fixture ${c.id} (${c.ack}): declares ${armsHere.join("/")} and the store publishes no yes on ${absent.join("/")} — the store changed under this fixture, or the population query is wrong`);

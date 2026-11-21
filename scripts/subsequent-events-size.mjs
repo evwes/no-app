@@ -488,6 +488,23 @@ for (const c of FIX.cases) {
     console.log(`  (fixture ${c.id} does not publish ${ARM} — not applicable to this run)`);
     continue;
   }
+  /* must-stay-withdrawn: v207 withdrew this arm and the withdrawal was RIGHT,
+   * so the ack is CORRECTLY absent and its absence is the pin PASSING. The
+   * claim inverts: present means a later change undid the shipped fix. This
+   * script exited 1 on both its own motivating cases the first time it ran
+   * after the v207 merge, which is bookkeeping reported as a defect — and a
+   * check that is habitually red teaches its reader to ignore it. */
+  const withdrawnArms = ARMS.filter((a) => (c.expect[a] || []).includes("must-stay-withdrawn"));
+  if (withdrawnArms.length) {
+    const stillPublished = withdrawnArms.filter((a) => p && p.features && p.features[a] === true);
+    if (stillPublished.length) {
+      fails.push(`${c.id}: ${stillPublished.join("/")} is PUBLISHED again — v207 withdrew it and something has undone that. This is a REGRESSION, not a stale pin.`);
+    } else {
+      console.log(`  (fixture ${c.id} ${withdrawnArms.join("/")}: withdrawn by v207 and still withdrawn — pin holds)`);
+    }
+    /* every in-scope arm accounted for: nothing left for this fixture to say */
+    if (withdrawnArms.length === ARMS.filter((a) => (c.expect[a] || []).length).length) continue;
+  }
   if (!p) { fails.push(`${c.id}: ack ${c.ack} is not in the published-yes population at all`); continue; }
   if (!chosen.some((x) => x.ack === c.ack)) { fails.push(`${c.id}: not selected by this run — the pin proves nothing`); continue; }
   const t = read(c.ack);
