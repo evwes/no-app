@@ -99,6 +99,11 @@ if (!["roth", "afterTax", "either"].includes(ARM)) { console.error(`--arm must b
  * prefix-only anchor reads it as undated and the member lands in a quarantine
  * bucket whose own name ("only the evaluation date") is false for it. */
 const DUMP = one("--dump-dates", "");
+/* `--anchor pre` restores the PREFIX-ONLY anchor this script shipped with, so
+ * the suffix disjunct below can be measured as a DIFFERENTIAL over one
+ * population rather than against a remembered number. */
+const ANCHOR = one("--anchor", "both");
+if (!["pre", "both"].includes(ANCHOR)) { console.error(`--anchor must be pre|both`); process.exit(2); }
 
 /* ---------------------------------------------------------------------------
  * the population: plans whose OWN entry's features publish a yes
@@ -314,6 +319,218 @@ const EFFECTIVE_NEAR = /\b(?:effective|adopted|amended|restated|amendment|as of|
  * word AND is not the evaluation or issuance date. */
 const EVAL_DATE = /\b(?:evaluat\w+|review\w+|through the date|available to be issued|were issued|date of (?:the )?(?:independent )?audit\w*|report date|financial statements were)\b[^.]{0,90}$/i;
 
+/* THE ANCHOR WORD IS NOT ALWAYS BEFORE THE DATE, AND A PREFIX-ONLY ANCHOR SENDS
+ * REAL DEFECTS INTO A QUARANTINE BUCKET WHOSE OWN NAME IS FALSE FOR THEM.
+ * Simpson Manufacturing files "On January 1, 2026, the Company amended the Plan
+ * to allow after-tax employee contributions." — the amendment verb follows the
+ * date, so `EFFECTIVE_NEAR` reads nothing and the member lands in
+ * `causalUnanchored`, labelled "only the evaluation date". Three were known by
+ * name; the shapes below are ENUMERATED from `--dump-dates` over the 4,306
+ * after-tax yeses and the 44,551 roth yeses, never guessed.
+ *
+ * IT IS A DEDICATED DISJUNCT, NOT A TOKEN ADDED TO `EFFECTIVE_NEAR`'s
+ * VOCABULARY, because that vocabulary is a closed whole-string set that
+ * multiplies with every token already in it, and its blast radius is 70
+ * characters of PRECEDING text. This one is bounded by `^`: it fires only on
+ * the phrase IMMEDIATELY after the date, and only on the enumerated
+ * announcement shape ⟨date⟩, the ⟨plan/company⟩ ⟨was⟩ ⟨amended⟩.
+ *
+ * FIVE SHAPES IT REFUSES, every one read in its own filing:
+ *  - `the Plan WILL BE amended` / `the Plan Sponsor INTENDS TO AMEND by the
+ *    deadline of <date>` — W.W. Grainger (31,290) and McCarter & English
+ *    (1,167). That is the SECURE 2.0 remedial-amendment DEADLINE, which
+ *    affirms that the plan already operates the provision and is being
+ *    documented later. It is the opposite of a not-yet-effective grant, so the
+ *    aux list admits only `was/were/is/has been/have been` — a future aux
+ *    cannot reach the verb.
+ *  - `participants who earned FICA wages of …` (Washington Gas Light, 1,318) —
+ *    the §603 catch-up mandate, whose subject is PARTICIPANTS. Admitting it
+ *    would widen the subject set over a class the v206 arm already refuses.
+ *  - `the Plan's document provider … adopted an amendment` (Sharpe Dry Goods,
+ *    174) — a real amendment, but reaching it needs an open noun phrase after
+ *    the subject, and `the Plan's ⟨anything⟩` is how a 40-character wildcard
+ *    gets into a regex that has to stay narrow.
+ *  - merger / acquisition / assumption / bankruptcy / dividend dates
+ *    (`the Plan was assumed by`, `ColorDynamics … merged`, `the Company made
+ *    the decision to`) — a change, but not an amendment of the plan's terms.
+ *  - the evaluation date under a phrasing `EVAL_DATE` misses
+ *    (`through <date>, the date the financial statements were available`) — the
+ *    suffix here names a DATE, never a subject, so `^…the (plan|company|…)`
+ *    cannot reach it.
+ * `increas\w*` and `chang\w*` are NOT in the verb set: each was necessary for
+ * exactly one member and both of those members must be KEPT — see
+ * PRESUPPOSITION below. */
+const EFFECTIVE_AFTER = new RegExp(
+  "^[\\s,;:—–-]*the\\s+(?:plan|company|employer|board|organization|plan\\s+sponsor|plan\\s+administrator)" +
+  "\\s+(?:was|were|is|has\\s+been|have\\s+been)?\\s*(?:amend\\w*|restat\\w*|adopt\\w*|implement\\w*)\\b", "i");
+
+/* A SENTENCE THAT CHANGES THE DEGREE OF A FEATURE PRESUPPOSES THE FEATURE, so
+ * it is evidence FOR the published yes in the reported year and must never
+ * license a withdrawal. Health Management Associates (1,114) files "During
+ * 2026, the Plan increased the maximum annual employee after-tax contribution
+ * amount from $4,000 to $9,000." — after-tax plainly existed at $4,000 in the
+ * year reported. Same shape as the standing refusal that a LOAN FROM after-tax
+ * money presupposes after-tax money. Counted apart, never in the headline.
+ *
+ * IT IS ARM-SPECIFIC, AND THE FIRST VERSION WAS NOT — which is how a guard
+ * meant to protect a true answer nearly withdrew five real defects. Keyed on
+ * "a degree verb and a limit noun appear in the quote", it claimed EIGHT
+ * members / 17,933 readers of the after-tax headline and five of them were
+ * about something else entirely: Fanatics (12,580) "a change in the matching
+ * contribution formula from…", Mntn (722) "amended to PERMIT after-tax
+ * contributions and the Employer matching contribution calculation increased",
+ * Backblaze (491) "amended to change the age requirement … from 16", Fish &
+ * Richardson (279) "an automatic annual increase of 1% in participants'
+ * deferral percentages", Praetorian (188) "amended to ALLOW after-tax employee
+ * contributions, limited to 10%". In each the sentence GRANTS this arm and
+ * changes the degree of something else. *A witness that a row is damaged is not
+ * a witness to WHICH claim the damage is on.* So the degree change must govern
+ * THIS ARM's own tax word, and a GRANT of this arm vetoes outright: a new
+ * permission is never a degree change, whatever else the sentence moves. */
+const TAXWORD = { roth: "roth", afterTax: "after[-\\s]?tax|post[-\\s]?tax|aftertax" };
+const grantRe = (tw) => new RegExp(
+  /* `add\w*` MATCHES "ADDITIONALLY", and that is not a grant verb. Stonepeak
+   * files "Additionally, effective January 1, 2026, the Company increased the
+   * after-tax contribution maximum from $10,000 to $29,500" — a textbook
+   * presupposition — and the first spelling of this veto threw it back into the
+   * headline on the strength of an adverb. *A character class written for a
+   * concept picks up everything that shares its shape*, met again on a stem
+   * rather than a character class. */
+  "\\b(?:permit|allow|introduc|offer|institut|implement|includ)\\w*\\b[^.]{0,70}?(?:" + tw + ")" +
+  "|\\badd(?:ed|ing|s)?\\b[^.]{0,70}?(?:" + tw + ")" +
+  "|(?:" + tw + ")[^.]{0,70}?\\b(?:are|is|were|was|became|may)\\b[^.]{0,40}?\\b(?:permitted|allowed|available|offered|added|introduced)\\b", "i");
+const degreeRe = (tw) => new RegExp(
+  "\\b(?:increas|decreas|rais|lower|chang|modif)\\w*\\b[^.]{0,60}?\\b(?:maximum|minimum|limit|cap|percentage)\\b[^.]{0,60}?(?:" + tw + ")" +
+  "|\\b(?:increas|decreas|rais|lower|chang|modif)\\w*\\b[^.]{0,40}?(?:" + tw + ")[^.]{0,60}?\\b(?:maximum|minimum|limit|cap|from)\\b", "i");
+const presupposes = (quote, arm) => {
+  const tw = TAXWORD[arm];
+  return !!quote && degreeRe(tw).test(quote) && !grantRe(tw).test(quote);
+};
+
+/* ---------------------------------------------------------------------------
+ * `--selftest` — the controls for the two predicates above, and `--mutations
+ * <dump.jsonl>` which prices a WIDENING over the real date dump rather than
+ * over the cases its author imagined.
+ *
+ * Every string below is VERBATIM from a filing's `suf`/`quote` in a
+ * `--dump-dates` run: a hand-built control table tests only what its author
+ * already thought of. Each refusal has been READ in its own filing.
+ * ------------------------------------------------------------------------- */
+if (has("--selftest")) {
+  const must = [
+    ["simpson", ", the Company amended the Plan to allow after-tax employee contributions."],
+    ["ultra-clean", ", the Plan was amended to allow for after-tax contributions."],
+    ["arcturus", ", the Plan was amended to (i) permit participants to make voluntary after-tax"],
+    ["solomon", ", the Plan was amended as follows: • Effective January 1, 2026, participants"],
+    ["rosenberg", ", the plan implemented procedures to require"],
+    ["bracebridge", ", the Plan adopted the SECURE 2.0 provision"],
+    ["praetorian-restatement", ", the Plan was restated and amended"],
+  ];
+  const mustNot = [
+    /* a remedial-amendment DEADLINE, which affirms current operation */
+    ["grainger-will-be-amended", ", the Plan will be amended to adopt certain legally required"],
+    ["mccarter-intends-to-amend", ". Participants may also contribute amounts representing distributions"],
+    /* the §603 catch-up mandate: the subject is PARTICIPANTS */
+    ["washington-gas-participants", ", participants who earned FICA wages of $145,000"],
+    /* a change, but not an amendment of the plan's terms */
+    ["coach-usa-assumed", ", the Plan was assumed by Bus Holdings"],
+    ["cyberark-decision", ", the Company made the decision to terminate the Plan"],
+    ["fanatics-merger", ", ColorDynamics 401(k) Profit Sharing Plan merged into the Plan"],
+    ["crossover-acquired", ", Crossover Health Management Services, Inc. was acquired by"],
+    ["kidde-added", ". Kidde Home Safety, LLC was added as a participating employer"],
+    /* the evaluation date under a phrasing EVAL_DATE misses: the suffix names a
+     * DATE, never a subject */
+    ["sprinklr-eval", ", the date the financial statements and the accompanying notes"],
+    ["hanna-eval", ", the date the report was available to be issued"],
+    /* eligibility / vesting cohort dates */
+    ["infirmary-cohort", ", two percent of the participant’s eligible compensation"],
+    ["potomac-vesting", ", remain fully vested."],
+    ["private-client-vesting", " will be 100% vested in employer contributions."],
+    ["dillards-dividend", " to shareholders of record as of December 15, 2025"],
+    /* A DEGREE CHANGE OF THIS ARM, refused at the VERB SET rather than only at
+     * the presupposition screen, so the member never needs the second guard:
+     * Health Management Associates (1,114) "During 2026, the Plan increased the
+     * maximum annual employee after-tax contribution amount from $4,000 to
+     * $9,000" — after-tax existed at $4,000 in the year reported. */
+    ["health-management-increased", ", the Plan increased the maximum annual employee after-tax contribution amount from $4,000 to $9,000."],
+    /* A CUSTODIAN CHANGE IS NOT AN AMENDMENT OF THE PLAN'S TERMS, and this
+     * date was attributed to a generic contributions sentence two paragraphs
+     * away (Praetorian, 188, tier `section`). */
+    ["praetorian-custodian", ", the Plan changed custodian from Matrix Trust Company to FMTC"],
+    /* THE `^` IS LOAD-BEARING AND THESE FOUR ARE WHY. Each is a date whose own
+     * phrase says nothing, followed LATER in the same 90 characters by an
+     * amendment sentence about a different date. Vizient's is the EVALUATION
+     * date (6,859 readers); Resolute's and Richline's are balance-sheet dates;
+     * Coach USA's is a 2022 date followed by a 2023 amendment. A suffix anchor
+     * that may match anywhere in its window attributes all four. */
+    ["vizient-eval-then-amendment", ", the date these financial statements were available to be issued The Plan was amended effective"],
+    ["resolute-balance-sheet", " Plan Amendments The Plan was amended and restated on January 1, 2019 to incorporate"],
+    ["richline-balance-sheet", " and 2024 10. Subsequent events Effective January 1, 2026, the Plan was amended to add"],
+    ["coach-usa-other-date", ". Effective April 20, 2023, the Plan was amended to allow installment payments"],
+  ];
+  const f1 = [];
+  for (const [id, s] of must) if (!EFFECTIVE_AFTER.test(s)) f1.push(`POSITIVE ${id} does not fire: ${JSON.stringify(s)}`);
+  for (const [id, s] of mustNot) if (EFFECTIVE_AFTER.test(s)) f1.push(`REFUSAL ${id} FIRES and must not: ${JSON.stringify(s)}`);
+  /* presupposition: the three keeps and the five that must stay in the headline */
+  const pKeep = [
+    ["irhythm", "afterTax", "Effective January 1 2026, the Plan documents has been amended to increase the contribution limit of after-tax contributions from 10% to 20% of compensation."],
+    ["qualys", "afterTax", "X Change the limit for voluntary after tax contributions to 12%."],
+    ["stonepeak", "afterTax", "Additionally, effective January 1, 2026, the Company increased the after-tax contribution maximum from $10,000 to $29,500 for the 2026 Plan year."],
+  ];
+  const pHeadline = [
+    ["fanatics", "afterTax", "the Plan was amended to allow voluntary after-tax contributions, a revised safe harbor matching contribution equal to 100% of the first 4% of eligible compensation deferred, a change in the matching contribution formula from the prior year"],
+    ["mntn", "afterTax", "Additionally, effective January 1, 2026, the Plan was amended to permit after-tax contributions and the Employer matching contribution calculation increased to a maximum of 4%"],
+    ["backblaze", "afterTax", "Effective January 1, 2026, the Plan was amended to change the age requirement for participation to 18 years of age from 16, and to allow after-tax contributions"],
+    ["fish-richardson", "afterTax", "Effective January 1, 2026, the Plan was amended to provide for an automatic annual increase of 1% in participants' deferral percentages, up to a maximum of 15%, and to permit after-tax contributions"],
+    ["praetorian", "afterTax", "In conjunction with the 2025 Restatement, the Plan was amended to allow after-tax employee contributions, limited to 10% of compensation, as defined"],
+  ];
+  for (const [id, arm, q] of pKeep) if (!presupposes(q, arm)) f1.push(`PRESUPPOSES ${id} does not fire — a degree change would be counted as a defect`);
+  for (const [id, arm, q] of pHeadline) if (presupposes(q, arm)) f1.push(`PRESUPPOSES ${id} FIRES — a real defect would be withdrawn from the headline`);
+
+  /* MUTATIONS, each derived from a refusal above and each anchored on the
+   * fragment of the source it is meant to change. A mutation must fail BY NAME
+   * on its own refusal; one that reaches nothing is reported, because a
+   * mutation that cannot fail prices nothing. */
+  const SRC = EFFECTIVE_AFTER.source;
+  const muts = [
+    ["admit a future aux (reaches the remedial-amendment DEADLINE)",
+      SRC.replace("(?:was|were|is|has\\s+been|have\\s+been)?", "(?:was|were|is|will\\s+be|has\\s+been|have\\s+been)?"),
+      ["grainger-will-be-amended"]],
+    ["admit `assum\\w*` as an amendment verb (reaches a plan ASSUMED by a buyer)",
+      SRC.replace("implement\\w*", "implement\\w*|assum\\w*"), ["coach-usa-assumed"]],
+    ["drop the `^` so the phrase may sit anywhere in the 90-character suffix",
+      SRC.replace(/^\^/, ""),
+      ["vizient-eval-then-amendment", "resolute-balance-sheet", "richline-balance-sheet", "coach-usa-other-date"]],
+    ["admit `increas\\w*` as an amendment verb (reaches a DEGREE change of this arm)",
+      SRC.replace("implement\\w*", "implement\\w*|increas\\w*"), ["health-management-increased"]],
+    ["admit `chang\\w*` as an amendment verb (reaches a CUSTODIAN change)",
+      SRC.replace("implement\\w*", "implement\\w*|chang\\w*"), ["praetorian-custodian"]],
+    ["allow up to three free words after the subject (reaches `made the decision`, `will be`)",
+      SRC.replace("\\s+(?:was|were|is|has\\s+been|have\\s+been)?", "(?:\\s+[a-z]+){0,3}\\s*(?:was|were|is|has\\s+been|have\\s+been)?"),
+      ["grainger-will-be-amended"]],
+  ];
+  const f2 = [];
+  for (const [lbl, src, expect] of muts) {
+    let re;
+    try { re = new RegExp(src, "i"); } catch (e) { f2.push(`MUTATION ${lbl}: not a valid regex — ${e.message}`); continue; }
+    if (src === SRC) { f2.push(`MUTATION ${lbl}: the replacement did not change the source — it prices nothing`); continue; }
+    const reached = mustNot.filter(([, s]) => re.test(s)).map(([id]) => id);
+    const named = expect.filter((e) => reached.includes(e));
+    console.log(`  mutation: ${lbl}`);
+    console.log(`    newly reaches refusals: ${reached.length ? reached.join(", ") : "(NONE)"}`);
+    if (!named.length) f2.push(`MUTATION ${lbl}: expected to reach ${expect.join("/")} and reached ${reached.join(", ") || "nothing"} — the control is decorative`);
+  }
+  if (f1.length || f2.length) {
+    console.error(`\nSELFTEST FAILED:`);
+    for (const x of [...f1, ...f2]) console.error(`  ${x}`);
+    process.exit(1);
+  }
+  console.log(`\nselftest OK — ${must.length} positives fire, ${mustNot.length} refusals do not,` +
+    ` ${pKeep.length} presuppositions fire, ${pHeadline.length} headline members do not,` +
+    ` ${muts.length} widening mutations each reach a named refusal`);
+  process.exit(0);
+}
+
 /* ---------------------------------------------------------------------------
  * the pass
  * ------------------------------------------------------------------------- */
@@ -384,7 +601,7 @@ const R = {
 };
 function mk() {
   return { stored: [], causalFuture: [], causalUnanchored: [], causalInYear: [], causalUndated: [],
-    latentFuture: [], latentOther: [], noSection: 0, sectionSilent: 0,
+    causalPresupposes: [], latentFuture: [], latentOther: [], noSection: 0, sectionSilent: 0,
     denial: [], denialAndLatentFuture: [], denialAndCausalFuture: [] };
 }
 /* The SECURE 2.0 §603 Roth catch-up mandate is statutory boilerplate entering
@@ -451,13 +668,19 @@ for (const p of chosen) {
     const future = dts.filter((x) => afterPYE(x, p));
     /* ANCHORED: tied to an effective/adopted/amended word and NOT the
      * evaluation or issuance date, which every such note carries and which is
-     * always after the plan-year end. */
-    const eff = future.filter((x) => {
-      const pre = window.slice(Math.max(0, x.idx - 90), x.idx);
-      return EFFECTIVE_NEAR.test(pre) && !EVAL_DATE.test(pre);
-    });
-    const inYear = dts.filter((x) => !afterPYE(x, p) &&
-      EFFECTIVE_NEAR.test(window.slice(Math.max(0, x.idx - 90), x.idx)));
+     * always after the plan-year end. The word may sit on EITHER SIDE of the
+     * date — see EFFECTIVE_AFTER — and the eval veto is a claim about the DATE,
+     * so it applies whichever side found it. */
+    const preOf = (x) => window.slice(Math.max(0, x.idx - 90), x.idx);
+    const sufOf = (x) => window.slice(x.idx + x.raw.length, x.idx + x.raw.length + 90);
+    const anchoredPre = (x) => EFFECTIVE_NEAR.test(preOf(x));
+    const anchoredSuf = (x) => ANCHOR === "both" && EFFECTIVE_AFTER.test(sufOf(x));
+    const anchored = (x) => (anchoredPre(x) || anchoredSuf(x)) && !EVAL_DATE.test(preOf(x));
+    const eff = future.filter(anchored);
+    const inYear = dts.filter((x) => !afterPYE(x, p) && anchored(x));
+    /* which side of the date the anchor was on, reported so a widening is
+     * visible in the output rather than folded into one count */
+    const sufOnly = eff.filter((x) => !anchoredPre(x) && anchoredSuf(x));
     const causal = !bf[arm];
     /* TWO SHAPES INSIDE ONE CLASS, AND THEY ARE NOT EQUALLY WRONG. An
      * amendment effective after the reported plan year but BEFORE today is
@@ -470,11 +693,15 @@ for (const p of chosen) {
     const stillAhead = eff.some((x) => x.y > TODAY.y || (x.y === TODAY.y && x.m > TODAY.m));
     const rec = { ...p, quote, dates: dts.map((x) => x.raw), future: future.map((x) => x.raw),
       eff: eff.map((x) => x.raw), inYear: inYear.map((x) => x.raw), catchup: CATCHUP(quote),
+      sufOnly: sufOnly.map((x) => x.raw), presupposes: presupposes(quote, arm),
       stillAhead, tier, heads: spans.map((s) => s.text) };
     const neg = denies(arm === "roth" ? p.rothText : p.afterTaxText);
     let bucket;
     if (causal) {
-      if (eff.length) { bucket = "causalFuture"; A.causalFuture.push(rec); }
+      /* a degree-change sentence presupposes the feature: evidence FOR the
+       * published yes, so it is quarantined BEFORE the headline bucket */
+      if (eff.length && rec.presupposes) { bucket = "causalPresupposes"; A.causalPresupposes.push(rec); }
+      else if (eff.length) { bucket = "causalFuture"; A.causalFuture.push(rec); }
       else if (inYear.length) { bucket = "causalInYear"; A.causalInYear.push(rec); }
       else if (future.length) { bucket = "causalUnanchored"; A.causalUnanchored.push(rec); }   /* a future date, but only the evaluation date */
       else { bucket = "causalUndated"; A.causalUndated.push(rec); }
@@ -494,7 +721,8 @@ for (const p of chosen) {
         const pre = window.slice(Math.max(0, x.idx - 90), x.idx);
         const suf = window.slice(x.idx + x.raw.length, x.idx + x.raw.length + 90);
         dumpLines.push(JSON.stringify({ ...base, date: x.raw, bareYear: !!x.bareYear,
-          future: afterPYE(x, p), anchoredPre: EFFECTIVE_NEAR.test(pre), evalPre: EVAL_DATE.test(pre),
+          future: afterPYE(x, p), anchoredPre: EFFECTIVE_NEAR.test(pre),
+          anchoredSuf: EFFECTIVE_AFTER.test(suf), evalPre: EVAL_DATE.test(pre),
           pre: pre.replace(/\s+/g, " "), suf: suf.replace(/\s+/g, " ") }));
       }
     }
@@ -603,11 +831,13 @@ for (const arm of ARMS) {
   const L = (lbl, a) => console.log(`    ${lbl.padEnd(54)} ${f(a.length).padStart(5)} plans  ${f(sum(a)).padStart(10)} readers`);
   L("NEGATION class (quote denies it) — defect 1", A.denial);
   L("CAUSAL + anchored future effective date — WRONG NOW", A.causalFuture);
+  L("  of those, anchored by the SUFFIX only (--anchor both)", A.causalFuture.filter((x) => x.sufOnly.length));
   L("  of those, dated from the quote's OWN sentence", A.causalFuture.filter((x) => x.tier === "sentence"));
   L("  of those, dated from a NEIGHBOUR in the section", A.causalFuture.filter((x) => x.tier !== "sentence"));
   L("  of those, a SECURE 2.0 catch-up mandate", A.causalFuture.filter((x) => x.catchup));
   L("  of those, effective date STILL ahead of today", A.causalFuture.filter((x) => x.stillAhead));
   L("  of those, effective after the year but before today", A.causalFuture.filter((x) => !x.stillAhead));
+  L("CAUSAL + anchored future, but PRESUPPOSES the feature (keep)", A.causalPresupposes);
   L("CAUSAL + effective date inside the year (correct)", A.causalInYear);
   L("CAUSAL + only the evaluation date (undatable)", A.causalUnanchored);
   L("CAUSAL + no date at all in the section", A.causalUndated);
@@ -650,16 +880,19 @@ for (const arm of ARMS) {
     }
   }
 
-  for (const [lbl, a] of [["WRONG NOW (causal + anchored future)", A.causalFuture], ["LATENT + future", A.latentFuture],
-    ["CAUSAL + in-year (correct)", A.causalInYear], ["CAUSAL + only the evaluation date", A.causalUnanchored]]) {
+  for (const [lbl, a, cap] of [["WRONG NOW (causal + anchored future)", A.causalFuture, 12],
+    ["NEWLY REACHED by the SUFFIX anchor — every member printed, to be READ", A.causalFuture.filter((x) => x.sufOnly.length), 999],
+    ["PRESUPPOSES the feature (anchored future, must be KEPT)", A.causalPresupposes, 999],
+    ["LATENT + future", A.latentFuture, 12],
+    ["CAUSAL + in-year (correct)", A.causalInYear, 12], ["CAUSAL + only the evaluation date", A.causalUnanchored, 12]]) {
     if (!a.length) continue;
     console.log(`\n  --- ${lbl} ---`);
-    for (const x of a.sort((p, q) => q.ppl - p.ppl).slice(0, 12)) {
+    for (const x of a.sort((p, q) => q.ppl - p.ppl).slice(0, cap)) {
       console.log(`    ${String(x.ppl).padStart(7)}ppl  ${x.ack}  ${x.name.slice(0, 40)}  PYE ${x.pyeY}-${String(x.pyeM).padStart(2, "0")}  [${x.stratum}/${x.tier}]${x.catchup ? " catch-up" : ""}`);
       console.log(`             future ${JSON.stringify(x.future)} eff ${JSON.stringify(x.eff)} inYear ${JSON.stringify(x.inYear)}`);
-      console.log(`             quote ${JSON.stringify(String(x.quote).slice(0, 150))}`);
+      console.log(`             quote ${JSON.stringify(String(x.quote).slice(0, cap > 12 ? 300 : 150))}${String(x.quote).length > (cap > 12 ? 300 : 150) ? ` …+${String(x.quote).length - (cap > 12 ? 300 : 150)}` : ""}`);
     }
-    if (a.length > 12) console.log(`    … ${a.length - 12} more`);
+    if (a.length > cap) console.log(`    … ${a.length - cap} more`);
   }
 }
 
