@@ -7,6 +7,80 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-22 (1x:xxZ) — v209: THE SCOPE GATE ASKS FOR AN EMPLOYER NOUN AND BOEING WRITES "BOEING'S CONTRIBUTIONS"
+
+**WHAT WAS WRONG.** `match` and `vesting` both come from the audited notes, and
+the immediate-vesting scope gate (`lib-4i`, the `employerMoney` / `strictGate` /
+`universal` triple) decides whether a sentence covers EMPLOYER money using a
+closed list of GENERIC nouns — employer, company, corporation, bank,
+partnership, association, non-elective, profit-sharing, plan sponsor. A filer
+who writes the employer's actual NAME satisfies none of them. **The Boeing Co.
+(209,633 readers)** files *"Vesting — Member contributions, **Boeing's
+contributions**, and earnings on those contributions are immediately vested"*
+under a `Vesting` heading and the page showed nothing. The class is dominated by
+universities, colleges, hospitals and schools, because an institution's employer
+noun IS its institution type: Rochester 47,731, Vanderbilt 21,526, Georgetown
+13,222, Children's of Akron 9,440.
+
+**THE CHANGE.** `sponsorMoneyRe(sponsorName)` — the sponsor's own name as an
+employer-money noun, keyed on THIS plan's sponsor so "University contributions"
+is admitted only in a filing a university sponsored. `SPONSOR_GENERIC` is now
+module-level and shared with `parseRows` (same tokens, same object) instead of
+retyped. Measured committed-base-vs-working-tree, narrowed by a property of the
+change and the narrowing DISCHARGED (4,559 excluded filings re-run unnarrowed,
+0 differences): **258 plans / 540,929 readers gain a vesting label, 0 losses,
+0 label changes, 0 non-vesting fields moved**, `parse-replay --vs HEAD~1`
+0 menus lost.
+
+**THREE REFUSALS, EACH EARNED BY A FILING THE FIRST CUT GOT WRONG — the gain is
+not the interesting part of this entry.**
+1. **Gated on `IMMED`, narrower than the gate's own question.** Unconditioned it
+   gains the identical 258 labels and also moves 21 QUOTES: twenty improvements
+   and one regression — **Brown University (12,566)** gains a fragment of the
+   auditor's §103(a)(3)(C) scope paragraph whose only vest word sits inside the
+   PLAN'S OWN NAME, *"…Defined Contribution Deferred **Vesting** Retirement
+   Plan"*, and `vestingQuoteOk` SHOWS it. Same shape as Vensure's `VESTED METALS
+   INTERNATIONAL LLC`, reached by a new route.
+2. **A sentence making TWO claims is refused** (`SPONSOR_TWO_CLAIM`). The
+   **Lutheran University Association (2,110)** joints *"immediately vested in
+   their voluntary contributions"* to *"required to complete one year of service
+   before becoming fully vested in University contributions"* with the word
+   **"however"** — not "except", so no existing guard reached it, and
+   `cliffFromShape` had only HELD the cliff in `shapeCliff`, so winning the
+   immediate loop discarded it silently. The first cut published `Immediate` over
+   a one-year cliff.
+3. **A HIRE-DATE COHORT is refused.** **Ithaca College (3,698)** says pre-2019
+   hires are immediately vested in the College's contributions and everyone hired
+   since must complete 1,000 hours each anniversary year. `hireSplitLabel`'s
+   "(varies by hire date per the filing)" suffix does NOT rescue it: the headline
+   word is still Immediate. Exactly 2 of the 260 first-cut gains carried a hire
+   clause, BOTH were read, and both must go — the arm costs 5,808 readers of
+   wrong answers and no right ones.
+
+**AND THE GATE WAS MEASURING WITH ONE FEWER ARGUMENT THAN PRODUCTION PASSES.**
+`fetch-4i:648` calls `extractPlanFeatures(text, plan.sponsorName || plan.label
+|| "", planYear)`; `parser-gate.mjs` called `extractPlanFeatures(text)`. Both new
+positive specimens FAILED in the gate while passing in a harness that passed the
+name — *measure through the function the caller calls, with the ARGUMENT the
+caller passes*, at least the seventh instance. Specimens now carry an optional
+sponsor name; those that declare none still pass `""` and keep their exact prior
+verdicts, and the name is in the specimen row rather than looked up because this
+gate runs BEFORE `build-data.mjs` and would otherwise read the previous run's
+store.
+
+**PREVENTION.** Five gate specimens: Boeing and Rochester positive; Lutheran,
+Ithaca and **Employee Owned Holdings** negative. The third is the only filing in
+56,056 cached texts whose sponsor's own name IS an employee-money word
+(`employee`) — *"immediately 100% vested in their employee and rollover
+contributions"* — and its real rule, a six-year graded schedule, must survive.
+`SPONSOR_EMPLOYEE_WORD` is derived from the live names, not imagined: 193 of
+71,484 full-form plans / 288,738 readers carry one among their first three
+tokens. `safe`, `harbor`, `profit`, `sharing` and `matching` are deliberately NOT
+excluded — each makes a contribution phrase employer money, which the gate's own
+arms already accept, so excluding them would cost correct answers to buy nothing.
+
+---
+
 ## 2026-11-22 (09:xxZ) — THE SAME SIX ACKS DEGRADED AGAIN, WITH THE SAME READER COUNT, SO IT IS NOT A RE-ROLL
 
 **WHAT WAS WRONG.** Run #881 (v208, full re-parse) took a published menu from
