@@ -12,9 +12,10 @@ import { dirname, join } from "node:path";
  * use to qualify an acceleration-only quote — so the label gate and the
  * reader-facing sentence are one predicate and cannot contradict each other. */
 import { vestingQuoteOk, accelerationOnlyVesting } from "./lib-quote.mjs";
+import { futureEffectiveGrant, catchupMandate, planYearEnd } from "./lib-effective-date.mjs";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 207;
+export const PARSER_VERSION = 208;
 
 /* v207: THE QUOTE'S OWN WORDS CAN DENY WHAT THE FLAG ASSERTS, and 76 plans /
  * 175,656 readers were published that way — `afterTax: true` or `roth: true`
@@ -6673,7 +6674,19 @@ export function vestingQuoteUpgrade(out, candidate) {
     && !vestingQuoteOk(out.vestingText) && vestingQuoteOk(candidate);
 }
 
-export function extractPlanFeatures(text, sponsorName = "") {
+/* v208: THE THIRD ARGUMENT IS THE PLAN YEAR, AND WITHOUT IT THERE IS NO DATE
+ * TEST AT ALL. `{pyb, pye}` exactly as `build-data.mjs` writes them; the roth
+ * and after-tax arms use it to skip a candidate sentence whose grant is not yet
+ * effective. Every existing caller passes two arguments and therefore gets
+ * `{pyeY: 0}`, which fails OPEN — the arms behave exactly as they did at v207.
+ * That is deliberate and it is also a LIMIT worth stating: `parser-gate.mjs`,
+ * `roth-pairing-test.mjs` and `trace-filing.mjs` pass no plan year, so the date
+ * test is INERT in them and they cannot witness this change. The instruments
+ * that can are `scripts/tax-flag-gate.mjs` (which now carries each plan's own
+ * `pyb`/`pye` out of the store) and `scripts/effective-date-test.mjs`.
+ * `docs/accuracy-log.md` 2026-11-22. */
+export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
+  const PYE = planYearEnd(planYear && planYear.pyb, planYear && planYear.pye);
   // zero-width characters survive \s normalization and shipped inside quotes
   // (R.H. White's eligibility quote began with U+200B); strip them first so
   // every offset below is computed on the same clean text
@@ -8282,16 +8295,73 @@ export function extractPlanFeatures(text, sponsorName = "") {
    * offers Roth showed nothing. Requires the pre-tax/Roth pairing AND
    * contribution language, so it cannot fire on a passing mention.
    * Owner-reported 2026-09-01 from the filing itself. */
-  const roth = t.match(/\broth\b[^.]{0,120}(contribut|deferral|option|401)/i) || t.match(/(designated|make) \broth\b/i) ||
-    t.match(/(?:contribut|deferral)\w*[^.]{0,80}?(?:into|to|as) an? \broth\b/i) ||
+  /* v208: A FIRST-MATCH ARM CANNOT REFUSE A CANDIDATE — IT CAN ONLY PUBLISH THE
+   * FIRST THING IT FINDS, AND THAT IS THE DEFECT.
+   *
+   * This was five `t.match(...)` alternatives joined by `||`: each takes its
+   * FIRST hit anywhere in the document and the chain stops there. Two measured
+   * classes of wrong published claim come out of exactly that shape, and
+   * neither is fixable by adding a veto BELOW it:
+   *
+   *  - THE §603/§604 CATCH-UP MANDATE, 330 plans / 571,350 readers. "Effective
+   *    January 1, 2026, the Plan implemented the Roth catch-up contribution
+   *    requirements under the Internal Revenue Code" matches alternative 1, so
+   *    the page published *Roth: available* for a plan year whose only Roth
+   *    money is a 2026 statutory requirement on high earners' catch-ups. The
+   *    v206 arm below ALREADY carries `CATCHUP_MANDATE` — and it sits inside
+   *    `if (!out.roth)`, so it was unreachable whenever this arm fired. *A
+   *    guard measured and documented in one arm is not a guard on the class.*
+   *    Read in the largest member, Trustees of the National Electrical
+   *    (30,463): Roth appears exactly three times, all three the mandate, while
+   *    its own contributions note says over-50 catch-ups are PRETAX.
+   *  - A FUTURE-EFFECTIVE AMENDMENT, 738 plans / 1,391,058 readers across both
+   *    arms. An amendment granting Roth from a date AFTER the plan-year end is
+   *    not a feature of the year being reported.
+   *
+   * AND IT IS A RE-SEARCH, NOT A VETO, BECAUSE THE DIFFERENCE WAS MEASURED.
+   * `subsequent-events-size.mjs --published-quote` enumerates what a terminal
+   * `if (out.roth && futureEffective(out.rothText)) out.roth = false` would
+   * withdraw: 901 roth + 119 after-tax plans / 1,539,670 readers, of which
+   * **554 plans / 886,544 readers are CORRECT** — the amendment sentence won
+   * the quote while the SAME filing says yes somewhere else. A veto destroys
+   * those; skipping the candidate and taking the next one recovers them. *A
+   * guard that blocks a wrong answer must not discard the honest evidence.*
+   *
+   * THE ORDER IS PRESERVED EXACTLY. The alternatives are tried in their
+   * original sequence and each is scanned left-to-right, so with no candidate
+   * refused the arm selects the identical match the `||` chain did — asserted
+   * over the store by `scripts/effective-date-test.mjs --equivalence` and by
+   * `tax-flag-gate.mjs`'s own held/moved split.
+   *
+   * THE TWO REFUSALS ARE PER CANDIDATE AND NOTHING ELSE CHANGES: the accepted
+   * match's `.index` still supplies the quote, so a surviving first candidate
+   * publishes the sentence it always did. */
+  const ROTH_ARMS = [
+    /\broth\b[^.]{0,120}(contribut|deferral|option|401)/gi,
+    /(designated|make) \broth\b/gi,
+    /(?:contribut|deferral)\w*[^.]{0,80}?(?:into|to|as) an? \broth\b/gi,
     /* v124: allow a QUALIFIER between the separator and the word. "pre-tax or
      * after-tax Roth basis" (R.J. Kielty) is the ordinary way to write it and
      * was scoring as no Roth at all, so the page said "not stated" about a
      * filing that states it. Closed set, each glued directly to "roth", so
      * "pre-tax or after-tax" with no Roth still does not match. */
-    t.match(/(?:contribut|defer)\w*[^.]{0,140}?(?:pre-?tax|before-?tax)\s*(?:,|\bor\b|\band\b|\/)\s*(?:designated\s+|after-?tax\s+|post-?tax\s+)?\broth\b/i) ||
-    t.match(/(?:contribut|defer)\w*[^.]{0,140}?\broth\b\s*(?:,|\bor\b|\band\b|\/)\s*(?:pre-?tax|before-?tax)/i);
-  if (roth) { out.roth = true; out.rothText = sentence(roth.index); }
+    /(?:contribut|defer)\w*[^.]{0,140}?(?:pre-?tax|before-?tax)\s*(?:,|\bor\b|\band\b|\/)\s*(?:designated\s+|after-?tax\s+|post-?tax\s+)?\broth\b/gi,
+    /(?:contribut|defer)\w*[^.]{0,140}?\broth\b\s*(?:,|\bor\b|\band\b|\/)\s*(?:pre-?tax|before-?tax)/gi,
+  ];
+  for (const re of ROTH_ARMS) {
+    /* `null` and not a falsy-string test: v207 set the flag on the MATCH and the
+     * quote separately, so a candidate whose sentence came back empty still
+     * published a yes. Keeping that is what makes the no-refusal case
+     * byte-identical rather than merely similar. */
+    let hit = null;
+    for (const m of t.matchAll(re)) {
+      const s = sentence(m.index);
+      if (catchupMandate(s)) continue;
+      if (futureEffectiveGrant(s, PYE, "roth")) continue;
+      hit = s; break;
+    }
+    if (hit !== null) { out.roth = true; out.rothText = hit; break; }
+  }
   /* v206: ROTH NAMED BESIDE A TAX-BASIS WORD — the ordinary way an auditor
    * states Roth, and the shape every arm above misses.
    *
@@ -8369,7 +8439,14 @@ export function extractPlanFeatures(text, sponsorName = "") {
   if (!out.roth) {
     const ROLL_IN = /roll(?:ed|ing|s)?[- ]?over|rollover|transferr?ed (?:in|from)|from (?:other|another|a prior|a predecessor|a former)\b/i;
     const NOT_IN = /\bwithdraw|\bdistribut|in[- ]?plan|\bconvert|\bconversion|\brecharacteriz/i;
-    const CATCHUP_MANDATE = (s) => /catch-? ?up/i.test(s) && /\b(?:required|requires|require|must|mandat\w+)\b/i.test(s);
+    /* v208: THIS TEST IS NOW SHARED WITH THE PRIMARY ARM ABOVE, which is where
+     * it was needed and where it was not. It was declared here as a local
+     * const, measured here as the sole protection for 3 filings / 133,930
+     * readers, and documented here — inside a block gated on `!out.roth`, so it
+     * could never be reached by the 330 plans whose catch-up sentence had
+     * already won the arm above. It is one function in
+     * `lib-effective-date.mjs` now; the behaviour of THIS arm is unchanged. */
+    const CATCHUP_MANDATE = catchupMandate;
     for (const m of t.matchAll(/(?:pre|before|after|post)-? ?tax\b[^.;]{0,32}?\broth\b|\broth\b[^.;]{0,14}?(?:pre|before|after|post)-? ?tax\b/gi)) {
       const s = sentence(m.index);
       /* money going IN. `savings` is here for Xylem's "designate savings as
@@ -8380,6 +8457,10 @@ export function extractPlanFeatures(text, sponsorName = "") {
       if (!/contribut|\bdefer|designate\w* savings|savings (?:as|on) a/i.test(s)) continue;
       if (ROLL_IN.test(s) || NOT_IN.test(s) || /\broth\s+ira\b/i.test(s)) continue;
       if (CATCHUP_MANDATE(s)) continue;
+      /* v208: and the same date test the primary arm applies — this arm is a
+       * skipping candidate loop already, so the refusal is one `continue` and
+       * the re-search it needs comes free. */
+      if (futureEffectiveGrant(s, PYE, "roth")) continue;
       out.roth = true; out.rothText = s; break;
     }
   }
@@ -8422,6 +8503,13 @@ export function extractPlanFeatures(text, sponsorName = "") {
     // that also says voluntary/traditional/regular/non-deductible/thrift is
     // describing the separate after-tax money and keeps the flag.
     if (DEFERRAL_ROTH(sentence(at.index))) continue;
+    /* v208: THE AFTER-TAX ARMS NEEDED THE DATE TEST AND NOT THE CONVERSION.
+     * All three are already `matchAll` candidate loops that `continue` past a
+     * refused sentence, so the re-search the roth arm had to be rebuilt for is
+     * their existing shape — the only thing missing was the question. Checked
+     * rather than assumed, and the asymmetry is the finding: the roth arm was a
+     * bare first-match `||` chain and these are not. */
+    if (futureEffectiveGrant(sentence(at.index), PYE, "afterTax")) continue;
     out.afterTax = true; out.afterTaxText = sentence(at.index); break;
   }
   // BASIS enumerations never say "after-tax contributions": "Contributions
@@ -8439,6 +8527,7 @@ export function extractPlanFeatures(text, sponsorName = "") {
       const ri2 = post2.search(/\broth\b/i);
       const rothTarget2 = ri2 >= 0 && !/[.,;]|\b(?:and|or)\b/i.test(post2.slice(0, ri2));
       if (rothMod || rothTarget2 || !/contribut\w+[^.]{0,80}$/i.test(pre)) continue;
+      if (futureEffectiveGrant(sentence(m2.index), PYE, "afterTax")) continue;  /* v208 */
       out.afterTax = true; out.afterTaxText = sentence(m2.index); break;
     }
   }
@@ -8453,6 +8542,7 @@ export function extractPlanFeatures(text, sponsorName = "") {
       const pre = t.slice(Math.max(0, m3.index - 80), m3.index);
       if (!/(?:before[- ]tax|pre[- ]tax|roth|combination of|may (?:make|contribute|elect)|contribute)\b/i.test(pre)) continue;
       if (DEFERRAL_ROTH(sentence(m3.index))) continue;
+      if (futureEffectiveGrant(sentence(m3.index), PYE, "afterTax")) continue;  /* v208 */
       out.afterTax = true; out.afterTaxText = sentence(m3.index); break;
     }
   }

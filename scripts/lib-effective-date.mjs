@@ -190,6 +190,41 @@ export function planYearEnd(pyb, pye) {
  *                                      evidence FOR the yes and must never
  *                                      withdraw one
  */
+/* A SENTENCE THAT SUSPENDS, FREEZES OR CURTAILS THIS ARM'S OWN TAX WORD
+ * PRESUPPOSES IT, EXACTLY AS A DEGREE CHANGE DOES — and it is a SEPARATE
+ * predicate because `presupposes`'s grant veto cannot be asked of it.
+ *
+ * FOUND BY READING THE MEMBER, NOT BY IMAGINING THE CLASS. Arcadium Lithium
+ * (482 readers) files "Effective March 31, 2026, the Plan was frozen and
+ * contributions under the Plan are temporarily suspended, including after-tax
+ * contributions." The date is after the plan-year end and anchored on
+ * "Effective", so the date test skipped it — and the next after-tax candidate
+ * in the same filing, "Participants may designate contributions as Roth
+ * contributions or as other after-tax contributions", is refused by the
+ * `rothModifies` guard in `lib-4i.mjs` on the words "or as other". So the
+ * re-search found nothing and a TRUE flag was withdrawn. You cannot suspend
+ * what does not exist: during the year reported, after-tax was available.
+ *
+ * WHY NOT A FOURTH ARM OF `presupposes`: that function vetoes on a GRANT verb,
+ * and its grant list contains `includ\w*`. Arcadium's sentence says "including
+ * after-tax contributions" — a LIST MARKER — so the grant veto fires and the
+ * presupposition would be thrown away. Same shape as `add\w*` matching
+ * "Additionally", which this file already records; a dedicated disjunct whose
+ * blast radius is the phrase is the recorded remedy.
+ *
+ * ITS BLAST RADIUS IS MEASURED, NOT ASSUMED — see
+ * `scripts/effective-date-test.mjs --restriction`, which enumerates every
+ * published quote the date test would otherwise skip and prints the ones this
+ * spares, to be read. */
+const RESTRICT_VERBS = "suspend|freez|froze|curtail|ceas";
+export const restrictsExisting = (quote, arm) => {
+  const tw = TAXWORD[arm];
+  if (!quote || !tw) return false;
+  return new RegExp(
+    "\\b(?:" + RESTRICT_VERBS + ")\\w*\\b[^.]{0,80}?(?:" + tw + ")" +
+    "|(?:" + tw + ")[^.]{0,60}?\\b(?:" + RESTRICT_VERBS + ")\\w*\\b", "i").test(quote);
+};
+
 export function futureEffectiveGrant(quote, pye, arm) {
   if (!quote || !pye || !pye.pyeY) return null;
   const dts = datesIn(quote);
@@ -202,6 +237,7 @@ export function futureEffectiveGrant(quote, pye, arm) {
   });
   if (!hit) return null;
   if (presupposes(quote, arm)) return null;
+  if (restrictsExisting(quote, arm)) return null;
   return hit.raw;
 }
 
