@@ -799,6 +799,17 @@ directives, the standing machinery, and the procedures with a specific shape.*
   never 0). The hand-rolled `git push --force-with-lease` is retired: running
   the check by eye failed once, when an unconditional "(nothing above…)" echo
   overrode the reading of the offending commit it had just printed.
+  **`--force` BUYS TWO OVERRIDES FOR THE PRICE OF ONE, measured 2026-11-22.**
+  It is documented for the git-ahead refusal ("only after confirming those
+  commits carry nothing the branch lacks"), and `mirror.sh:152` also forwards it
+  to `sitetest-gate.mjs` — so a session clearing a same-data-twice cron commit
+  silently disables the gate that proves CI is green on the mirrored SHA. The
+  working habit until the flags are split: get site-test GREEN on the exact
+  head first, then pass `--force`, then **read the output for
+  `sitetest-gate: ok — site-test run #N on this exact commit concluded
+  success`**, which is a genuine pass; an override prints no such line. *A flag
+  named for one refusal can be wired to two, and the second one is the
+  verification.*
 - **A frontend change must re-derive the cache-buster:
   `node scripts/stamp-assets.mjs`, then commit `index.html`.** The stamps are
   sha256 content hashes of `app.js`, `styles.css`, `data.js`, `fund-er.js` and
