@@ -17,8 +17,11 @@ filer may not have written. Measured with a new committed instrument,
 `scripts/match-cause-census.mjs`, which splits the match census's bucket C
 (note present, match vocabulary present, extractor yields nothing — 4,448 plans
 / 7,229,368 readers re-derived): **991 plans / 1,097,241 readers of that bucket
-say their match is discretionary and publish NOTHING.** Three shapes, each with
-its own sole-protection population:
+say their match is discretionary and publish NOTHING.** That is the class BEFORE
+the refusals below; the shipped arm reaches **671 of those plans / 868,965
+readers**, and the figure is stated both ways on purpose, because a sizing
+measured with a looser predicate than the one that ships is a number that reads
+as a result. Three shapes, each with its own sole-protection population:
 
 | shape | the filers | sole protection |
 |---|---|---|
