@@ -29,6 +29,9 @@
  *     --expect-loss-file <path> the same, one ACK[:arm] per line
  *     --must-keep ACK           a pin: failing unless the candidate keeps it
  *     --cached-only             judge only filings already in the text cache
+ *     --dump <path.json>        enumerate EVERY loss, quote move, gain and
+ *                               untested plan, and write a --expect-loss-file
+ *                               beside it (show() prints only 25)
  *     --control-max 0.25        refuse to report above this baseline/store
  *                               disagreement rate (measured band 10-14%)
  *     --selftest                prove the harness can fail (see below)
@@ -71,7 +74,7 @@
  *     promote one, and a changed sentence under an unchanged tick is a change
  *     to what the page says.
  */
-import { readFileSync, readdirSync, existsSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
@@ -97,6 +100,7 @@ const ALL = has("--all");
  * run here, so the floor is set above the measured band and the measurement is
  * printed every time rather than assumed. */
 const CONTROL_REFUSE_ABOVE = +one("--control-max", 0.25);
+const DUMP = one("--dump", null);
 
 /* ---------------------------------------------------------------------------
  * loading an extractor: a git REF or a PATH, and a missing one THROWS
@@ -155,6 +159,15 @@ function buildPopulation() {
       ein: d.get(r, "ein"), pn: d.get(r, "pn"),
       roth: !!ft.roth, afterTax: !!ft.afterTax,
       rothText: ft.rothText || "", afterTaxText: ft.afterTaxText || "",
+      /* v208: THE PLAN YEAR, BECAUSE WITHOUT IT THIS HARNESS CANNOT SEE THE
+       * CHANGE IT EXISTS TO JUDGE. `extractPlanFeatures`' third argument is
+       * what gives the roth and after-tax arms a date test; a gate that keeps
+       * calling it with two arguments would print a perfect, meaningless zero
+       * on a change that withdraws 1,391,058 readers' worth of flags. *Measure
+       * through the function the page calls, WITH THE ARGUMENT THE PAGE
+       * PASSES* — and `--selftest` now asserts this argument reaches the
+       * extractor rather than trusting that it does. */
+      pyb: String(d.get(r, "pyb") || ""), pye: String(d.get(r, "pye") || ""),
     };
     if (ARMS.some((a) => rec[a])) pop.push(rec);
   }
@@ -228,8 +241,14 @@ async function runGate(opts) {
     if (!text) { out.noText.push(p); continue; }
     n++;
     let b, c;
-    try { b = base.mod.extractPlanFeatures(text, p.name) || {}; } catch (e) { b = { __throw: e.message }; }
-    try { c = cand.mod.extractPlanFeatures(text, p.name) || {}; } catch (e) { c = { __throw: e.message }; }
+    /* BOTH SIDES GET THE SAME THIRD ARGUMENT. A baseline at a ref that predates
+     * the parameter ignores it (its signature takes two), which is exactly the
+     * fail-open the ship relies on — so passing it to both is what makes the
+     * two sides differ ONLY by the code under test. Holding it back from the
+     * baseline would have been a second variable. */
+    const py = { pyb: p.pyb || "", pye: p.pye || "" };
+    try { b = base.mod.extractPlanFeatures(text, p.name, py) || {}; } catch (e) { b = { __throw: e.message }; }
+    try { c = cand.mod.extractPlanFeatures(text, p.name, py) || {}; } catch (e) { c = { __throw: e.message }; }
     if (c.__throw) { out.lost.push({ ...p, arm: "(throw)", why: c.__throw, bq: "", cq: "" }); continue; }
     for (const arm of ARMS) {
       if (!p[arm]) continue;
@@ -308,6 +327,26 @@ function report(R, expectLoss, mustKeep) {
     }
     if (a.length > n) console.log(`  … ${a.length - n} more`);
   };
+  /* v208: THE ENUMERATION, BECAUSE `show()` PRINTS 25 AND SAYS "… N more".
+   * A ship whose whole point is a withdrawal has to name every member of it —
+   * to be READ before it is accepted, and to become the --expect-loss-file of
+   * the verdict run. A gate that can only summarise cannot be used twice. */
+  if (DUMP) {
+    const slim = (a) => a.map((x) => ({ ack: x.ack, arm: x.arm, ppl: x.ppl, name: x.name,
+      stratum: x.stratum, was: String(x.bq || "").slice(0, 400), now: String(x.cq || "").slice(0, 400) }));
+    writeFileSync(DUMP, JSON.stringify({
+      generated: new Date().toISOString(), base: R.base.how, cand: R.cand.how,
+      population: R.pop.length, judged: R.agree,
+      lostUnexpected: slim(unexpected), lostExpected: slim(expected),
+      quoteMoved: slim(R.quoteMoved), gained: slim(R.gained),
+      untested: R.untested.map((x) => ({ ack: x.ack, arm: x.arm, ppl: x.ppl, name: x.name })),
+    }, null, 1));
+    console.log(`\nenumerated -> ${DUMP}  (${unexpected.length} unexpected + ${expected.length} expected losses, ` +
+      `${R.quoteMoved.length} quote moves, ${R.gained.length} gains, ${R.untested.length} untested)`);
+    const lines = [...unexpected, ...expected].map((x) => `${x.ack}:${x.arm}`).join("\n");
+    writeFileSync(DUMP.replace(/\.json$/, "") + ".losses.txt", lines + (lines ? "\n" : ""));
+    console.log(`  --expect-loss-file candidate -> ${DUMP.replace(/\.json$/, "")}.losses.txt`);
+  }
   show("LOST — UNEXPECTED: a published yes this candidate withdraws", unexpected, 25);
   show("LOST — expected (named with --expect-loss)", expected, 25);
   show("QUOTE MOVED", R.quoteMoved, 10);
@@ -393,6 +432,17 @@ function pins(R, unexpected, mustKeep) {
         fails.push(`fixture ${c.id} ${arm} (${f(inPop.ppl)} readers): a VERIFIED CORRECT yes was WITHDRAWN. ${c.verified}`);
       if (roles.includes("must-keep") && !lost && unexpected.some((x) => x.ack === c.ack && x.arm === arm))
         fails.push(`fixture ${c.id} ${arm}: internal inconsistency — reported unexpected-lost but not lost`);
+      /* v208: `must-withdraw` IS THE CLAIM OF THE SHIP, SO IT FAILS RATHER THAN
+       * NOTES. `subsequent-future` below only NOTES a still-published defect,
+       * which is right for a fixture that merely DESCRIBES a known-wrong yes.
+       * A member the candidate was built to withdraw is different: if it is
+       * still published, the ship does not do what its commit message says. It
+       * inherits this loop's untested handling, so a plan the baseline cannot
+       * reproduce is REPORTED and never failed. */
+      if (roles.includes("must-withdraw") && !lost)
+        fails.push(`fixture ${c.id} ${arm} (${f(inPop.ppl)} readers): a WRONG published yes this candidate exists to withdraw is STILL PUBLISHED. ${c.verified}`);
+      if (roles.includes("must-withdraw") && lost)
+        console.log(`  NOTE: fixture ${c.id} ${arm} (${f(inPop.ppl)} readers) WITHDRAWN as intended — pin holds`);
       if ((roles.includes("denial") || roles.includes("subsequent-future")) && !lost)
         console.log(`  NOTE: fixture ${c.id} ${arm} is a KNOWN-WRONG published yes and this candidate still publishes it ` +
           `(role ${roles.join("+")}) — the defect is not fixed by this candidate`);

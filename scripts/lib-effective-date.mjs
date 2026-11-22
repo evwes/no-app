@@ -254,3 +254,29 @@ export function futureEffectiveGrant(quote, pye, arm) {
 export const catchupMandate = (s) =>
   /catch-? ?up/i.test(String(s || "")) &&
   /\b(?:required|requires|require|must|mandat\w+)\b/i.test(String(s || ""));
+
+/* AND THE REFUSAL THE PARSER ACTUALLY CALLS: A MANDATE, AND NOT A SENTENCE THAT
+ * ALSO GRANTS THE ARM.
+ *
+ * MEASURED, NOT FEARED. Promoting `catchupMandate` from the v206 arm to the
+ * PRIMARY arm withdraws 279 plans / 184,635 readers whose published quote is a
+ * mandate the date test cannot reach, and moves 61 quotes / 134,079 readers.
+ * The top twenty were read: eighteen are plain SS603/604 mandates and two are
+ * MIXED — one sentence that both announces the mandate and grants Roth:
+ *   Aijj Enterprises (7,405) "Among other changes, the amendment added a Roth
+ *     elective deferral feature, ... including enhanced catch-up contribution
+ *     limits" — refusing this withdrew a TRUE flag, because the re-search found
+ *     nothing else and v207 had published it.
+ *   Loyola University (8,752) "a ROTH contribution was added to the Plan, and
+ *     the ROTH catch-up contribution as required by SECURE 2.0 was implemented".
+ * *Ambiguity must not withdraw* — this project's own position, recorded for
+ * v207's negation veto on exactly this kind of affirm-then-carve-out sentence.
+ *
+ * THE GRANT VETO IS `grantRe`, ALREADY HERE AND ALREADY TESTED, and it does not
+ * weaken what the v206 arm protected: measured on both of that arm's pinned
+ * mandates — Whole Foods (123,250) and Altamed (6,577), the single-protection
+ * cases in `roth-pairing-test.mjs` — `grantRe` is FALSE, so both still refuse.
+ * American Eagle, Mavis and Resonetics likewise. It is therefore ONE spelling
+ * used in both arms rather than two spellings of one caption family. */
+export const catchupMandateRefusal = (s, arm = "roth") =>
+  catchupMandate(s) && !grantRe(TAXWORD[arm] || TAXWORD.roth).test(String(s || ""));

@@ -12,7 +12,7 @@ import { dirname, join } from "node:path";
  * use to qualify an acceleration-only quote — so the label gate and the
  * reader-facing sentence are one predicate and cannot contradict each other. */
 import { vestingQuoteOk, accelerationOnlyVesting } from "./lib-quote.mjs";
-import { futureEffectiveGrant, catchupMandate, planYearEnd } from "./lib-effective-date.mjs";
+import { futureEffectiveGrant, catchupMandateRefusal, planYearEnd } from "./lib-effective-date.mjs";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
 export const PARSER_VERSION = 208;
@@ -8356,7 +8356,7 @@ export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
     let hit = null;
     for (const m of t.matchAll(re)) {
       const s = sentence(m.index);
-      if (catchupMandate(s)) continue;
+      if (catchupMandateRefusal(s, "roth")) continue;
       if (futureEffectiveGrant(s, PYE, "roth")) continue;
       hit = s; break;
     }
@@ -8446,7 +8446,7 @@ export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
      * could never be reached by the 330 plans whose catch-up sentence had
      * already won the arm above. It is one function in
      * `lib-effective-date.mjs` now; the behaviour of THIS arm is unchanged. */
-    const CATCHUP_MANDATE = catchupMandate;
+    const CATCHUP_MANDATE = (s) => catchupMandateRefusal(s, "roth");
     for (const m of t.matchAll(/(?:pre|before|after|post)-? ?tax\b[^.;]{0,32}?\broth\b|\broth\b[^.;]{0,14}?(?:pre|before|after|post)-? ?tax\b/gi)) {
       const s = sentence(m.index);
       /* money going IN. `savings` is here for Xylem's "designate savings as

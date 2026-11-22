@@ -126,7 +126,13 @@ if (hits !== 1) {
   // bare directory is enough here and is asserted by the positives flipping.
   const p = path.join(dir, "lib-4i-noarm.mjs");
   writeFileSync(p, SRC.replace(ANCHOR, "  if (false) {\n    const ROLL_IN ="));
-  writeFileSync(path.join(dir, "lib-quote.mjs"), readFileSync(new URL("./lib-quote.mjs", import.meta.url), "utf8"));
+  /* THE WHOLE LOCAL GRAPH, not the one import that was there when this was
+   * written. v208 added `./lib-effective-date.mjs` to lib-4i and this test went
+   * ERR_MODULE_NOT_FOUND — a copy of a module graph is only as current as the
+   * list that built it, so the list is derived from the SOURCE rather than
+   * typed. A missing file still throws; it just names the real cause. */
+  for (const m of SRC.matchAll(/\bfrom\s+["']\.\/([^"']+)["']/g))
+    writeFileSync(path.join(dir, m[1]), readFileSync(new URL(`./${m[1]}`, import.meta.url), "utf8"));
   const noarm = await import(p);
   let reached = 0;
   for (const c of CASES.filter((x) => x.roth)) {

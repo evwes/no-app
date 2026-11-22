@@ -1,67 +1,167 @@
 {
-  "what": "Named, hand-verified filings for the Roth / voluntary-after-tax flags. Pinned BY ACK, with the ROLE each one plays, so an instrument that stops reproducing its own motivating case fails loudly instead of printing a smaller number. A count that omits its own motivating case looks exactly like a count that includes it.",
-  "read_by": [
-    "scripts/subsequent-events-size.mjs",
-    "scripts/tax-flag-gate.mjs"
-  ],
-  "roles": {
-    "denial": "the published quote's own words DENY the flag it is published under — defect 1, docs/accuracy-log.md 2026-11-20",
-    "subsequent-future": "the flag is caused, or would be re-caused after a repair upstream, by an affirmative sentence inside a subsequent-events / plan-amendment section whose effective date falls AFTER the reported plan year — defect 2",
-    "must-keep": "a correct published yes, verified by reading the filing. A veto that withdraws this one is too wide and must not ship.",
-    "must-stay-withdrawn": "v207 WITHDREW this flag and the withdrawal was right. The ack is therefore CORRECTLY ABSENT from the published-yes population, and a tool that treats that absence as a missing pin is reporting its own bookkeeping as a defect — subsequent-events-size.mjs exited 1 on exactly that the first time it ran after the v207 merge. The claim is now the other way round and it is STRONGER than the one it replaces: if this ack ever publishes this arm again, a later change has undone v207 and the pin must FAIL. Nothing else in the repo guards the shipped fix against regression."
+ "what": "Named, hand-verified filings for the Roth / voluntary-after-tax flags. Pinned BY ACK, with the ROLE each one plays, so an instrument that stops reproducing its own motivating case fails loudly instead of printing a smaller number. A count that omits its own motivating case looks exactly like a count that includes it. 2026-11-22: ten cases, nine added for v208. The two the brief named for WITHDRAWAL (Asphalt Materials, Arcadium Lithium) are pinned must-KEEP instead, because reading their filings says so and because the accuracy-log entry they came from lists them among a terminal veto's genuine ERRORS rather than among its targets.",
+ "read_by": [
+  "scripts/subsequent-events-size.mjs",
+  "scripts/tax-flag-gate.mjs"
+ ],
+ "roles": {
+  "denial": "the published quote's own words DENY the flag it is published under — defect 1, docs/accuracy-log.md 2026-11-20",
+  "subsequent-future": "the flag is caused, or would be re-caused after a repair upstream, by an affirmative sentence inside a subsequent-events / plan-amendment section whose effective date falls AFTER the reported plan year — defect 2",
+  "must-keep": "a correct published yes, verified by reading the filing. A veto that withdraws this one is too wide and must not ship.",
+  "must-stay-withdrawn": "v207 WITHDREW this flag and the withdrawal was right. The ack is therefore CORRECTLY ABSENT from the published-yes population, and a tool that treats that absence as a missing pin is reporting its own bookkeeping as a defect — subsequent-events-size.mjs exited 1 on exactly that the first time it ran after the v207 merge. The claim is now the other way round and it is STRONGER than the one it replaces: if this ack ever publishes this arm again, a later change has undone v207 and the pin must FAIL. Nothing else in the repo guards the shipped fix against regression.",
+  "must-withdraw": "the candidate under test EXISTS to withdraw this published yes, and the member was READ in its own filing. Unlike `subsequent-future`, which merely describes a known-wrong yes and NOTES when a candidate leaves it alone, this FAILS the gate when the flag survives: a ship whose claim is a withdrawal must make it. Added 2026-11-22 for v208 (the date test in the roth and after-tax arms). It inherits the UNTESTED handling, so a plan whose stored flag the baseline cannot reproduce from local text is reported and never failed."
+ },
+ "cases": [
+  {
+   "id": "waste-management",
+   "ack": "20261013121857NAL0004205171001",
+   "sponsor": "Waste Management, Inc.",
+   "participants": 47047,
+   "planYear": 2025,
+   "verified": "2026-11-20, filing read: \"After-tax contributions are not permitted by the Plan.\" and ZERO occurrences of Roth anywhere. The store holds afterTax: true and app.js:4080 renders it as \"✓ Available\". WITHDRAWN BY v207 (2026-11-21): the store now holds the flag FALSE with the denial quote retained as the evidence for the withdrawal, mirrored 13a445fb. The pin's role flips to must-stay-withdrawn: this arm reappearing means a later change undid v207.",
+   "quote": "After-tax contributions are not permitted by the 6 Plan.",
+   "expect": {
+    "afterTax": [
+     "denial",
+     "must-stay-withdrawn"
+    ]
+   }
   },
-  "cases": [
-    {
-      "id": "waste-management",
-      "ack": "20261013121857NAL0004205171001",
-      "sponsor": "Waste Management, Inc.",
-      "participants": 47047,
-      "planYear": 2025,
-      "verified": "2026-11-20, filing read: \"After-tax contributions are not permitted by the Plan.\" and ZERO occurrences of Roth anywhere. The store holds afterTax: true and app.js:4080 renders it as \"✓ Available\". WITHDRAWN BY v207 (2026-11-21): the store now holds the flag FALSE with the denial quote retained as the evidence for the withdrawal, mirrored 13a445fb. The pin's role flips to must-stay-withdrawn: this arm reappearing means a later change undid v207.",
-      "quote": "After-tax contributions are not permitted by the 6 Plan.",
-      "expect": {
-        "afterTax": [
-          "denial",
-          "must-stay-withdrawn"
-        ]
-      }
-    },
-    {
-      "id": "cortech",
-      "ack": "20261015073223NAL0008571632003",
-      "sponsor": "Cortech, Llc",
-      "participants": 16067,
-      "planYear": 2025,
-      "verified": "2026-11-20, filing read: the contributions note says \"The Plan does not allow for Roth or after-tax contributions.\" while Note 8 — Subsequent events lists \"Participants are allowed to make Roth contributions\" under a restated adoption agreement effective January 1, 2026, after the plan year reported. Asked that section ALONE the shipped extractor returns roth=true, so the Roth flag is DOUBLY CAUSED and a negation veto alone would leave it wrong. WITHDRAWN BY v207 (2026-11-21): the store now holds the flag FALSE with the denial quote retained as the evidence for the withdrawal, mirrored 13a445fb. The pin's role flips to must-stay-withdrawn: this arm reappearing means a later change undid v207.",
-      "quote": "The Plan does not allow for Roth or after-tax contributions.",
-      "expect": {
-        "roth": [
-          "denial",
-          "subsequent-future",
-          "must-stay-withdrawn"
-        ],
-        "afterTax": [
-          "denial",
-          "must-stay-withdrawn"
-        ]
-      }
-    },
-    {
-      "id": "target",
-      "ack": "20261006141531NAL0030853571001",
-      "sponsor": "Target Corporation",
-      "participants": 473741,
-      "planYear": 2025,
-      "verified": "2026-11-20, filing read at line 1038: \"Except for highly compensated participants, participants are allowed to make contributions to the Plan in any combination of before-tax, after-tax and/or Roth contributions.\" Both arms are correct, and the sentence carries the words \"allowed to make\" — the exact token an over-wide negation veto keyed on allow/permit would destroy. It is the largest correct yes in the population.",
-      "quote": "Except for highly compensated participants, participants are allowed to make contributions to the Plan in any combination of before-tax, after-tax and/or Roth contributions.",
-      "expect": {
-        "roth": [
-          "must-keep"
-        ],
-        "afterTax": [
-          "must-keep"
-        ]
-      }
-    }
-  ]
+  {
+   "id": "cortech",
+   "ack": "20261015073223NAL0008571632003",
+   "sponsor": "Cortech, Llc",
+   "participants": 16067,
+   "planYear": 2025,
+   "verified": "2026-11-20, filing read: the contributions note says \"The Plan does not allow for Roth or after-tax contributions.\" while Note 8 — Subsequent events lists \"Participants are allowed to make Roth contributions\" under a restated adoption agreement effective January 1, 2026, after the plan year reported. Asked that section ALONE the shipped extractor returns roth=true, so the Roth flag is DOUBLY CAUSED and a negation veto alone would leave it wrong. WITHDRAWN BY v207 (2026-11-21): the store now holds the flag FALSE with the denial quote retained as the evidence for the withdrawal, mirrored 13a445fb. The pin's role flips to must-stay-withdrawn: this arm reappearing means a later change undid v207.",
+   "quote": "The Plan does not allow for Roth or after-tax contributions.",
+   "expect": {
+    "roth": [
+     "denial",
+     "subsequent-future",
+     "must-stay-withdrawn"
+    ],
+    "afterTax": [
+     "denial",
+     "must-stay-withdrawn"
+    ]
+   }
+  },
+  {
+   "id": "target",
+   "ack": "20261006141531NAL0030853571001",
+   "sponsor": "Target Corporation",
+   "participants": 473741,
+   "planYear": 2025,
+   "verified": "2026-11-20, filing read at line 1038: \"Except for highly compensated participants, participants are allowed to make contributions to the Plan in any combination of before-tax, after-tax and/or Roth contributions.\" Both arms are correct, and the sentence carries the words \"allowed to make\" — the exact token an over-wide negation veto keyed on allow/permit would destroy. It is the largest correct yes in the population.",
+   "quote": "Except for highly compensated participants, participants are allowed to make contributions to the Plan in any combination of before-tax, after-tax and/or Roth contributions.",
+   "expect": {
+    "roth": [
+     "must-keep"
+    ],
+    "afterTax": [
+     "must-keep"
+    ]
+   }
+  },
+  {
+   "id": "national-electrical-catchup",
+   "ack": "20260730144050NAL0023443601001",
+   "expect": {
+    "roth": [
+     "must-withdraw"
+    ]
+   },
+   "verified": "2026-11-22, filing read: Roth appears exactly THREE times and all three are the SS604 catch-up mandate (\"Effective January 1, 2026, the Plan implemented the Roth catch-up contribution requirements under the Internal Revenue Code\"), while the plan's own contributions note says over-50 catch-up contributions are PRETAX. 30,463 readers; the largest member of the 330-plan class. CATCHUP_MANDATE was already in the v206 arm and unreachable, because that arm is gated on !out.roth and this sentence had won the arm above it."
+  },
+  {
+   "id": "simpson-amendment-2026",
+   "ack": "20260706123851NAL0015558627001",
+   "expect": {
+    "afterTax": [
+     "subsequent-future",
+     "must-withdraw"
+    ]
+   },
+   "verified": "2026-11-22, filing read: the ONLY after-tax sentence is \"On January 1, 2026, the Company amended the Plan to allow after-tax employee contributions.\" against a plan year ending 2025-12. 3,516 readers. Its own roth flag rests on a different sentence and must be KEPT, which is why the fixture declares one arm and not two."
+  },
+  {
+   "id": "ultra-clean-amendment-2026",
+   "ack": "20261015150738NAL0007917105001",
+   "expect": {
+    "afterTax": [
+     "subsequent-future",
+     "must-withdraw"
+    ]
+   },
+   "verified": "2026-11-22, filing read: \"In May 2026, the Plan was amended to allow for after-tax contributions.\" against a plan year ending 2025-12, and no other after-tax sentence. 2,666 readers. The amendment date is carried by a BARE month-and-year, which is why datesIn admits that shape."
+  },
+  {
+   "id": "arcturus-amendment-2026",
+   "ack": "20261014150604NAL0003095363001",
+   "expect": {
+    "afterTax": [
+     "subsequent-future",
+     "must-withdraw"
+    ]
+   },
+   "verified": "2026-11-22, filing read: \"In September 2026, the Plan was amended to (i) permit participants to make voluntary after-tax contributions to the Plan...\" against a plan year ending 2025-12. 226 readers. Roth is separately stated (\"Roth elective deferrals (after-tax) when contributed to the Plan\") and is KEPT."
+  },
+  {
+   "id": "asphalt-materials-suspension",
+   "ack": "20261001143444NAL0020761329001",
+   "expect": {
+    "roth": [
+     "must-keep"
+    ]
+   },
+   "verified": "2026-11-22, filing READ and the answer is the OPPOSITE of the one proposed for it. Asphalt Materials (3,100) was briefed as a must-withdraw. Its filing mentions Roth four times: a 2026 amendment-list item, the SS603 catch-up mandate, and TWICE \"The participants salary redirection contributions and Roth contributions will be suspended for the six-month period following the distribution\" — a plan provision that cannot exist unless Roth contributions do. v208 therefore KEEPS the flag and MOVES the quote off the amendment item onto the provision. accuracy-log 2026-11-22 (04:xxZ) lists it among the veto's GENUINE errors, i.e. a yes a terminal veto would wrongly destroy; it is the re-search's reason for existing, not its target."
+  },
+  {
+   "id": "arcadium-freeze",
+   "ack": "20260728112718NAL0017361811001",
+   "expect": {
+    "afterTax": [
+     "must-keep"
+    ]
+   },
+   "verified": "2026-11-22, filing READ, and it is why `restrictsExisting` exists. Arcadium Lithium (482) was briefed as a must-withdraw. Its after-tax quote is \"Effective March 31, 2026, the Plan was frozen and contributions under the Plan are temporarily suspended, including after-tax contributions\" — a future-dated SUSPENSION presupposes the feature — and the SAME filing states it independently: \"Participants may designate contributions as Roth contributions or as other after-tax contributions.\" That second sentence is refused by lib-4i's `rothModifies` guard on the words \"or as other\", so the re-search alone could not recover it and the first version of v208 withdrew a TRUE flag from 482 readers."
+  },
+  {
+   "id": "irhythm-degree",
+   "ack": "20261007125342NAL0015420419001",
+   "expect": {
+    "afterTax": [
+     "must-keep"
+    ]
+   },
+   "verified": "2026-11-22: \"Effective January 1 2026, the Plan documents has been amended to increase the contribution limit of after-tax contributions from 10% to 20% of compensation.\" A DEGREE change presupposes the feature — after-tax plainly existed at 10% in the year reported — so the date test must not withdraw it. 2,485 readers."
+  },
+  {
+   "id": "qualys-degree",
+   "ack": "20261005160730NAL0026706224001",
+   "expect": {
+    "afterTax": [
+     "must-keep"
+    ],
+    "roth": [
+     "must-keep"
+    ]
+   },
+   "verified": "2026-11-22: after-tax quote \"X Change the limit for voluntary after tax contributions to 12%\" is a degree change and must be kept; its roth quote (\"Roth contributions and voluntary (after-tax) contributions are also permitted under the Plan\") carries no date at all and is the control that the date test is silent where there is no date. 878 readers."
+  },
+  {
+   "id": "stonepeak-degree",
+   "ack": "20260930092417NAL0023259939001",
+   "expect": {
+    "afterTax": [
+     "must-keep"
+    ],
+    "roth": [
+     "must-keep"
+    ]
+   },
+   "verified": "2026-11-22: \"Additionally, effective January 1, 2026, the Company increased the after-tax contribution maximum from $10,000 to $29,500 for the 2026 Plan year.\" This is the member that caught the grant veto being spelled `add\\\\w*`, which matches \"Additionally\" — a character class written for a concept, met on a stem. 310 readers. NOTE: the briefed ack for Stonepeak was Stonepeak Ceramics; the plan that carries this sentence is Stonepeak Partners LP."
+  }
+ ]
 }
