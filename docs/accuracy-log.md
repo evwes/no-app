@@ -7,6 +7,60 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-22 (03:xxZ) — THE SIZER'S ANCHOR READ ONLY ONE SIDE OF THE DATE, AND ITS QUARANTINE BUCKET'S NAME WAS FALSE FOR THE MEMBERS IT HELD
+
+**WHAT WAS WRONG.** The future-effective-amendment sizing anchored an effective
+date on `EFFECTIVE_NEAR`, a **prefix** test over the 90 characters BEFORE the
+date. Half the announcement shapes in this corpus put the verb AFTER it — "On
+January 1, 2026, the Company amended the Plan to allow after-tax employee
+contributions" — so those parsed as undated and fell into `causalUnanchored`,
+printed as *"CAUSAL + only the evaluation date (undatable)"*. **That label is
+false for them: the sentence states its own amendment date.** Three members were
+known by name; nothing said how many more there were.
+
+**HOW IT WAS MEASURED, NOT GUESSED.** `--dump-dates` writes one record per date
+the classifier saw with the prefix and suffix it judged it on, and a record with
+`date: null` when the window held none, so the undated population is enumerable
+rather than inferred from absence. Over all 4,306 after-tax yeses: 1,312 date
+records, 66 future dates neither prefix-anchored nor an evaluation date, and
+their suffixes tabulate into ONE announcement shape plus five families that must
+not be anchored.
+
+**THE CHANGE.** `EFFECTIVE_AFTER`, a dedicated disjunct bounded by `^` —
+⟨date⟩`, the `⟨plan|company|employer|board|…⟩ ⟨was⟩ ⟨amended|restated|adopted|
+implemented⟩ — rather than tokens added to `EFFECTIVE_NEAR`'s closed
+whole-string vocabulary, whose radius is 70 characters of preceding text.
+
+**AND READING THE NEWLY REACHED MEMBERS FOUND THE OPPOSITE DEFECT.** Three
+members of the recorded 114 are DEGREE changes that **presuppose** the feature
+and must be KEPT (iRhythm "increase the contribution limit of after-tax
+contributions from 10% to 20%"; Qualys; Stonepeak). So the floor is **114 plans
+/ 216,041 readers**, not 114 / 213,306: +3 / +6,408 anchored, −3 / −3,673
+presupposing. *The plan count is unchanged by coincidence and the composition is
+not — a re-size is a new measurement, not a delta.*
+
+**TWO NEAR-MISSES INSIDE THAT SECOND FIX, both caught by reading members.** The
+presupposition screen was first written arm-blind — "a degree verb and a limit
+noun appear in the quote" — and claimed 8 members / 17,933 readers, five of them
+real defects whose sentence GRANTS this arm and changes the degree of something
+else (Fanatics' match formula, Backblaze's age requirement, Mntn's match
+calculation). *A witness that a row is damaged is not a witness to which claim
+the damage is on.* Then its grant veto was spelled `add\w*`, which matches
+**"Additionally"**, and threw Stonepeak back into the headline on the strength
+of an adverb — *a character class written for a concept picks up everything that
+shares its shape*, met on a stem.
+
+**WHAT PREVENTS IT.** `--selftest`: 7 positives, 20 refusals each READ in its
+own filing, 3 presuppositions, 5 headline members that must not be withdrawn,
+and 6 widening mutations that must each reach a NAMED refusal. Two mutations
+were decorative when first written and the control said so by name; replacing
+them is what established that `^` is load-bearing — dropping it anchors
+Vizient's evaluation date (6,859 readers) to an unrelated amendment sentence
+later in the same window, and Resolute's and Richline's balance-sheet dates to
+amendments from 2019 and 2026.
+
+---
+
 ## 2026-11-22 (02:xxZ) — THE ONE GUARD PROTECTING v207's WITHDRAWAL ANNOUNCED "pin holds" ON A PLAN THAT PUBLISHES THE FLAG RIGHT NOW
 
 **WHAT WAS WRONG.** `subsequent-events-size.mjs`'s `must-stay-withdrawn` pin —
