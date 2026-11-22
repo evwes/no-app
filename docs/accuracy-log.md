@@ -103,6 +103,24 @@ UNEXPECTED 0, GAINED 0**, control 88.9% (inside the measured 86-90% band), and
 **13 fixtures held** — every `must-withdraw` pin withdrawn and every `must-keep`
 pin kept, including the two the brief had named for withdrawal. Exit 0.
 
+**AND A FOURTH INSTANCE OF THIS SHAPE WAS LOOKED FOR AND REFUTED BY READING
+ITS OWN MEMBERS — do not port these vetoes.** The v206 arm carries `ROLL_IN`,
+`NOT_IN`, a Roth-IRA veto and a money-going-IN requirement, measured as jointly
+load-bearing for Amazon's 1,428,999 readers; the PRIMARY arm carries none of
+them. 4,895 plans / **7,696,157 readers** publish a roth quote that trips one.
+The top fifteen were read and the framing is WRONG: Starbucks (314,112)
+*"credited with their contributions (pre-tax, Roth, and/or rollover)"*, Ulta
+(79,798) *"Employee rollover contributions and Roth contributions are also
+permitted"*, Abbott, LabCorp, Cox, Novant — every one states Roth contributions
+and merely NAMES a rollover beside them. The vetoes belong to the v206 arm's
+weaker evidence standard, which infers from mere ADJACENCY; the primary arm
+already requires a contribution word near "roth", so a rollover mention is
+harmless there. Porting them would withdraw ~7.7M readers of correct yeses.
+*A guard right for one arm is not right for its neighbour.* The one residue
+worth a number: 321 plans / 829,642 readers whose quote has NO money-going-IN
+word at all (Delta, State Farm, GM — withdrawal and vesting sentences that
+PRESUPPOSE Roth). That is a quote-QUALITY question, not a flag defect.
+
 **WHAT PREVENTS IT.** `scripts/effective-date-test.mjs`: the sizer's selftest at
 its source, `planYearEnd`, the catch-up discriminator, both new refusals,
 SILENCE, a BYTE-IDENTICAL corpus equivalence (afterTax identical; roth identical

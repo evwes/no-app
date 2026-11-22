@@ -1130,6 +1130,20 @@ the publish gate applied before any reader figure, and an accuracy-log entry.
   since the refusal applies to EVERY candidate and a latent second cause is
   usually the same provision repeated. *A `latent` verdict never meant the yes
   was correct, which that entry said in words and not in its number.*
+- **REFUTED 2026-11-22, AND RECORDED SO IT IS NOT "FIXED" LATER: the v206 arm's
+  `ROLL_IN` / `NOT_IN` / Roth-IRA vetoes must NOT be ported to the primary roth
+  arm.** 4,895 plans / **7,696,157 readers** publish a roth quote that trips one
+  of them, which reads like a fourth instance of *a guard in one arm is not a
+  guard on the class* — and the top fifteen were READ and refute it: Starbucks
+  (314,112) *"credited with their contributions (pre-tax, Roth, and/or
+  rollover)"*, Ulta (79,798), Abbott, LabCorp, Cox, Novant all STATE Roth
+  contributions and merely name a rollover beside them. The vetoes belong to the
+  v206 arm's weaker standard, which infers from mere ADJACENCY; the primary arm
+  already requires a contribution word near "roth". *A guard right for one arm
+  is not right for its neighbour.* Residue worth a number: 321 plans / 829,642
+  readers whose quote carries NO money-going-IN word at all (Delta, State Farm,
+  GM — withdrawal and vesting sentences that PRESUPPOSE Roth), which is a
+  quote-QUALITY question and not a flag defect.
 - **A FUTURE-EFFECTIVE AMENDMENT READ AS A CURRENT FEATURE — SIZED 2026-11-20 at
   ~780-1,260 plans / ~1.5-1.6M readers, NINE TIMES the negation class. REPAIRED
   AS v208 (see directly above); this entry is now the PRE-repair measurement.**
