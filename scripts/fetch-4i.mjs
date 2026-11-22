@@ -337,6 +337,15 @@ function buildWorkList() {
          * held in a trust. Absent from the object until now, so the fallback
          * had no way to know. */
         mtiaAck: i.mtiaAck != null ? row[i.mtiaAck] || "" : "",
+        /* v208: THE PLAN YEAR, because without it the roth and after-tax arms
+         * have no date test at all. `extractPlanFeatures` asks whether an
+         * amendment granting Roth or after-tax takes effect AFTER the year
+         * being reported; that question needs the year, and the feature
+         * extractor had never been given it. `pye` is set only for IRREGULAR
+         * years and `planYearEnd` derives the ordinary case from `pyb`.
+         * A work item with neither fails OPEN — no date test, v207 behaviour. */
+        pyb: i.pyb != null ? row[i.pyb] || "" : "",
+        pye: i.pye != null ? row[i.pye] || "" : "",
       });
     }
   } catch (e) {
@@ -621,7 +630,22 @@ async function analyzePdf(ack, plan, tag) {
   }
   // plan features (match formula, vesting, Roth, auto-enroll) live in the
   // audit notes and exist even when the 4i table can't be parsed
-  let features = extractPlanFeatures(text, plan.sponsorName || plan.label || "");
+  /* v208: the third argument. A MASTER TRUST has no `pyb` (its work item comes
+   * from mtias.json), so its date test is silent — correct, since a trust files
+   * no plan-level contribution terms anyway. */
+  const planYear = { pyb: plan.pyb || "", pye: plan.pye || "" };
+  /* AND A PRIOR-YEAR FALLBACK IS JUDGED AGAINST THE NEWEST FILING'S YEAR, ON
+   * PURPOSE. `analyzePdf` is re-entered for the fallback with the SAME `plan`
+   * object, so a 2024 filing's notes are dated against the 2025 plan-year end.
+   * That is the right way round for what the page SAYS: it describes the plan
+   * as of its newest filing, and an amendment the 2024 notes announce as
+   * effective 2025-01-01 IS in force in the year displayed. It is also the
+   * conservative direction — the later boundary withdraws strictly fewer flags.
+   * Stated here because the sibling decision for ASSETS went the other way and
+   * is a recorded open defect (`overshoot`, judged against the wrong year's
+   * assets): these two are not the same question and must not be "fixed"
+   * together. */
+  let features = extractPlanFeatures(text, plan.sponsorName || plan.label || "", planYear);
   let parsed = parse4i(text, plan.assetsEOY, plan.label || "", plan.codes || "");
   let usedOcr = false;
 
@@ -714,7 +738,7 @@ async function analyzePdf(ack, plan, tag) {
         }
         if (otext && otext.replace(/\s+/g, "").length > 500) {
           const combined = text + "\f" + otext;
-          const f2 = extractPlanFeatures(combined, plan.sponsorName || plan.label || "");
+          const f2 = extractPlanFeatures(combined, plan.sponsorName || plan.label || "", planYear);
           // v58: field-GROUP-wise merge — base-text groups always win (the
           // value+quote pair stays from ONE source so the audit's
           // formula-in-quote invariant holds); OCR fills whole groups the

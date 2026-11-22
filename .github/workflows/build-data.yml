@@ -33,7 +33,20 @@ on:
     # main is a force-mirror of the dev branch, so a main push trigger would
     # run the identical parse twice — dev-branch runs are the only push runs
     branches: ["claude/wampo-401k-live-nx1t4o"]
-    paths: ["scripts/build-data.mjs", "scripts/fetch-4i.mjs", "scripts/lib-4i.mjs", "scripts/merge-4i.mjs", "scripts/.kick", ".github/workflows/build-data.yml"]
+    # v208 added scripts/lib-effective-date.mjs: lib-4i.mjs IMPORTS it, so a
+    # change to the roth/after-tax date predicate alone would otherwise land
+    # with no run created at all — and a gate the file it guards cannot trigger
+    # is indistinguishable from no gate.
+    #
+    # AND THE LIST IS STILL NOT THE WHOLE MODULE GRAPH, which is a MEASUREMENT
+    # and not a claim: enumerated 2026-11-22, the four scripts named here also
+    # import scripts/match-curated.mjs (build-data), scripts/lib-quote.mjs
+    # (lib-4i) and scripts/lib-disclose.mjs (merge-4i), and none of the three is
+    # in this filter. The last of those is RECORDED in CLAUDE.md as creating no
+    # run, i.e. relied upon; the other two are a latent gap of exactly the shape
+    # this entry fixes. Left alone here on purpose — widening the trigger
+    # surface for three modules unrelated to v208 belongs in its own change.
+    paths: ["scripts/build-data.mjs", "scripts/fetch-4i.mjs", "scripts/lib-4i.mjs", "scripts/lib-effective-date.mjs", "scripts/merge-4i.mjs", "scripts/.kick", ".github/workflows/build-data.yml"]
 
 # a newer push supersedes an in-flight parse of the same ref: the work list is
 # recomputed from parser versions anyway, so cancel instead of double-parsing
