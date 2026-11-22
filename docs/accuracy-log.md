@@ -45,6 +45,30 @@ residue, share-class rotation, duplicated class token, lost space), 0 row-count
 moves — but the general point is that the repairs are a function of the ticker
 table's key set, and nothing declares that dependency.
 
+**AND THE REGEN ITSELF IS PRICED, BECAUSE A KEY COUNT IS NOT A COVERAGE
+MEASURE.** `sec-key-loss 45122afe 5a585dcc`: 23,954 -> 23,955 keys, 1 removed
+and 2 added, over 1,781,297 published+served rows narrowed to **1**. Cost: **1
+row / 1 plan / 826 reader-slots lose a ticker** (`Fid Frdm Idx Ret Prm` ->
+nothing, FAPIX), 0 gained, **0 symbols switched**, with the tool's own control
+confirming a synthetic row on a removed key does move.
+
+**TWO MECHANISMS, AND MY REPAIR COMMIT CONFLATED THEM.** `fc24b29f` reported the
+merge's `weld 1` note — a NAME REPAIR landing on a row the table is keyed on, so
+the key stops matching the repaired name — and the regen-side loss above is a
+DIFFERENT thing: the regen deciding an issuer∥name pair no longer resolves. Both
+cost a symbol until the next regen; they are not the same row by construction
+and must not be reported as one finding.
+
+**A HYPOTHESIS TESTED AND REFUTED, recorded because it is the attractive wrong
+answer.** The lost row belongs to WD Management — one of the six degraded plans
+— so the obvious story is that the regen runs over LIVE fund names, could not
+see a menu the re-parse had withdrawn, and dropped the key. **False, and its own
+instrument said so:** `Fid Frdm Idx Ret Prm` WAS present in the store the regen
+read, in a different and undegraded ack, with a control name found 816 times on
+the same side to prove the search works. The row appears in WD Management only
+AFTER the repair, which is why the price lands there. *A plausible causal story
+that places a defect inside a known defect is exactly the one to instrument.*
+
 ---
 
 ## 2026-11-22 (17:4xZ) — A GATE RED BECAUSE ITS SHIP WORKED, AND CI NEVER REACHED IT
