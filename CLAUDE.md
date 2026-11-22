@@ -986,6 +986,55 @@ so `confident` / `lineups` / `entries` / `dl` / `overshoot` jitter by whatever
 the re-roll moves, and the six named acks (7 plans / 6,145 readers) have
 degraded on every re-parse since v207.
 
+**v210 IS WRITTEN, GATED AND NOT DISPATCHED, AND `PARSER_VERSION` IS STILL 209**
+— the branch's version must match the store #884 produces until its verdict is
+taken, so whoever dispatches v210 bumps it at dispatch. The match is
+DISCRETIONARY in three spellings the shipped `disc` trigger's six do not read
+(`discMatchWidened`, `lib-4i.mjs`). Derived from a committed-base-vs-working-tree
+differential against `006ef459` over all 56,056 cached filings, narrowed by the
+arm itself (superset by construction) and DISCHARGED over 6,000 excluded filings
+at 0 differences; `parser-gate` green at **104** specimens; `parse-replay --vs
+006ef459` over all 1,305 affected acks — **0 menus lost, 6 must-keep pins held,
+its own confidence control 1,289/1,289**.
+
+| key | registered |
+|---|---|
+| `match` (trail, PLAN count) | 45,270 -> **46,213** (+943) |
+| `matchAny` | 48,473 -> **49,778** (+1,305; the split is `match` +943 and `matchInZeroEmp` +362, because the trail gates `match` on reported employer money and the ledger does not) |
+| `matchQuote` | 5,765 -> **5,277** (−488) and `matchQuoteShown` 2,242 -> **2,109** (−133) — those plans now publish a LABEL, so this fall is the gain |
+| `match_shown` | 68.58% -> **70.50%** |
+| `match_gap` (absent) | 20,864,008 -> **19,992,693** (−871,315) |
+| `match_withheld` | 13,842,783 -> **12,587,626** (−1,255,157 moving withheld -> published, i.e. a quote-only cell becoming an answer) |
+| ONE SCALAR | 79.06% -> **79.43%** |
+| `vesting`, `roth`, `aftertax`, `contributions`, `custodian`, `lineup` | **UNCHANGED** — the write set is `out.match` + `out.matchText`, asserted at **0 non-match field moves** over the whole 12,964-plan narrowed population and 0 differences over the 6,000-filing discharge |
+
+**EXACT over the 56,056 filings the instrument could judge (82.1% of full-form
+readers) and a FLOOR over the run.** The UNJUDGED remainder is **15,428 plans /
+19,732,984 readers with no cached filing text**, and the band's upper end is
+loose in a way worth stating: the cache was built from the GAP-census
+populations, so an unjudged plan is predominantly one that already carries a
+parsed answer and that this arm cannot reach. Judged move rate 2.33% of plans
+would put the band at **+2.13M to ~+2.6M readers published**; the absent /
+withheld split of any remainder is not estimated.
+
+**AND NO PUBLISHED QUOTE CHANGES, which is structural rather than sampled.** The
+label is written AFTER the two quote fallback loops and replaces their sentence
+only where `matchQuoteOk` REFUSES it. 90 stored quotes still change and **0 of
+them were published before** — verified through the guard both renderers call.
+
+**SEPARATELY, and not claimed:** a `PARSER_VERSION` bump re-parses the universe,
+so `confident` / `lineups` / `entries` / `dl` / `overshoot` jitter by whatever
+the re-roll moves, and the six named acks (7 plans / 6,145 readers) have
+degraded on every re-parse since v207.
+
+**AND ONE PRE-EXISTING RED GATE, NOT MINE:** `scripts/effective-date-test.mjs`
+fails with *"member national-electrical / ultra-clean / american-eagle /
+mavis-tire is not in the published-yes population — the store changed under this
+test"*, and it fails IDENTICALLY at `006ef459` in a clean worktree over the same
+store. It is v208's withdrawals having emptied those fixture members out of the
+roth/after-tax published population; the fix is that test's fixture list, not a
+parser change.
+
 **v208 was dispatched as run #881 and DELIVERED**; that registration is settled
 below and must not be re-dispatched. `docs/accuracy-log.md` 2026-11-22.
 
