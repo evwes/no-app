@@ -1005,8 +1005,19 @@ its own confidence control 1,289/1,289**.
 | `match_shown` | 68.58% -> **70.50%** |
 | `match_gap` (absent) | 20,864,008 -> **19,992,693** (−871,315) |
 | `match_withheld` | 13,842,783 -> **12,587,626** (−1,255,157 moving withheld -> published, i.e. a quote-only cell becoming an answer) |
-| ONE SCALAR | 79.06% -> **79.43%** |
+| ONE SCALAR | 79.15% -> **79.52%** |
 | `vesting`, `roth`, `aftertax`, `contributions`, `custodian`, `lineup` | **UNCHANGED** — the write set is `out.match` + `out.matchText`, asserted at **0 non-match field moves** over the whole 12,964-plan narrowed population and 0 differences over the 6,000-filing discharge |
+
+**RE-SEATED ON THE POST-#884 STORE, AND THE RE-SEATING IS ITSELF A CHECK.** The
+differential was measured against a store at `pv` 208; run #884 landed `pv` 209
+on this branch mid-pass. Re-derived against the new store, **every `match` key
+is byte-identical** — `match` 45,270, `matchQuote` 5,765, `matchQuoteShown`
+2,242, `matchAny` 48,473, published 75,746,660 / withheld 13,842,783 / absent
+20,864,008 — because v209's write set is `out.vesting` + `out.vestingText`, which
+is what its own registration claimed. Only the ONE SCALAR baseline moved
+(79.06% -> 79.15%), so that row carries the new one. *A delta measured on one
+store and a baseline read from another is the diff-of-the-wrong-two-lines
+defect; re-deriving both from the same store is the cheap way out.*
 
 **EXACT over the 56,056 filings the instrument could judge (82.1% of full-form
 readers) and a FLOOR over the run.** The UNJUDGED remainder is **15,428 plans /
@@ -1075,18 +1086,19 @@ estimate: it refutes itself the moment a new import appears.
 
 **THE LEDGER IS THE QUEUE.** `node scripts/ledger-report.mjs` prints the one
 participant-weighted scalar and the addressable gap per field; it is DERIVED and
-must never be copied forward. Re-derived 2026-11-22 from run #881's own merge
-(v208): **115,641 plans / 119,907,098 participants / overall 79.06%**,
-88,780,759 participant-cells addressable, with addressable gaps below
-(v208 withdrew a future-effective or catch-up-mandate Roth/after-tax yes from
-865 plans, so `contributions` fell 66.96% -> 66.05% and the scalar
-79.25 -> 79.06 ON PURPOSE — the fifth time it has gone DOWN for accuracy)
+must never be copied forward. Re-derived 2026-11-22 from the store run #884
+left on this branch (`pv` 209): **115,641 plans / 119,907,098 participants /
+overall 79.15%**, 88,230,773 participant-cells addressable, with addressable
+gaps below. (v208 withdrew a future-effective or catch-up-mandate Roth/after-tax
+yes from 865 plans, so `contributions` fell 66.96% -> 66.05% and the scalar
+79.25 -> 79.06 ON PURPOSE — the fifth time it has gone DOWN for accuracy; v209
+then took it 79.06 -> 79.15 on the vesting scope gate.)
 
 | field | shown | readers with no answer | owner agent |
 |---|---|---|---|
 | contributions (pre-tax / Roth / after-tax / brokerage) | 66.05% | **40.70M** | `tier-a-contributions` |
 | match | 68.58% | **20.86M** (13.84M withheld on purpose) | `tier-a-plan-terms` |
-| vesting | 77.06% | **14.58M** (10.75M withheld on purpose) | `tier-a-plan-terms` |
+| vesting | 77.59% | **14.03M** (10.75M withheld on purpose) | `tier-a-plan-terms` |
 | custodian / recordkeeper | 90.22% | **11.72M** | `tier-a-custodian` |
 | fund menu | 93.52% | **0.91M** (6.25M withheld on purpose) | `tier-a-lineup` |
 
