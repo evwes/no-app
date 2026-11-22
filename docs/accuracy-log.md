@@ -7,6 +7,123 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-22 (2x:xxZ) — v210: THE MATCH IS DISCRETIONARY AND THE SIX SHIPPED SPELLINGS MISS IT — 1,305 PLANS / 2,126,472 READERS
+
+**WHAT WAS WRONG.** "Discretionary — set year to year" is not a consolation
+prize: for a plan whose employer decides the match each year there IS no formula
+and that sentence is the complete, correct answer. The `disc` trigger in
+`extractPlanFeatures` reads six spellings of it, and each wants a token the
+filer may not have written. Measured with a new committed instrument,
+`scripts/match-cause-census.mjs`, which splits the match census's bucket C
+(note present, match vocabulary present, extractor yields nothing — 4,448 plans
+/ 7,229,368 readers re-derived): **991 plans / 1,097,241 readers of that bucket
+say their match is discretionary and publish NOTHING.** Three shapes, each with
+its own sole-protection population:
+
+| shape | the filers | sole protection |
+|---|---|---|
+| the trailing noun is not immediately "contributions" | IUJAT 36,501, Innova 38,904 | 3 of 10 fixtures |
+| `at <X>'s discretion` with a verb other than "contribute" | TriNet HR III 219,334, Nexstar 22,088 | 4 of 10 |
+| the discretion clause TRAILS the match noun | Kforce 11,320 | 3 of 10 |
+
+**THE CHANGE.** `discMatchWidened(t)` in `lib-4i.mjs`, asked only where the six
+shipped spellings found nothing, writing the byte-identical label so a widening
+cannot also be a new assertion. Measured committed-base-vs-working-tree over
+56,056 cached filings, narrowed by the arm itself (superset by construction;
+discharged over 6,000 excluded filings, 0 differences): **1,305 plans /
+2,126,472 readers gain a formula label — 677 / 871,315 out of `absent` and 628 /
+1,255,157 out of `withheld` — 0 formulas lost, 0 relabelled, 0 non-match fields
+moved.** `parse-replay --vs 006ef459` over all 1,305: 0 menus lost, 6 must-keep
+pins held, its own control 1,289/1,289. 16 uniformly drawn gainers read by hand:
+16 of 16 correct.
+
+**SIX REFUSALS, 50 FILINGS READ, AND THE TWO THAT MATTER MOST CAME OUT OF THE
+DIFFERENTIAL RATHER THAN OUT OF IMAGINATION.**
+1. `non-discretionary` is not `discretionary` — **Gilead (15,358)** files "a
+   NON-discretionary match of 100% of the first $15,000", **Arthrex (7,316)**
+   the same; the v207 `Roth`-inside-`Non-Roth` shape, load-bearing for 13 plans
+   / 21,936 readers of bucket C.
+2. A SECONDARY match is not THE match, tested by ADJACENCY and never by
+   presence — **Compass Health (6,328)** states a 100%-of-6% safe harbor and
+   then "may ALSO make OTHER matching contributions", but **Pentegra (45,003)**
+   writes "ADDITIONAL employer contributions … at the employer's discretion,
+   including … matching contributions" and that is the ONLY match sentence in
+   its whole filing, so a presence test costs 45,003 readers their one answer.
+3. A sentence about VESTING, FORFEITURE or ELIGIBILITY is not about the match
+   (MHM 12,688; Major League Soccer 2,483).
+4. ***The sentence must say the money is GIVEN, and that is the half that
+   reaches the TYPO***: **Medisys (8,471)** writes "fully BESTED", so there is
+   no vest word to find. A `years of service` topic test was tried instead and
+   REFUSED Select Rehabilitation's perfectly good grant, where the same four
+   words are an eligibility condition.
+5. **WHOSE discretion — found BY the differential.** **General Dynamics
+   (22,339 + 8,343 on a second filing)** files, under `Party-in-Interest
+   Transactions`, "The Plan may, at the discretion of the Plan's PARTICIPANTS or
+   via the Employer matching contribution, invest … in the Company's common
+   stock". The first cut replaced the plan's own published sentence — "The
+   Employer matching contribution VARIES BASED ON THE BUSINESS UNIT" — with a
+   stock clause and put a false label over it.
+6. `match` is ordinary English, in the one arm whose shape does not prove
+   otherwise.
+
+**AND THE GUARD THAT WAS MEASURED AND FOUND NET HARMFUL IS THE ENTRY'S REAL
+LESSON.** The first cut required employer MONEY within sixty characters of the
+match word. Asked of bucket C rather than of the examples that came to mind it
+was the sole protection on **67 plans / 45,596 readers, and all sixty-seven were
+read: not one is ordinary English.** They are "contributes on a flexible
+discretionary matching FORMULA" (FC Compassus 10,628), "a discretionary match to
+a designated GROUP" (E. A. Renfroe 5,009), "Discretionary matching … AMOUNTS may
+be contributed" (Geras), "The discretionary match has remained at 9% for all
+employees" (Philadelphia University) — true statements whose next noun is not
+money — plus two whose own "contributions" sat at character 58 and 61. *A guard
+that withdraws a TRUE answer because it is INCOMPLETE makes the page less
+honest, not more.* It survives scoped to the one arm that needs it. A `DW_TABLE`
+arm written for Piping Technology's reconciliation table was REMOVED for the
+opposite reason: sole protection on ZERO plans, because a reconciliation table
+carries no giving verb.
+
+**THE DISPLACEMENT, AND WHY ORDER IS THE FIX RATHER THAN A VETO.** As an
+`else if (discW)` beside `disc` the arm ran INSTEAD of the two quote loops and
+wrote its own sentence: 388 plans / 717,236 readers had their quote replaced,
+and the ten largest split eight improvements to two downgrades — **Arkansas
+Children's (7,003)** lost "shall not exceed the lesser of (1) 50% of the
+eligible employee's elective deferrals … or (2) 5% of the … compensation" for a
+bare "may, at its discretion, contribute matching contributions", and PMG
+Services (9,594) lost a stated 4% cap. Moved AFTER the loops, the change is
+additive by construction: the quote is touched only where the loops found
+nothing or found a sentence `matchQuoteOk` REFUSES. **Verified rather than
+argued: of the 90 quotes that still change, 0 were published before and 0
+readers see a different quote.** Sixth instance of *a guard that blocks a wrong
+answer must not discard the honest evidence*, and the second by DISPLACEMENT.
+
+**PREVENTION.** 29 assertions in `scripts/match-formula-test.mjs` (10 fire, 12
+refuse, the additive property through the shipped function, 6 guard controls
+each flipping a verdict on the case where it is the ONLY protection, a
+topic+give PAIR control for the 52 plans held by the conjunction and by neither
+alone, and an inertness check per arm); nine `parser-gate` specimens, five
+positive and four counter, every counter pinning `quote: null` as well as the
+label. **The gate refused the ship on its first run**, on v205's pin of TriNet
+HR III as publishing NOTHING — a claim about the FILING that only ever had
+evidence about one ARM, since v205's note names the "COLLEGE MATCH" employer and
+a voluntary-contribution vesting sentence and never the plan-description note's
+own "The Employers may, at their discretion, elect to match up to 100%". *Scope
+a pin by the arm it is a pin for.* **And the controls now look their case up by
+NAME**: keyed on `DW_REFUSE[10]`, one inserted fixture made the
+discretion-holder control probe the reconciliation table — refused by another
+guard — so it printed "NOTHING changes" and read exactly like a decorative
+guard.
+
+**LEFT UNCLAIMED, on purpose.** TriNet and ADP TotalSource are PEOs whose notes
+ALSO offer employers a safe-harbor design with a MANDATORY match, so the label is
+true of the sentence quoted beside it rather than complete over every worksite
+employer; "Varies by employer group" already exists as a label and choosing it
+for multiple-employer plans is a separate change with its own claim. Greystar's
+filing states 50%/6% inside its discretionary sentence and keeps the weaker
+label; reading a declared rate out of a discretionary sentence is the shipped
+`Discretionary — <year> declared:` arm's job and it is not widened here.
+
+---
+
 ## 2026-11-22 (2x:xxZ) — THE DROPPED RATE-BEFORE-MATCH ARM: BOTH PRESCRIBED GUARDS BUILT, AND TWO MORE FAILURE MODES THE RECORD NEVER NAMED
 
 **WHAT WAS WRONG — WITH THE PRESCRIPTION, NOT THE PARSER.** `docs/closed-classes.md`
