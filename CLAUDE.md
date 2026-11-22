@@ -810,6 +810,19 @@ directives, the standing machinery, and the procedures with a specific shape.*
   success`**, which is a genuine pass; an override prints no such line. *A flag
   named for one refusal can be wired to two, and the second one is the
   verification.*
+  **AND THE GATE DEMANDS A RUN ON THE *EXACT* HEAD, WHICH A COMMIT OUTSIDE
+  `site-test.yml`'s `paths` FILTER CANNOT PRODUCE (measured 2026-11-22).** The
+  filter rightly lists `CLAUDE.md`, the trail and the ledger — what
+  `record-check` reads — and rightly omits `docs/accuracy-log.md`. So a head
+  commit touching only the log creates **no run at all**, the gate finds none,
+  and the only offered way past it is `--force`, which disables the very check
+  the operator is trying to satisfy. *A gate that can only be satisfied by
+  overriding it is not protecting anything*, met again from the other side.
+  The working remedy, used today: `site-test.yml` carries `workflow_dispatch`,
+  so dispatch it on the ref and read the `conclusion`. The real fix is for
+  `sitetest-gate` to accept a green run on an ANCESTOR when the diff from that
+  commit to the head touches nothing its tests read — unbuilt, and it is gate
+  logic rather than a filter widening, because the log genuinely needs no test.
 - **A frontend change must re-derive the cache-buster:
   `node scripts/stamp-assets.mjs`, then commit `index.html`.** The stamps are
   sha256 content hashes of `app.js`, `styles.css`, `data.js`, `fund-er.js` and
