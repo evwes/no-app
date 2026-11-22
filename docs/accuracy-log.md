@@ -7,6 +7,61 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-22 (2x:xxZ) — THE DROPPED RATE-BEFORE-MATCH ARM: BOTH PRESCRIBED GUARDS BUILT, AND TWO MORE FAILURE MODES THE RECORD NEVER NAMED
+
+**WHAT WAS WRONG — WITH THE PRESCRIPTION, NOT THE PARSER.** `docs/closed-classes.md`
+records an arm dropped at v199 for the rate sitting BEFORE the word "match" with
+words between (*"receive 100% company matching contributions of up to 4%"*,
+American Airlines, 114,490 readers), at 93.1% agreement with the shipped oracle,
+and prescribes exactly two repairs: **an NEC-adjacency test and a lead-tier
+anchor**. Both were built. The NEC test is STRUCTURAL rather than a veto list —
+the gap between the rate and the match word must be a bounded determiner run
+followed by an employer noun (`MF_FSUBJ`, shared not retyped), which cannot cross
+a sentence — and the lead-tier anchor is asked of the gap between the match word
+and the cap connector and of the sixty characters before the rate.
+
+**Both recorded failures are refused by construction, verified by reading:**
+Wellesley College's *"non-elective contributions of 6% and discretionary
+safe-harbor matching contributions equal to 50%…"* (the gap after 6% holds no
+employer noun, so the NEC rate can never bind) and Eight Eleven Group's
+*"100% of first 3% and 50% of the matched amount that exceed 3%…"* (the token
+after the determiner run is "matched", not an employer noun). Tyson Foods
+(122,939) and American Airlines (114,490) both came out exactly right.
+
+**AND IT IS STILL NOT SHIPPABLE, because the two guards the record asked for are
+necessary and NOT sufficient.** A committed-base-vs-working-tree differential
+over 56,056 cached filings narrowed 30 plans / 525,489 readers and moved 19 /
+370,991: 3 plans / 124,297 readers `absent -> published`, 9 / 164,755
+`withheld -> published`, **7 relabelled**, 0 formulas lost. Reading all seven:
+four are right (Ryder 50%/5%, Ampac 100%/4.5%, Rockydale 50%/8%, Lawrence
+50%/3% + 25% of the next 2%) and **three are wrong, in two ways nobody had
+written down**.
+
+1. **AN EXCEPTION COHORT IS NOT A SECOND TIER, and the lead-tier anchor cannot
+   see it.** Vistra and Oncor both file *"receive Employer matching contributions
+   of 100% up to the first 6% … EXCEPT FOR employees participating in the
+   traditional retirement plan formula … who receive a 75% employer matching
+   contribution on the first 6%"*. The 100% sits BEFORE its employer noun and so
+   is invisible to the arm; the exception cohort's 75% sits AFTER one and wins.
+   Both plans publish the correct 100%/6% today from an `!mf`-gated arm, so the
+   change would have REPLACED a right answer with a wrong one.
+2. **A COLUMN TABLE OF ACHIEVEMENT TARGETS LOOKS EXACTLY LIKE A RATE.** Old
+   Republic files `Threshold Objective Maximum | combined ratio achievement
+   objective for the Plan year 99.0% 92.5% 89.0% | Employer Matching
+   Contribution (on employee deferrals up to 6% of compensation) 50.0% 100.0%
+   150.0%`, and the arm read the **combined-ratio target 89.0%** as the match
+   rate. *A fix for one phrasing of a class is not a fix for the class*, and the
+   class also has a TABLE.
+
+**NOT SHIPPED. The gain is 289,052 readers across the judged population —
+BELOW the 500,000 floor — and would cost three wrong published claims.** Reverted
+in full; `scripts/match-arm-diff.mjs` is the differential that measured it, and
+the two new failure modes are what a next attempt has to answer. *The prescription
+in the queue was right about what was wrong and incomplete about what would fix
+it, and only the differential could say so.*
+
+---
+
 ## 2026-11-22 (1x:xxZ) — THE MATCH GAP IS HALF A CEILING, THE VESTING GAP IS 88% OURS, AND THREE OF MY OWN SCREENS WERE CONTAMINATED
 
 **WHAT WAS WRONG.** The ledger's largest line, `match absent: attachment read,
