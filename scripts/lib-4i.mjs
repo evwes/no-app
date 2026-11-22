@@ -6620,6 +6620,145 @@ export function mfFiniteVerb(t) {
   return t.match(MF_F) || null;
 }
 
+/* v210 — THE MATCH IS DISCRETIONARY AND THE SIX SHIPPED SPELLINGS MISS IT.
+ *
+ * "Discretionary — set year to year" is not a consolation prize: for a plan
+ * whose employer decides the match each year there IS no formula, and that
+ * sentence is the complete and correct answer. The `disc` trigger at the call
+ * site reads six spellings of it. The cause census
+ * (`scripts/match-cause-census.mjs`, bucket C) finds **991 plans / 1,097,241
+ * readers** whose public notes say the match is discretionary and who publish
+ * NOTHING AT ALL, because every one of the six wants a token this filer did not
+ * write. Three shapes, each with its own population where it is the only arm
+ * that fires:
+ *
+ *   DW_ADJ  the trailing noun is not immediately "contributions", or an
+ *           employer word sits inside the phrase
+ *             "The employer may make discretionary matching, profit sharing,
+ *              and/or bonus contributions"          IUJAT,        36,501
+ *             "Discretionary matching or nonelective contributions may be
+ *              contributed by the Company"          Innova,       38,904
+ *   DW_AT   "at <someone>'s discretion" with a VERB other than "contribute"
+ *             "The Employers may, at their discretion, elect to match up to
+ *              100% of their employees' contributions"
+ *                                                   TriNet HR III, 219,334
+ *             "The Company, at its discretion, may elect to match participant
+ *              contributions"                       Nexstar,       22,088
+ *   DW_OF   the discretion clause TRAILS the match noun
+ *             "The Company provides a matching employer contribution at the
+ *              discretion of the Board of Directors"
+ *                                                   Kforce,        11,320
+ *
+ * FOUR REFUSALS, EVERY ONE EARNED BY A FILING THAT WAS READ — 34 filings read
+ * across the three arms, and 8 of them must not publish this label.
+ *
+ * 1. `non-discretionary` IS NOT `discretionary`, and this is the same shape as
+ *    v207's `Roth` inside `Non-Roth`. **Gilead Sciences (15,358)** files "The
+ *    Company contributes a NON-discretionary match of 100% of the first $15,000
+ *    of compensation" and **Arthrex (7,316)** "a NON-discretionary match of 6
+ *    percent"; a trigger without the lookbehind publishes the exact opposite of
+ *    what both filings say. Measured over bucket C the lookbehind is
+ *    load-bearing for 26 plans / 35,169 readers.
+ * 2. A SECONDARY match is not THE match. **Compass Health (6,328)** files "the
+ *    Company will make a safe harbor matching contribution … of 100% of the
+ *    participants' contributions, up to a limit of 6%" and then "At its
+ *    discretion, the Company may ALSO make OTHER matching … contributions" —
+ *    labelling that plan "Discretionary" describes the side dish. Likewise
+ *    **Research Triangle Institute (4,979)** ("ADDITIONAL qualified matching …
+ *    at the discretion of the Company", beside an 8% safe harbor) and
+ *    **Republic Airways (8,605)** ("an ADDITIONAL matching contribution").
+ *    The test is ADJACENCY to the match word, not the mere presence of the
+ *    word: **Pentegra (45,003)** writes "ADDITIONAL employer contributions may
+ *    be made … at the employer's discretion, including, but not limited to,
+ *    matching contributions" and that is the ONLY match sentence in its whole
+ *    filing, so a presence test would cost 45,003 readers their one true answer.
+ * 3. A SENTENCE ABOUT VESTING, FORFEITURE OR ELIGIBILITY mentions a
+ *    discretionary match without being about one, and the quote this arm
+ *    publishes would then sit under the match heading describing something
+ *    else — the v80 rule, which the `disc` site never had. **MHM Services
+ *    (12,688)**: "The method for crediting VESTING SERVICE for Company
+ *    discretionary matching and nonelective contributions is based on vesting
+ *    periods of service." **Major League Soccer (2,483)**: "FORFEITED nonvested
+ *    accounts may be used to reduce matching contributions or, at the
+ *    discretion of the Companies, can be used to pay Plan expenses."
+ *    ***AND THE SERVICE TEST IS HERE BECAUSE OF A TYPO***: **Medisys Health
+ *    Network (8,471)** writes "Participants become fully BESTED in the
+ *    Company's discretionary employer matching … portions of their accounts
+ *    after three years of service" — no vest word at all, so only
+ *    `years of service` reaches it. *A service test keyed on a correctly
+ *    spelled unit is defeated by the filings' own typos*, and this record
+ *    already carries that lesson with `six (6) yeas`.
+ * 4. THE WORD "match" IS ORDINARY ENGLISH. `DW_AT` would otherwise accept
+ *    Tyson's "to alter the return characteristics of underlying securities to
+ *    MATCH certain fixed income fund objectives", which sits in a filing whose
+ *    own stable-value note talks about discretion. `DW_MONEY` requires employer
+ *    money within sixty characters after the match word, which that sentence has
+ *    none of — the same discipline `MF_FSUBJ` applies to the finite verb.
+ *
+ * It fires only where the shipped `disc` does not and only where no formula arm
+ * produced anything, so it can neither change a formula nor displace a
+ * published quote. `docs/accuracy-log.md` 2026-11-22. */
+const DW_ADJ = /(?<!non-)(?<!non )(?<!non- )\bdiscretionar(?:y|ily)\s+(?:(?:401\(k\)|employer|company|sponsor|safe harbor|annual|qualified|plan)\s+){0,2}match(?:ing|ed|es)?\b/i;
+const DW_AT = /\bat\s+(?:its|their|his|her|the)?\s*(?:[A-Za-z]+(?:['’]s)\s+)?(?:sole\s+|own\s+)?discretion\b,?[^.]{0,110}?\bmatch(?:ing|ed|es)?\b/i;
+const DW_OF = /\bmatch(?:ing|ed|es)?\b[^.]{0,90}?\bat\s+the\s+(?:sole\s+|own\s+)?discretion\s+of\b/i;
+export const DW_ARMS = [["adjacent", DW_ADJ], ["at-discretion", DW_AT], ["discretion-of", DW_OF]];
+/* refusal 4 — employer money within sixty characters after THE MATCH WORD, not
+ * after the trigger. The first version measured from the end of the trigger,
+ * which for `DW_OF` is the far side of the whole clause: Kforce's "a matching
+ * employer contribution at the discretion of the Board of Directors" put
+ * "contributions" at character 61 and the arm read as having no money in it.
+ * *A window has to start where the question is asked.* */
+const DW_MONEY = /\b(?:contributions?|deferrals?|defer|compensation|wages|earnings|salary|pay)\b|\$\s?[\d.]/i;
+/* refusal 2 — ADJACENT, never merely present */
+const DW_SECONDARY = /\b(?:additional|other|another|supplemental|further)\s+(?:[A-Za-z()’'-]+\s+){0,2}match(?:ing|ed|es)?\b/i;
+/* refusal 3, first half — the sentence's topic is another plan rule */
+const DW_TOPIC = /\bvest\w*\b|\bnon-?vested\b|\bforfeit\w*\b|\beligib\w*\b/i;
+/* refusal 3, second half, AND IT IS THE HALF THAT REACHES THE TYPO. The
+ * sentence must say the money is or may be GIVEN. Medisys writes "Participants
+ * become fully BESTED in the Company's discretionary employer matching …
+ * portions of their accounts after three years of service" — no vest word to
+ * find, and no giving verb either, which is what refuses it. A `years of
+ * service` clause was tried here instead and REFUSED Select Rehabilitation's
+ * perfectly good "The Employer may make discretionary matching and non-elective
+ * contributions for all full-time participants who have completed one year of
+ * service": the same four words are an eligibility condition on a real grant
+ * and the end of a vesting schedule, so they cannot discriminate. */
+const DW_GIVE = /\b(?:make|makes|made|making|contribute|contributes|contributed|provide|provides|provided|elect|elects|elected|match|matches|matched|fund|funded|allows?|may)\b/i;
+/**
+ * The filing says the match is DISCRETIONARY, in a spelling the shipped `disc`
+ * trigger does not read. Returns the trigger match (carrying `.index`, so the
+ * caller quotes the sentence it sits in) or null.
+ *
+ * EVERY OCCURRENCE OF EVERY ARM IS TRIED, not the first. A filing states its
+ * plan rules in several sentences and the earliest one carrying the vocabulary
+ * is routinely the vesting or forfeiture note; stopping at it would make the
+ * refusals above suppress answers they were never aimed at, which is this
+ * record's `continue`-inside-the-loop lesson from v201.
+ */
+export function discMatchWidened(t, { arms = DW_ARMS } = {}) {
+  const s = String(t || "");
+  for (const [, re] of arms) {
+    const g = new RegExp(re.source, "gi");
+    let m;
+    while ((m = g.exec(s))) {
+      /* the trigger's own sentence, bounded the way the caller's `sentence()`
+       * bounds a quote — a period followed by a space, so an abbreviation's
+       * full stop does not end it */
+      let a = s.lastIndexOf(". ", m.index); a = a === -1 ? Math.max(0, m.index - 260) : a + 2;
+      let b = s.indexOf(". ", m.index); b = b === -1 ? Math.min(s.length, m.index + 300) : b + 1;
+      const sent = s.slice(a, b);
+      const w = /match(?:ing|ed|es)?\b/i.exec(m[0]);
+      const after = w ? s.slice(m.index + w.index + w[0].length, m.index + w.index + w[0].length + 60) : "";
+      if (!DW_MONEY.test(after)) continue;
+      if (DW_SECONDARY.test(sent)) continue;
+      if (DW_TOPIC.test(sent)) continue;
+      if (!DW_GIVE.test(sent)) continue;
+      return m;
+    }
+  }
+  return null;
+}
+
 /* v199 — PUBLISHING A MISREAD FORMULA IS WORSE THAN PUBLISHING NONE.
  *
  * Found by diffing the two arms above against the shipped chain: 398 plans /
@@ -7267,6 +7406,9 @@ export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
     // by the Board" — roughly half the no-formula backlog. There IS no
     // formula; discretionary is the answer, not a gap.
     const disc = t.match(/discretionary (?:401\(k\) )?match(?:ing)?(?: and profit[- ]sharing)? contributions?|match(?:ing)?(?: and profit[- ]sharing)? contributions? [^.]{0,80}?(?:discretionary|determined (?:annually |each year )?by (?:its |the )?(?:board|company|employer|trustees|firm|plan sponsor|management))|on a discretionary basis,? contribut[^.]{0,30}?match|(?:contribute|make) a discretionary match(?:ing)?\b|at (?:its|their) discretion,? (?:may )?contribut\w+ a match|(?:company|employer) contributions are (?:entirely )?discretionary/i);
+    /* v210: asked ONLY where the six spellings above found nothing, so this
+     * cannot change which sentence an already-answered plan quotes */
+    const discW = !disc && discMatchWidened(t);
     if (out.match) {
       // rate-only already answered it
     } else if (dfLimit) {
@@ -7281,6 +7423,13 @@ export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
     } else if (disc) {
       out.match = "Discretionary — set year to year";
       out.matchText = sentence(disc.index);
+    } else if (discW) {
+      /* v210 — THE SAME CLAIM, A SPELLING THE SIX ABOVE DO NOT READ. The label
+       * is byte-identical to `disc`'s on purpose: the claim was reviewed and
+       * shipped long ago and this changes only which filings reach it, so a
+       * widening cannot also be a new assertion. See `discMatchWidened`. */
+      out.match = "Discretionary — set year to year";
+      out.matchText = sentence(discW.index);
     } else {
       // fall back to the descriptive sentence, skipping form-page boilerplate
       const mre = /(?:employer|company|plan sponsor|organization|school|firm)(?:['’]s)? (?:made |makes |will make |shall make |may make |also )?(?:safe harbor )?match(?:ing|ed)? (?:safe harbor )?(?:401\(k\) )?contributions?|matching contributions? (?:is|are|equal|of|based|provided)/gi;
