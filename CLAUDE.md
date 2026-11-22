@@ -1001,7 +1001,10 @@ re-parse** — the identical set and the identical 6,145 readers as v207, v208 a
 sees it. The repair is deliberately DEFERRED to after v210's merge: a full
 re-parse undoes it, so repairing before a dispatch is paying twice.
 
-**v210 DELIVERED by run #886 (17:34Z–18:29Z, on `325afdc8`), and it
+**v210 DELIVERED by run #886 (17:34Z–18:29Z, on `325afdc8`) and MIRRORED as
+`3e6026a2`** — `mirror-gate` 0 plans losing service, `sitetest-gate` a GENUINE
+pass on run #373 (the `ok` line printed, not an override), `deploy-check` pages
+run 1320 success. v209, v210 and the six-ack repair are all live. **It
 over-delivered — the FOURTH registration running whose point was a floor.**
 
 | key | registered | delivered |
