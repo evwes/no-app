@@ -77,6 +77,17 @@ was measured and **REFUSED**: 89 plans / 303,113 readers reached, only 40 /
 Arconic, Alcoa all file *"who meet certain requirements MAY ELECT to make … Roth
 catch-up contributions"*, a permission whose requirement word is ELIGIBILITY.
 
+**AND THE 299 RECOVERED QUOTES ARE NOT ALL CORRECT EITHER — the 14 in the
+verdict run's sample were read.** Two are textbook recoveries (The Delong Co,
+Phillips Pet Food: the arm skips a mandate and lands on *"Participants may
+designate … deferral contributions as after-tax contributions into a Roth
+account"*). Two are weaker than what they replaced: FGS-WI's new quote is a
+ROLLOVER sentence (the primary arm has no `ROLL_IN` veto — only the v206 arm
+does), and Center for Strategic's refers back to *"the effective date"* of the
+very amendment that was skipped. So ~2 of 14 keep a flag on evidence pointing at
+the future grant — in the direction of keeping v207's claim, and ~43 plans if
+the rate holds over all 299. Measured, named, not repaired.
+
 **COST AND EVIDENCE.** `roth` 44,551 → 43,668, `aftertax` 4,306 → 4,203, **865
 plans / 1,004,136 readers leave the published set**, `contributions_shown` 66.96%
 → 66.13%, scalar 79.25% → 79.07%. **The score goes DOWN and the gap UP, and that
@@ -85,6 +96,12 @@ uniformly at three seeds and READ: 55 correct, 1 wrong (Arkansas, fixed), 0
 remaining known-wrong**; Wilson 95% upper bound ~6%. Closest surviving call is
 SMBC Manubank (1,180), resolved for the withdrawal because *a plan does not amend
 to allow what it already allows*.
+
+**THE GATE'S VERDICT, two strata over 2,409 filings / 2,358 judged arm-flags:**
+HELD 2,292 / 30,459,095 readers, QUOTE MOVED 14, **LOST—expected 52, LOST—
+UNEXPECTED 0, GAINED 0**, control 88.9% (inside the measured 86-90% band), and
+**13 fixtures held** — every `must-withdraw` pin withdrawn and every `must-keep`
+pin kept, including the two the brief had named for withdrawal. Exit 0.
 
 **WHAT PREVENTS IT.** `scripts/effective-date-test.mjs`: the sizer's selftest at
 its source, `planYearEnd`, the catch-up discriminator, both new refusals,
