@@ -951,17 +951,18 @@ re-derive it, never bump it.
 
 ### Pre-registered for the next run that merges
 
-**v209 IS WRITTEN, GATED AND NOT DISPATCHED.** `PARSER_VERSION = 209`; the
-sponsor's own name admitted as an employer-money noun in the immediate-vesting
-scope gate. Derived by running the metrics over a committed-base-vs-working-tree
-differential (`parser-gate` green at 96 specimens, `parse-replay --vs HEAD~1`
-0 menus lost, narrowing discharged at 4,559 excluded filings / 0 differences):
+**v209 IS DISPATCHED AS RUN #884** (15:26Z, on `56ef18ef`).
+`PARSER_VERSION = 209`; the sponsor's own name admitted as an employer-money
+noun in the immediate-vesting scope gate. Derived by running the metrics over a
+committed-base-vs-working-tree differential (`parser-gate` green at 96
+specimens, `parse-replay --vs HEAD~1` 0 menus lost, narrowing discharged at
+4,559 excluded filings / 0 differences):
 
 | key | registered |
 |---|---|
-| `vesting` (trail, PLAN count) | 55,087 -> **55,345** (+258) |
+| `vesting` (trail, PLAN count) | 55,088 -> **55,346** (+258) |
 | `vesting_shown` | 77.06% -> **77.55%** |
-| `vesting_gap` | 14,584,491 -> **14,044,174** |
+| `vesting_gap` | 14,584,220 -> **14,043,903** (−540,317) |
 | `vesting_withheld` | 10,750,603 -> **10,749,991** (3 plans / 612 readers move withheld -> published) |
 | ONE SCALAR | 79.06% -> **79.15%** |
 | `match`, `matchQuote`, `matchAny`, `roth`, `aftertax` | **UNCHANGED** — the write set is `out.vesting` + `out.vestingText`, asserted at 0 non-vesting field moves over the whole in-scope population |
@@ -970,6 +971,15 @@ differential (`parser-gate` green at 96 specimens, `parse-replay --vs HEAD~1`
 readers; the vesting-ABSENT bucket itself is 99.5% judged) and a FLOOR over the
 run — band +540,929 to ~+600,000 readers.** That is the v208 lesson stated as a
 band instead of carried as a whole.
+
+**THE DELTA IS THE MEASUREMENT AND THE BASELINE IS NOT.** The differential was
+run against a store whose trail read `vesting` 55,087 / `vesting_gap`
+14,584,491; rebasing main's cron commit in before the dispatch moved the
+baseline to 55,088 / 14,584,220, so the table above is the SAME measured delta
+re-seated on the line the audit will actually diff against. A plan count
+SATURATES, so +258 onto a baseline that moved by a re-roll plan is additive
+only if the two populations are disjoint — they are not guaranteed to be, which
+is one more reason the figure is a band.
 
 **SEPARATELY, and not claimed:** a `PARSER_VERSION` bump re-parses the universe,
 so `confident` / `lineups` / `entries` / `dl` / `overshoot` jitter by whatever
