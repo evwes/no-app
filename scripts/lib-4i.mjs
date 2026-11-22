@@ -11,7 +11,7 @@ import { dirname, join } from "node:path";
 /* v203 adds `accelerationOnlyVesting`, the same guard the two display surfaces
  * use to qualify an acceleration-only quote — so the label gate and the
  * reader-facing sentence are one predicate and cannot contradict each other. */
-import { vestingQuoteOk, accelerationOnlyVesting } from "./lib-quote.mjs";
+import { vestingQuoteOk, matchQuoteOk, accelerationOnlyVesting } from "./lib-quote.mjs";
 import { futureEffectiveGrant, catchupMandateRefusal, planYearEnd } from "./lib-effective-date.mjs";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
@@ -6728,6 +6728,19 @@ export const DW_ARMS = [["adjacent", DW_ADJ], ["at-discretion", DW_AT], ["discre
  * difference between this and the guard that was removed. `income` is
  * deliberately absent: "fixed income fund" is what the arm has to refuse. */
 const DW_AT_MONEY = /\b(?:contributions?|deferrals?|deferred|defer|compensation|wages|earnings|salary|pay)\b|\$\s?[\d.]/i;
+/* refusal 5 — WHOSE DISCRETION? Found by the differential, not by imagination:
+ * **General Dynamics (22,339 readers, plus a second filing of the same plan at
+ * 8,343)** files, under `Party-in-Interest Transactions`, "The Plan may, at the
+ * discretion of the Plan's PARTICIPANTS or via the Employer matching
+ * contribution, invest through the Master Trust an unlimited amount of its
+ * assets in the Company's common stock". The discretion there is the
+ * participant's investment choice; the plan's real match sentence, which the
+ * page already published, is "The Employer matching contribution VARIES BASED
+ * ON THE BUSINESS UNIT with whom the participant is employed." So the first cut
+ * replaced a true and informative quote with a stock-investment clause and put
+ * a false label over it. An employer's discretion is the only discretion that
+ * can make an employer's match discretionary. */
+const DW_WHOSE = /\bdiscretion\s+of\s+(?:the\s+|each\s+|a\s+)?(?:[A-Za-z]+(?:['’]s)?\s+){0,2}(?:participants?|employees?|members?|individuals?)\b/i;
 /* refusal 2 — ADJACENT, never merely present */
 const DW_SECONDARY = /\b(?:additional|other|another|supplemental|further)\s+(?:[A-Za-z()’'-]+\s+){0,2}match(?:ing|ed|es)?\b/i;
 /* refusal 3, first half — the sentence's topic is another plan rule */
@@ -6766,6 +6779,7 @@ export function discMatchWidened(t, { arms = DW_ARMS } = {}) {
       let a = s.lastIndexOf(". ", m.index); a = a === -1 ? Math.max(0, m.index - 260) : a + 2;
       let b = s.indexOf(". ", m.index); b = b === -1 ? Math.min(s.length, m.index + 300) : b + 1;
       const sent = s.slice(a, b);
+      if (DW_WHOSE.test(sent)) continue;
       if (DW_SECONDARY.test(sent)) continue;
       if (DW_TOPIC.test(sent)) continue;
       if (!DW_GIVE.test(sent)) continue;
@@ -7452,13 +7466,6 @@ export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
     } else if (disc) {
       out.match = "Discretionary — set year to year";
       out.matchText = sentence(disc.index);
-    } else if (discW) {
-      /* v210 — THE SAME CLAIM, A SPELLING THE SIX ABOVE DO NOT READ. The label
-       * is byte-identical to `disc`'s on purpose: the claim was reviewed and
-       * shipped long ago and this changes only which filings reach it, so a
-       * widening cannot also be a new assertion. See `discMatchWidened`. */
-      out.match = "Discretionary — set year to year";
-      out.matchText = sentence(discW.index);
     } else {
       // fall back to the descriptive sentence, skipping form-page boilerplate
       const mre = /(?:employer|company|plan sponsor|organization|school|firm)(?:['’]s)? (?:made |makes |will make |shall make |may make |also )?(?:safe harbor )?match(?:ing|ed)? (?:safe harbor )?(?:401\(k\) )?contributions?|matching contributions? (?:is|are|equal|of|based|provided)/gi;
@@ -7507,6 +7514,34 @@ export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
           if (!HAS_RATE.test(s) && (OTHER_TOPIC.test(s) || DOLLAR_TOTAL.test(s))) continue;
           out.matchText = s; break;
         }
+      }
+      /* v210 — THE LABEL IS ADDED AFTER THE QUOTE LOOPS, NOT BEFORE THEM, AND
+       * THAT ORDER IS THE WHOLE SAFETY ARGUMENT.
+       *
+       * `discMatchWidened` first sat beside `disc` as `else if (discW)`, so it
+       * ran INSTEAD of the two loops above and wrote its own sentence as the
+       * quote. The differential said what that costs: 388 plans / 717,236
+       * readers had their quote REPLACED, and reading the ten largest found two
+       * downgrades among eight improvements — **Arkansas Children's (7,003)**
+       * lost "The Employer matching contribution shall not exceed the lesser of
+       * (1) 50% of the eligible employee's elective deferrals … or (2) 5% of
+       * the … compensation" for a bare "The Employer may, at its discretion,
+       * contribute matching contributions to the Plan", and PMG Services
+       * (9,594) lost a stated 4% cap. *A guard that blocks a wrong answer must
+       * not discard the honest evidence*, and the sixth instance on this record
+       * was by DISPLACEMENT rather than omission.
+       *
+       * Running after the loops makes the change ADDITIVE BY CONSTRUCTION: the
+       * label is new, and the quote is touched only where the loops produced
+       * NOTHING or produced a sentence `matchQuoteOk` REFUSES — which is a
+       * sentence no reader can ever see. So **no published quote changes**, and
+       * that is structural rather than sampled. The guard is the oracle, which
+       * is v201's `vestingQuoteUpgrade` pattern applied to the other field, and
+       * it is asked of `cap(...)` because the 300-character truncation is what
+       * the page receives. */
+      if (discW) {
+        out.match = "Discretionary — set year to year";
+        if (!out.matchText || !matchQuoteOk(cap(out.matchText), true)) out.matchText = sentence(discW.index);
       }
     }
   }

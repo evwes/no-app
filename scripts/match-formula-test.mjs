@@ -557,6 +557,8 @@ const DW_REFUSE = [
    "Tyson Foods — 'match' as ordinary English with the discretion clause in FRONT, which is the position DW_AT reads; refused because the sentence grants nobody anything"],
   ["RECONCILIATION TO TAX RETURN Net assets available for benefits per financial statements $ 11,013,332 Employer's discretionary match receivable (82,891) Net assets available for benefits per Schedule H of the Form 5500 $ 11,000,700",
    "Piping Technology & Products, 619 — a RECONCILIATION TABLE, where the label would be true and the quote a column of dollar figures"],
+  ["The Plan may, at the discretion of the Plan\u2019s participants or via the Employer matching contribution, invest through the Master Trust an unlimited amount of its assets in the Company\u2019s common stock.",
+   "General Dynamics, 22,339 + 8,343 — a PARTY-IN-INTEREST note where the discretion is the PARTICIPANT'S investment choice, and the first cut replaced the plan's own 'varies based on the business unit' sentence with it"],
 ];
 for (const [t, who] of DW_REFUSE) is210(discMatchWidened(t) === null, `v210 MUST REFUSE: ${who}`);
 /* the shipped `disc` arm must still own everything it owned: the widening is
@@ -564,6 +566,18 @@ for (const [t, who] of DW_REFUSE) is210(discMatchWidened(t) === null, `v210 MUST
  * change its answer */
 is210(((extractPlanFeatures205("The Plan Sponsor may make discretionary matching contributions determined annually by the board.") || {}).match || null)
   === "Discretionary — set year to year", "the shipped disc spellings must keep their own answer");
+
+/* THE CONTROLS BELOW LOOK THEIR CASE UP BY NAME, NOT BY INDEX. The first
+ * version keyed on `DW_REFUSE[10]`, a new fixture was inserted above it, and
+ * the discretion-holder control silently started probing the RECONCILIATION
+ * TABLE — which another guard already refuses, so it printed "NOTHING changes"
+ * and read exactly like a decorative guard. *A positional reference into a
+ * growing list is a mutation anchored on the wrong line.* */
+const refuseCase = (frag) => {
+  const hit = DW_REFUSE.find(([, who]) => who.includes(frag));
+  if (!hit) throw new Error(`match-formula-test: no v210 refusal case matching ${JSON.stringify(frag)}`);
+  return hit[0];
+};
 
 /* NEGATIVE CONTROLS, one per guard, on the case where it is the ONLY
  * protection — proved by LEAVE-ONE-OUT over the sliced source, never by
@@ -584,24 +598,27 @@ const dwBuild = (mutate) => {
 { /* prove the slicer works UNMUTATED: a broken slice makes every control below pass vacuously */
   const probe = dwBuild((s) => s + "\n/* probe */");
   if (!probe.discMatchWidened(DW_FIRE[0][0])) throw new Error("the v210 slice cannot read its own first sentence — every control below would be meaningless");
-  if (probe.discMatchWidened(DW_REFUSE[0][0]) !== null) throw new Error("the v210 slice does not refuse Gilead — the slice is broken");
+  if (probe.discMatchWidened(refuseCase("Gilead")) !== null) throw new Error("the v210 slice does not refuse Gilead — the slice is broken");
 }
 const DW_CONTROLS = [
   ["the non-discretionary lookbehinds",
    (s) => s.replace(/\(\?<!non-\)\(\?<!non \)\(\?<!non- \)/, ""),
-   (mod) => !!mod.discMatchWidened(DW_REFUSE[0][0]), "Gilead's NON-discretionary match is published as discretionary"],
+   (mod) => !!mod.discMatchWidened(refuseCase("Gilead")), "Gilead's NON-discretionary match is published as discretionary"],
   ["the secondary-match adjacency refusal",
    (s) => s.replace(/const DW_SECONDARY = [^\n]*\n/, "const DW_SECONDARY = /(?!)/;\n"),
-   (mod) => !!mod.discMatchWidened(DW_REFUSE[2][0]), "Compass Health's side dish is labelled as its match"],
+   (mod) => !!mod.discMatchWidened(refuseCase("Compass Health")), "Compass Health's side dish is labelled as its match"],
   ["the other-topic refusal",
    (s) => s.replace(/const DW_TOPIC = [^\n]*\n/, "const DW_TOPIC = /(?!)/;\n"),
-   (mod) => !!mod.discMatchWidened(DW_REFUSE[7][0]), "Major League Soccer's forfeiture sentence is quoted under the match heading"],
+   (mod) => !!mod.discMatchWidened(refuseCase("Major League Soccer")), "Major League Soccer's forfeiture sentence is quoted under the match heading"],
+  ["the discretion-holder refusal",
+   (s) => s.replace(/const DW_WHOSE = [^\n]*\n/, "const DW_WHOSE = /(?!)/;\n"),
+   (mod) => !!mod.discMatchWidened(refuseCase("General Dynamics")), "General Dynamics' party-in-interest stock clause is labelled a discretionary match"],
   ["the at-discretion arm's money window",
    (s) => s.replace(/const DW_AT_MONEY = [^\n]*\n/, "const DW_AT_MONEY = /(?:)/;\n"),
-   (mod) => !!mod.discMatchWidened(DW_REFUSE[9][0]), "'to MATCH certain fixed income fund objectives' is read as a discretionary match"],
+   (mod) => !!mod.discMatchWidened(refuseCase("Tyson Foods")), "'to MATCH certain fixed income fund objectives' is read as a discretionary match"],
   ["the giving-verb requirement",
    (s) => s.replace(/const DW_GIVE = [^\n]*\n/, "const DW_GIVE = /(?:)/;\n"),
-   (mod) => !!mod.discMatchWidened(DW_REFUSE[6][0]), "Medisys's 'fully BESTED' vesting sentence is read as a match grant"],
+   (mod) => !!mod.discMatchWidened(refuseCase("Medisys")), "Medisys's 'fully BESTED' vesting sentence is read as a match grant"],
 ];
 console.log("v210 NEGATIVE CONTROL, one per guard, on the case where it is the ONLY protection:");
 for (const [label, mutate, probe, what] of DW_CONTROLS) {
@@ -610,6 +627,21 @@ for (const [label, mutate, probe, what] of DW_CONTROLS) {
   console.log(`  drop ${label}: ${flipped ? `a verdict FLIPS (${what})` : "NOTHING changes"}`);
   if (!flipped) fails.push(`the v210 control for ${label} changed NOTHING — it is decorative`);
 }
+/* THE ADDITIVE PROPERTY, ASSERTED THROUGH THE SHIPPED FUNCTION. The label is
+ * written AFTER the two quote loops and replaces their sentence only where
+ * `matchQuoteOk` would refuse it, so a PUBLISHED quote can never change. Both
+ * sentences below are verbatim and adjacent in Arkansas Children's filing
+ * (7,003 readers): the first is what the arm would have quoted, the second is
+ * what the page publishes today and must keep publishing. */
+{
+  const AC = "The Employer may, at its discretion, contribute matching contributions to the Plan. "
+    + "The Employer matching contribution shall not exceed the lesser of (1) 50% of the eligible employee\u2019s elective deferrals, including Roth elective deferrals, for the payroll period or (2) 5% of the eligible employee\u2019s applicable compensation for the payroll period.";
+  const ff = extractPlanFeatures205(AC) || {};
+  is210(ff.match === "Discretionary — set year to year", `the label must be ADDED to Arkansas Children's, got ${JSON.stringify(ff.match || null)}`);
+  is210(/shall not exceed the lesser of/.test(ff.matchText || ""),
+    `the PUBLISHED quote must survive the label: got ${JSON.stringify(String(ff.matchText || "").slice(0, 90))}`);
+}
+
 /* AND THE PAIR, because two guards blocking the SAME population each read
  * "necessary for 0" and deleting both costs correct refusals. Measured over
  * bucket C: topic alone is the sole protection on 161 plans / 114,688 readers,
@@ -620,7 +652,7 @@ for (const [label, mutate, probe, what] of DW_CONTROLS) {
   const both = dwBuild((s) => s
     .replace(/const DW_TOPIC = [^\n]*\n/, "const DW_TOPIC = /(?!)/;\n")
     .replace(/const DW_GIVE = [^\n]*\n/, "const DW_GIVE = /(?:)/;\n"));
-  is210(!!both.discMatchWidened(DW_REFUSE[5][0]) && !!both.discMatchWidened(DW_REFUSE[6][0]),
+  is210(!!both.discMatchWidened(refuseCase("MHM Services")) && !!both.discMatchWidened(refuseCase("Medisys")),
     "dropping BOTH the topic test and the giving verb must admit MHM and Medisys together");
 }
 

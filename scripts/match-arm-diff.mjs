@@ -26,9 +26,10 @@
  * with no cached filing text is UNJUDGED, and v208 over-delivered by 8% because
  * a registration was quoted as exact over a judged subset.
  */
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, openSync, writeSync, closeSync } from "node:fs";
 import { buildLedger } from "./lib-ledger.mjs";
 import { read } from "./lib-filingtext.mjs";
+import { loadPlans } from "./lib-schema.mjs";
 import { materialiseAt } from "./lib-refmod.mjs";
 
 const argv = process.argv.slice(2);
@@ -36,11 +37,25 @@ const argv = process.argv.slice(2);
  * made the first version read the arm name as the git ref and then refuse,
  * because `indexOf` returned 0 and the guard asked for `> 0`: two
  * off-by-one-shaped mistakes in one line of argument parsing. */
-const FLAGV = new Set(["--arm", "--discharge", "--show"]);
+const FLAGV = new Set(["--arm", "--discharge", "--show", "--prefilter", "--moves", "--narrow-cache", "--chunk"]);
 const POS = argv.filter((a, i) => !a.startsWith("--") && !FLAGV.has(argv[i - 1]));
 const REF = POS[0] || "HEAD";
 const DISCHARGE = (() => { const i = argv.indexOf("--discharge"); return i >= 0 ? +argv[i + 1] : 0; })();
 const SHOW = (() => { const i = argv.indexOf("--show"); return i >= 0 ? +argv[i + 1] : 25; })();
+/* RESUMABILITY IS NOT A CONVENIENCE HERE. This container gives a background
+ * process CPU only while a turn is active and reclaims it between turns, so a
+ * 90-minute pass over 56,056 filings dies partway with nothing to show. Both
+ * halves therefore checkpoint: the narrowing appends `ack<TAB>0|1` to
+ * `--narrow-cache` as it goes and skips anything already in it, and the diff
+ * takes `--chunk <start>:<count>` and writes `<moves>.<start>`. A run that dies
+ * costs the chunk it was in and nothing before it. */
+const NARROW_CACHE = (() => { const i = argv.indexOf("--narrow-cache"); return i >= 0 ? argv[i + 1] : null; })();
+const CHUNK = (() => {
+  const i = argv.indexOf("--chunk"); if (i < 0) return null;
+  const [a, b] = String(argv[i + 1]).split(":").map(Number);
+  if (!Number.isFinite(a) || !Number.isFinite(b)) { console.error("--chunk wants <start>:<count>"); process.exit(2); }
+  return { start: a, count: b };
+})();
 
 const ARM = (() => { const i = argv.indexOf("--arm"); return i >= 0 ? argv[i + 1] : null; })();
 if (!ARM) { console.error("match-arm-diff: --arm <exportName> is required — the narrowing IS the named arm"); process.exit(2); }
@@ -57,6 +72,21 @@ if (typeof newLib[ARM] !== "function")
 if (typeof oldLib[ARM] === "function")
   throw new Error(`${REF} already carries ${ARM} — the baseline is not a baseline`);
 const fires = (flat) => !!newLib[ARM](flat);
+/* A SUBSTRING EVERY ARM REQUIRES, applied to the RAW text before the whitespace
+ * flatten. The flatten is the expensive step — 8.3 GB of filing text through one
+ * regex — and `--prefilter discretion` skips it for the 19,033 filings that
+ * cannot possibly fire. It is sound ONLY while every arm requires the substring,
+ * so it is asserted rather than trusted: the assertion below runs the arm on a
+ * sentence with the substring REMOVED and requires silence. */
+const PREFILTER = (() => { const i = argv.indexOf("--prefilter"); return i >= 0 ? argv[i + 1] : null; })();
+const preRe = PREFILTER ? new RegExp(PREFILTER, "i") : null;
+if (PREFILTER) {
+  const probe = "At its discretion the Employer may make discretionary matching contributions at the discretion of the Board.";
+  if (!newLib[ARM](probe)) throw new Error(`--prefilter: the probe sentence does not fire ${ARM} — the prefilter cannot be validated`);
+  const stripped = probe.replace(new RegExp(PREFILTER, "gi"), "XXXX");
+  if (newLib[ARM](stripped)) throw new Error(`--prefilter ${PREFILTER} is NOT required by ${ARM} — it still fires with the substring removed`);
+  console.log(`prefilter: "${PREFILTER}" asserted necessary for ${ARM} (probe fires; probe without it does not)`);
+}
 
 /* the ledger's precedence, written once and controlled below */
 const stateOf = (ft) => !ft ? "absent"
@@ -66,6 +96,13 @@ const stateOf = (ft) => !ft ? "absent"
         : ft.noEmployer ? "published" : "absent";
 
 const L = buildLedger({ withStatus: false });
+/* the EMPLOYER CONTRIBUTION per ack, read from the same store the audit reads,
+ * because the trail's `match` key is gated on it */
+const empByAck = (() => {
+  const P = loadPlans(), m = new Map();
+  for (const r of P.rows) m.set(P.get(r, "ack"), P.get(r, "contribEmployer") || 0);
+  return m;
+})();
 /* THE MAPPER'S CONTROL. Handed each plan's STORED features — the very input the
  * ledger used — the mapper must return the ledger's own state. A short-form
  * plan is `impossible` before features are consulted at all, so it is excluded
@@ -94,14 +131,33 @@ if (ctrlOk !== ctrlN) { console.error("the state mapper disagrees with lib-ledge
 const ppl = (a) => a.reduce((s, x) => s + (x.ppl !== undefined ? x.ppl : x.p.ppl), 0);
 const narrowed = [], excluded = [], unjudged = [];
 let judged = 0, judgedPpl = 0;
+const cached = new Map();
+if (NARROW_CACHE && existsSync(NARROW_CACHE))
+  for (const line of readFileSync(NARROW_CACHE, "utf8").split("\n"))
+    if (line) { const [a, v] = line.split("\t"); cached.set(a, v === "1"); }
+let scanned = 0, fresh = 0;
+const sink = NARROW_CACHE ? openSync(NARROW_CACHE, "a") : null;
 for (const p of L.plans) {
   if (p.sf || !p.ack) continue;
+  if (++scanned % 2000 === 0) process.stderr.write(`  narrowing ${scanned} (fresh ${fresh})\n`);
+  if (cached.has(p.ack)) {
+    judged++; judgedPpl += p.ppl;
+    (cached.get(p.ack) ? narrowed : excluded).push(p);
+    continue;
+  }
   const raw = read(p.ack);
   if (!raw) { unjudged.push(p); continue; }
-  judged++; judgedPpl += p.ppl;
-  const flat = raw.replace(/\s+/g, " ");
-  (fires(flat) ? narrowed : excluded).push(p);
+  judged++; judgedPpl += p.ppl; fresh++;
+  /* `raw.toLowerCase()` was here and it allocated a full copy of every
+   * multi-megabyte filing — as expensive as the flatten it exists to avoid, and
+   * the run got SLOWER rather than faster. A case-folded regex on the raw text
+   * allocates nothing. */
+  let hit = false;
+  if (!PREFILTER || preRe.test(raw)) hit = fires(raw.replace(/\s+/g, " "));
+  (hit ? narrowed : excluded).push(p);
+  if (sink) writeSync(sink, `${p.ack}\t${hit ? 1 : 0}\n`);
 }
+if (sink) closeSync(sink);
 console.log(`\njudged ${judged} full-form plans / ${judgedPpl.toLocaleString()} readers`);
 console.log(`UNJUDGED ${unjudged.length} plans / ${ppl(unjudged).toLocaleString()} readers — no cached filing text, so every figure below is a FLOOR over the run`);
 console.log(`narrowed to ${narrowed.length} plans / ${ppl(narrowed).toLocaleString()} readers (the arm fires on the text); ${excluded.length} excluded`);
@@ -110,7 +166,11 @@ console.log(`narrowed to ${narrowed.length} plans / ${ppl(narrowed).toLocaleStri
 const FIELDS = new Set();
 const moves = [];
 const nonMatch = [];
-for (const p of narrowed) {
+let done = 0;
+const slice = CHUNK ? narrowed.slice(CHUNK.start, CHUNK.start + CHUNK.count) : narrowed;
+if (CHUNK) console.log(`CHUNK ${CHUNK.start}..${CHUNK.start + slice.length} of ${narrowed.length}`);
+for (const p of slice) {
+  if (++done % 250 === 0) process.stderr.write(`  diffing ${done}/${slice.length}\n`);
   const raw = read(p.ack);
   const a = oldLib.extractPlanFeatures(raw, p.sponsorName || "") || {};
   const b = newLib.extractPlanFeatures(raw, p.sponsorName || "") || {};
@@ -128,6 +188,7 @@ for (const p of narrowed) {
     oldMatch: a.match || null, newMatch: b.match || null,
     oldQuote: a.matchText || null, newQuote: b.matchText || null,
     ledger: p.cells.match.state,
+    contribEmployer: empByAck.get(p.ack) || 0,
   });
 }
 console.log(`\nfields that moved anywhere: ${[...FIELDS].sort().join(", ") || "(none)"}`);
@@ -150,6 +211,31 @@ const quoteMoved = moves.filter((m) => m.oldQuote && m.newQuote && m.oldQuote !=
 console.log(`\nFORMULAS LOST: ${lost.length}    FORMULAS RELABELLED: ${relabel.length}    QUOTES CHANGED (both present): ${quoteMoved.length}`);
 for (const m of [...lost, ...relabel].slice(0, 10))
   console.log(`  ${m.p.sponsorName} ${m.p.ack}  ${m.oldMatch} -> ${m.newMatch}`);
+
+/* THE TRAIL SPLITS A PLAN GAINING A FORMULA TWO WAYS AND THE LEDGER DOES NOT.
+ * `audit-data` counts `match` only where the plan reported employer money and
+ * puts the rest in `matchInZeroEmp`; `matchAny` is their sum. A registration
+ * naming `match` alone under-predicts by exactly the $0-employer population, so
+ * the split is printed rather than left to a band. */
+{
+  const zero = moves.filter((m) => m.newMatch && !m.oldMatch && !(m.contribEmployer > 0));
+  const nonzero = moves.filter((m) => m.newMatch && !m.oldMatch && m.contribEmployer > 0);
+  console.log(`\nTRAIL SPLIT of the plans that GAIN a formula:`);
+  console.log(`  match          += ${nonzero.length}  (employer money reported)`);
+  console.log(`  matchInZeroEmp += ${zero.length}  ($0 employer contribution)`);
+  console.log(`  matchAny       += ${nonzero.length + zero.length}`);
+  const hadQuote = moves.filter((m) => m.newMatch && !m.oldMatch && m.oldQuote);
+  console.log(`  matchQuote     -= ${hadQuote.filter((m) => m.contribEmployer > 0).length}  (of the gainers, had a stored quote and employer money)`);
+}
+const MOVES = (() => { const i = argv.indexOf("--moves"); return i >= 0 ? argv[i + 1] : null; })();
+if (MOVES) {
+  writeFileSync(CHUNK ? `${MOVES}.${CHUNK.start}` : MOVES, JSON.stringify(moves.map((m) => ({
+    ein: m.p.ein, pn: m.p.pn, name: m.p.sponsorName, ack: m.p.ack, ppl: m.p.ppl,
+    contribEmployer: m.contribEmployer, from: m.from, to: m.to, ledger: m.ledger,
+    oldMatch: m.oldMatch, newMatch: m.newMatch, oldQuote: m.oldQuote, newQuote: m.newQuote,
+  }))));
+  console.log(`wrote ${moves.length} moved plans to ${MOVES}`);
+}
 
 console.log(`\n--- the ${Math.min(SHOW, moves.length)} largest movers, for reading ---`);
 for (const m of moves.sort((a, b) => b.p.ppl - a.p.ppl).slice(0, SHOW)) {
