@@ -7,6 +7,46 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-22 (21:xxZ) — v210 DELIVERED, AND THE RE-ROLL CHANGED SHAPE, WHICH IS EVIDENCE
+
+**DELIVERED vs REGISTERED.** `match` 45,270 -> **46,619** against a registered
+46,213, so +1,349 where +943 was written. `matchAny` +1,842 against +1,305; `match_shown` **70.90%** against 70.50%; the
+ONE SCALAR **79.60%** against 79.52%. **Readers moved to an answer: 2,564,040**
+(gap −1,007,457, withheld −1,556,583) against a point of 2,126,472 and a band of
++2.13M to ~+2.6M — near the top edge, past the point. **Fourth run running**
+where the point was a floor and the band was the right shape.
+
+**THE INTERESTING FAILURE IS THE JITTER, NOT THE GAIN.** `vesting` −3 and `roth`
+−2 were registered UNCHANGED, and the write set is provably `out.match` +
+`out.matchText`. Five plans' non-match flags moved on a change that cannot write
+them. **What is new is what did NOT move: `confident`, `lineups`, `entries`,
+`dl` and `overshoot` were all FLAT**, where every re-parse since v206 jittered
+them. So this re-roll reached FEATURE extraction and left menu confidence alone
+— the mirror image of the usual shape, and the second independent sighting of
+the 2026-11-21 finding that this class is not an OCR phenomenon and reaches the
+plain-text path. *A jitter that changes shape is evidence about its cause; the
+temptation is to absorb it as noise because the magnitude is small.*
+
+**AND THE SIX ACKS DEGRADED A FIFTH TIME WHILE `confident` STAYED FLAT.** The
+trail read 62,210 before and after, because v209's run had already taken those
+six off and v210's took them off a baseline that already lacked them. ***A key
+that cannot move cannot warn*** — the audit's −200 tolerance never had a delta
+to compare, and only `mirror-gate`'s plan-keyed refusal named the seven plans.
+That is a sharper version of the recorded problem: it was known that `confident
+−6` hides inside the tolerance; it was not written down that on the SECOND
+consecutive degradation the delta is **zero**.
+
+**ONE SEQUENCING FACT WORTH KEEPING.** Re-running `merge-4i` for the repair
+moved 31 rows in 25 acks beyond the six, because `sec-tickers.js` was
+regenerated at 19:57Z AFTER #886's merge at 18:29Z and the shipped name repairs
+decline any row the table is keyed on. So **a regen retroactively changes what a
+later merge will repair.** All 31 were read and all 31 are correct (OCR tail
+residue, share-class rotation, duplicated class token, lost space), 0 row-count
+moves — but the general point is that the repairs are a function of the ticker
+table's key set, and nothing declares that dependency.
+
+---
+
 ## 2026-11-22 (17:4xZ) — A GATE RED BECAUSE ITS SHIP WORKED, AND CI NEVER REACHED IT
 
 **WHAT WAS WRONG.** `effective-date-test.mjs` forced its 11 pinned members into

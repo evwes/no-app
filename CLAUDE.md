@@ -988,12 +988,48 @@ re-parse** — the identical set and the identical 6,145 readers as v207, v208 a
 sees it. The repair is deliberately DEFERRED to after v210's merge: a full
 re-parse undoes it, so repairing before a dispatch is paying twice.
 
-**v210 IS IN FLIGHT AS RUN #886** (17:34Z, on `325afdc8`). The
-`PARSER_VERSION` bump to 210 is what started it: the push trigger's path filter
-names `scripts/lib-4i.mjs`, so the push created the run and there was no
-dispatch to race it. *The cheapest way to avoid the duplicate-run hazard is to
-let the push be the trigger rather than adding a dispatch beside it.* The match
-is
+**v210 DELIVERED by run #886 (17:34Z–18:29Z, on `325afdc8`), and it
+over-delivered — the FOURTH registration running whose point was a floor.**
+
+| key | registered | delivered |
+|---|---|---|
+| `match` (trail, PLAN count) | 46,213 (+943) | **46,619 (+1,349)** |
+| `matchAny` | 49,778 (+1,305) | **50,315 (+1,842)** |
+| `matchQuote` | 5,277 (−488) | **4,957 (−808)** |
+| `matchQuoteShown` | 2,109 (−133) | **2,035 (−207)** |
+| `match_shown` | 70.50% | **70.90%** |
+| `match_gap` | −871,315 | **−1,007,457** |
+| `match_withheld` | −1,255,157 | **−1,556,583** |
+| ONE SCALAR | 79.52% | **79.60%** |
+
+**READERS MOVED TO AN ANSWER: 2,564,040** (gap −1,007,457 plus withheld
+−1,556,583), against a point estimate of 2,126,472 and a registered band of
+**+2.13M to ~+2.6M** — near the band's top edge, past the point. Four runs in a
+row now: *the point is what the instrument could judge and the band is what the
+run does.* The band has been the right shape every time it was stated.
+
+**AND "NOTHING ELSE MOVES" FAILED AGAIN, SMALLLY AND IN A NEW SHAPE.** `vesting`
+55,366 -> **55,363** (−3) and `roth` 43,595 -> **43,593** (−2) were registered
+UNCHANGED, and the write set is provably `out.match` + `out.matchText`, so five
+plans' non-match flags moved on a change that cannot write them. What is NEW is
+the rest: `confident`, `lineups`, `entries`, `dl` and `overshoot` were all
+**FLAT**, where every prior re-parse jittered them. So this re-roll reached the
+FEATURE extraction and not the menu — the same text path the 2026-11-21 finding
+named, seen from the other side. *Register the change's keys, then say
+separately what a full re-parse jitters; and when the jitter changes shape,
+that is evidence about the cause, not noise to absorb.*
+
+**THE SIX ACKS DEGRADED FOR THE FIFTH CONSECUTIVE RE-PARSE and `confident` could
+not say so.** The trail read 62,210 BEFORE and AFTER, because v209's run had
+already taken those six off and v210's took them off a baseline that already
+lacked them — *a key that cannot move cannot warn*, and only `mirror-gate`'s
+plan-keyed refusal named them. Repaired in `fc24b29f`: all six back to `c=1` at
+`pv` 210, merge `+6 / -0`, `confident` 62,216. That commit also had to READ 31
+rows in 25 OTHER acks that the local merge moved, because `sec-tickers.js` was
+regenerated at 19:57Z AFTER #886's merge and the name repairs decline any row
+the table is keyed on — all 31 read, all 31 correct, 0 row-count moves.
+
+The match is
 DISCRETIONARY in three spellings the shipped `disc` trigger's six do not read
 (`discMatchWidened`, `lib-4i.mjs`). Derived from a committed-base-vs-working-tree
 differential against `006ef459` over all 56,056 cached filings, narrowed by the
@@ -1091,18 +1127,19 @@ estimate: it refutes itself the moment a new import appears.
 
 **THE LEDGER IS THE QUEUE.** `node scripts/ledger-report.mjs` prints the one
 participant-weighted scalar and the addressable gap per field; it is DERIVED and
-must never be copied forward. Re-derived 2026-11-22 from the store run #884
-left on this branch (`pv` 209): **115,641 plans / 119,907,098 participants /
-overall 79.15%**, 88,230,773 participant-cells addressable, with addressable
+must never be copied forward. Re-derived 2026-11-22 from the store run #886
+left on this branch (`pv` 210): **115,641 plans / 119,907,098 participants /
+overall 79.60%**, 87,224,940 participant-cells addressable, with addressable
 gaps below. (v208 withdrew a future-effective or catch-up-mandate Roth/after-tax
 yes from 865 plans, so `contributions` fell 66.96% -> 66.05% and the scalar
 79.25 -> 79.06 ON PURPOSE — the fifth time it has gone DOWN for accuracy; v209
-then took it 79.06 -> 79.15 on the vesting scope gate.)
+then took it 79.06 -> 79.15 on the vesting scope gate and v210 79.15 -> 79.60
+on the discretionary-match spellings.)
 
 | field | shown | readers with no answer | owner agent |
 |---|---|---|---|
 | contributions (pre-tax / Roth / after-tax / brokerage) | 66.05% | **40.70M** | `tier-a-contributions` |
-| match | 68.58% | **20.86M** (13.84M withheld on purpose) | `tier-a-plan-terms` |
+| match | 70.90% | **19.86M** (12.29M withheld on purpose) | `tier-a-plan-terms` |
 | vesting | 77.56% | **14.03M** (10.75M withheld on purpose) | `tier-a-plan-terms` |
 | custodian / recordkeeper | 90.22% | **11.72M** | `tier-a-custodian` |
 | fund menu | 93.52% | **0.91M** (6.25M withheld on purpose) | `tier-a-lineup` |
