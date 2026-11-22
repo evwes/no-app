@@ -832,8 +832,20 @@ for (const arm of ARMS) {
   L("NEGATION class (quote denies it) — defect 1", A.denial);
   L("CAUSAL + anchored future effective date — WRONG NOW", A.causalFuture);
   L("  of those, anchored by the SUFFIX only (--anchor both)", A.causalFuture.filter((x) => x.sufOnly.length));
+  /* THE TIER IS THE HEADLINE'S OWN HEDGE AND IT HAS TO BE PRINTED THREE WAYS,
+   * because reading all 25 members the suffix anchor newly reached on the roth
+   * arm found the split is a RELIABLE DISCRIMINATOR: all 19 at tier `sentence`
+   * or `near` are real future-effective amendments, and all 6 at tier
+   * `section` are section-span artifacts — the quote is a standing plan-terms
+   * sentence ("Roth deferrals are also permitted by the Plan") and the date
+   * belongs to a different sentence in the same note. So `sentence`+`near` is
+   * the DEFENSIBLE floor and `section` is a separate, unestablished question
+   * about `MAX_SECTION_LINES`. A two-way split folded `near` in with
+   * `section`, which hid that `near` behaves like `sentence`. */
   L("  of those, dated from the quote's OWN sentence", A.causalFuture.filter((x) => x.tier === "sentence"));
-  L("  of those, dated from a NEIGHBOUR in the section", A.causalFuture.filter((x) => x.tier !== "sentence"));
+  L("  of those, dated from a TIGHT window round the quote", A.causalFuture.filter((x) => x.tier === "near"));
+  L("  of those, dated from ANYWHERE in the section (unestablished)", A.causalFuture.filter((x) => x.tier === "section"));
+  L("  TIGHT floor: sentence + near", A.causalFuture.filter((x) => x.tier === "sentence" || x.tier === "near"));
   L("  of those, a SECURE 2.0 catch-up mandate", A.causalFuture.filter((x) => x.catchup));
   L("  of those, effective date STILL ahead of today", A.causalFuture.filter((x) => x.stillAhead));
   L("  of those, effective after the year but before today", A.causalFuture.filter((x) => !x.stillAhead));
