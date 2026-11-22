@@ -532,6 +532,74 @@ if (has("--selftest")) {
 }
 
 /* ---------------------------------------------------------------------------
+ * `--published-quote` — WHAT A TERMINAL VETO WOULD ACTUALLY WITHDRAW, store
+ * only, no filing text at all.
+ *
+ * WHY IT IS THE DECISIVE MEASUREMENT FOR THE FIX. The classes above are
+ * measured by BLANKING the section and re-asking, which answers "is this
+ * amendment the only thing in the filing that says yes". That is the right
+ * question about the FILING and the WRONG question about the PARSER: the
+ * shipped arms are a FIRST-WINS chain, so when the amendment sentence wins the
+ * quote the parser never looks at the other evidence. A veto placed beside
+ * v207's — `if (out.roth && futureEffective(out.rothText)) out.roth = false` —
+ * therefore withdraws every plan whose PUBLISHED QUOTE is a future-effective
+ * grant, *including the LATENT ones whose yes is independently supported*. This
+ * record's rule that a guard blocking a wrong answer must not discard the
+ * honest evidence, and the reason the fix has to be a RE-SEARCH (skip this
+ * candidate, take the next) rather than a veto.
+ *
+ * So this mode measures the terminal veto's exact blast radius over all 48,857
+ * published yeses, and the SIZING passes above say how much of it is correct.
+ * The difference is what a re-search must recover and a veto would lose.
+ * ------------------------------------------------------------------------- */
+if (has("--published-quote")) {
+  const f0 = (n) => n.toLocaleString();
+  /* the same catch-up test the pass uses, declared here because `CATCHUP` is a
+   * `const` below this block and a TDZ error reads like a missing function */
+  const catchupQ = (s) => /catch-? ?up/i.test(String(s || ""));
+  /* the quote is ONE SENTENCE, so the window is the quote and the tier is
+   * `sentence` by construction — which is exactly the tier reading 25 members
+   * by hand established as the reliable one */
+  const futureGrant = (quote, p, arm) => {
+    if (!quote || !p.pyeY) return null;
+    const dts = datesIn(quote);
+    if (!dts.length) return null;
+    const hit = dts.find((x) => {
+      if (!afterPYE(x, p)) return false;
+      const pre = quote.slice(Math.max(0, x.idx - 90), x.idx);
+      const suf = quote.slice(x.idx + x.raw.length, x.idx + x.raw.length + 90);
+      return (EFFECTIVE_NEAR.test(pre) || EFFECTIVE_AFTER.test(suf)) && !EVAL_DATE.test(pre);
+    });
+    if (!hit) return null;
+    if (presupposes(quote, arm)) return null;     /* a degree change presupposes the feature */
+    return hit.raw;
+  };
+  for (const arm of (ARM === "either" ? ["roth", "afterTax"] : [ARM])) {
+    const popArm = pop.filter((x) => x[arm]);
+    const q = (p) => (arm === "roth" ? p.rothText : p.afterTaxText);
+    const hits = [];
+    for (const p of popArm) {
+      const d2 = futureGrant(q(p), p, arm);
+      if (d2) hits.push({ ...p, date: d2, catchup: catchupQ(q(p)) });
+    }
+    const S = (a) => a.reduce((t, x) => t + x.ppl, 0);
+    console.log(`\n${arm}: a TERMINAL veto on the published quote would withdraw ${f0(hits.length)} of ${f0(popArm.length)}` +
+      ` yeses — ${f0(S(hits))} readers of ${f0(S(popArm))}`);
+    console.log(`  of those, a SECURE 2.0 catch-up mandate: ${f0(hits.filter((x) => x.catchup).length)} plans /` +
+      ` ${f0(S(hits.filter((x) => x.catchup)))} readers`);
+    console.log(`  plans with no reconstructable plan-year end (veto cannot apply): ` +
+      `${f0(popArm.filter((x) => !x.pyeY).length)}`);
+    for (const x of hits.sort((a, b) => b.ppl - a.ppl).slice(0, 15))
+      console.log(`    ${String(x.ppl).padStart(7)}ppl  ${x.ack}  ${x.name.slice(0, 30).padEnd(30)} PYE ${x.pyeY}-${String(x.pyeM).padStart(2, "0")}` +
+        ` eff ${JSON.stringify(x.date)}${x.catchup ? " catch-up" : ""}\n              ${JSON.stringify(String(q(x)).slice(0, 160))}`);
+    if (hits.length > 15) console.log(`    … ${hits.length - 15} more`);
+    writeFileSync(`/tmp/pubquote-${arm}.json`, JSON.stringify(hits.map((x) => ({ ack: x.ack, ppl: x.ppl, name: x.name, date: x.date, catchup: x.catchup })), null, 1));
+    console.log(`  enumerated -> /tmp/pubquote-${arm}.json`);
+  }
+  process.exit(0);
+}
+
+/* ---------------------------------------------------------------------------
  * the pass
  * ------------------------------------------------------------------------- */
 const { extractPlanFeatures } = await import("./lib-4i.mjs");
