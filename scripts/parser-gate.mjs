@@ -159,8 +159,35 @@ const FEATURE_SPECIMENS = [
    * law and are not an employer match at all. */
   ["v205 control: a Statement of Changes line caption is not a match statement",
     "20251014200056NAL0001789283001", { match: null, quote: null }],
-  ["v205 control: an employer NAMED 'COLLEGE MATCH' is not a match statement",
-    "20261015114803NAL0007909523001", { match: null, quote: null }],
+  /* THIS EXPECTATION MOVED AT v210, AND THE MOVE IS THE REVIEW MOMENT THIS GATE
+   * EXISTS TO FORCE. v205 pinned TriNet HR III as publishing NOTHING, on the
+   * strength of the two hits its own arm would find — the participating
+   * employer named "COLLEGE MATCH" and a vesting sentence about voluntary
+   * contributions. Reading the filing for v210 found a THIRD sentence v205's
+   * note never mentions, in the plan-description note itself:
+   *   "The Employers may, at their discretion, elect to match up to 100% of
+   *    their employees' contributions."
+   * That is an affirmative statement that the match is discretionary, so
+   * `{match: null}` was a claim about this FILING that only ever had evidence
+   * about one ARM. *Scope a pin by the arm it is a pin for* — the v205
+   * assertion that survives is the predicate-level one, and it is already
+   * pinned by name in `scripts/match-formula-test.mjs`'s FV_SILENT list
+   * (`MF_FVERB` must stay silent on both the employer name and the vesting
+   * sentence). This row now pins the v210 answer and still fails the moment
+   * the verb arm starts quoting "COLLEGE MATCH", because that hit would make
+   * the quote a Schedule of Participating Employers row rather than this
+   * sentence.
+   *
+   * WHAT IS DELIBERATELY NOT CLAIMED, and is in the accuracy log as an open
+   * question: this is a PEO, and the same note offers employers "an option …
+   * to adopt a safe harbor plan design whereby a mandatory matching or
+   * nonelective contribution is made". So the plan's match is discretionary
+   * for some adopting employers and mandatory for others, and
+   * "Discretionary — set year to year" is true of the sentence quoted beside
+   * it rather than complete over every worksite employer. The quote says
+   * "The Employers", which is what lets a reader see that. */
+  ["v210 (was v205 {match:null}): TriNet HR III — \"at their discretion, ELECT to match up to 100%\"",
+    "20261015114803NAL0007909523001", { match: "Discretionary — set year to year", quote: true }],
   /* v83: three false-"Immediate" shapes the v81 widening let through, found
    * by self-checking all 3,907 new Immediate labels against their own quotes.
    * Each states a service condition in the SAME sentence as the immediate
@@ -325,6 +352,37 @@ const FEATURE_SPECIMENS = [
     "20260910080439NAL0004968161001", { vesting: null }, "Ithaca College"],
   ["v209 control: Employee Owned Holdings — the sponsor's own name is an EMPLOYEE-money word",
     "20261009094416NAL0035029843001", { vesting: "Graded schedule" }, "Employee Owned Holdings, Incorporated"],
+  /* v210 — THE MATCH IS DISCRETIONARY IN A SPELLING THE SIX SHIPPED ONES MISS.
+   * "Discretionary — set year to year" is the complete and correct answer for a
+   * plan whose employer decides the match each year, and the `disc` trigger's
+   * six spellings each want a token these filers did not write. The three arms
+   * are pinned one specimen each, by the shape that is theirs alone.
+   *
+   * AND THE FOUR COUNTER-SPECIMENS ARE THE REASON THIS ARM SHIPS AT ALL. v204
+   * is on this record for adding a positive specimen and not a negative one and
+   * taking 21 real funds off a page; here the cost of over-reach is telling a
+   * reader their plan's match is at the employer's whim when the filing states
+   * a fixed safe-harbor formula. Each counter-specimen is the case where ONE
+   * guard is the only protection, and each pins `quote: null` as well as the
+   * label — these four filings publish NEITHER today, so a widening that
+   * reached them would set both and a label-only assertion would miss the
+   * junk quote. */
+  ["v210: Nexstar Media — \"at its discretion, MAY ELECT to match participant contributions\"",
+    "20260827135226NAL0002869106001", { match: "Discretionary — set year to year", quote: true }],
+  ["v210: Innova Solutions — \"Discretionary matching OR NONELECTIVE contributions\"",
+    "20261015072919NAL0006868017001", { match: "Discretionary — set year to year", quote: true }],
+  ["v210: Kforce — the discretion clause TRAILS the match noun",
+    "20261015135704NAL0004121251001", { match: "Discretionary — set year to year", quote: true }],
+  ["v210: Select Rehabilitation — \"one year of service\" is ELIGIBILITY on a real grant, not a vesting schedule",
+    "20261013095543NAL0004081153001", { match: "Discretionary — set year to year", quote: true }],
+  ["v210 control: Gilead — a NON-discretionary match is the opposite claim",
+    "20260730163631NAL0022760017001", { match: null, quote: null }],
+  ["v210 control: Compass Health — a SECONDARY match beside a stated safe-harbor formula",
+    "20261015121554NAL0003966483001", { match: null, quote: null }],
+  ["v210 control: Medisys — a vesting sentence whose vest word is MISSPELLED (\"fully bested\")",
+    "20261015184529NAL0004502675001", { match: null, quote: null }],
+  ["v210 control: Major League Soccer — a FORFEITURE sentence",
+    "20261005093330NAL0031800162001", { match: null, quote: null }],
 ];
 
 const SPECIMENS = [
