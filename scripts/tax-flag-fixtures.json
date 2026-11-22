@@ -162,6 +162,16 @@
     ]
    },
    "verified": "2026-11-22: \"Additionally, effective January 1, 2026, the Company increased the after-tax contribution maximum from $10,000 to $29,500 for the 2026 Plan year.\" This is the member that caught the grant veto being spelled `add\\\\w*`, which matches \"Additionally\" — a character class written for a concept, met on a stem. 310 readers. NOTE: the briefed ack for Stonepeak was Stonepeak Ceramics; the plan that carries this sentence is Stonepeak Partners LP."
+  },
+  {
+   "id": "arkansas-fcu-deadline",
+   "ack": "20261007124110NAL0035295202001",
+   "expect": {
+    "roth": [
+     "must-keep"
+    ]
+   },
+   "verified": "2026-11-22, found by READING a seeded uniform draw of v208's own withdrawals — 1 wrong in 30 read — and the only member of its class in the whole store. Arkansas Federal Credit Union (478) files \"As permitted under the Secure Act 2.0, the Plan will be formally amended no later than December 31, 2026 Contributions Eligible participants are permitted to elect to have a percentage ... contributed as pre-tax 401(k) or Roth contributions to the Plan.\" -- a SECURE 2.0 remedial-amendment DEADLINE welded to a plain CURRENT Roth statement by a missing period before a heading. A deadline dates the PAPERWORK and affirms that the plan already operates the provision; the refusal already existed in EFFECTIVE_AFTER's aux list (Grainger, McCarter & English) and NOT in EFFECTIVE_NEAR, which is the same shape of defect this ship repairs. `DEADLINE_DATE` is anchored on the preposition that governs the date, never on `will be`: \"will be amended EFFECTIVE January 1, 2026\" is a genuine not-yet-effective grant and is still refused."
   }
  ]
 }

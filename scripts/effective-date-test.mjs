@@ -92,6 +92,10 @@ const MEMBERS = {
    * announces the mandate and grants Roth. v207 published it and the first
    * version of v208 withdrew it. */
   "aijj": { ack: "20260910140119NAL0005259761001", arm: "roth", ppl: 7405 },
+  /* the SECURE 2.0 remedial-amendment DEADLINE, found by reading a seeded draw
+   * of the withdrawals — 1 wrong in 30 read, and the refusal already existed in
+   * the OTHER anchor */
+  "arkansas-fcu": { ack: "20261007124110NAL0035295202001", arm: "roth", ppl: 478 },
 };
 
 /* ---------------------------------------------------------------------------
@@ -280,6 +284,14 @@ console.log(`\n--- 5/7 silence: no plan year, and an IN-YEAR date ---`);
     futureEffectiveGrant("Effective December 15, 2025, the Plan was amended to allow after-tax contributions.", JAN25, "afterTax") === null);
   ok("the 39 plans / 81,018 readers whose amendment was effective IN-YEAR are this case, and it is the one the fix must not touch", true,
     "in-year grants are silent by the afterPYE test, not by a list");
+  /* THE DEADLINE, AND THE DISTINCTION IT TURNS ON */
+  const ARK = "As permitted under the Secure Act 2.0, the Plan will be formally amended no later than December 31, 2026 Contributions Eligible participants are permitted to elect to have a percentage, limited by Plan provisions, of their compensation contributed as pre-tax 401(k) or Roth contributions to the Plan.";
+  ok("a DEADLINE date is not an effective date — the remedial-amendment shape is SPARED",
+    futureEffectiveGrant(ARK, JAN25, "roth") === null);
+  ok("but the FUTURE TENSE alone does not spare it: `will be amended EFFECTIVE <date>` is still refused",
+    futureEffectiveGrant("The Plan will be amended effective January 1, 2026 to allow Roth elective deferrals.", JAN25, "roth") === "January 1, 2026");
+  ok("and an in-year deadline was never reached anyway",
+    futureEffectiveGrant(ARK, planYearEnd("2026-01", ""), "roth") === null);
   ok("a sentence with no date at all is silent",
     futureEffectiveGrant("Roth contributions and voluntary (after-tax) contributions are also permitted under the Plan.", JAN25, "roth") === null);
 }
@@ -386,6 +398,9 @@ console.log(`\n--- 7/7 mutations: each must break a NAMED member ---`);
     ["drop the date refusal from the after-tax contributions arm",
       [["lib-4i.mjs", "    if (futureEffectiveGrant(sentence(at.index), PYE, \"afterTax\")) continue;\n", ""]],
       ["simpson", "ultra-clean", "arcturus"]],
+    ["drop the DEADLINE refusal (withdraws a TRUE flag on a remedial-amendment deadline)",
+      [["lib-effective-date.mjs", " && !DEADLINE_DATE.test(pre)", ""]],
+      ["arkansas-fcu"]],
     ["drop restrictsExisting (withdraws a TRUE flag from Arcadium)",
       [["lib-effective-date.mjs", "  if (restrictsExisting(quote, arm)) return null;\n", ""]],
       ["arcadium"]],

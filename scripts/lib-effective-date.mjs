@@ -225,6 +225,35 @@ export const restrictsExisting = (quote, arm) => {
     "|(?:" + tw + ")[^.]{0,60}?\\b(?:" + RESTRICT_VERBS + ")\\w*\\b", "i").test(quote);
 };
 
+/* A DEADLINE IS NOT AN EFFECTIVE DATE, AND THIS REFUSAL EXISTED IN ONE ANCHOR
+ * AND NOT THE OTHER — the same shape of defect this whole repair is about.
+ *
+ * `EFFECTIVE_AFTER`'s aux list admits only `was/were/is/has been/have been`
+ * precisely so that the SECURE 2.0 remedial-amendment DEADLINE cannot anchor a
+ * date: W.W. Grainger's "the Plan WILL BE amended" and McCarter & English's
+ * "the Plan Sponsor INTENDS TO AMEND by the deadline of <date>" affirm that the
+ * plan ALREADY OPERATES the provision and is being documented later, which is
+ * the opposite of a not-yet-effective grant. `EFFECTIVE_NEAR` is a bare
+ * vocabulary with no aux restriction, so it anchors those sentences happily.
+ *
+ * FOUND BY READING A SEEDED DRAW, not by inspecting the regex. Arkansas Federal
+ * Credit Union (478 readers) files "As permitted under the Secure Act 2.0, the
+ * Plan will be formally amended no later than December 31, 2026 Contributions
+ * Eligible participants are permitted to elect to have a percentage … of their
+ * compensation contributed as pre-tax 401(k) or Roth contributions to the
+ * Plan." — a deadline welded to a plain CURRENT Roth statement by a missing
+ * period before a heading, and v208's first spelling withdrew a true flag from
+ * it. It was 1 wrong withdrawal in 30 drawn and read.
+ *
+ * IT IS THE DEADLINE PREPOSITION AND NOT THE FUTURE TENSE, which is the whole
+ * distinction: "the Plan WILL BE amended EFFECTIVE January 1, 2026 to allow
+ * Roth" is a genuine not-yet-effective grant and must still be refused, while
+ * "amended NO LATER THAN <date>" dates the PAPERWORK. So the test is anchored
+ * at `$` on the preposition that governs the date, never on `will be`.
+ * MEASURED BLAST RADIUS over every published quote in the store: 1 plan / 478
+ * readers on roth, 0 on after-tax — exactly the member it was written for. */
+const DEADLINE_DATE = /\b(?:no|not)\s+later\s+than\s*$|\bon\s+or\s+before\s*$|\bby\s+the\s+deadline\s+of\s*$|\bprior\s+to\s*$/i;
+
 export function futureEffectiveGrant(quote, pye, arm) {
   if (!quote || !pye || !pye.pyeY) return null;
   const dts = datesIn(quote);
@@ -233,7 +262,8 @@ export function futureEffectiveGrant(quote, pye, arm) {
     if (!afterPYE(x, pye)) return false;
     const pre = quote.slice(Math.max(0, x.idx - 90), x.idx);
     const suf = quote.slice(x.idx + x.raw.length, x.idx + x.raw.length + 90);
-    return (EFFECTIVE_NEAR.test(pre) || EFFECTIVE_AFTER.test(suf)) && !EVAL_DATE.test(pre);
+    return (EFFECTIVE_NEAR.test(pre) || EFFECTIVE_AFTER.test(suf)) &&
+      !EVAL_DATE.test(pre) && !DEADLINE_DATE.test(pre);
   });
   if (!hit) return null;
   if (presupposes(quote, arm)) return null;
