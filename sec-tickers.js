@@ -7,7 +7,7 @@
  *
  * ASSERTED ANSWERS ONLY. A `comparable` — the SEC registers several share
  * classes and the filing states none — is NOT in here: it would publish an
- * asterisked approximation on 35,797 plans reaching 49,479,924
+ * asterisked approximation on 35,795 plans reaching 49,479,008
  * participants, which is a decision of its own.
  *
  * Key: the two raw cells the page holds, joined by NUL —
@@ -16,8 +16,8 @@
  * spelling absent from this table resolves to nothing, which is the honest
  * status quo and never a wrong symbol.
  *
- * 23,954 keys, covering 88,490 published rows across 23,447 plans
- * reaching 29,785,278 participants. Swaps 0, losses 0: a key is written only
+ * 23,955 keys, covering 88,478 published rows across 23,448 plans
+ * reaching 29,787,297 participants. Swaps 0, losses 0: a key is written only
  * where the page's chain returns nothing AND the row carries no `f.tk`.
  */
 const SEC_TICKERS = {
@@ -1711,6 +1711,7 @@ const SEC_TICKERS = {
 "\u0000American Funds 2015 Target Date Retirement Income Fund Class R2E":"RBEJX",
 "\u0000American Funds 2015 Target Date Retirement Income Fund-R2":"RBJTX",
 "\u0000American Funds 2015 Target Date Retirement Income R5E":"RHBTX",
+"\u0000American Funds 2015 Target Date RetirementIncome Fund Class R6":"RFJTX",
 "\u0000American Funds 2015 Target Date Rtm In R6":"RFJTX",
 "\u0000American Funds 2015 Tgt Date Ret Inc R2":"RBJTX",
 "\u0000American Funds 2015 Tgt Date Ret Inc R2E":"RBEJX",
@@ -4576,7 +4577,6 @@ const SEC_TICKERS = {
 "\u0000Fid Frdm Bld 2055 K6":"FHDDX",
 "\u0000Fid Frdm Bld 2060 K6":"FHCDX",
 "\u0000Fid Frdm Bld 2065 K6":"FFBQX",
-"\u0000Fid Frdm Idx Ret Prm":"FAPIX",
 "\u0000Fid Frdm In Ret Prii":"FATQX",
 "\u0000Fid Frdm Index 2045 Inv":"FIOFX",
 "\u0000Fid Frdm Index 2055 Inv":"FDEWX",
@@ -7946,6 +7946,7 @@ const SEC_TICKERS = {
 "\u0000PIMCO Real Return Inst'l Fund":"PRRIX",
 "\u0000PIMCO Real Return Institutional Class Fund 4,853 shares":"PRRIX",
 "\u0000PIMCO Real Return Institutional Fund Mutual Fund we":"PRRIX",
+"\u0000PIMCO Real Return Instl Fund ae":"PRRIX",
 "\u0000PIMCO Real Return Instl Mutual Funds":"PRRIX",
 "\u0000PIMCO Short-Term Inst'l Fund":"PTSHX",
 "\u0000PIMCO Stocks Plus Inst'l":"PSTKX",
