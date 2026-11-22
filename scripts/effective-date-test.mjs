@@ -88,17 +88,22 @@ const f0 = (n) => n.toLocaleString();
  * ------------------------------------------------------------------------- */
 const JAN25 = planYearEnd("2025-01", "");
 const MEMBERS = {
-  "national-electrical": { ack: "20260730144050NAL0023443601001", arm: "roth", ppl: 30463 },
+  /* `withdrawn: true` means THIS SHIP took the flag off, so the member is
+   * correctly ABSENT from the published-yes population now. It is not a
+   * weakening: a withdrawn member that reappears there fails, and a member
+   * NOT marked withdrawn that disappears still fails. See the note at the
+   * population check. */
+  "national-electrical": { ack: "20260730144050NAL0023443601001", arm: "roth", ppl: 30463, withdrawn: true },
   "simpson": { ack: "20260706123851NAL0015558627001", arm: "afterTax", ppl: 3516 },
   "asphalt-materials": { ack: "20261001143444NAL0020761329001", arm: "roth", ppl: 3100 },
-  "ultra-clean": { ack: "20261015150738NAL0007917105001", arm: "afterTax", ppl: 2666 },
+  "ultra-clean": { ack: "20261015150738NAL0007917105001", arm: "afterTax", ppl: 2666, withdrawn: true },
   "irhythm": { ack: "20261007125342NAL0015420419001", arm: "afterTax", ppl: 2485 },
   "arcadium": { ack: "20260728112718NAL0017361811001", arm: "afterTax", ppl: 482 },
   "arcturus": { ack: "20261014150604NAL0003095363001", arm: "afterTax", ppl: 226 },
   /* the catch-up class, which the DATE test cannot reach: no post-year date in
    * the quote, so only `catchupMandateRefusal` can withdraw these */
-  "american-eagle": { ack: "20261015081124NAL0008046673001", arm: "roth", ppl: 22309 },
-  "mavis-tire": { ack: "20261015060126NAL0006780177001", arm: "roth", ppl: 14443 },
+  "american-eagle": { ack: "20261015081124NAL0008046673001", arm: "roth", ppl: 22309, withdrawn: true },
+  "mavis-tire": { ack: "20261015060126NAL0006780177001", arm: "roth", ppl: 14443, withdrawn: true },
   /* and the MIXED sentence the grant veto spares — one sentence that both
    * announces the mandate and grants Roth. v207 published it and the first
    * version of v208 withdrew it. */
@@ -333,11 +338,63 @@ const v208 = (await import(new URL("./lib-4i.mjs", import.meta.url).href)).extra
 const pop = await storePopulation();
 const cached = pop.filter((p) => read(p.ack));
 const sample = seededShuffle(cached, SEED).slice(0, SAMPLE);
-for (const id of Object.keys(MEMBERS)) {              /* the pins are forced in */
-  const p = pop.find((x) => x.ack === MEMBERS[id].ack);
-  if (!p) { fails.push(`member ${id} is not in the published-yes population — the store changed under this test`); continue; }
-  if (!read(p.ack)) { fails.push(`member ${id} has no cached text — run tax-flag-gate --download`); continue; }
-  if (!sample.some((x) => x.ack === p.ack)) sample.push(p);
+/* THE PINS ARE FORCED IN, AND A WITHDRAWN MEMBER IS NOT A MISSING ONE.
+ * This check used to require every member to be in the published-yes
+ * population. After v208 shipped, four members were no longer there BECAUSE
+ * v208 withdrew them — so the gate went red for the ship working, which is the
+ * failure shape this record names as teaching its reader to pass the gate
+ * flags. The repair is DIRECTIONAL rather than lenient: a `withdrawn` member
+ * must be ABSENT (reappearance fails), a plain member must be PRESENT
+ * (disappearance still fails), and either way the member stays in the judged
+ * sample, built from plans-all so it survives losing its feature flags. A
+ * member whose ack has left the universe entirely still fails. */
+const planByAck = new Map();
+{
+  const { loadPlans } = await lazy();
+  const d = loadPlans(path.join(ROOT, "plans-all.json"));
+  for (const r of d.rows) {
+    const ack = d.get(r, "ack");
+    if (ack) planByAck.set(ack, { ack, name: String(d.get(r, "sponsorName") || "").trim(),
+      ppl: +d.get(r, "partEOY") || +d.get(r, "participants") || 0,
+      pye: planYearEnd(d.get(r, "pyb"), d.get(r, "pye")),
+      roth: false, afterTax: false, rothText: "", afterTaxText: "" });
+  }
+  if (!planByAck.size) throw new Error("CONTROL FAILED: plans-all yielded no acks — this check is void");
+}
+/* The decision is a function so the control below can exercise it in all four
+ * combinations, rather than restating one member's status. */
+const memberVerdict = (withdrawn, present) =>
+  withdrawn && present ? "reappeared" : !withdrawn && !present ? "missing" : null;
+for (const id of Object.keys(MEMBERS)) {
+  const m = MEMBERS[id];
+  const p = pop.find((x) => x.ack === m.ack);
+  const v = memberVerdict(!!m.withdrawn, !!p);
+  if (v === "reappeared") {
+    fails.push(`member ${id} is marked withdrawn by this ship but is PUBLISHING a yes again — a regression, not a stale pin`);
+    continue;
+  }
+  if (v === "missing") {
+    fails.push(`member ${id} is not in the published-yes population and is not marked withdrawn — the store changed under this test`);
+    continue;
+  }
+  const rec = p || planByAck.get(m.ack);
+  if (!rec) { fails.push(`member ${id}'s ack is not in plans-all at all — the plan left the universe`); continue; }
+  if (!read(rec.ack)) { fails.push(`member ${id} has no cached text — run tax-flag-gate --download`); continue; }
+  if (!sample.some((x) => x.ack === rec.ack)) sample.push(rec);
+}
+{
+  /* The directional check must fail in BOTH directions or it is decorative, and
+   * it must PASS in both legitimate ones or it is a nuisance. All four, over the
+   * function the loop above actually calls. Verified by hand too, by flipping
+   * two real members and requiring the run to fail naming each. */
+  ok("control: a withdrawn member that is ABSENT passes", memberVerdict(true, false) === null);
+  ok("control: a plain member that is PRESENT passes", memberVerdict(false, true) === null);
+  ok("control: a withdrawn member that REAPPEARS fails", memberVerdict(true, true) === "reappeared");
+  ok("control: a plain member that DISAPPEARS fails", memberVerdict(false, false) === "missing");
+  const marked = Object.values(MEMBERS).filter((m) => m.withdrawn).length;
+  ok(`control: the mark reaches the data — ${marked} of ${Object.keys(MEMBERS).length} members are marked withdrawn`,
+    marked > 0 && marked < Object.keys(MEMBERS).length,
+    `${marked} marked — all or none would mean the distinction is untested on this fixture`);
 }
 console.log(`  ${f0(sample.length)} filings (${f0(cached.length)} of ${f0(pop.length)} published-yes plans are cached)`);
 const diffs = { roth: [], afterTax: [], rothCatchup: [] };
