@@ -289,6 +289,42 @@ const FEATURE_SPECIMENS = [
     "20260930073605NAL0011352403001", { roth: null }],
   ["v206 control: Whole Foods — a SECURE 2.0 catch-up mandate is not a Roth offering",
     "20260918110451NAL0012578674001", { roth: null }],
+  /* v209 — THE SPONSOR'S OWN NAME IS AN EMPLOYER-MONEY NOUN. The
+   * immediate-vesting scope gate asks whether a sentence covers employer money
+   * using a closed list of GENERIC nouns (employer / company / corporation /
+   * bank / partnership / association / non-elective / profit-sharing / plan
+   * sponsor), and a filer who writes the employer's actual NAME satisfies none
+   * of them. Boeing is the largest plan in the whole "attachment read, no
+   * vesting statement found" class and states its rule in one sentence under a
+   * `Vesting` heading. The class is dominated by universities, colleges,
+   * hospitals and schools, because an institution's employer noun IS its
+   * institution type and the gate's list holds only the commercial ones. */
+  ["v209: Boeing — \"Member contributions, Boeing's contributions … are immediately vested\"",
+    "20260825123431NAL0021797649001", { vesting: "Immediate" }, "The Boeing Co. And Consolidated Subsidiaries"],
+  ["v209: University of Rochester — \"…voluntary contributions, University contributions, and actual earnings\"",
+    "20260409045402NAL0015654096001", { vesting: "Immediate" }, "University Of Rochester"],
+  /* …AND THE THREE COUNTER-SPECIMENS, which are the reason this arm carries two
+   * gates rather than none. v204 is on this record for adding the positive
+   * specimen and not the negative one, and the first cut of THIS arm published
+   * a false Immediate on each of the first two.
+   *
+   * Lutheran states both halves in ONE sentence jointed by "however": the
+   * immediate clause covers the participant's own voluntary money and the
+   * sponsor-named money is behind one year of service. Ithaca states them in
+   * TWO sentences split by hire date, and the pre-2019 cohort's immediate
+   * sentence is true of a shrinking minority while everyone hired since faces
+   * a 1,000-hour-per-anniversary-year rule. Employee Owned Holdings is the
+   * ONLY filing in 56,056 cached texts where the sponsor's own name IS an
+   * employee-money word (`employee`), and its sentence — "immediately 100%
+   * vested in their employee and rollover contributions" — is exactly what the
+   * exclusion list exists to refuse; its real rule is the six-year graded
+   * schedule on employer money, which must survive. */
+  ["v209 control: Lutheran University Assoc. — \"however, are required to complete one year of service\" keeps its cliff",
+    "20261014134221NAL0007145728001", { vesting: "1-year cliff" }, "The Lutheran University Association, Inc."],
+  ["v209 control: Ithaca College — a pre-2019 HIRE COHORT is not the plan's rule",
+    "20260910080439NAL0004968161001", { vesting: null }, "Ithaca College"],
+  ["v209 control: Employee Owned Holdings — the sponsor's own name is an EMPLOYEE-money word",
+    "20261009094416NAL0035029843001", { vesting: "Graded schedule" }, "Employee Owned Holdings, Incorporated"],
 ];
 
 const SPECIMENS = [
@@ -665,7 +701,7 @@ for (const [label, ack, assets, expect] of SPECIMENS) {
   if (!ok) failed++;
 }
 
-for (const [label, ack, expect] of FEATURE_SPECIMENS) {
+for (const [label, ack, expect, sponsor] of FEATURE_SPECIMENS) {
   const url = `https://efast2-filings-public.s3.amazonaws.com/prd/${ack.slice(0, 4)}/${ack.slice(4, 6)}/${ack.slice(6, 8)}/${ack}.pdf`;
   const pdf = path.join(work, ack + ".pdf");
   let text = null;
@@ -677,7 +713,23 @@ for (const [label, ack, expect] of FEATURE_SPECIMENS) {
     } catch { await new Promise((r) => setTimeout(r, 3000 * (attempt + 1))); }
   }
   if (text === null) { console.log(`GATE SKIP  ${label}: specimen unreachable after retries`); continue; }
-  const ff = extractPlanFeatures(text) || {};
+  /* v209: THE GATE WAS CALLING THIS WITH ONE FEWER ARGUMENT THAN PRODUCTION
+   * DOES. `fetch-4i.mjs` calls
+   *   extractPlanFeatures(text, plan.sponsorName || plan.label || "", planYear)
+   * and this loop called `extractPlanFeatures(text)`, so every path that reads
+   * the sponsor's name was being measured with it empty — *measure through the
+   * function the caller calls, WITH THE ARGUMENT THE CALLER PASSES*, which is
+   * on this record at least six times. It surfaced as two v209 specimens
+   * failing here while passing in a harness that did pass the name.
+   *
+   * The name is carried in the specimen row rather than looked up, on purpose:
+   * this gate runs BEFORE build-data.mjs in the prep job, so a store lookup
+   * would read the PREVIOUS run's plans-all.json, and a specimen whose input
+   * depends on data the gate is meant to protect is not a pin. Specimens that
+   * declare no name keep passing "" and therefore keep their exact previous
+   * verdicts — this change adds an argument where a specimen asks for it and
+   * nowhere else. */
+  const ff = extractPlanFeatures(text, sponsor || "") || {};
   // a match specimen asserts the match label (and that its quote survives) —
   // the same loop, a different field
   if ("match" in expect) {

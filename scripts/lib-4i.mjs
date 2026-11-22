@@ -15,7 +15,7 @@ import { vestingQuoteOk, accelerationOnlyVesting } from "./lib-quote.mjs";
 import { futureEffectiveGrant, catchupMandateRefusal, planYearEnd } from "./lib-effective-date.mjs";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 208;
+export const PARSER_VERSION = 209;
 
 /* v207: THE QUOTE'S OWN WORDS CAN DENY WHAT THE FLAG ASSERTS, and 76 plans /
  * 175,656 readers were published that way — `afterTax: true` or `roth: true`
@@ -222,6 +222,107 @@ function cutTail(rows) {
   let v = 0;
   for (let i = ROW_CAP; i < rows.length; i++) v += rows[i].value || 0;
   return { n: rows.length - ROW_CAP, v };
+}
+
+/* v209 — THE SPONSOR'S OWN NAME IS AN EMPLOYER-MONEY NOUN.
+ *
+ * Corporate furniture that identifies no particular employer, so a sponsor
+ * token drawn from it would match any filing. Lifted verbatim out of
+ * `parseRows`' local `GENERIC` (which now references this Set, same tokens,
+ * same object) rather than retyped, because this project has paid twice for a
+ * construction that was reproduced from memory instead of shared.
+ */
+export const SPONSOR_GENERIC = new Set(["inc", "incorporated", "corp", "corporation", "company", "companies", "llc", "llp", "ltd", "group", "holdings", "holding", "the", "and", "trust", "master", "savings", "plan", "plans", "usa"]);
+
+/* …AND A SPONSOR NAME CAN CONTAIN AN EMPLOYEE-MONEY WORD, WHICH IS THE WHOLE
+ * HAZARD OF THIS MECHANISM. `Enbridge Employee Services, Inc.` yields the
+ * token `employee`, and then "immediately vested in their employee
+ * contributions" would read as a statement about EMPLOYER money and publish a
+ * false `Immediate` — the exact error the scope gate exists to prevent, let in
+ * through the back door. *A token added to a closed vocabulary multiplies with
+ * every token already in it.*
+ *
+ * DERIVED FROM THE LIVE SPONSOR NAMES, NOT FROM IMAGINATION. Measured over all
+ * 71,484 full-form plans: 193 plans / 288,738 readers carry one of these among
+ * their first three tokens, led by `employee` (65 plans / 108,543 readers),
+ * `supplemental` (1 / 43,977 — Board Of Trustees Of Supplemental Income Trust
+ * Fund), `employees` (39 / 40,825, e.g. Boeing Employees Credit Union, which is
+ * a DIFFERENT filer from The Boeing Co.) and `workers` (22 / 35,882). The cost
+ * of refusing them is that those plans cannot use this route; the cost of not
+ * refusing them is a wrong answer about whose money vests.
+ *
+ * NOTE WHAT IS DELIBERATELY *NOT* HERE: `safe`, `harbor`, `profit`, `sharing`,
+ * `discretionary`, `matching` and `nonelective` all appear in sponsor names too
+ * (41 plans / 32,480 readers for `harbor` alone) and every one of them makes a
+ * contribution phrase EMPLOYER money, which `employerMoney`'s own arms already
+ * accept. Excluding them would cost correct answers to buy nothing.
+ */
+export const SPONSOR_EMPLOYEE_WORD = new Set(["employee", "employees", "participant", "participants",
+  "member", "members", "voluntary", "elective", "deferral", "deferrals", "salary", "personal",
+  "individual", "worker", "workers", "staff", "roth", "supplemental", "mandatory", "pretax",
+  "aftertax", "rollover", "catchup"]);
+
+/**
+ * A pattern matching "<this sponsor's own name> contributions", or null when
+ * the sponsor name yields no usable token.
+ *
+ * WHY THIS IS NEEDED AT ALL. The immediate-vesting scope gate asks whether a
+ * sentence covers EMPLOYER money, and it asks with a closed list of generic
+ * nouns — matching / employer / company / corporation / bank / partnership /
+ * association / non-elective / profit-sharing / plan sponsor. A filer who
+ * writes the employer's actual NAME satisfies none of them:
+ *
+ *   Boeing (209,633 readers)      "Member contributions, BOEING'S CONTRIBUTIONS,
+ *                                  and earnings on those contributions are
+ *                                  immediately vested."
+ *   U. of Rochester (47,731)      "…their account balance, which includes
+ *                                  voluntary contributions, UNIVERSITY
+ *                                  CONTRIBUTIONS, and actual earnings…"
+ *   Vanderbilt (21,526)           "…their contributions and the UNIVERSITY'S
+ *                                  CONTRIBUTIONS plus actual earnings thereon."
+ *
+ * Every one of those plans vests employer money immediately, says so in one
+ * sentence under a `Vesting` heading, and showed the reader nothing. The class
+ * is dominated by universities, colleges, hospitals and schools, because an
+ * institution's employer noun IS its institution type and the gate's list
+ * holds only the commercial ones.
+ *
+ * It is keyed on THIS PLAN'S sponsor, which is what keeps it from being a
+ * widening of the gate: "University contributions" is admitted in a filing
+ * whose sponsor is a university and nowhere else. A word match, never a
+ * substring — v151 paid for that rule here already, where `national` was
+ * matching INTERnational.
+ */
+/* A sentence that does NOT state a plan-wide rule, so a sponsor name appearing
+ * somewhere inside it does not say whose money vests when. Two shapes, each
+ * measured on a filing that was READ:
+ *
+ *  TWO CLAIMS IN ONE SENTENCE — one immediate, one conditioned. The Lutheran
+ *    University Association (2,110 readers) joints its two halves with
+ *    "however", not "except", so the contrast vocabulary is as load-bearing
+ *    here as the service vocabulary. Full case at the call site.
+ *
+ *  A HIRE-DATE COHORT — "Participants who were hired PRIOR TO January 1, 2019
+ *    are immediately vested in the College's contributions" is TRUE and is not
+ *    the plan's rule. Ithaca College (3,698 readers) states in the very next
+ *    sentence that "Participants hired ON OR AFTER January 1, 2019 will be
+ *    100% vested in the College's contribution AFTER COMPLETION OF AT LEAST
+ *    1,000 HOURS EACH ANNIVERSARY YEAR", which after seven years is most of
+ *    the staff. `hireSplitLabel` would append "(varies by hire date per the
+ *    filing)" and that does not rescue it: the headline word the reader sees
+ *    is still "Immediate". Measured over all 260 gains, exactly TWO carry a
+ *    hire clause — Ithaca and Lutheran — and READING BOTH shows both must be
+ *    refused, so this arm costs 5,808 readers of answers that would have been
+ *    wrong and nothing that would have been right.
+ */
+export const SPONSOR_TWO_CLAIM = /\b(?:years?|months?)\s+of\s+(?:vesting |credited |continuous |eligibility )?(?:service|employment)\b|\bcomplet\w+|\banniversar\w+|\bvesting schedule\b|\bhowever\b|\bwhereas\b|\bexcept\b|\bother than\b|\bunless\b|\bprovided that\b|\bsubject to\b|\b(?:hired?|employed|enrolled)\b[^.]{0,60}?\b(?:before|after|on or after|on or before|prior to|or later|or earlier)\b/i;
+
+export function sponsorMoneyRe(sponsorName) {
+  const tk = String(sponsorName || "").toLowerCase().split(/[^a-z0-9]+/)
+    .filter((w) => w.length > 2 && !SPONSOR_GENERIC.has(w) && !SPONSOR_EMPLOYEE_WORD.has(w))
+    .slice(0, 3);
+  if (!tk.length) return null;
+  return new RegExp(tk.map((w) => `\\b${w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:'s|s'|\u2019s|s\u2019)?(?:\\s+\\w+){0,3}\\s+contributions?`).join("|"), "i");
 }
 
 // form/statement vocabulary that must never appear as a fund NAME in a
@@ -5330,7 +5431,7 @@ function parse4iPass(text, assetsEOY, sponsorName = "", codes = "", captionSeed 
   // Some filings itemize every security inside a separately managed account
   // or stock window. Those aren't investment choices — roll them into one
   // line. The sponsor's own stock IS a menu option and stays separate.
-  const GENERIC = new Set(["inc", "incorporated", "corp", "corporation", "company", "companies", "llc", "llp", "ltd", "group", "holdings", "holding", "the", "and", "trust", "master", "savings", "plan", "plans", "usa"]);
+  const GENERIC = SPONSOR_GENERIC;
   const spTokens = sponsorName.toLowerCase().split(/[^a-z0-9]+/).filter((w) => w.length > 2 && !GENERIC.has(w)).slice(0, 3);
   /* v151: a sponsor token matches a WORD, not a substring. `national` (First
    * National Bank) was matching Honeywell INTERnational and `red` (American
@@ -7857,7 +7958,61 @@ export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
         /(?:matching|employer|company|corporation|bank|partnership|association|non.?elective|profit.?sharing|plan sponsor|sponsor)(?:'s|s'|’s|s’)?(?:\s+\w+){0,3}\s+contributions?/i.test(s)
         || /(?:matching|employer|company|non.?elective|profit.?sharing|plan sponsor)(?:'s|s'|’s|s’)?\s+accounts?|company match/i.test(s)
         || /safe.?harbor(?:\s+\w+){0,2}\s+contributions?/i.test(s)
-        || /all (?:of (?:their|his|her) )?(?:plan )?accounts|all contribution sources/i.test(s);
+        || /all (?:of (?:their|his|her) )?(?:plan )?accounts|all contribution sources/i.test(s)
+        /* v209: …or the sentence names THIS PLAN'S OWN SPONSOR beside the word
+         * "contributions". See `sponsorMoneyRe`. Boeing (209,633 readers) files
+         * "Member contributions, Boeing's contributions, and earnings on those
+         * contributions are immediately vested" and showed the reader nothing,
+         * because "Boeing" is in none of the four arms above.
+         *
+         * GATED ON `IMMED`, WHICH IS NARROWER THAN THE GATE'S OWN QUESTION, AND
+         * THAT IS DELIBERATE — the same scoping v86 gave its widening twenty
+         * lines up: the change reaches only the population it was measured on.
+         * Measured both ways over 1,860 in-scope cached filings. UNGATED it
+         * gains the identical 145 labels / 449,895 readers with 0 label losses
+         * AND MOVES 21 QUOTES, twenty of them improvements (the Metropolitan
+         * Museum gains "100% vested in the Museum's contributions after
+         * completing two plan years and at least 1,000 hours of service",
+         * Deerfield Academy its real three-year cliff, Wesleyan an upgrade from
+         * a 1992 legacy sentence to the live schedule) — and ONE regression:
+         * Brown University (12,566 readers) gains a fragment of the auditor's
+         * §103(a)(3)(C) scope paragraph whose only vest word sits inside the
+         * PLAN'S OWN NAME, "…Defined Contribution Deferred VESTING Retirement
+         * Plan". That is the Vensure shape this record already names, and
+         * `vestingQuoteOk` SHOWS it, so a reader would get auditor boilerplate
+         * under the vesting heading. Gating on IMMED keeps the whole label gain
+         * and reaches no quote at all; the twenty quote improvements are a
+         * separate item that needs the plan-name case settled first, and a
+         * quote move does not touch the ledger in either direction.
+         *
+         * AND THE SECOND GATE IS NOT OPTIONAL — IT WAS EARNED BY THE ONE LABEL
+         * THE FIRST VERSION GOT WRONG, which is this gate's own failure mode.
+         * The Lutheran University Association (2,110 readers) files
+         *   "All employees who were hired January 1, 2022 or later are
+         *    IMMEDIATELY VESTED IN THEIR VOLUNTARY CONTRIBUTIONS, however, are
+         *    REQUIRED TO COMPLETE ONE YEAR OF SERVICE before becoming fully
+         *    vested in UNIVERSITY CONTRIBUTIONS."
+         * — a one-year cliff on employer money, correctly published as
+         * `1-year cliff` today. The immediate clause covers the participant's
+         * OWN money and the sponsor-named money sits in the other half of the
+         * same sentence, so the first version published `Immediate`: it told
+         * 2,110 people their employer money was theirs on day one. None of the
+         * existing guards reach it — the contrast word is "however" and not
+         * "except", there is no percentage, and `cliffFromShape` had merely
+         * HELD the cliff in `shapeCliff` rather than setting `out.vesting`, so
+         * winning the immediate loop discarded it silently.
+         *
+         * So a sentence that states a SERVICE condition or carries a CONTRAST
+         * marker is making two claims, and the sponsor's name does not say
+         * which half it belongs to. Refuse rather than infer. Measured: this
+         * costs 0 of the gains and removes exactly that one wrong label. The
+         * service test is deliberately the "N years/months OF SERVICE" form
+         * rather than a bare `\byears?\b` — the sentence window picks up the
+         * notes' running page header, and "For the Years Ended June 30, 2025"
+         * inside Rensselaer Polytechnic's window would otherwise refuse a
+         * clean one-clause statement (4,345 readers). */
+        || (IMMED.test(s) && !SPONSOR_TWO_CLAIM.test(s)
+            && (() => { const re = sponsorMoneyRe(sponsorName); return !!re && re.test(s); })());
       // "all contributions" is universal only when nothing narrows it to the
       // participant's own money ("all of their own contributions", "all
       // elective contributions" are employee-side statements)
@@ -7892,7 +8047,25 @@ export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
        * So: ANY other vesting sentence that puts employer money behind a
        * service condition means the plan is not uniformly immediate. */
       const remainderGraded = vestSentences.some((o) => o !== s
+        /* v209: THE WIDENING AND THE GUARD ARE ONE CHANGE. If the sponsor's own
+         * name counts as employer money when ADMITTING a sentence, it has to
+         * count when DETECTING the schedule that contradicts it — otherwise the
+         * widening is one-sided and buys a wrong answer with a right one. The
+         * Lutheran University Association (2,110 readers) is the measured case:
+         * its two sentences split by hire date, "…hired PRIOR TO January 1,
+         * 2022 are immediately vested in their voluntary contributions and any
+         * UNIVERSITY CONTRIBUTIONS" against "…hired January 1, 2022 OR LATER …
+         * are required to complete one year of service before becoming fully
+         * vested in UNIVERSITY CONTRIBUTIONS", and this list's employer nouns
+         * reach NEITHER of them — "employees" is not "employer". With the first
+         * admitted and the second invisible here, the plan published
+         * "Immediate (varies by hire date per the filing)" over a one-year
+         * cliff that every employee hired since 2022 actually faces. The
+         * disclosure suffix does not rescue it: a false Immediate is the worst
+         * thing this project can publish, and the base's plain `1-year cliff`
+         * is the current rule. */
         && (/(?:matching|employer|company|bank|partnership|association|sponsor|non.?elective|profit.?sharing)/i.test(o)
+          || (() => { const re = sponsorMoneyRe(sponsorName); return !!re && re.test(o); })()
           // "Vesting in THE REMAINDER of their accounts is based on full years
           // of credited service" names no employer at all — the portion the
           // immediate sentence did not cover is identified only by exclusion
