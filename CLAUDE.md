@@ -951,9 +951,33 @@ re-derive it, never bump it.
 
 ### Pre-registered for the next run that merges
 
-**NOTHING.** v208 was dispatched as run #881 and **DELIVERED**; the registration
-is settled below and must not be re-dispatched. `docs/accuracy-log.md`
-2026-11-22.
+**v209 IS WRITTEN, GATED AND NOT DISPATCHED.** `PARSER_VERSION = 209`; the
+sponsor's own name admitted as an employer-money noun in the immediate-vesting
+scope gate. Derived by running the metrics over a committed-base-vs-working-tree
+differential (`parser-gate` green at 96 specimens, `parse-replay --vs HEAD~1`
+0 menus lost, narrowing discharged at 4,559 excluded filings / 0 differences):
+
+| key | registered |
+|---|---|
+| `vesting` (trail, PLAN count) | 55,087 -> **55,345** (+258) |
+| `vesting_shown` | 77.06% -> **77.55%** |
+| `vesting_gap` | 14,584,491 -> **14,044,174** |
+| `vesting_withheld` | 10,750,603 -> **10,749,991** (3 plans / 612 readers move withheld -> published) |
+| ONE SCALAR | 79.06% -> **79.15%** |
+| `match`, `matchQuote`, `matchAny`, `roth`, `aftertax` | **UNCHANGED** — the write set is `out.vesting` + `out.vestingText`, asserted at 0 non-vesting field moves over the whole in-scope population |
+
+**EXACT over the 56,056 filings the instrument could judge (82.1% of full-form
+readers; the vesting-ABSENT bucket itself is 99.5% judged) and a FLOOR over the
+run — band +540,929 to ~+600,000 readers.** That is the v208 lesson stated as a
+band instead of carried as a whole.
+
+**SEPARATELY, and not claimed:** a `PARSER_VERSION` bump re-parses the universe,
+so `confident` / `lineups` / `entries` / `dl` / `overshoot` jitter by whatever
+the re-roll moves, and the six named acks (7 plans / 6,145 readers) have
+degraded on every re-parse since v207.
+
+**v208 was dispatched as run #881 and DELIVERED**; that registration is settled
+below and must not be re-dispatched. `docs/accuracy-log.md` 2026-11-22.
 
 **v208 DELIVERED — registered against delivered, and one key over-delivered.**
 
@@ -1015,6 +1039,29 @@ withdrew a false `roth: true` from 2,344 plans / 8,549,974 readers. Then
 (the Roth-beside-a-tax-word arm: `roth` 42,689 -> 44,624 plans, against a
 pre-registered centre of 44,627). *A number that only ever rises is not
 measuring anything.*
+
+**AND THE `match` / `vesting` ROWS OF THAT TABLE RANK THE WORK BACKWARDS — measured
+2026-11-22 by downloading every filing in both buckets (99.6% and 99.5% of their
+readers) and asking `lib-plannote.mjs` whether the public copy carries the
+audited notes at ALL before asking what they say.** Re-derive with
+`node scripts/notes-gap-census.mjs match|vesting|nofeatures`; never read these.
+
+| | match | vesting |
+|---|---|---|
+| parser-addressable (note present, vocabulary present) | 7.23M / 4,448 plans | **10.90M / 4,787** |
+| CEILING — note present and SILENT on the field | **9.41M / 5,049** | 17K / 15 |
+| SOURCE gap — no plan-description note in the public copy | 1.93M / 1,851 | 1.38M / 979 |
+| unreachable or OCR-only | 158K / 129 | 141K / 90 |
+
+**So `match` is HALF A CEILING and `vesting` is 88% a parser question, over
+populations drawn from the same filings.** An auditor describing a plan almost
+always states its vesting rule and very often never mentions a match, because a
+plan with no match has nothing to say. `match` tops the ledger by 6.3M readers
+and `vesting` is the larger ADDRESSABLE class by 3.7M. The same census closes
+the shared `no features extracted` bucket: **87.8% of its 2.14M readers are a
+source gap, a ceiling or unreachable, and its parser-addressable remainder is
+256,305 readers / 145 plans — below the floor.** `docs/accuracy-log.md`
+2026-11-22.
 
 Row-level fields (per-fund ticker, fee, return) are deliberately NOT in that
 scalar — they are rows, not plans — and are `tier-a-fees`'s.
