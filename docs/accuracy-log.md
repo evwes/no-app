@@ -9,133 +9,115 @@ prevention machinery is listed at the bottom.
 
 ## 2026-11-22 (v208, WRITTEN AND GATED, NOT YET RUN) — THE ROTH ARM COULD ONLY PUBLISH, NEVER REFUSE: TWO WRONG PUBLISHED CLAIMS, ONE SHAPE
 
-**WHAT WAS WRONG.** The primary roth arm was five `t.match()` alternatives
-joined by `||` — first hit in the document wins, chain stops. *A first-match arm
-cannot refuse a candidate*, so both defects sized today come out of ONE shape:
-the catch-up mandate (04:xxZ) and the future-effective amendment (03:xxZ). The
-three AFTER-TAX arms were already `matchAll` loops and needed only the question —
+**WHAT WAS WRONG.** The primary roth arm was five `t.match()` alternatives joined
+by `||` — first hit in the document wins, chain stops. *A first-match arm cannot
+refuse a candidate*, so both defects sized today come out of ONE shape: the
+catch-up mandate (04:xxZ) and the future-effective amendment (03:xxZ). The three
+AFTER-TAX arms were already `matchAll` loops and needed only the question —
 checked, not assumed.
 
 **THE CHANGE.** `extractPlanFeatures(text, sponsor, {pyb, pye})`, plumbed through
-`fetch-4i`; the roth arm becomes a SKIPPING CANDIDATE LOOP in its original
-alternative order; the predicates move to `lib-effective-date.mjs` so the
-sizer's `--selftest` gates the SHIPPED copy (proven by mutating it and watching
-that selftest refuse). It **fails OPEN** — no plan year, no date test, v207
-behaviour — which is also the limit: `parser-gate`, `roth-pairing-test` and
-`trace-filing` pass no plan year and cannot witness this change.
+`fetch-4i`; the roth arm becomes a SKIPPING CANDIDATE LOOP in its original order;
+the predicates move to `lib-effective-date.mjs` so the sizer's `--selftest` gates
+the SHIPPED copy (proven by mutating it and watching that selftest refuse). It
+**fails OPEN** — no plan year, no date test — which is also the limit:
+`parser-gate`, `roth-pairing-test` and `trace-filing` pass no plan year and
+cannot witness this change.
 
 **FOUR REFUSALS THE DESIGN DID NOT HAVE AND READING FOUND**, each a named member
-read in its own filing, each worth more than the design it corrected.
+read in its own filing.
  1. **A SUSPENSION PRESUPPOSES THE FEATURE** — Arcadium (482), whose freeze
     sentence was the only after-tax candidate the arms can reach.
-    `restrictsExisting` is a DEDICATED disjunct because `presupposes`'s grant
-    veto holds `includ\w*` and reads *"including after-tax"* as a grant: the
+    `restrictsExisting` is a DEDICATED disjunct because `presupposes`'s grant veto
+    holds `includ\w*` and reads *"including after-tax"* as a grant: the
     `add\w*`-matches-"Additionally" trap on another stem. Blast radius **1 plan**.
- 2. **A SENTENCE THAT BOTH MANDATES AND GRANTS MUST NOT WITHDRAW** — Aijj
-    (7,405), Loyola (8,752). *Ambiguity must not withdraw.* So the parser calls
+ 2. **A SENTENCE THAT BOTH MANDATES AND GRANTS MUST NOT WITHDRAW** — Aijj (7,405),
+    Loyola (8,752). *Ambiguity must not withdraw.* So the parser calls
     `catchupMandateRefusal` = mandate AND NOT a grant, and `grantRe` is FALSE on
     both v206 single-protection cases: ONE spelling in both arms.
- 3. **A DEADLINE IS NOT AN EFFECTIVE DATE, AND THAT REFUSAL LIVED IN ONE ANCHOR
-    — the same shape as the defect being repaired.** `EFFECTIVE_AFTER`'s aux list
-    refuses the SECURE 2.0 remedial-amendment deadline; `EFFECTIVE_NEAR` is a
-    bare vocabulary and anchors it. Arkansas FCU (478): a deadline welded to a
-    plain CURRENT Roth statement by a missing period before a heading. **The
-    distinction is the PREPOSITION, not the tense** — *"will be amended EFFECTIVE
-    <date>"* is a real future grant and is still refused. Blast radius 1 plan.
+ 3. **A DEADLINE IS NOT AN EFFECTIVE DATE, AND THAT REFUSAL LIVED IN ONE ANCHOR —
+    the same shape as the defect being repaired.** `EFFECTIVE_AFTER`'s aux list
+    refuses the SECURE 2.0 remedial-amendment deadline; `EFFECTIVE_NEAR` is a bare
+    vocabulary and anchors it. Arkansas FCU (478): a deadline welded to a plain
+    CURRENT Roth statement by a missing period before a heading. **The distinction
+    is the PREPOSITION, not the tense** — *"will be amended EFFECTIVE <date>"* is a
+    real future grant and is still refused. Blast radius 1 plan, and the case for
+    it is that a wrong WITHDRAWAL makes the page less honest.
  4. **THE TWO MEMBERS THE BRIEF NAMED FOR WITHDRAWAL MUST BE KEPT** — Asphalt
     Materials (3,100), Arcadium (482). Both filings read; the 04:xxZ entry lists
     them among a veto's *genuine errors*, not its targets. Pinned must-keep.
 
-**AND THE SIZING'S RECOVERY FIGURE WAS TOO OPTIMISTIC.** 554 plans / 886,544
-readers were labelled `latent`; the re-search recovers **299 quote moves**,
-because the refusal applies to EVERY candidate and a latent second cause is
-usually the SAME provision repeated. That entry predicted it in words
-(*"`latent` never means the yes is correct"*) and not in its number.
+**FOUR THINGS MEASURED AND REFUSED OR LEFT, so none is found again as new.**
+ - **A `requir\w+` WIDENING, REFUSED.** `required|requires|require|must|mandat\w+`
+   does not match the NOUN **"requirements"**, so the 04:xxZ headline (National
+   Electrical, 30,463) is a DATE finding. Widening reaches 89 plans / 303,113
+   readers, only 40 / 98,620 beyond the date test, and ≥7 plans / ~35,030 readers
+   must be KEPT — Howmet, Arconic, Alcoa all file *"who meet certain requirements
+   MAY ELECT to make … Roth catch-up contributions"*, a permission whose
+   requirement word is ELIGIBILITY.
+ - **THE GRANT VETO'S OWN COST, LEFT.** It spares 39 mandate quotes / 60,340
+   readers, 14 / 29,090 of which survive entirely. All 14 read: ~9 correctly
+   spared (a real grant, or one dated IN-YEAR — Greer's January 2025, Futamura's
+   November 2025), 4 wrongly, Loyola largest. **~10,500 readers of UNFIXED
+   residual, in the conservative direction — v207 published the same claim.**
+ - **THE 299 RECOVERED QUOTES ARE NOT ALL CORRECT.** 14 read: two textbook
+   recoveries, two weaker than what they replaced (FGS-WI lands on a ROLLOVER
+   sentence — the primary arm has no `ROLL_IN` veto; Center for Strategic refers
+   back to *"the effective date"* that was skipped). ~43 plans if the rate holds.
+ - **PORTING THE v206 ARM'S `ROLL_IN`/`NOT_IN` VETOES TO THE PRIMARY ARM IS
+   REFUTED** — 4,895 plans / **7,696,157 readers** trip one, and the top fifteen
+   read as correct yeses (Starbucks 314,112 *"contributions (pre-tax, Roth, and/or
+   rollover)"*, Ulta, Abbott, LabCorp, Cox, Novant): they STATE Roth and merely
+   name a rollover beside it. Those vetoes belong to the v206 arm's ADJACENCY
+   standard. *A guard right for one arm is not right for its neighbour.*
 
-**THE GRANT VETO'S OWN COST AND THE GAIN IT DOES NOT CREATE, both measured
-rather than argued.** It spares 39 mandate quotes / 60,340 readers, of which 14
-/ 29,090 survive entirely (the date test cannot reach them either). Reading all
-14: about nine are CORRECTLY spared — a real grant with no date, or one dated
-IN-YEAR (Greer's *"the January 1, **2025** … document added Roth elective
-deferrals"*, Futamura's November 2025) — and four are wrongly spared, Loyola
-(8,752) the largest, **~10,500 readers of UNFIXED residual, in the conservative
-direction: v207 published the same claim, so nothing regresses.** And the gain
-this could create is **ZERO by enumeration, not by sampling**: the only promotion
-mechanism is the v206 arm's catch-up test gaining the veto, `tax-flag-gate`'s
-population is published-yes plans and is blind to it, and a text screen for the
-exact sentence shape over all **45,616 cached filings** finds 7 candidates — all
-7 already publish roth under v207 AND v208. A direct draw of the blind class
-(20,600 plans / 28.0M readers, 89 cached) also finds 0. *A guard that withdraws
-an assertion can also PROMOTE one, and the harness that would judge the ship
-cannot see that direction at all.*
+**COST.** `roth` 44,551 → 43,668, `aftertax` 4,306 → 4,203, **865 plans /
+1,004,136 readers leave the published set**, `contributions_shown` 66.96% →
+66.13%, scalar 79.25% → 79.07%. **The score goes DOWN and the gap UP, and that is
+accuracy — the fourth time on this record.**
 
-**A GAP IN THE SHIPPED PREDICATE.** `required|requires|require|must|mandat\w+`
-does not match the NOUN **"requirements"**, so the 04:xxZ headline (National
-Electrical, 30,463) is a DATE finding, not a catch-up one. A `requir\w+` widening
-was measured and **REFUSED**: 89 plans / 303,113 readers reached, only 40 /
-98,620 beyond the date test, and ≥7 plans / ~35,030 readers must be KEPT — Howmet,
-Arconic, Alcoa all file *"who meet certain requirements MAY ELECT to make … Roth
-catch-up contributions"*, a permission whose requirement word is ELIGIBILITY.
-
-**AND THE 299 RECOVERED QUOTES ARE NOT ALL CORRECT EITHER — the 14 in the
-verdict run's sample were read.** Two are textbook recoveries (The Delong Co,
-Phillips Pet Food: the arm skips a mandate and lands on *"Participants may
-designate … deferral contributions as after-tax contributions into a Roth
-account"*). Two are weaker than what they replaced: FGS-WI's new quote is a
-ROLLOVER sentence (the primary arm has no `ROLL_IN` veto — only the v206 arm
-does), and Center for Strategic's refers back to *"the effective date"* of the
-very amendment that was skipped. So ~2 of 14 keep a flag on evidence pointing at
-the future grant — in the direction of keeping v207's claim, and ~43 plans if
-the rate holds over all 299. Measured, named, not repaired.
-
-**COST AND EVIDENCE.** `roth` 44,551 → 43,668, `aftertax` 4,306 → 4,203, **865
-plans / 1,004,136 readers leave the published set**, `contributions_shown` 66.96%
-→ 66.13%, scalar 79.25% → 79.07%. **The score goes DOWN and the gap UP, and that
-is accuracy — the third time on this record.** **56 unique withdrawals drawn
+**EVIDENCE.** `tax-flag-gate --all`, 45,527 filings / 42,458 judged arm-flags,
+exit 0: HELD **41,173 / 71,157,293 readers**, QUOTE MOVED 299, LOST—expected 986,
+**LOST—UNEXPECTED 0** (which discharges the store-side narrowing over the whole
+population rather than by argument), **GAINED 1**, control 87.6%, 5,793 plans /
+7,180,042 readers UNTESTED, **13 fixtures held**. **56 unique withdrawals drawn
 uniformly at three seeds and READ: 55 correct, 1 wrong (Arkansas, fixed), 0
-remaining known-wrong**; Wilson 95% upper bound ~6%. Closest surviving call is
-SMBC Manubank (1,180), resolved for the withdrawal because *a plan does not amend
-to allow what it already allows*.
+remaining known-wrong**; Wilson 95% upper bound ~6%. Closest surviving call, SMBC
+Manubank (1,180), resolves for the withdrawal because *a plan does not amend to
+allow what it already allows*. `parse-replay --vs 3c0a6d2d`: **0 menus lost, 0
+gained, 0 rows moved, 12 pins held, control 2,430/2,430.** A GAIN is invisible to
+the gate on plans publishing NEITHER arm (20,600 plans / 28.0M readers, now
+PRINTED by the gate every run); the only promotion mechanism was enumerated over
+all 45,616 cached filings — 7 candidates, all 7 already publishing — so 0.
 
-**THE GATE'S VERDICT, two strata over 2,409 filings / 2,358 judged arm-flags:**
-HELD 2,292 / 30,459,095 readers, QUOTE MOVED 14, **LOST—expected 52, LOST—
-UNEXPECTED 0, GAINED 0**, control 88.9% (inside the measured 86-90% band), and
-**13 fixtures held** — every `must-withdraw` pin withdrawn and every `must-keep`
-pin kept, including the two the brief had named for withdrawal. Exit 0.
-
-**AND A FOURTH INSTANCE OF THIS SHAPE WAS LOOKED FOR AND REFUTED BY READING
-ITS OWN MEMBERS — do not port these vetoes.** The v206 arm carries `ROLL_IN`,
-`NOT_IN`, a Roth-IRA veto and a money-going-IN requirement, measured as jointly
-load-bearing for Amazon's 1,428,999 readers; the PRIMARY arm carries none of
-them. 4,895 plans / **7,696,157 readers** publish a roth quote that trips one.
-The top fifteen were read and the framing is WRONG: Starbucks (314,112)
-*"credited with their contributions (pre-tax, Roth, and/or rollover)"*, Ulta
-(79,798) *"Employee rollover contributions and Roth contributions are also
-permitted"*, Abbott, LabCorp, Cox, Novant — every one states Roth contributions
-and merely NAMES a rollover beside them. The vetoes belong to the v206 arm's
-weaker evidence standard, which infers from mere ADJACENCY; the primary arm
-already requires a contribution word near "roth", so a rollover mention is
-harmless there. Porting them would withdraw ~7.7M readers of correct yeses.
-*A guard right for one arm is not right for its neighbour.* The one residue
-worth a number: 321 plans / 829,642 readers whose quote has NO money-going-IN
-word at all (Delta, State Farm, GM — withdrawal and vesting sentences that
-PRESUPPOSE Roth). That is a quote-QUALITY question, not a flag defect.
+**AND THE ONE GAIN IS CORRECT, AND IS A DEFECT I DID NOT SET OUT TO FIX.** EP
+Energy Global (320) states *"Participants may contribute in any combination of
+pre-tax, after-tax and Roth contributions"* and, separately, *"effective January
+1, 2024, … the after-tax contribution was removed"* — against a year ending
+2023-12. v207's arm 1 matched only the REMOVAL sentence (the real statement reads
+"after-tax and Roth contributions", which the adjacency arm cannot see), set the
+flag, gated arms 2-3 out, and was then withdrawn by the removal veto — publishing
+NO after-tax for a year in which it existed. v208 skips the removal sentence, so
+arm 3 finds the genuine statement. **A removal effective AFTER the year end means
+the feature existed in the year reported.** ***So the predicate's NAME is narrower
+than what it does*** — `futureEffectiveGrant` also fires on a future-effective
+REMOVAL, and a reader reasoning from the name would get this case backwards.
+Residual: where no other statement exists the answer stays v207's wrong no.
 
 **WHAT PREVENTS IT.** `scripts/effective-date-test.mjs`: the sizer's selftest at
-its source, `planYearEnd`, the catch-up discriminator, both new refusals,
-SILENCE, a BYTE-IDENTICAL corpus equivalence (afterTax identical; roth identical
-except a catch-up quote), and **eight mutations each breaking a NAMED member**
-behind a base check that the tree equals HEAD — which caught it mutating stale
-code. `tax-flag-gate.mjs` carries each plan's `pyb`/`pye` into BOTH extractors
-(*a gate calling a two-argument function prints a perfect, meaningless zero*) and
-gained `--dump`; ten fixtures under a new `must-withdraw` role that FAILS rather
-than notes. `roth-pairing-test.mjs` copies lib-4i's whole graph DERIVED from the
-source — it went ERR_MODULE_NOT_FOUND the moment lib-4i gained an import.
-`gate-coverage` found `lib-effective-date.mjs` behind SEVEN blind-spot gates and
-the new test as an ORPHAN; both wired, CI runs `--quick`, imports LAZY so the
-trigger is not widened to files this gate cannot judge.
-`parse-replay --vs 3c0a6d2d`: **0 menus lost, 0 gained, 0 rows moved, 12 pins
-held, control 2,430/2,430.**
+its source, `planYearEnd`, the catch-up discriminator, both new refusals, SILENCE,
+a BYTE-IDENTICAL corpus equivalence (afterTax identical; roth identical except a
+catch-up quote), and **eight mutations each breaking a NAMED member** behind a
+base check that the tree equals HEAD — which caught it mutating stale code.
+`tax-flag-gate.mjs` carries each plan's `pyb`/`pye` into BOTH extractors (*a gate
+calling a two-argument function prints a perfect, meaningless zero*), gained
+`--dump`, and now PRINTS the population it cannot see — whose first counter read
+0, in the direction that hides the limitation. Ten new fixtures under a
+`must-withdraw` role that FAILS rather than notes. `roth-pairing-test.mjs` copies
+lib-4i's whole graph DERIVED from the source — it went ERR_MODULE_NOT_FOUND the
+moment lib-4i gained an import. `gate-coverage` found `lib-effective-date.mjs`
+behind SEVEN blind-spot gates and the new test as an ORPHAN; both wired, CI runs
+`--quick`, imports LAZY so the trigger is not widened to files it cannot judge.
 
 ---
 
