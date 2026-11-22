@@ -7,6 +7,60 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-22 (1x:xxZ) — THE MATCH GAP IS HALF A CEILING, THE VESTING GAP IS 88% OURS, AND THREE OF MY OWN SCREENS WERE CONTAMINATED
+
+**WHAT WAS WRONG.** The ledger's largest line, `match absent: attachment read,
+no match statement found` (18,726,480 readers), read as a description of the
+filing and was a description of US — the same defect as the custodian cell's
+refuted 9.45M a fortnight ago, in the same file. Measured by downloading every
+filing in the three affected buckets (99.6%, 99.5% and 98.1% of their readers)
+and asking `lib-plannote.mjs` whether the public copy carries the audited notes
+at ALL before asking what they say:
+
+| | match | vesting | no-features (shared) |
+|---|---|---|---|
+| parser-addressable | 7.23M / 4,448 | **10.90M / 4,787** | 256K / 145 |
+| CEILING, notes silent on the field | **9.41M / 5,049** | 17K / 15 | — |
+| SOURCE gap, no plan-description note | 1.93M / 1,851 | 1.38M / 979 | **1.83M / 4,736** |
+| unreachable or OCR-only | 158K / 129 | 141K / 90 | 44K / 111 |
+
+**`match` is HALF A CEILING and `vesting` is 88% a parser question, over
+populations drawn from the same filings** — so "the audited notes are the only
+source" is true of both and says nothing about which a parser pass can move. An
+auditor describing a plan almost always states its vesting rule and very often
+never mentions a match, because a plan with no match has nothing to say. The
+shared no-features bucket, briefed as the sharper target because one cause
+serves both fields, is **87.8% not parser work**; its addressable remainder is
+below the reader floor.
+
+**THE CHANGE.** `scripts/lib-plannote.mjs` + `plannote-test.mjs` (13 committed
+verbatim fixtures, every arm's single-protection case, two load-bearing
+mutants), `scripts/notes-gap-census.mjs` as the committed derivation, and the
+three reason strings in `lib-ledger.mjs` now naming their measured splits. **The
+STATE stays `absent`:** reclassifying a ceiling half as `impossible` raises
+`shown` by shrinking its denominator, which is a change to the scoreboard the
+loop steers by and the owner's call.
+
+**AND THREE OF MY OWN SCREENS WERE CONTAMINATED, each by the rule it was meant
+to respect.** (1) A first census keyed on the PHRASE "notes to the financial
+statements" anywhere in the text classified **Dollar General (193,089 readers)**
+as a parser candidate, because every §103(a)(3)(C) opinion contains it while the
+notes are absent. (2) A "two-column page" split of the match residue reported
+**2.23M readers / 1,354 plans**, and reading eight members refutes the label:
+Intermountain Health Care (87,660) is a single-column rate TABLE
+(1%→1%, 2%→2%, 3%→3%, 4%→3.5%, 5%+→4.0%), ConocoPhillips is the DROPPED
+rate-before-match arm, Amgen is "a contribution equal to amounts contributed by
+the participant", Qualcomm's "rate" belongs to its VESTING sentence, and only
+Goldman Sachs is a genuine splice. (3) A screen for that rate TABLE reported
+195 plans / 258,642 readers and all but one member is a graded VESTING table
+with a match sentence six lines above it — *a count keyed on a vocabulary
+measures the vocabulary*, met three times in one afternoon.
+**So the match residue's 2.33M is MIXED and UNSIZED, and no single cause may be
+quoted for it.** The named members are the record; the sizes are not.
+`scripts/notes-gap-census.mjs` is the part that is trustworthy.
+
+---
+
 ## 2026-11-22 (1x:xxZ) — v209: THE SCOPE GATE ASKS FOR AN EMPLOYER NOUN AND BOEING WRITES "BOEING'S CONTRIBUTIONS"
 
 **WHAT WAS WRONG.** `match` and `vesting` both come from the audited notes, and
