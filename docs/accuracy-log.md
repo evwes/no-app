@@ -7,6 +7,86 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-22 (v208, WRITTEN AND GATED, NOT YET RUN) — THE ROTH ARM COULD ONLY PUBLISH, NEVER REFUSE: TWO WRONG PUBLISHED CLAIMS, ONE SHAPE
+
+**WHAT WAS WRONG.** The primary roth arm was five `t.match()` alternatives
+joined by `||` — first hit in the document wins, chain stops. *A first-match arm
+cannot refuse a candidate*, so both defects sized today come out of ONE shape:
+the catch-up mandate (04:xxZ) and the future-effective amendment (03:xxZ). The
+three AFTER-TAX arms were already `matchAll` loops and needed only the question —
+checked, not assumed.
+
+**THE CHANGE.** `extractPlanFeatures(text, sponsor, {pyb, pye})`, plumbed through
+`fetch-4i`; the roth arm becomes a SKIPPING CANDIDATE LOOP in its original
+alternative order; the predicates move to `lib-effective-date.mjs` so the
+sizer's `--selftest` gates the SHIPPED copy (proven by mutating it and watching
+that selftest refuse). It **fails OPEN** — no plan year, no date test, v207
+behaviour — which is also the limit: `parser-gate`, `roth-pairing-test` and
+`trace-filing` pass no plan year and cannot witness this change.
+
+**FOUR REFUSALS THE DESIGN DID NOT HAVE AND READING FOUND**, each a named member
+read in its own filing, each worth more than the design it corrected.
+ 1. **A SUSPENSION PRESUPPOSES THE FEATURE** — Arcadium (482), whose freeze
+    sentence was the only after-tax candidate the arms can reach.
+    `restrictsExisting` is a DEDICATED disjunct because `presupposes`'s grant
+    veto holds `includ\w*` and reads *"including after-tax"* as a grant: the
+    `add\w*`-matches-"Additionally" trap on another stem. Blast radius **1 plan**.
+ 2. **A SENTENCE THAT BOTH MANDATES AND GRANTS MUST NOT WITHDRAW** — Aijj
+    (7,405), Loyola (8,752). *Ambiguity must not withdraw.* So the parser calls
+    `catchupMandateRefusal` = mandate AND NOT a grant, and `grantRe` is FALSE on
+    both v206 single-protection cases: ONE spelling in both arms.
+ 3. **A DEADLINE IS NOT AN EFFECTIVE DATE, AND THAT REFUSAL LIVED IN ONE ANCHOR
+    — the same shape as the defect being repaired.** `EFFECTIVE_AFTER`'s aux list
+    refuses the SECURE 2.0 remedial-amendment deadline; `EFFECTIVE_NEAR` is a
+    bare vocabulary and anchors it. Arkansas FCU (478): a deadline welded to a
+    plain CURRENT Roth statement by a missing period before a heading. **The
+    distinction is the PREPOSITION, not the tense** — *"will be amended EFFECTIVE
+    <date>"* is a real future grant and is still refused. Blast radius 1 plan.
+ 4. **THE TWO MEMBERS THE BRIEF NAMED FOR WITHDRAWAL MUST BE KEPT** — Asphalt
+    Materials (3,100), Arcadium (482). Both filings read; the 04:xxZ entry lists
+    them among a veto's *genuine errors*, not its targets. Pinned must-keep.
+
+**AND THE SIZING'S RECOVERY FIGURE WAS TOO OPTIMISTIC.** 554 plans / 886,544
+readers were labelled `latent`; the re-search recovers **299 quote moves**,
+because the refusal applies to EVERY candidate and a latent second cause is
+usually the SAME provision repeated. That entry predicted it in words
+(*"`latent` never means the yes is correct"*) and not in its number.
+
+**A GAP IN THE SHIPPED PREDICATE.** `required|requires|require|must|mandat\w+`
+does not match the NOUN **"requirements"**, so the 04:xxZ headline (National
+Electrical, 30,463) is a DATE finding, not a catch-up one. A `requir\w+` widening
+was measured and **REFUSED**: 89 plans / 303,113 readers reached, only 40 /
+98,620 beyond the date test, and ≥7 plans / ~35,030 readers must be KEPT — Howmet,
+Arconic, Alcoa all file *"who meet certain requirements MAY ELECT to make … Roth
+catch-up contributions"*, a permission whose requirement word is ELIGIBILITY.
+
+**COST AND EVIDENCE.** `roth` 44,551 → 43,668, `aftertax` 4,306 → 4,203, **865
+plans / 1,004,136 readers leave the published set**, `contributions_shown` 66.96%
+→ 66.13%, scalar 79.25% → 79.07%. **The score goes DOWN and the gap UP, and that
+is accuracy — the third time on this record.** **56 unique withdrawals drawn
+uniformly at three seeds and READ: 55 correct, 1 wrong (Arkansas, fixed), 0
+remaining known-wrong**; Wilson 95% upper bound ~6%. Closest surviving call is
+SMBC Manubank (1,180), resolved for the withdrawal because *a plan does not amend
+to allow what it already allows*.
+
+**WHAT PREVENTS IT.** `scripts/effective-date-test.mjs`: the sizer's selftest at
+its source, `planYearEnd`, the catch-up discriminator, both new refusals,
+SILENCE, a BYTE-IDENTICAL corpus equivalence (afterTax identical; roth identical
+except a catch-up quote), and **eight mutations each breaking a NAMED member**
+behind a base check that the tree equals HEAD — which caught it mutating stale
+code. `tax-flag-gate.mjs` carries each plan's `pyb`/`pye` into BOTH extractors
+(*a gate calling a two-argument function prints a perfect, meaningless zero*) and
+gained `--dump`; ten fixtures under a new `must-withdraw` role that FAILS rather
+than notes. `roth-pairing-test.mjs` copies lib-4i's whole graph DERIVED from the
+source — it went ERR_MODULE_NOT_FOUND the moment lib-4i gained an import.
+`gate-coverage` found `lib-effective-date.mjs` behind SEVEN blind-spot gates and
+the new test as an ORPHAN; both wired, CI runs `--quick`, imports LAZY so the
+trigger is not widened to files this gate cannot judge.
+`parse-replay --vs 3c0a6d2d`: **0 menus lost, 0 gained, 0 rows moved, 12 pins
+held, control 2,430/2,430.**
+
+---
+
 ## 2026-11-22 (04:xxZ) — THE §603 CATCH-UP MANDATE IS REFUSED IN ONE ROTH ARM AND WINS IN THE ARM ABOVE IT — 330 PLANS / 571,350 READERS
 
 **WHAT IS WRONG.** `CATCHUP_MANDATE` — "a sentence naming catch-up AND a

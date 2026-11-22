@@ -940,7 +940,35 @@ re-derive it, never bump it.
 
 ### Pre-registered for the next run that merges
 
-**NOTHING.** Every registration through 2026-11-05 was delivered and verified;
+**v208 — THE DATE TEST IN THE ROTH AND AFTER-TAX ARMS. Written, gated, committed
+with CI suppressed, NOT dispatched: the owner holds the single dispatch for this
+batch.** `docs/accuracy-log.md` 2026-11-22.
+
+| key | from | to | basis |
+|---|---|---|---|
+| `roth` | 44,551 | **43,668** (−883) | exact over the gate's judged population |
+| `aftertax` | 4,306 | **4,203** (−103) | same |
+| `contributions_shown` | 66.96% | **66.13%** | 865 plans / **1,004,136 readers** leave the published set |
+| `contributions_gap` | 39,613,795 | **40,617,931** | the same readers, the other way up |
+| ONE SCALAR | 79.25% | **79.07%** | 1,004,136 / 571,175,494 knowable cells |
+
+**THE SCORE GOES DOWN AND THE GAP UP, ON PURPOSE — the fourth time.** 685 plans
+/ 828,424 readers land in the 2K disjunction rather than going blank; 5 plans /
+3,247 readers also lose the mega-backdoor bit (`indexFlags` bit 8 needs
+`afterTax`). The withdrawal was read: **56 unique members drawn uniformly at
+three seeds, 55 correct, 1 wrong and fixed before commit.**
+
+**THE CHANGE'S WRITE SET IS `out.roth`, `out.rothText`, `out.afterTax`,
+`out.afterTaxText` AND NOTHING ELSE** — provable from the diff. **Stated
+SEPARATELY, because v207 registered this wrongly: a `PARSER_VERSION` bump
+re-parses the UNIVERSE and the re-roll moves what it moves.** Expect
+`confident`, `lineups`, `vesting`, `entries`, `dl` and `overshoot` to JITTER by
+the amounts the 2026-11-17 and 2026-11-21 re-roll entries record (v207: confident
+−6, lineups −5, vesting −1, dl +51). That is not this change and must not be
+attributed to it; it IS worth the `reparse-loss` triage, which named all six of
+v207's degraded acks and made them repairable in-session with `ONLY_ACKS_4I`.
+
+**Every registration through 2026-11-05 was delivered and verified;**
 the record of each is in `docs/closed-classes.md` and `docs/accuracy-log.md`.
 **The habit stays:** before dispatching a run, write down the coverage keys that
 must move, the band, and — explicitly — *nothing else moves*, derived by running
@@ -1088,9 +1116,24 @@ the publish gate applied before any reader figure, and an accuracy-log entry.
   acks** (7 plans / 6,145 readers), repaired in `1fd0e2c1` — see the re-roll
   entry in the gotchas, whose OCR framing that finding refutes.
   `docs/accuracy-log.md` 2026-11-21.
+- **WRITTEN AS v208 AND AWAITING THE OWNER'S DISPATCH, 2026-11-22 — the
+  future-effective amendment AND the catch-up mandate, which are ONE repair: a
+  first-match arm with no date test.** The roth arm became a skipping candidate
+  loop, the after-tax arms (already loops) gained the question, and
+  `scripts/lib-effective-date.mjs` holds the predicates the sizer's `--selftest`
+  gates. Registration is in the block above; evidence, the four
+  reading-found refusals and the measured `requir\w+` REFUSAL are in
+  `docs/accuracy-log.md` 2026-11-22. **Nothing here is left to do but dispatch
+  and verify.** The sizing below is kept because it is the record of what was
+  measured BEFORE the repair, and one of its numbers is now known to have been
+  optimistic — the 554-plan `latent` recovery is really **299 quote moves**,
+  since the refusal applies to EVERY candidate and a latent second cause is
+  usually the same provision repeated. *A `latent` verdict never meant the yes
+  was correct, which that entry said in words and not in its number.*
 - **A FUTURE-EFFECTIVE AMENDMENT READ AS A CURRENT FEATURE — SIZED 2026-11-20 at
-  ~780-1,260 plans / ~1.5-1.6M readers, NINE TIMES the negation class, and NOT
-  shipped. It is the largest open accuracy defect on this record.** After-tax is
+  ~780-1,260 plans / ~1.5-1.6M readers, NINE TIMES the negation class. REPAIRED
+  AS v208 (see directly above); this entry is now the PRE-repair measurement.**
+  After-tax is
   exact over all 4,349: **114 plans / 213,306 readers** where a subsequent-events
   or plan-amendment section is the SOLE cause and its effective date falls after
   the plan-year end; roth is sampled at 668-1,147 plans / ~1.36M.
