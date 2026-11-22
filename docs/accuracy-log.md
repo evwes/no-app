@@ -7,6 +7,39 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-22 (17:4xZ) — A GATE RED BECAUSE ITS SHIP WORKED, AND CI NEVER REACHED IT
+
+**WHAT WAS WRONG.** `effective-date-test.mjs` forced its 11 pinned members into
+the judged sample by finding each in the PUBLISHED-YES population, so a member
+that stops publishing a yes read as *"the store changed under this test"*.
+v208's entire purpose was to stop four of them publishing a yes, so the gate has
+been red since that ship landed — **for the ship succeeding**. It fails
+identically at `006ef459` in a clean worktree, so it was not v210's.
+
+**AND THE REASON IT WENT UNNOTICED IS A SECOND FINDING.** CI runs
+`effective-date-test --quick`, which exits before section 6, so **the red mode
+is the one only a session runs by hand.** A gate whose expensive half nothing
+schedules is a gate that goes stale silently; its `--quick` pass says so in its
+own output (*"prove nothing"*) and that line is the only warning there was.
+
+**THE FIX IS DIRECTIONAL, NOT LENIENT**, which is the part worth keeping. Each
+member carries `withdrawn: true` or not: a withdrawn member must be ABSENT and a
+plain member PRESENT. That catches one thing MORE than before — a withdrawn flag
+that comes BACK, which the old check could not see at all — and the sample record
+is built from `plans-all` so a member keeps being judged after losing its feature
+flags. *The repair for a pin the ship invalidated is to assert the post-ship
+truth, never to drop the pin.*
+
+**MY FIRST CONTROL WAS DECORATIVE AND ITS OWN OUTPUT SAID SO.** It probed one
+member's status, which restates the fixture rather than testing the rule.
+`memberVerdict(withdrawn, present)` is now asserted in all four combinations
+plus a check that the mark reaches the data (4 of 11 marked — all or none would
+leave the distinction untested), and the directionality was verified by hand by
+flipping two real members in opposite directions and requiring the full run to
+fail naming each.
+
+---
+
 ## 2026-11-22 (17:3xZ) — v209 DELIVERED: THE BAND HELD WHERE THE POINT DID NOT, AND ONE KEY MOVED THE WRONG WAY
 
 **WHAT WAS REGISTERED AND WHAT ARRIVED.** Run #884 landed `vesting` 55,088 ->
