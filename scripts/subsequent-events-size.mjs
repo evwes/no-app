@@ -70,7 +70,7 @@
  * Exit 1 if a pinned fixture is not reproduced: a count that omits its own
  * motivating case looks exactly like a count that includes it.
  */
-import { readFileSync, readdirSync } from "node:fs";
+import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadPlans } from "./lib-schema.mjs";
@@ -89,6 +89,16 @@ const ALL = has("--all");
  * 0–182 plans). `--arm afterTax` draws from the after-tax yeses alone. */
 const ARM = one("--arm", "either");
 if (!["roth", "afterTax", "either"].includes(ARM)) { console.error(`--arm must be roth|afterTax|either`); process.exit(2); }
+/* `--dump-dates <file>` writes ONE JSONL RECORD PER DATE found in the window the
+ * classifier actually read, with the prefix and suffix it actually saw and the
+ * verdict of each anchor test. It exists because the date vocabulary has to be
+ * ENUMERATED OVER THE FILINGS rather than guessed: this record's rule that a fix
+ * for one phrasing of a class is not a fix for the class, met here as a SIZING
+ * error — "On January 1, 2026, the Company amended the Plan to allow after-tax
+ * employee contributions" carries its amendment date BEFORE the verb, so a
+ * prefix-only anchor reads it as undated and the member lands in a quarantine
+ * bucket whose own name ("only the evaluation date") is false for it. */
+const DUMP = one("--dump-dates", "");
 
 /* ---------------------------------------------------------------------------
  * the population: plans whose OWN entry's features publish a yes
@@ -310,7 +320,10 @@ const EVAL_DATE = /\b(?:evaluat\w+|review\w+|through the date|available to be is
 const { extractPlanFeatures } = await import("./lib-4i.mjs");
 
 /* the fixtures, pinned BY ACK and asserted by ROLE */
-const FIX = JSON.parse(readFileSync(path.join(ROOT, "scripts/tax-flag-fixtures.json"), "utf8"));
+/* the same lever `tax-flag-gate.mjs` carries, for the same reason: a pin whose
+ * failure path has never been exercised is decorative, and this one's HAD not
+ * been — see the `must-stay-withdrawn` check below. */
+const FIX = JSON.parse(readFileSync(process.env.TAX_FLAG_FIXTURES || path.join(ROOT, "scripts/tax-flag-fixtures.json"), "utf8"));
 const fixByAck = new Map(FIX.cases.map((c) => [c.ack, c]));
 
 /* TWO STRATA, AND THEY MUST NOT BE POOLED. The head is the top plans by
@@ -383,6 +396,7 @@ function mk() {
 const CATCHUP = (s) => /catch-? ?up/i.test(String(s || ""));
 
 let processed = 0;
+const dumpLines = [];
 for (const p of chosen) {
   const text = read(p.ack);
   if (!text) { R.noText.push(p); continue; }
@@ -458,20 +472,40 @@ for (const p of chosen) {
       eff: eff.map((x) => x.raw), inYear: inYear.map((x) => x.raw), catchup: CATCHUP(quote),
       stillAhead, tier, heads: spans.map((s) => s.text) };
     const neg = denies(arm === "roth" ? p.rothText : p.afterTaxText);
+    let bucket;
     if (causal) {
-      if (eff.length) A.causalFuture.push(rec);
-      else if (inYear.length) A.causalInYear.push(rec);
-      else if (future.length) A.causalUnanchored.push(rec);   /* a future date, but only the evaluation date */
-      else A.causalUndated.push(rec);
+      if (eff.length) { bucket = "causalFuture"; A.causalFuture.push(rec); }
+      else if (inYear.length) { bucket = "causalInYear"; A.causalInYear.push(rec); }
+      else if (future.length) { bucket = "causalUnanchored"; A.causalUnanchored.push(rec); }   /* a future date, but only the evaluation date */
+      else { bucket = "causalUndated"; A.causalUndated.push(rec); }
     } else if (eff.length) {
+      bucket = "latentFuture";
       A.latentFuture.push(rec);
       if (neg) A.denialAndLatentFuture.push(rec);
-    } else A.latentOther.push(rec);
+    } else { bucket = "latentOther"; A.latentOther.push(rec); }
     if (causal && eff.length && neg) A.denialAndCausalFuture.push(rec);
+    if (DUMP) {
+      /* every date the classifier saw, with the two contexts it judged it on.
+       * A record is written even when the window held NO date, so the
+       * "undated" population is enumerable rather than inferred from absence. */
+      const base = { ack: p.ack, ppl: p.ppl, name: p.name, arm, bucket, tier, pyeY: p.pyeY, pyeM: p.pyeM, quote: quote.slice(0, 200) };
+      if (!dts.length) dumpLines.push(JSON.stringify({ ...base, date: null }));
+      for (const x of dts) {
+        const pre = window.slice(Math.max(0, x.idx - 90), x.idx);
+        const suf = window.slice(x.idx + x.raw.length, x.idx + x.raw.length + 90);
+        dumpLines.push(JSON.stringify({ ...base, date: x.raw, bareYear: !!x.bareYear,
+          future: afterPYE(x, p), anchoredPre: EFFECTIVE_NEAR.test(pre), evalPre: EVAL_DATE.test(pre),
+          pre: pre.replace(/\s+/g, " "), suf: suf.replace(/\s+/g, " ") }));
+      }
+    }
   }
   if (processed % 200 === 0) process.stdout.write(`\r  parsed ${processed}/${chosen.length}`);
 }
 console.log(`\n`);
+if (DUMP) {
+  writeFileSync(DUMP, dumpLines.join("\n") + "\n");
+  console.log(`date dump: ${dumpLines.length} records -> ${DUMP}`);
+}
 
 /* ---------------------------------------------------------------------------
  * the pins — THROW on a miss, before any number is believed
@@ -496,7 +530,14 @@ for (const c of FIX.cases) {
    * check that is habitually red teaches its reader to ignore it. */
   const withdrawnArms = ARMS.filter((a) => (c.expect[a] || []).includes("must-stay-withdrawn"));
   if (withdrawnArms.length) {
-    const stillPublished = withdrawnArms.filter((a) => p && p.features && p.features[a] === true);
+    /* `p[a]`, NOT `p.features[a]`: a population row carries the arm flags
+     * directly (`roth`/`afterTax`, built above from `e.features`) and has no
+     * `features` key at all, so the original spelling was undefined on every
+     * row and the regression pin COULD NOT FAIL — the one thing in the repo
+     * guarding v207 against being undone was decorative. Shown failing by
+     * name with `TAX_FLAG_FIXTURES` pointed at a copy that declares a
+     * still-published arm must-stay-withdrawn. */
+    const stillPublished = withdrawnArms.filter((a) => p && p[a] === true);
     if (stillPublished.length) {
       fails.push(`${c.id}: ${stillPublished.join("/")} is PUBLISHED again — v207 withdrew it and something has undone that. This is a REGRESSION, not a stale pin.`);
     } else {

@@ -7,6 +7,49 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-22 (02:xxZ) — THE ONE GUARD PROTECTING v207's WITHDRAWAL ANNOUNCED "pin holds" ON A PLAN THAT PUBLISHES THE FLAG RIGHT NOW
+
+**WHAT WAS WRONG.** `subsequent-events-size.mjs`'s `must-stay-withdrawn` pin —
+the only thing in the repo asserting that v207's withdrawn after-tax/Roth yeses
+stay withdrawn — read `withdrawnArms.filter((a) => p && p.features && p.features[a] === true)`.
+A population row is built by `pop.push({ ack, pyeY, ppl, name, roth, afterTax, rothText, afterTaxText })`
+and **has no `features` key at all**, so `p.features` is `undefined` on every
+row, the conjunction short-circuits, `stillPublished` is empty by construction,
+and the pin took its `else` branch — printing `pin holds` — whatever the store
+said. Not a wrong threshold: a check that could not fail.
+
+**WHY NO COUNT COULD SEE IT.** The pin is green when it holds and green when it
+is inert, and on a healthy store those are the same output. The defect is
+visible only by asking the pin to judge a case it must reject.
+
+**THE CHANGE.** `p[a]`, which is the spelling the row actually carries, plus a
+`TAX_FLAG_FIXTURES` lever so the failure path can be exercised at all.
+
+**AND THE CLASS IS ONE SITE, CHECKED RATHER THAN ASSUMED.** `tax-flag-gate.mjs`
+carries the same lever and already spells it `inPop && inPop[a]` — correct. Two
+scripts written to the same design diverged in the one expression that decides
+whether a pin can fire, and the correct one is not the one the fix was found in.
+
+**WHAT PREVENTS IT.** A two-sided control, because *a pin that fires and a pin
+that is inert read the same green*: a mutant fixture declaring Target's Roth
+`must-stay-withdrawn` (Target publishes Roth today; its real fixture says
+`must-keep`) must make the fixed spelling exit 1 BY NAME, and must leave the old
+spelling at exit 0. It does both — the old spelling prints
+`fixture target roth: withdrawn by v207 and still withdrawn — pin holds` for a
+plan whose flag is live.
+
+**AND THE CONTROL'S OWN FIRST RUN WAS VOID, WHICH IS THE TRANSFERABLE PART.**
+The old-spelling copy was placed in the scratchpad, where the script's
+`ROOT = dirname(import.meta.url)/..` and its relative `./lib-schema.mjs` import
+do not resolve: it died with `ERR_MODULE_NOT_FOUND` and **exited 1**, which the
+control read as "the old pin fires too" and which would have retired a real
+finding as a non-defect. *A gate that fails for a reason that is not a loss
+teaches its reader to pass it flags* — met here inside the instrument built to
+test a gate. The control now asserts the copy LOADED and reached the pin block
+before it believes either exit status, and the copy lives in `scripts/`.
+
+---
+
 ## 2026-11-21 (21:xxZ) — THE DAILY YTD REFRESH HAS NEVER ONCE RUN AT 3 AM, SO AN ETF'S PAGE DATES A MID-SESSION READING WITH THAT DAY'S RECEIPT
 
 **WHAT WAS WRONG.** Two published entries changed VALUE under an UNCHANGED
