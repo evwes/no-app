@@ -988,9 +988,12 @@ re-parse** — the identical set and the identical 6,145 readers as v207, v208 a
 sees it. The repair is deliberately DEFERRED to after v210's merge: a full
 re-parse undoes it, so repairing before a dispatch is paying twice.
 
-**v210 IS IN FLIGHT** — `PARSER_VERSION` bumped to 210 in this commit, and the
-push trigger on `scripts/lib-4i.mjs` starts the run, so there is no dispatch to
-race it. The match is
+**v210 IS IN FLIGHT AS RUN #886** (17:34Z, on `325afdc8`). The
+`PARSER_VERSION` bump to 210 is what started it: the push trigger's path filter
+names `scripts/lib-4i.mjs`, so the push created the run and there was no
+dispatch to race it. *The cheapest way to avoid the duplicate-run hazard is to
+let the push be the trigger rather than adding a dispatch beside it.* The match
+is
 DISCRETIONARY in three spellings the shipped `disc` trigger's six do not read
 (`discMatchWidened`, `lib-4i.mjs`). Derived from a committed-base-vs-working-tree
 differential against `006ef459` over all 56,056 cached filings, narrowed by the

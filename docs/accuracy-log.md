@@ -7,6 +7,52 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-22 (17:3xZ) — v209 DELIVERED: THE BAND HELD WHERE THE POINT DID NOT, AND ONE KEY MOVED THE WRONG WAY
+
+**WHAT WAS REGISTERED AND WHAT ARRIVED.** Run #884 landed `vesting` 55,088 ->
+**55,366** against a registered 55,346, `vesting_gap` **−549,715** against a
+registered −540,317, `vesting_shown` **77.56%** against 77.55%, and the ONE
+SCALAR **79.15%** exactly. `match`, `matchQuote`, `matchAny`, `roth` and
+`aftertax` are byte-identical, which is what the write set (`out.vesting` +
+`out.vestingText`, verified by construction before dispatch) claimed.
+
+**THE BAND IS THE PART THAT EARNED ITS KEEP.** v208's lesson was that a
+registration is only as exact as the population its instrument could judge, so
+v209 carried +540,929 as a FLOOR with a band to ~600,000. Delivery came in at
++549,715 — past the point, inside the band. Third consecutive registration
+whose point estimate was a floor; the band is now the honest default shape and
+not a hedge.
+
+**AND ONE KEY MOVED OPPOSITE TO ITS REGISTRATION.** `vesting_withheld` was
+registered to FALL by 612 (3 plans moving withheld -> published) and ROSE by
+153. No arm in the write set can do that; `lineup_withheld` rose 5,994 on the
+same trail line, so it is the re-parse re-roll. *A key registered in one
+direction that moves in the other is a finding even when its magnitude is
+small* — rounding it off would have left the next registration believing the
+withheld column tracks the arm.
+
+**THE SIX ACKS DEGRADED FOR THE FOURTH CONSECUTIVE RE-PARSE** — identical set,
+identical 6,145 readers, five of six on `ds: "readfail"`, zero gained, and
+`mirror-gate`'s plan-keyed refusal still the only watcher that sees it
+(`confident −6` sits far inside the audit's −200 tolerance). **The repair was
+deliberately NOT applied before dispatching v210**: a full re-parse undoes it,
+so repairing first pays twice for one restoration. It is owed immediately after
+#886 merges, and the durable cure (a parse strictly WORSE than the stored one
+must not overwrite it) is still unbuilt.
+
+**AND "MAIN IS AHEAD" WAS SETTLED BY MEASUREMENT, NOT BY TIMING.** Cron run
+#885 re-ran the same universe on main at `pv` 208 while #884 ran on the branch.
+Over three key sets — plan keys from plans-all's own `.plans` array (115,641
+both sides), master trusts from mtias's `.trusts` (**511** both, not the
+wrapper-key 3 this record warns about), parsed acks from lineups-status's
+`.plans` (71,995 both) — main holds **0** keys the branch lacks, with a
+synthetic main-only key injected to prove the comparison could see one. Both
+wrapper keys were found the right way: the script guessed `.rows` and `.acks`
+and the throw named `.plans` both times. So the mirror adopts the BRANCH side;
+rebasing main in would have written a pv-208 store over a pv-209 one.
+
+---
+
 ## 2026-11-22 (2x:xxZ) — v210: THE MATCH IS DISCRETIONARY AND THE SIX SHIPPED SPELLINGS MISS IT — 1,305 PLANS / 2,126,472 READERS
 
 **WHAT WAS WRONG.** "Discretionary — set year to year" is not a consolation
