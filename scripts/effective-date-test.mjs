@@ -392,10 +392,26 @@ console.log(`\n--- 7/7 mutations: each must break a NAMED member ---`);
     ["drop presupposes (withdraws a TRUE flag from a DEGREE change)",
       [["lib-effective-date.mjs", "  if (presupposes(quote, arm)) return null;\n", ""]],
       ["irhythm"]],
+    /* THE DESIGN DECISION, AND THE FIRST SPELLING OF THIS MUTATION WAS
+     * DECORATIVE — the control said so by name, which is the only reason it is
+     * right now. Adding a terminal veto BESIDE the re-search withdraws nothing,
+     * because the re-search has already moved the quote onto a sentence the
+     * veto spares. The veto measured in `docs/accuracy-log.md` 2026-11-22
+     * (04:xxZ) is one that replaces the re-search, so the mutation must do
+     * BOTH: restore v207's first-match arm and then veto its quote. Asphalt
+     * Materials (3,100) is then withdrawn on "To update provisions related to
+     * 'Salary Redirection Contributions and Roth Contributions', effective
+     * January 1, 2026" — a correct yes destroyed, which is the 554 plans /
+     * 886,544 readers the re-search exists to recover, asserted on one of
+     * them rather than remembered. */
     ["REPLACE THE RE-SEARCH WITH A TERMINAL VETO — the design decision, asserted",
-      [["lib-4i.mjs", "    if (hit !== null) { out.roth = true; out.rothText = hit; break; }",
-        "    if (hit !== null) { out.roth = true; out.rothText = hit; break; }\n" +
-        "  }\n  if (out.roth && futureEffectiveGrant(out.rothText, PYE, \"roth\")) { out.roth = false; }\n  {"]],
+      [["lib-4i.mjs",
+        "      if (catchupMandateRefusal(s, \"roth\")) continue;\n      if (futureEffectiveGrant(s, PYE, \"roth\")) continue;\n      hit = s; break;",
+        "      hit = s; break;"],
+       ["lib-4i.mjs",
+        "    if (hit !== null) { out.roth = true; out.rothText = hit; break; }\n  }\n",
+        "    if (hit !== null) { out.roth = true; out.rothText = hit; break; }\n  }\n" +
+        "  if (out.roth && futureEffectiveGrant(out.rothText, PYE, \"roth\")) out.roth = false;\n"]],
       ["asphalt-materials"]],
   ];
   for (const [label, edits, expect] of MUTS) {
