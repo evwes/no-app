@@ -1,0 +1,170 @@
+{
+ "generated": "2026-11-22T14:38:37.171Z",
+ "note": "VERBATIM slices of real EFAST2 filings. Regenerate, never retype.",
+ "pages": [
+  {
+   "id": "microsoft-vesting-note",
+   "ack": "20260724135502NAL0012679475001",
+   "hasNote": true,
+   "arm": "numbered-description",
+   "sole": null,
+   "fired": [
+    "numbered-description"
+   ],
+   "why": "Microsoft (184,329 readers) — 'NOTE 1 — DESCRIPTION OF THE PLAN AND ACCOUNTING POLICIES', the heading whose EM DASH defeated the first separator class. Its vesting sentence is 'Participants are fully vested in Plan accounts at all times.'",
+   "text": "DUCTIONS Benefits paid to participants 4,846,584,058 Administrative expenses 6,116,277 Total deductions 4,852,700,335 NET INCREASE IN NET ASSETS AVAILABLE FOR BENEFITS 12,193,146,660 NET ASSETS AVAILABLE FOR BENEFITS Beginning of year 65,627,337,124 End of year $ 77,820,483,784 Refer to accompanying notes. 5 NOTES TO FINANCIAL STATEMENTS NOTE 1 — DESCRIPTION OF THE PLAN AND ACCOUNTING POLICIES Plan Description The Microsoft Corporation Savings Plus 401(k) Plan (the “Plan”), a defined contribution plan, is sponsored by Microsoft Corporation (the “Company” or “Microsoft”). Participating employers included in the Plan are Microsoft Corporation; MOL Corporation; Vexcel Corporation; Microsoft Online, Inc.; U"
+  },
+  {
+   "id": "costco-vesting-note",
+   "ack": "20260723165543NAL0014354289001",
+   "hasNote": true,
+   "arm": "boilerplate-general",
+   "sole": null,
+   "fired": [
+    "boilerplate-general",
+    "refer-to-document",
+    "numbered-description",
+    "sourced-heading"
+   ],
+   "why": "Costco (279,798) — plan-description note present; '(d) Vesting … employer contributions are 100% vested and nonforfeitable.'",
+   "text": " of year . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . $ 41,523,678 See accompanying notes to financial statements. 5 COSTCO 401(k) RETIREMENT PLAN Notes to Financial Statements December 31, 2025 and 2024 (1) Plan Description The following description of the Costco 401(k) Retirement Plan (the Plan) provides only general information. Participants should refer to the Plan document for a more complete description of the Plan. To participate in the Plan, an individual must be at least 18 years of age and an employee of Costco Wholesale Corporation (the Company or Costco) or certain subsidiaries. The Plan is a defined contribution plan for the benefit of eligible employ"
+  },
+  {
+   "id": "proletariat-plan-description",
+   "ack": "20260802102049NAL0023532819001",
+   "hasNote": true,
+   "arm": "boilerplate-general",
+   "sole": null,
+   "fired": [
+    "boilerplate-general",
+    "refer-to-document",
+    "numbered-description",
+    "sourced-heading"
+   ],
+   "why": "Proletariat (the single largest addressable gap on the ledger) — '1. Plan Description … refer to the plan document for a more complete description'",
+   "text": "ssets available for benefits: Beginning of year 6,482,862 End of year $ - See accompanying notes. 5 Proletariat 401(k) Plan Notes to Financial Statements For the Period from January 1 to July 16, 2025 1. Plan Description The following description of Proletariat 401(k) Plan (the Plan) provides only general information. Participants should refer to the plan document for a more complete description of the Plan’s provisions. a. General The Plan, originally effective June 25, 2017, and restated November 7, 2024, is a defined contribution plan covering all employees of Proletariat Inc. (the Company) who have attained the age of 21, excluding certain classes of employees as set forth in the plan document"
+  },
+  {
+   "id": "duke-notes-present",
+   "ack": "20261012105859NAL0002979424001",
+   "hasNote": true,
+   "arm": "boilerplate-general",
+   "sole": null,
+   "fired": [
+    "boilerplate-general",
+    "numbered-description",
+    "sourced-heading"
+   ],
+   "why": "Duke University (73,001) — notes present, '(1) Description of Plan'. Its silence on a MATCH is the filing's, not ours: Duke funds a non-elective contribution and the only 'match' in the whole PDF is the Form's printed 21b question.",
+   "text": "5 2,093,769,021 Net assets available for benefits  beginning of year 11,044,676,648 8,950,907,627 Net assets available for benefits  end of year $ 12,478,263,183 11,044,676,648 See accompanying notes to financial statements. 5 THE DUKE UNIVERSITY FACULTY AND STAFF RETIREMENT PLAN Notes to Financial Statements December 31, 2025 and 2024 (1) Description of Plan (a) General The following description of The Duke University Faculty and Staff Retirement Plan (the Plan) provides general information only. Participants should refer to the Summary Plan Description for a more complete description of the Plan s provisions. The Plan is a defined contribution plan, sponsored and administered by Duke Univer"
+  },
+  {
+   "id": "dollar-general-opinion-only",
+   "ack": "20261009130556NAL0016770867001",
+   "hasNote": false,
+   "arm": null,
+   "sole": null,
+   "fired": [],
+   "why": "Dollar General (193,089) — THE PIN THAT MATTERS. The §103(a)(3)(C) OPINION, the statements and the 4i schedule; the notes are absent from the public copy. Its own opinion contains 'and the related notes to the financial statements', which is what defeated the first detector and classified these readers as a parser candidate.",
+   "text": "nt Income Security Act of 1974 (ERISA), as permitted by ERISA Section 103(a)(3)(C) (ERISA Section 103(a)(3)(C) audit). The financial statements comprise the statements of net assets available for benefits as of December 31, 2025 and 2024, and the related statements of changes in net assets available for benefits for the years then ended, and the related notes to the financial statements. Management, having determined it is permissible in the circumstances, has elected to have the audits of the Plan's financial statements performed in accordance with ERISA Section 103(a)(3)(C) pursuant to 29 CFR 2520.103-8 of the Department of Labor's (DOL) Rules and Regulations for Reporting and Disclosure under ERISA. As permitted by E"
+  },
+  {
+   "id": "shell-schedule-c-only",
+   "ack": "20260917101230NAL0006242626001",
+   "hasNote": false,
+   "arm": null,
+   "sole": null,
+   "fired": [],
+   "why": "Shell Provident Fund (22,944) — a Schedule C formula description plus the 4i schedule and nothing else. No notes, no auditor's report.",
+   "text": "ions 401(k)(3) and 401(m)(2). _ Design-based safe harbor method _ “Prior year” ADP test X “Current year” ADP test _ _ N/A 22 If the plan sponsor is an adopter of a pre-approved plan that received a favorable IRS Opinion Letter, enter the date of the Opinion Letter ___/___/_____ (MM/DD/YYYY) and the Opinion Letter serial number__________. Schedule C, Line 2(h) Formula Descriptions Shell Provident Fund EIN: 13-1299890, PN: 002 Plan Year Ending: December 31, 2025 Indirect compensation in the form of sub-transfer agency fees was paid to: Fidelity Investments Institutional Operations Company, EIN: 04-2647786 Payor Name Street Address 1 Street Address 2 City State Zip Compensation AB LARGE CAP GROWTH CLASS A 8000 IH 10"
+  },
+  {
+   "id": "only-boilerplate-general",
+   "ack": "20261015075552NAL0007403651001",
+   "hasNote": true,
+   "arm": "boilerplate-general",
+   "sole": "boilerplate-general",
+   "fired": [
+    "boilerplate-general"
+   ],
+   "why": "Electrical Industry Deferred Salary Plan (32,016) — the ONLY single-protection case for `boilerplate-general` at scale",
+   "text": ") For the years ended December 31, 2025 and 2024, employer contributions made in excess of the HRA maximum limit totaled $80,217,046 and $81,815,752, respectively. This amount is shown in employers’ contributions in the statements of changes in net assets available for benefits (modified cash basis). The foregoing description of the Plan provides only general information. Information about the Plan and the vesting and benefit provisions is contained in the Summary Plan Description (SPD) of the Deferred Salary Plan of the Electrical Industry for a more complete description of the Plan’s provisions. Copies of this SPD are available from the Plan Administrator. Basis of presentation: The financial statement"
+  },
+  {
+   "id": "only-refer-to-document",
+   "ack": "20260917145749NAL0006535586001",
+   "hasNote": true,
+   "arm": "refer-to-document",
+   "sole": "refer-to-document",
+   "fired": [
+    "refer-to-document"
+   ],
+   "why": "Aecom (32,081) — largest single-protection case for `refer-to-document`",
+   "text": "EFITS: Beginning of year 6,778,558 End of year $ 7,368,267 See notes to financial statements. 5 AECOM RETIREMENT & SAVINGS PLAN NOTES TO FINANCIAL STATEMENTS A. DESCRIPTION OF THE PLAN The following brief description of the AECOM Retirement & Savings Plan (the “Plan”) is provided for general information purposes only. Participants should refer to the Plan document and the Summary Plan Description for more complete information. General — The Plan is a defined contribution plan with a profit sharing component intended to qualify under Section 401(a) of the Internal Revenue Code (the \"Code\"), a cash or deferred arrangement intended to qualify under Sections 401(a) and 401(k) of the Code, and a non-le"
+  },
+  {
+   "id": "only-numbered-description",
+   "ack": "20260702112746NAL0014451521001",
+   "hasNote": true,
+   "arm": "numbered-description",
+   "sole": "numbered-description",
+   "fired": [
+    "numbered-description"
+   ],
+   "why": "Mass General Brigham (9,930) — largest single-protection case for `numbered-description`",
+   "text": "364 Net assets available for benefits, beginning of year 628,814 Net assets available for benefits, end of year $ 645,178 See independent auditor's report and accompanying notes to financial statements. 8 Consolidated 401(a) and 401(k) Program of Mass General Brigham and Member Organizations Notes to Financial Statements ($ in thousands) 1. Description of Plan General The Consolidated 401(a) and 401(k) Program of Mass General Brigham and Member Organizations (the Plan) is a defined contribution plan covering all eligible employees of Newton-Wellesley Hospital (NWH) who are members of the Massachusetts Nurses Association bargaining unit at NWH and all eligible employees of Martha’s Vineyard Hos"
+  },
+  {
+   "id": "only-policies-heading",
+   "ack": "20260220163023NAL0012236099001",
+   "hasNote": true,
+   "arm": "policies-heading",
+   "sole": "policies-heading",
+   "fired": [
+    "policies-heading"
+   ],
+   "why": "YMCA Retirement Fund (99,339) — largest single-protection case for `policies-heading`",
+   "text": "s and circumstances described in the Retirement Plan document. (g) Plan Mergers Plan mergers or transfers between the Retirement Plan and any other plan are prohibited. 8 (Continued) THE YOUNG MEN’S CHRISTIAN ASSOCIATION RETIREMENT FUND RETIREMENT PLAN Notes to Financial Statements June 30, 2025 and 2024 (Dollar amounts in thousands) (3) Summary of Significant Accounting Policies The accompanying financial statements are prepared in accordance with U.S. generally accepted accounting principles (GAAP). (a) Use of Estimates The preparation of financial statements in conformity with GAAP requires management to make estimates and assumptions that affect the reported amounts of assets and liabilities and disclosure of"
+  },
+  {
+   "id": "only-sourced-heading",
+   "ack": "20261005094708NAL0029034819001",
+   "hasNote": true,
+   "arm": "sourced-heading",
+   "sole": "sourced-heading",
+   "fired": [
+    "sourced-heading"
+   ],
+   "why": "Tower Health (15,682) — largest single-protection case for `sourced-heading`",
+   "text": "r of a pre-approved plan that received a favorable IRS Opinion Letter, enter the date of the Opinion Letter ___/___/_____ 03 31 2017 (MM/DD/YYYY) and the Opinion Letter serial number__________. J500796A TOWER HEALTH 403(B) PLAN FINANCIAL REPORT DECEMBER 31, 2025 • ROSS & COMPANY IS UIJCERTIFIED PUBLIC ACCOUNTANTS TOWER HEALTH 403(B) PLAN NOTES TO FINANCIAL STATEMENTS Year Ended December 31, 2025 Note 7. Group Fixed Annuity Contract (Continued) Rate Resets: Quarterly Minimum Credited Rate: 1% Because the contract is fully benefit-responsive, contract value is the relevant measurement attribute for that portion of the net assets available for benefits attributable to the guaranteed investment contract. Contract v"
+  },
+  {
+   "id": "loose-arm-statement-footer",
+   "ack": "20251015171115NAL0010789298001",
+   "hasNote": false,
+   "arm": null,
+   "sole": null,
+   "fired": [],
+   "why": "Resourcing Edge I (2,166) -- 'See accompanying notes to financial statements 4' is the STATEMENT's footer pointing at notes that are not in the public copy",
+   "text": " contributions 316,009 - Participants'' contributions 38,179 - Notes receivable from participants 479,335 566,109 Other receivables 121,684 - Total Receivables 955,207 566,109 Total Assets 45,290,284 43,751,978 LIABILITIES Excess contributions due to participants 163,176 218,981 Net Assets Available for Benefits $ 45,127,108 $ 43,532,997 See accompanying notes to financial statements 4 CBR MANAGEMENT SERVICES, INC. 401(K) PLAN STATEMENT OF CHANGES IN NET ASSETS AVAILABLE FOR BENEFITS For the Year Ended December 31, 2024 Additions to Net Assets Attributed to: Contributions: Participant $ 4,680,170 Employer 1,790,125 Rollovers 532,855 Total Contributions 7,003,150 Net appreciation in fair value of investments, includin"
+  },
+  {
+   "id": "loose-arm-table-of-contents",
+   "ack": "20261009121040NAL0038555730001",
+   "hasNote": false,
+   "arm": null,
+   "sole": null,
+   "fired": [],
+   "why": "Midwest Center for Women's Healthcare (468) -- 'Notes to Financial Statements 9' is a TABLE OF CONTENTS line; the notes pages themselves are absent",
+   "text": "vorable IRS Opinion Letter, enter the date of the Opinion Letter ___/___/_____ 06 30 2020 (MM/DD/YYYY) and the Opinion Letter serial number__________. Q703007A Table of Contents Independent Auditor s Report 3 Financial Statements Statements of Net Assets Available for Benefits 7 Statement of Changes in Net Assets Available for Benefits 8 Notes to Financial Statements 9 Supplementary Information Schedule H, Line 4i Schedule of Assets (Held at Year End) 18 INDEPENDENT AUDITOR S REPORT To the Plan Administrators and Participants Scope and Nature of the ERISA Section 103(a)(3)(C) Audit We have performed audits of the financial statements of LTD 401(k) Plan Security Act of 1974 ( ERISA ), permitted by ERISA"
+  }
+ ],
+ "armsCovered": [
+  "numbered-description",
+  "boilerplate-general",
+  "refer-to-document",
+  "policies-heading",
+  "sourced-heading"
+ ],
+ "armsMissing": []
+}

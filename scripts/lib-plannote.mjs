@@ -40,13 +40,39 @@
 /** Each arm is named so a census can report WHICH hallmark found the note. */
 export const PLAN_NOTE_ARMS = [
   ["boilerplate-general", /provides only general information|following (?:is a )?(?:brief )?description of the plan|more complete description of the plan/i],
+  /* AN SPD ALTERNATIVE WAS WRITTEN HERE AND REMOVED AS INERT, which is worth
+   * the three lines it takes to say. Duke writes "refer to the Summary Plan
+   * Description for a more complete description of the Plan's provisions" and
+   * Microsoft "see the … Summary Plan Description for more complete
+   * information", so `|summary plan description for (?:a )?more complete`
+   * looked necessary — and measured over 19,855 filings in the three gap
+   * buckets it is the SOLE protection on ZERO of them: every filing it reaches
+   * is already found by `numbered-description` or `boilerplate-general`,
+   * Microsoft included. *An arm real in principle and inert on the data is
+   * untested machinery*, and a condition no case can exercise reads as a guard
+   * while being dead code. Removed rather than kept with a fixture invented
+   * for it. */
   ["refer-to-document", /refer to the plan (?:document|agreement|instrument)/i],
-  ["numbered-description", /\b(?:note\s*)?\(?\d{1,2}[).:]\s*(?:plan )?description of (?:the )?plan\b|\b(?:note\s*)?\(?\d{1,2}[).:]\s*plan description\b/i],
+  /* THE SEPARATOR IS NOT ALWAYS PUNCTUATION THIS CLASS CONTAINS. Microsoft
+   * heads its note "NOTE 1 — DESCRIPTION OF THE PLAN AND ACCOUNTING POLICIES"
+   * with an EM DASH, and a class of `[).:]` reads it as absent — *a fix for one
+   * phrasing of a class is not a fix for the class*, and here the class has a
+   * PUNCTUATION MARK. Without this the only arm that fired on Microsoft was
+   * `sourced-heading` matching its TABLE OF CONTENTS line ("Notes to Financial
+   * Statements   6"), i.e. the right answer for the wrong reason.
+   * Measured over the same 19,855 filings, the em dash is the SOLE protection
+   * on 3 filings / 1,470 readers — small, and not zero, which is the whole
+   * difference between a guard and dead code. */
+  ["numbered-description", /\b(?:note\s*)?\(?\d{1,2}\s*[).:\-–—]\s*(?:plan )?description of (?:the )?plan\b|\b(?:note\s*)?\(?\d{1,2}\s*[).:\-–—]\s*plan description\b/i],
   ["policies-heading", /summary of significant accounting policies/i],
-  /* the RUNNING HEADER of the notes section, which always carries the period
-   * it covers. The trailing anchor is what separates it from the opinion's
-   * prose use of the same phrase. */
-  ["sourced-heading", /\bnotes? to (?:the )?financial statements\s*(?:\(continued\)|\(concluded\))?\s*(?:for the|december|january|as of|years? ended|\d)/i],
+  /* the RUNNING HEADER of the notes section, which always carries the PERIOD it
+   * covers. The trailing anchor is what separates it from the opinion's prose
+   * use of the same phrase.
+   * A BARE `\d` WAS AN ALTERNATIVE HERE AND IS REMOVED: it matched a TABLE OF
+   * CONTENTS line's page number, so a filing that attaches the index page and
+   * not the notes would have read as carrying them. The arms above identify the
+   * note by its own content, which is the thing being asked about. */
+  ["sourced-heading", /\bnotes? to (?:the )?financial statements\s*(?:\(continued\)|\(concluded\))?\s*(?:for the|december|january|as of|years? ended)/i],
 ];
 
 /** The name of the arm that found the plan-description note, or null. */

@@ -58,6 +58,18 @@ on:
             # data condition must never be able to stop the pipeline ingesting
             # new filings. A red site-test blocks nothing but the verdict.
             "scripts/lib-4i.mjs", "scripts/slice-vq.mjs",
+            # the plan-note detector, its committed fixtures and its test. The
+            # fixtures are VERBATIM filing slices and the only reason this gate
+            # is startable in CI at all, so a recapture must be able to fire the
+            # job that checks it -- the same reason schwab-pages.json is listed
+            # above.
+            "scripts/lib-plannote.mjs", "scripts/plannote-test.mjs",
+            "data/fixtures/plannote-pages.json",
+            # the shared cached filing-text reader. plannote-test's second layer
+            # reads whole filings through it, and effective-date-test and
+            # tax-flag-gate are built on it too, so a change to it must be able
+            # to start a job that exercises it.
+            "scripts/lib-filingtext.mjs",
             # v206's Roth-beside-a-tax-word arm. Its fixtures are VERBATIM
             # sentences and its two discharges disable the arm by text
             # substitution on lib-4i, so an edit to EITHER file can make it
@@ -402,6 +414,16 @@ jobs:
           # allowlisted as an orphan for exactly the same reason. --quick says
           # so in its own verdict line rather than passing silently.
           node scripts/effective-date-test.mjs --quick
+      # The PLAN-NOTE detector that answers "does the public copy carry the
+      # audited notes at all" before anything asks what they say. It runs here
+      # on ELEVEN COMMITTED VERBATIM SLICES rather than on the filing corpus a
+      # CI clone does not have -- which is the closure `gate-coverage.mjs`
+      # records as queued for tax-flag-gate.mjs and never claimed. The slices
+      # include Dollar General, whose own 103(a)(3)(C) opinion contains "and the
+      # related notes to the financial statements" while its notes are absent;
+      # that is the fixture the detector this one replaced fails by name.
+      - name: Plan-note detector — the pins, every arm's single-protection case, and two mutants
+        run: node scripts/plannote-test.mjs
       - name: The field ledger's own suite — the one number the loop steers by
         run: node scripts/ledger-test.mjs
       - name: Generic-typo gate
