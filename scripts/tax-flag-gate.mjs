@@ -147,6 +147,14 @@ function buildPopulation() {
       if (e && e.features && (e.features.roth || e.features.afterTax)) feats.set(ack, e.features);
   }
   if (!feats.size) throw new Error("CONTROL FAILED: no features loaded from data/lineups — the gate is void");
+  /* the BLIND class: entries with features and neither flag. Counted here so
+   * the report can state the size of what it cannot judge. */
+  const blind = new Set();
+  for (const sh of readdirSync(path.join(ROOT, "data/lineups"))) {
+    if (!sh.endsWith(".json")) continue;
+    for (const [ack, e] of Object.entries(JSON.parse(readFileSync(path.join(ROOT, "data/lineups", sh), "utf8"))))
+      if (e && e.features && !e.features.roth && !e.features.afterTax) blind.add(ack);
+  }
   const d = loadPlans(path.join(ROOT, "plans-all.json"));
   const pop = [];
   for (const r of d.rows) {
@@ -171,9 +179,21 @@ function buildPopulation() {
     };
     if (ARMS.some((a) => rec[a])) pop.push(rec);
   }
+  /* SEPARATE LOOP, and the first version was wrong in the direction that hides
+   * the limitation: the loop above `continue`s on `!ft`, and a blind plan has
+   * no entry in `feats` at all, so an `else` branch inside it reported 0 — a
+   * clean zero reporting on the query, about the very population this line
+   * exists to admit it cannot see. */
+  for (const r of d.rows) {
+    const ack = d.get(r, "ack");
+    if (!ack || !blind.has(ack)) continue;
+    blindPlans++;
+    blindPpl += +d.get(r, "partEOY") || +d.get(r, "participants") || 0;
+  }
   pop.sort((a, b) => b.ppl - a.ppl);
   return pop;
 }
+let blindPlans = 0, blindPpl = 0;
 
 /* TAX_FLAG_FIXTURES exists for ONE purpose: to let the arm-scoping check above
  * be given a fixture the store does not satisfy, so that its refusal can be
@@ -232,6 +252,7 @@ async function runGate(opts) {
 
   const out = {
     pop, popPpl, chosen, noText: [], untested: [], agree: 0, disagree: 0,
+    blindPlans, blindPpl,
     lost: [], gained: [], quoteMoved: [], held: [], base, cand,
     headN: headN, restCount, cachedOnly: !!opts.cachedOnly,
   };
@@ -296,6 +317,16 @@ function report(R, expectLoss, mustKeep) {
   console.log(`  reproduces ${f(R.agree)} of ${f(checked)}${checked ? ` (${(100 * R.agree / checked).toFixed(1)}%)` : ""}` +
     `; ${f(R.disagree)} arm-flags are in the store and not in this text (OCR / prior-year fallback), ` +
     `${f(R.noText.length)} filings unreachable`);
+  /* v208: AND THE POPULATION THIS GATE CANNOT SEE AT ALL, printed because the
+   * gate's third promise is to report what it cannot see. Its population is
+   * plans that ALREADY publish a yes, so a GAIN on a plan publishing NEITHER
+   * arm is outside it by construction — and a change to these arms can promote
+   * as well as withdraw. Measured 2026-11-22 while shipping v208: 20,600 plans
+   * / 28.0M readers have READ features and neither flag, of which 89 had cached
+   * text. The instrument for that direction is an ENUMERATION of the change's
+   * own promotion mechanism over the cached corpus, not this gate. */
+  console.log(`  INVISIBLE to this gate by construction: ${f(R.blindPlans)} plans / ${f(R.blindPpl)} readers have READ features and NEITHER flag, ` +
+    `so a GAIN there is outside the population. A change that promotes a false yes among them would print nothing here.`);
   console.log(`  UNTESTED by this run: ${f(new Set(R.untested.map((x) => x.ack)).size)} plans / ` +
     `${f(sumPlans(R.untested))} readers — their flags are neither held nor lost here, and a change that ` +
     `destroys them would be invisible to this gate. ONLY_ACKS_4I through the real fetch-4i path, which does OCR, is the instrument for those.`);
