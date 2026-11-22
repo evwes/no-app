@@ -19,7 +19,7 @@
  * because the cost of getting this wrong is a wrong number in front of them.
  */
 import { mfWidened, mfMixedFraction, mfEqualTo, mfEqualToWords, mfMisreadRateUnderCap,
-  mfMisreadCompoundCap, mfFiniteVerb, MF_FVERB,
+  mfMisreadCompoundCap, mfFiniteVerb, MF_FVERB, discMatchWidened, DW_ARMS,
   extractPlanFeatures as extractPlanFeatures205 } from "./lib-4i.mjs";
 
 const fails = [];
@@ -504,6 +504,136 @@ for (const [label, mutate, probe, what] of FV_CONTROLS) {
   if (!flipped) fails.push(`the v205 control for ${label} changed NOTHING — it is decorative`);
 }
 
+/* ---- v210: THE MATCH IS DISCRETIONARY IN A SPELLING THE SIX SHIPPED ONES
+ * MISS. Every sentence below is verbatim from the filing named beside it, with
+ * its reader count, because that is the cost of getting one of them wrong. The
+ * four refusals were each found by READING a filing the first cut got wrong.
+ * ---------------------------------------------------------------------- */
+let n210 = 0;
+const is210 = (c, m) => { n210++; if (!c) fails.push(m); };
+const DW_FIRE = [
+  ["The Employers may, at their discretion, elect to match up to 100% of their employees’ contributions.",
+   "TriNet HR III, 219,334 readers — 'at their discretion' with the verb ELECT, which the shipped arm's 'contribut\\w+' cannot reach"],
+  ["Additional employer contributions may be made in accordance with the Plan at the employer’s discretion, including, but not limited to, matching contributions.",
+   "Pentegra, 45,003 — a POSSESSIVE NOUN inside the discretion phrase, and the only match sentence in its whole filing"],
+  ["Discretionary matching or nonelective contributions may be contributed by the Company at the option of the Retirement (US) Committee.",
+   "Innova Solutions, 38,904 — the trailing noun is 'or nonelective contributions', not 'contributions'"],
+  ["The employer may make discretionary matching, profit sharing, and/or bonus contributions.",
+   "IUJAT, 36,501 — a COMMA after 'matching'"],
+  ["The Company, at its discretion, may elect to match participant contributions.",
+   "Nexstar Media, 22,088"],
+  ["The Company provides a matching employer contribution at the discretion of the Board of Directors.",
+   "Kforce, 11,320 — the discretion clause TRAILS the match noun"],
+  ["The Employer may make discretionary matching and non-elective contributions for all full-time participants who have completed one year of service.",
+   "Select Rehabilitation, 12,314 — 'one year of service' is an ELIGIBILITY condition on a real grant, and a topic test keyed on it refused this filing"],
+  ["Matching and discretionary contributions are made at the sole discretion of the business units.",
+   "Employer Services Corporation, 4,356"],
+  ["Employer matching and profit-sharing contributions are made at the discretion of the Company.",
+   "Earnhardt Management, 2,074"],
+  ["The Plan Sponsor, at its discretion, may make matching and non-elective employer contributions.",
+   "Breakthru Beverage, 9,486"],
+];
+for (const [t, who] of DW_FIRE) is210(!!discMatchWidened(t), `v210 MUST read the discretionary match: ${who}`);
+const DW_REFUSE = [
+  ["The Company contributes a non-discretionary match of 100% of the first $15,000 of compensation that a participant contributes to the Plan.",
+   "Gilead Sciences, 15,358 — NON-discretionary is the opposite claim; the v207 Roth-inside-Non-Roth shape"],
+  ["The Company contributes a non-discretionary match of 6 percent of the eligible compensation up to the amount that a participant contributes to the Plan.",
+   "Arthrex, 7,316 — the same, spelled without a dollar figure"],
+  ["At its discretion, the Company may also make other matching and profit-sharing contributions, as defined in the Plan Document.",
+   "Compass Health, 6,328 — a SECONDARY match beside a stated 100%-of-6% safe harbor"],
+  ["Additional qualified matching and supplemental profit- sharing contributions may be made at the discretion of the Company.",
+   "Research Triangle Institute, 4,979 — ADDITIONAL, beside an 8% safe harbor"],
+  ["The Company may, at its discretion, elect to make an additional matching contribution to the Plan.",
+   "Republic Airways, 8,605 — an ADDITIONAL match"],
+  ["The method for crediting vesting service for Company discretionary matching and nonelective contributions is based on vesting periods of service.",
+   "MHM Services, 12,688 — a VESTING-SERVICE sentence"],
+  ["Participants become fully bested in the Company's discretionary employer matching and profit sharing contribution portions of their accounts after three years of service, as defined.",
+   "Medisys Health Network, 8,471 — a vesting sentence with the vest word MISSPELLED, so only the giving-verb test reaches it"],
+  ["As described in the Plan document, forfeited nonvested accounts may be used to reduce matching contributions or, at the discretion of the Companies, can be used to pay Plan expenses.",
+   "Major League Soccer, 2,483 — a FORFEITURE sentence"],
+  ["Each participant's account is credited with the participant's contributions, Company matching and discretionary profit-sharing contributions, and earnings on those contributions.",
+   "Centene, 68,568 — account mechanics, and 'discretionary' modifies the PROFIT SHARING"],
+  ["At its discretion the Fund may alter the return characteristics of underlying securities to match certain fixed income fund objectives.",
+   "Tyson Foods — 'match' as ordinary English with the discretion clause in FRONT, which is the position DW_AT reads; refused because the sentence grants nobody anything"],
+  ["RECONCILIATION TO TAX RETURN Net assets available for benefits per financial statements $ 11,013,332 Employer's discretionary match receivable (82,891) Net assets available for benefits per Schedule H of the Form 5500 $ 11,000,700",
+   "Piping Technology & Products, 619 — a RECONCILIATION TABLE, where the label would be true and the quote a column of dollar figures"],
+];
+for (const [t, who] of DW_REFUSE) is210(discMatchWidened(t) === null, `v210 MUST REFUSE: ${who}`);
+/* the shipped `disc` arm must still own everything it owned: the widening is
+ * asked only where that one found nothing, so a sentence it reads must not
+ * change its answer */
+is210(((extractPlanFeatures205("The Plan Sponsor may make discretionary matching contributions determined annually by the board.") || {}).match || null)
+  === "Discretionary — set year to year", "the shipped disc spellings must keep their own answer");
+
+/* NEGATIVE CONTROLS, one per guard, on the case where it is the ONLY
+ * protection — proved by LEAVE-ONE-OUT over the sliced source, never by
+ * retyping it. Which case that is was MEASURED by dropping each guard in turn
+ * and asking which refusals survive, not chosen by eye. */
+const DW_SLICE = (() => {
+  const h = SRC.indexOf("const DW_ADJ =");
+  const e = SRC.indexOf("\n}", SRC.indexOf("export function discMatchWidened"));
+  if (h < 0 || e < 0) throw new Error("match-formula-test: the v210 block moved in lib-4i.mjs");
+  return SRC.slice(h, e + 2).replace(/^export /gm, "");
+})();
+const dwBuild = (mutate) => {
+  const s = mutate(DW_SLICE);
+  if (s === DW_SLICE) throw new Error("v210 negative control did not land — the target string moved");
+  // eslint-disable-next-line no-new-func
+  return new Function(`${s}\n return { discMatchWidened, DW_ARMS };`)();
+};
+{ /* prove the slicer works UNMUTATED: a broken slice makes every control below pass vacuously */
+  const probe = dwBuild((s) => s + "\n/* probe */");
+  if (!probe.discMatchWidened(DW_FIRE[0][0])) throw new Error("the v210 slice cannot read its own first sentence — every control below would be meaningless");
+  if (probe.discMatchWidened(DW_REFUSE[0][0]) !== null) throw new Error("the v210 slice does not refuse Gilead — the slice is broken");
+}
+const DW_CONTROLS = [
+  ["the non-discretionary lookbehinds",
+   (s) => s.replace(/\(\?<!non-\)\(\?<!non \)\(\?<!non- \)/, ""),
+   (mod) => !!mod.discMatchWidened(DW_REFUSE[0][0]), "Gilead's NON-discretionary match is published as discretionary"],
+  ["the secondary-match adjacency refusal",
+   (s) => s.replace(/const DW_SECONDARY = [^\n]*\n/, "const DW_SECONDARY = /(?!)/;\n"),
+   (mod) => !!mod.discMatchWidened(DW_REFUSE[2][0]), "Compass Health's side dish is labelled as its match"],
+  ["the other-topic refusal",
+   (s) => s.replace(/const DW_TOPIC = [^\n]*\n/, "const DW_TOPIC = /(?!)/;\n"),
+   (mod) => !!mod.discMatchWidened(DW_REFUSE[7][0]), "Major League Soccer's forfeiture sentence is quoted under the match heading"],
+  ["the at-discretion arm's money window",
+   (s) => s.replace(/const DW_AT_MONEY = [^\n]*\n/, "const DW_AT_MONEY = /(?:)/;\n"),
+   (mod) => !!mod.discMatchWidened(DW_REFUSE[9][0]), "'to MATCH certain fixed income fund objectives' is read as a discretionary match"],
+  ["the giving-verb requirement",
+   (s) => s.replace(/const DW_GIVE = [^\n]*\n/, "const DW_GIVE = /(?:)/;\n"),
+   (mod) => !!mod.discMatchWidened(DW_REFUSE[6][0]), "Medisys's 'fully BESTED' vesting sentence is read as a match grant"],
+];
+console.log("v210 NEGATIVE CONTROL, one per guard, on the case where it is the ONLY protection:");
+for (const [label, mutate, probe, what] of DW_CONTROLS) {
+  let flipped = false;
+  try { flipped = probe(dwBuild(mutate)); } catch (e) { fails.push(`the v210 control for ${label} THREW: ${e.message}`); }
+  console.log(`  drop ${label}: ${flipped ? `a verdict FLIPS (${what})` : "NOTHING changes"}`);
+  if (!flipped) fails.push(`the v210 control for ${label} changed NOTHING — it is decorative`);
+}
+/* AND THE PAIR, because two guards blocking the SAME population each read
+ * "necessary for 0" and deleting both costs correct refusals. Measured over
+ * bucket C: topic alone is the sole protection on 161 plans / 114,688 readers,
+ * the giving verb on 54 / 31,443, and dropping BOTH admits 258 / 180,118 — so
+ * 43 plans / 33,987 readers are held by the conjunction and by neither
+ * condition alone. */
+{
+  const both = dwBuild((s) => s
+    .replace(/const DW_TOPIC = [^\n]*\n/, "const DW_TOPIC = /(?!)/;\n")
+    .replace(/const DW_GIVE = [^\n]*\n/, "const DW_GIVE = /(?:)/;\n"));
+  is210(!!both.discMatchWidened(DW_REFUSE[5][0]) && !!both.discMatchWidened(DW_REFUSE[6][0]),
+    "dropping BOTH the topic test and the giving verb must admit MHM and Medisys together");
+}
+
+/* AND EACH ARM MUST BE LOAD-BEARING TOO: an arm real in principle and inert on
+ * the fixtures is untested machinery. Asked by running the function with that
+ * arm REMOVED from DW_ARMS and requiring a must-fire sentence to go silent. */
+for (const [name] of DW_ARMS) {
+  const kept = DW_ARMS.filter(([n]) => n !== name);
+  const lost = DW_FIRE.filter(([t]) => discMatchWidened(t, { arms: kept }) === null);
+  is210(lost.length > 0, `v210 arm "${name}" is INERT on the fixtures — no must-fire sentence depends on it`);
+  console.log(`  arm ${name}: sole protection on ${lost.length} of ${DW_FIRE.length} must-fire sentences`);
+}
+
 if (fails.length) { for (const f of fails) console.error("FAIL " + f); process.exit(1); }
 console.log(`\nmatch-formula: ${EXTRACT.length + REFUSE.length + SILENT.length} v198 assertions `
   + `(${EXTRACT.length} extract, ${REFUSE.length} range/cap refused, ${SILENT.length} silent; both controls fire)`);
@@ -516,3 +646,6 @@ console.log(`match-formula: v205 — ${n205} assertions `
   + `(${FV_EXTRACT.length} finite-verb extracted, ${FV_REFUSE.length} refused, `
   + `${FV_FIRE.length} predicate fires, ${FV_SILENT.length} predicate silent, `
   + `${LESSER.length + 1} lesser-of; all ${FV_CONTROLS.length} controls fire)`);
+console.log(`match-formula: v210 — ${n210} assertions `
+  + `(${DW_FIRE.length} discretionary read, ${DW_REFUSE.length} refused, 1 shipped-arm control; `
+  + `all ${DW_CONTROLS.length} guard controls fire, all ${DW_ARMS.length} arms load-bearing)`);

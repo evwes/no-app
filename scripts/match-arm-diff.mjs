@@ -32,11 +32,17 @@ import { read } from "./lib-filingtext.mjs";
 import { materialiseAt } from "./lib-refmod.mjs";
 
 const argv = process.argv.slice(2);
-const REF = argv.find((a) => !a.startsWith("--")) || "HEAD";
-const DISCHARGE = (() => { const i = argv.indexOf("--discharge"); return i > 0 ? +argv[i + 1] : 0; })();
-const SHOW = (() => { const i = argv.indexOf("--show"); return i > 0 ? +argv[i + 1] : 25; })();
+/* flag VALUES are not positional arguments. `--arm discMatchWidened HEAD~1`
+ * made the first version read the arm name as the git ref and then refuse,
+ * because `indexOf` returned 0 and the guard asked for `> 0`: two
+ * off-by-one-shaped mistakes in one line of argument parsing. */
+const FLAGV = new Set(["--arm", "--discharge", "--show"]);
+const POS = argv.filter((a, i) => !a.startsWith("--") && !FLAGV.has(argv[i - 1]));
+const REF = POS[0] || "HEAD";
+const DISCHARGE = (() => { const i = argv.indexOf("--discharge"); return i >= 0 ? +argv[i + 1] : 0; })();
+const SHOW = (() => { const i = argv.indexOf("--show"); return i >= 0 ? +argv[i + 1] : 25; })();
 
-const ARM = (() => { const i = argv.indexOf("--arm"); return i > 0 ? argv[i + 1] : null; })();
+const ARM = (() => { const i = argv.indexOf("--arm"); return i >= 0 ? argv[i + 1] : null; })();
 if (!ARM) { console.error("match-arm-diff: --arm <exportName> is required — the narrowing IS the named arm"); process.exit(2); }
 const base = materialiseAt(REF, "lib-4i.mjs", { label: "wampo-armdiff" });
 const oldLib = await import(base.entryPath);

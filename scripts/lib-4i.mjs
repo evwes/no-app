@@ -6688,12 +6688,15 @@ export function mfFiniteVerb(t) {
  *    `years of service` reaches it. *A service test keyed on a correctly
  *    spelled unit is defeated by the filings' own typos*, and this record
  *    already carries that lesson with `six (6) yeas`.
- * 4. THE WORD "match" IS ORDINARY ENGLISH. `DW_AT` would otherwise accept
- *    Tyson's "to alter the return characteristics of underlying securities to
- *    MATCH certain fixed income fund objectives", which sits in a filing whose
- *    own stable-value note talks about discretion. `DW_MONEY` requires employer
- *    money within sixty characters after the match word, which that sentence has
- *    none of — the same discipline `MF_FSUBJ` applies to the finite verb.
+ * 4. A FINANCIAL-STATEMENT TABLE IS NOT A PLAN TERM, AND THE GIVING VERB
+ *    ALREADY REFUSES IT. **Piping Technology & Products (619)** carries
+ *    "Employer's discretionary match receivable (82,891)" inside its
+ *    RECONCILIATION TO TAX RETURN, where the label would be true and the quote
+ *    a column of dollar figures. A dedicated `DW_TABLE` arm was written for it
+ *    and then REMOVED: asked of bucket C it is the sole protection on **ZERO**
+ *    plans, because a reconciliation table states no grant and so carries no
+ *    giving verb. *A condition unreachable by construction reads as a guard and
+ *    is dead code*, and this record keeps the measurement instead.
  *
  * It fires only where the shipped `disc` does not and only where no formula arm
  * produced anything, so it can neither change a formula nor displace a
@@ -6702,13 +6705,29 @@ const DW_ADJ = /(?<!non-)(?<!non )(?<!non- )\bdiscretionar(?:y|ily)\s+(?:(?:401\
 const DW_AT = /\bat\s+(?:its|their|his|her|the)?\s*(?:[A-Za-z]+(?:['’]s)\s+)?(?:sole\s+|own\s+)?discretion\b,?[^.]{0,110}?\bmatch(?:ing|ed|es)?\b/i;
 const DW_OF = /\bmatch(?:ing|ed|es)?\b[^.]{0,90}?\bat\s+the\s+(?:sole\s+|own\s+)?discretion\s+of\b/i;
 export const DW_ARMS = [["adjacent", DW_ADJ], ["at-discretion", DW_AT], ["discretion-of", DW_OF]];
-/* refusal 4 — employer money within sixty characters after THE MATCH WORD, not
- * after the trigger. The first version measured from the end of the trigger,
- * which for `DW_OF` is the far side of the whole clause: Kforce's "a matching
- * employer contribution at the discretion of the Board of Directors" put
- * "contributions" at character 61 and the arm read as having no money in it.
- * *A window has to start where the question is asked.* */
-const DW_MONEY = /\b(?:contributions?|deferrals?|defer|compensation|wages|earnings|salary|pay)\b|\$\s?[\d.]/i;
+/* THE REFUSAL THAT WAS MEASURED AND FOUND NET HARMFUL, kept here as the reason
+ * it is NOT in the list. The first version of this arm required employer MONEY
+ * within sixty characters of the match word, to keep "match" as ordinary
+ * English out ("to alter the return characteristics of underlying securities to
+ * MATCH certain fixed income fund objectives"). Asked of the live data rather
+ * than of the examples that came to mind, it was the sole protection on
+ * **67 plans / 45,596 readers of bucket C — and ALL SIXTY-SEVEN WERE READ: not
+ * one is ordinary English.** They are "The Company contributes on a flexible
+ * discretionary matching FORMULA" (FC Compassus, 10,628), "a discretionary
+ * match to a designated GROUP" (E. A. Renfroe, 5,009), "Discretionary matching
+ * and/or profit sharing AMOUNTS may be contributed" (Geras), "The discretionary
+ * match has remained at 9% for all employees" (Philadelphia University) — true
+ * statements whose next noun is not money — plus two whose own "contributions"
+ * sat at character 58 and 61. *A guard that withdraws a TRUE answer because it
+ * is INCOMPLETE makes the page less honest, not more.* The hazard it was aimed
+ * at is refused by the arms' own shapes and by the giving verb below, and the
+ * sixty-seven are not a cost of this arm but the measurement that corrected it.
+ */
+/* employer money after the match word, asked of the `at-discretion` arm ONLY —
+ * see the note at the return site for why scoping it to one arm is the whole
+ * difference between this and the guard that was removed. `income` is
+ * deliberately absent: "fixed income fund" is what the arm has to refuse. */
+const DW_AT_MONEY = /\b(?:contributions?|deferrals?|deferred|defer|compensation|wages|earnings|salary|pay)\b|\$\s?[\d.]/i;
 /* refusal 2 — ADJACENT, never merely present */
 const DW_SECONDARY = /\b(?:additional|other|another|supplemental|further)\s+(?:[A-Za-z()’'-]+\s+){0,2}match(?:ing|ed|es)?\b/i;
 /* refusal 3, first half — the sentence's topic is another plan rule */
@@ -6723,7 +6742,7 @@ const DW_TOPIC = /\bvest\w*\b|\bnon-?vested\b|\bforfeit\w*\b|\beligib\w*\b/i;
  * contributions for all full-time participants who have completed one year of
  * service": the same four words are an eligibility condition on a real grant
  * and the end of a vesting schedule, so they cannot discriminate. */
-const DW_GIVE = /\b(?:make|makes|made|making|contribute|contributes|contributed|provide|provides|provided|elect|elects|elected|match|matches|matched|fund|funded|allows?|may)\b/i;
+const DW_GIVE = /\b(?:make|makes|made|making|contribute|contributes|contributed|provide|provides|provided|elect|elects|elected|fund|funded|allows?|approved?|offers?|chose|chooses?|may|will|shall|can)\b/i;
 /**
  * The filing says the match is DISCRETIONARY, in a spelling the shipped `disc`
  * trigger does not read. Returns the trigger match (carrying `.index`, so the
@@ -6737,7 +6756,7 @@ const DW_GIVE = /\b(?:make|makes|made|making|contribute|contributes|contributed|
  */
 export function discMatchWidened(t, { arms = DW_ARMS } = {}) {
   const s = String(t || "");
-  for (const [, re] of arms) {
+  for (const [name, re] of arms) {
     const g = new RegExp(re.source, "gi");
     let m;
     while ((m = g.exec(s))) {
@@ -6747,12 +6766,22 @@ export function discMatchWidened(t, { arms = DW_ARMS } = {}) {
       let a = s.lastIndexOf(". ", m.index); a = a === -1 ? Math.max(0, m.index - 260) : a + 2;
       let b = s.indexOf(". ", m.index); b = b === -1 ? Math.min(s.length, m.index + 300) : b + 1;
       const sent = s.slice(a, b);
-      const w = /match(?:ing|ed|es)?\b/i.exec(m[0]);
-      const after = w ? s.slice(m.index + w.index + w[0].length, m.index + w.index + w[0].length + 60) : "";
-      if (!DW_MONEY.test(after)) continue;
       if (DW_SECONDARY.test(sent)) continue;
       if (DW_TOPIC.test(sent)) continue;
       if (!DW_GIVE.test(sent)) continue;
+      /* THE MONEY TEST BELONGS TO ONE ARM, WHICH IS WHY THE FIRST VERSION OF IT
+       * WAS NET HARMFUL. `DW_ADJ` and `DW_OF` prove the word "match" is about
+       * employer money by their own shape — "DISCRETIONARY matching", "matching
+       * … at the discretion OF the Board". `DW_AT` does not: it reaches a bare
+       * "match" up to 110 characters past the discretion clause, which is where
+       * "At its discretion the Fund may alter … underlying securities to MATCH
+       * certain fixed income fund objectives" gets in. Asked of that arm alone
+       * the window costs nothing and refuses the sentence. */
+      if (name === "at-discretion") {
+        const w = /match(?:ing|ed|es)?\b/i.exec(m[0]);
+        const after = w ? s.slice(m.index + w.index + w[0].length, m.index + w.index + w[0].length + 80) : "";
+        if (!DW_AT_MONEY.test(after)) continue;
+      }
       return m;
     }
   }
