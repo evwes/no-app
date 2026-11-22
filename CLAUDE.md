@@ -951,44 +951,46 @@ re-derive it, never bump it.
 
 ### Pre-registered for the next run that merges
 
-**v209 IS DISPATCHED AS RUN #884** (15:26Z, on `56ef18ef`).
-`PARSER_VERSION = 209`; the sponsor's own name admitted as an employer-money
-noun in the immediate-vesting scope gate. Derived by running the metrics over a
-committed-base-vs-working-tree differential (`parser-gate` green at 96
-specimens, `parse-replay --vs HEAD~1` 0 menus lost, narrowing discharged at
-4,559 excluded filings / 0 differences):
+**v209 DELIVERED by run #884, and the BAND held where the POINT did not — the
+third registration in a row whose point estimate was a floor.**
 
-| key | registered |
-|---|---|
-| `vesting` (trail, PLAN count) | 55,088 -> **55,346** (+258) |
-| `vesting_shown` | 77.06% -> **77.55%** |
-| `vesting_gap` | 14,584,220 -> **14,043,903** (−540,317) |
-| `vesting_withheld` | 10,750,603 -> **10,749,991** (3 plans / 612 readers move withheld -> published) |
-| ONE SCALAR | 79.06% -> **79.15%** |
-| `match`, `matchQuote`, `matchAny`, `roth`, `aftertax` | **UNCHANGED** — the write set is `out.vesting` + `out.vestingText`, asserted at 0 non-vesting field moves over the whole in-scope population |
+| key | registered | delivered |
+|---|---|---|
+| `vesting` (trail, PLAN count) | 55,346 (+258) | **55,366 (+278)** — 20 plans beyond |
+| `vesting_shown` | 77.55% | **77.56%** |
+| `vesting_gap` | 14,043,903 (−540,317) | **14,034,505 (−549,715)** — inside the registered band |
+| `vesting_withheld` | 10,749,991 (−612) | **10,750,756 (+153)** — moved the OTHER WAY |
+| ONE SCALAR | 79.15% | **79.15%** — exact |
+| `match`, `matchQuote`, `matchAny`, `roth`, `aftertax` | UNCHANGED | **all five byte-identical** |
 
-**EXACT over the 56,056 filings the instrument could judge (82.1% of full-form
-readers; the vesting-ABSENT bucket itself is 99.5% judged) and a FLOOR over the
-run — band +540,929 to ~+600,000 readers.** That is the v208 lesson stated as a
-band instead of carried as a whole.
+**THE BAND IS WHAT EARNED ITS KEEP.** The registration carried +540,929 as a
+FLOOR with a band to ~600,000, because the instrument could judge only 56,056
+filings; delivery landed at **+549,715**, inside the band and past the point.
+*A registration is only as exact as the population its instrument could judge*
+— stated as a band for the first time on v209, and the first time the band was
+the correct shape rather than the humble one.
 
-**THE DELTA IS THE MEASUREMENT AND THE BASELINE IS NOT.** The differential was
-run against a store whose trail read `vesting` 55,087 / `vesting_gap`
-14,584,491; rebasing main's cron commit in before the dispatch moved the
-baseline to 55,088 / 14,584,220, so the table above is the SAME measured delta
-re-seated on the line the audit will actually diff against. A plan count
-SATURATES, so +258 onto a baseline that moved by a re-roll plan is additive
-only if the two populations are disjoint — they are not guaranteed to be, which
-is one more reason the figure is a band.
+**ONE KEY MOVED THE WRONG WAY AND IS NOT EXPLAINED BY THE WRITE SET.**
+`vesting_withheld` was registered to FALL by 612 (3 plans moving withheld ->
+published) and ROSE by 153. The write set is `out.vesting` + `out.vestingText`,
+so a withheld rise is the re-roll's doing, not the arm's — `lineup_withheld`
+rose 5,994 on the same line and the six degraded acks are its visible half.
+Recorded rather than rounded off: a key registered in one direction that moves
+in the other is a finding even when its magnitude is small.
 
-**SEPARATELY, and not claimed:** a `PARSER_VERSION` bump re-parses the universe,
-so `confident` / `lineups` / `entries` / `dl` / `overshoot` jitter by whatever
-the re-roll moves, and the six named acks (7 plans / 6,145 readers) have
-degraded on every re-parse since v207.
+**THE JITTER REGISTERED SEPARATELY ARRIVED AS PREDICTED:** `confident` −6,
+`lineups` −5, `entries` −2, `vestQuote` −3, with `dl` and `overshoot` FLAT and
+`high` 6 -> 12 (CI's `reparse-loss` findings, which the next scheduled run
+clears). **And the six named acks degraded for the FOURTH consecutive
+re-parse** — the identical set and the identical 6,145 readers as v207, v208 and
+#875, five of the six again landing on `ds: "readfail"`, zero gained.
+`mirror-gate` refuses on exactly them, which is still the only watcher that
+sees it. The repair is deliberately DEFERRED to after v210's merge: a full
+re-parse undoes it, so repairing before a dispatch is paying twice.
 
-**v210 IS WRITTEN, GATED AND NOT DISPATCHED, AND `PARSER_VERSION` IS STILL 209**
-— the branch's version must match the store #884 produces until its verdict is
-taken, so whoever dispatches v210 bumps it at dispatch. The match is
+**v210 IS IN FLIGHT** — `PARSER_VERSION` bumped to 210 in this commit, and the
+push trigger on `scripts/lib-4i.mjs` starts the run, so there is no dispatch to
+race it. The match is
 DISCRETIONARY in three spellings the shipped `disc` trigger's six do not read
 (`discMatchWidened`, `lib-4i.mjs`). Derived from a committed-base-vs-working-tree
 differential against `006ef459` over all 56,056 cached filings, narrowed by the
@@ -1098,7 +1100,7 @@ then took it 79.06 -> 79.15 on the vesting scope gate.)
 |---|---|---|---|
 | contributions (pre-tax / Roth / after-tax / brokerage) | 66.05% | **40.70M** | `tier-a-contributions` |
 | match | 68.58% | **20.86M** (13.84M withheld on purpose) | `tier-a-plan-terms` |
-| vesting | 77.59% | **14.03M** (10.75M withheld on purpose) | `tier-a-plan-terms` |
+| vesting | 77.56% | **14.03M** (10.75M withheld on purpose) | `tier-a-plan-terms` |
 | custodian / recordkeeper | 90.22% | **11.72M** | `tier-a-custodian` |
 | fund menu | 93.52% | **0.91M** (6.25M withheld on purpose) | `tier-a-lineup` |
 
