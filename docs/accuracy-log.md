@@ -7,6 +7,50 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-22 (09:xxZ) — THE SAME SIX ACKS DEGRADED AGAIN, WITH THE SAME READER COUNT, SO IT IS NOT A RE-ROLL
+
+**WHAT WAS WRONG.** Run #881 (v208, full re-parse) took a published menu from
+**7 plans / 6,145 readers** — Hexcel 3,613 + 368, WD Management 826, St. Vincent
+De Paul 566, Impact Wellness 350, Belay 271, Sorinex 151. That is the **exact
+set and exact reader count** run #875 degraded six days earlier and `1fd0e2c1`
+repaired. Two independent re-parses landing on the identical six acks is not a
+random roll, and **CLAUDE.md's "the store keeps whichever roll came last"
+framing does not survive it.** The repair is also not durable: #881 UNDID
+`1fd0e2c1`, so every full re-parse re-incurs this until the real cure ships.
+
+**WHAT THE STORE RECORDS, which is the lead.** Five of the six moved from
+confident to `ds: "readfail"`, and the whole-store readfail population moved
+**2,169 → 2,174 — exactly those five and nothing else.** But `ds` is NOT an I/O
+witness: `lib-4i.mjs:1108` sets `readfail` when the statutory header IS found
+and the table was not extracted, and `diagnose()` writes it only for
+non-confident acks (`readfail-and-confident` is 0 on BOTH refs), so *it cannot
+be asked of the before side at all.* What it does say: the header was located
+and the rows were not, on filings this same code extracts in-session.
+
+**AND FOUR OF THE SIX NEVER TOUCHED OCR** — only Sorinex and the Hexcel trust
+rasterised; the other four are plain `pdftotext` parses. Second independent
+confirmation of the 2026-11-21 finding that this class reaches the TEXT path.
+
+**THE REPAIR.** `ONLY_ACKS_4I` over the six restored every count exactly (30,
+35, 23, 25, 3, 9; all `ok=true`), merge `+0/−0`, audit verdict inverted to
+`confident +6, vesting +1, lineups +5`, gate replay 7 plans → **0**.
+
+**WHAT PREVENTS IT — nothing yet, and that is the honest state.** `confident −6`
+sits far inside the audit's −200 tolerance, so **only `mirror-gate`'s
+plan-keyed refusal sees this at all**, and only when somebody mirrors. The cure
+remains the 2026-11-17 prescription (a parse strictly WORSE than the stored one
+must not overwrite it) and needs its own `PARSER_VERSION` bump.
+
+**TWO INSTRUMENT ERRORS PAID FOR HERE, BOTH THIS FILE'S OWN RECORDED TRAPS.**
+`lineups-status.json` is `{plans:{…}}` and my `before.acks || before` fell back
+to the wrapper, comparing 2 keys and printing **"acks losing confidence: 0"** —
+*a wrapper-key count reading as a data count*, and a clean zero reporting on the
+query. Then `plans-all.json` has no `.rows`: the guard threw and named `plans`,
+which is why that one cost seconds. *The guard that throws is worth more than
+the one that returns.*
+
+---
+
 ## 2026-11-22 (v208, WRITTEN AND GATED, NOT YET RUN) — THE ROTH ARM COULD ONLY PUBLISH, NEVER REFUSE: TWO WRONG PUBLISHED CLAIMS, ONE SHAPE
 
 **WHAT WAS WRONG.** The primary roth arm was five `t.match()` alternatives joined

@@ -940,33 +940,32 @@ re-derive it, never bump it.
 
 ### Pre-registered for the next run that merges
 
-**v208 — THE DATE TEST IN THE ROTH AND AFTER-TAX ARMS. Written, gated, committed
-with CI suppressed, NOT dispatched: the owner holds the single dispatch for this
-batch.** `docs/accuracy-log.md` 2026-11-22.
+**NOTHING.** v208 was dispatched as run #881 and **DELIVERED**; the registration
+is settled below and must not be re-dispatched. `docs/accuracy-log.md`
+2026-11-22.
 
-| key | from | to | basis |
-|---|---|---|---|
-| `roth` | 44,551 | **43,668** (−883) | exact over the gate's judged population |
-| `aftertax` | 4,306 | **4,203** (−103) | same |
-| `contributions_shown` | 66.96% | **66.13%** | 865 plans / **1,004,136 readers** leave the published set |
-| `contributions_gap` | 39,613,795 | **40,617,931** | the same readers, the other way up |
-| ONE SCALAR | 79.25% | **79.07%** | 1,004,136 / 571,175,494 knowable cells |
+**v208 DELIVERED — registered against delivered, and one key over-delivered.**
 
-**THE SCORE GOES DOWN AND THE GAP UP, ON PURPOSE — the fourth time.** 685 plans
-/ 828,424 readers land in the 2K disjunction rather than going blank; 5 plans /
-3,247 readers also lose the mega-backdoor bit (`indexFlags` bit 8 needs
-`afterTax`). The withdrawal was read: **56 unique members drawn uniformly at
-three seeds, 55 correct, 1 wrong and fixed before commit.**
+| key | registered | delivered |
+|---|---|---|
+| `aftertax` | 4,203 | **4,203** — exact |
+| `roth` | 43,668 (−883) | **43,595 (−956)** — 73 FURTHER withdrawals |
+| `contributions_shown` | 66.13% | **66.05%** |
+| ONE SCALAR | 79.07% | **79.06%** |
 
-**THE CHANGE'S WRITE SET IS `out.roth`, `out.rothText`, `out.afterTax`,
-`out.afterTaxText` AND NOTHING ELSE** — provable from the diff. **Stated
-SEPARATELY, because v207 registered this wrongly: a `PARSER_VERSION` bump
-re-parses the UNIVERSE and the re-roll moves what it moves.** Expect
-`confident`, `lineups`, `vesting`, `entries`, `dl` and `overshoot` to JITTER by
-the amounts the 2026-11-17 and 2026-11-21 re-roll entries record (v207: confident
-−6, lineups −5, vesting −1, dl +51). That is not this change and must not be
-attributed to it; it IS worth the `reparse-loss` triage, which named all six of
-v207's degraded acks and made them repairable in-session with `ONLY_ACKS_4I`.
+**THE OVER-DELIVERY IS THE ONE THING TO CARRY FORWARD.** The registration was
+derived as "exact over the gate's JUDGED population", and the gate's own output
+said **5,793 plans / 7,180,042 readers UNTESTED** (no cached filing text), so
+the figure was exact over a subset and silently a FLOOR over the run. 73 plans
+is 8% beyond it. *A registration is only as exact as the population its
+instrument could judge, and the honest form names the untested remainder as a
+band rather than carrying the judged number as the whole.*
+
+**THE JITTER REGISTERED SEPARATELY AND ARRIVED AS PREDICTED:** `confident −6`,
+`lineups −5`, `vesting −1`, `entries −2`, with `dl` and `overshoot` FLAT. The
+six degraded acks were **the identical set and reader count as v207's**, so that
+is no longer a jitter prediction but a standing defect — repaired in `8a31a74f`,
+cause still open, see the accuracy log for 2026-11-22 (09:xxZ).
 
 **Every registration through 2026-11-05 was delivered and verified;**
 the record of each is in `docs/closed-classes.md` and `docs/accuracy-log.md`.
@@ -982,18 +981,18 @@ estimate: it refutes itself the moment a new import appears.
 
 **THE LEDGER IS THE QUEUE.** `node scripts/ledger-report.mjs` prints the one
 participant-weighted scalar and the addressable gap per field; it is DERIVED and
-must never be copied forward. Re-derived 2026-11-21 from run #875's own merge
-(v207): **115,641 plans / 119,907,098 participants / overall 79.25%**,
-87,692,493 participant-cells addressable, with addressable gaps
-(v207 withdrew a false after-tax/Roth yes from 76 plans, so `contributions`
-fell 67.14% -> 66.96% and the scalar 79.29 -> 79.25 ON PURPOSE; the per-field
-figures below are the v206 line and are re-derived, never read, from here)
+must never be copied forward. Re-derived 2026-11-22 from run #881's own merge
+(v208): **115,641 plans / 119,907,098 participants / overall 79.06%**,
+88,780,759 participant-cells addressable, with addressable gaps below
+(v208 withdrew a future-effective or catch-up-mandate Roth/after-tax yes from
+865 plans, so `contributions` fell 66.96% -> 66.05% and the scalar
+79.25 -> 79.06 ON PURPOSE — the fifth time it has gone DOWN for accuracy)
 
 | field | shown | readers with no answer | owner agent |
 |---|---|---|---|
-| contributions (pre-tax / Roth / after-tax / brokerage) | 67.14% | **39.40M** | `tier-a-contributions` |
+| contributions (pre-tax / Roth / after-tax / brokerage) | 66.05% | **40.70M** | `tier-a-contributions` |
 | match | 68.58% | **20.86M** (13.84M withheld on purpose) | `tier-a-plan-terms` |
-| vesting | 77.06% | **14.59M** (10.75M withheld on purpose) | `tier-a-plan-terms` |
+| vesting | 77.06% | **14.58M** (10.75M withheld on purpose) | `tier-a-plan-terms` |
 | custodian / recordkeeper | 90.22% | **11.72M** | `tier-a-custodian` |
 | fund menu | 93.52% | **0.91M** (6.25M withheld on purpose) | `tier-a-lineup` |
 
@@ -1116,15 +1115,15 @@ the publish gate applied before any reader figure, and an accuracy-log entry.
   acks** (7 plans / 6,145 readers), repaired in `1fd0e2c1` — see the re-roll
   entry in the gotchas, whose OCR framing that finding refutes.
   `docs/accuracy-log.md` 2026-11-21.
-- **WRITTEN AS v208 AND AWAITING THE OWNER'S DISPATCH, 2026-11-22 — the
+- **SHIPPED as v208 and DELIVERED by run #881, 2026-11-22 — the
   future-effective amendment AND the catch-up mandate, which are ONE repair: a
-  first-match arm with no date test.** The roth arm became a skipping candidate
-  loop, the after-tax arms (already loops) gained the question, and
+  first-match arm with no date test.** 865 plans / **1,004,136 readers** lose a
+  "✓ Available" they should never have had. The roth arm became a skipping
+  candidate loop, the after-tax arms (already loops) gained the question, and
   `scripts/lib-effective-date.mjs` holds the predicates the sizer's `--selftest`
-  gates. Registration is in the block above; evidence, the four
+  gates. Delivered figures are in the block above; evidence, the four
   reading-found refusals and the measured `requir\w+` REFUSAL are in
-  `docs/accuracy-log.md` 2026-11-22. **Nothing here is left to do but dispatch
-  and verify.** The sizing below is kept because it is the record of what was
+  `docs/accuracy-log.md` 2026-11-22. The sizing below is kept because it is the record of what was
   measured BEFORE the repair, and one of its numbers is now known to have been
   optimistic — the 554-plan `latent` recovery is really **299 quote moves**,
   since the refusal applies to EVERY candidate and a latent second cause is
