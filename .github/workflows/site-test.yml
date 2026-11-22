@@ -384,7 +384,7 @@ jobs:
       # The prep gates from build-data.yml. That workflow's filter is
       # deliberately narrow -- a test edit must not fire a re-parse -- so
       # these ran in no job their own source could trigger. 8s together.
-      - name: Prep gates (ingest, name-repair, match formula) — triggerable here
+      - name: Prep gates (ingest, name-repair, match formula, Roth pairing, the date test) — triggerable here
         run: |
           node scripts/schc-item1-test.mjs
           node scripts/schd-name-test.mjs
