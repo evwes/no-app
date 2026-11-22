@@ -7,6 +7,48 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-22 (04:xxZ) — THE §603 CATCH-UP MANDATE IS REFUSED IN ONE ROTH ARM AND WINS IN THE ARM ABOVE IT — 330 PLANS / 571,350 READERS
+
+**WHAT IS WRONG.** `CATCHUP_MANDATE` — "a sentence naming catch-up AND a
+requirement word is not a Roth election" — guards only the v206
+Roth-beside-a-tax-word arm, which is itself gated on `!out.roth`. The PRIMARY
+arm above it is a bare `t.match(/\broth\b[^.]{0,120}(contribut|deferral|option|
+401)/i)` over the whole document, first match wins, with no catch-up refusal and
+no date test. So "Effective January 1, 2026, the Plan implemented the Roth
+catch-up contribution requirements under the Internal Revenue Code" takes the
+quote, and the page publishes *Roth: available* for a plan year in which the
+only Roth money is a 2026 statutory requirement on high earners' catch-ups.
+**330 roth plans / 571,350 readers publish a catch-up sentence as their quote.**
+Verified by reading the largest, Trustees of the National Electrical (30,463):
+Roth appears exactly three times, all three the §604 mandate, while its own
+contributions note says over-50 catch-ups are **pretax**. *A guard measured and
+documented in one arm is not a guard on the class* — and the v206 comment says
+this is statutory boilerplate entering every 2026 filing, so the population only
+grows.
+
+**AND THE FIX IS A RE-SEARCH, NOT A VETO, WITH THE COST OF GETTING THAT WRONG
+NOW MEASURED.** `--published-quote` enumerates what a terminal
+`if (out.roth && futureEffective(out.rothText)) out.roth = false` would
+withdraw: 901 roth + 119 after-tax plans / 1,539,670 readers, of which the
+judged part is **554 plans / 886,544 readers CORRECT** against 141 plans /
+132,741 labelled wrong. ***That label is mostly wrong***: 111 of the 139 roth
+members are the catch-up shape above, where the second cause is the SAME
+future-effective provision repeated outside the sectioned region. Four of the
+remaining 30 were read — two genuine (Asphalt Materials 3,100, whose provisions
+text suspends Roth contributions for six months after a distribution, and
+Arcadium Lithium 482, whose quote FREEZES after-tax and therefore presupposes
+it), two false by the same repetition. So a terminal veto's real error is at or
+below **~30 plans / ~18,092 readers** — 2% of what it correctly withdraws — and
+that is what a re-search recovers. *A `latent` verdict means another sentence
+also yields yes; it never means the yes is correct.*
+
+**NOT FIXED.** The repair needs `pyb` plumbed into `extractPlanFeatures` through
+`fetch-4i`, the primary arm converted from first-match to a skipping candidate
+loop, a `tax-flag-gate` must-keep set over the 41,172 correct roth flags, and
+`parse-replay --vs`. Sized here so it can be pre-registered rather than guessed.
+
+---
+
 ## 2026-11-22 (03:xxZ) — THE SIZER'S ANCHOR READ ONLY ONE SIDE OF THE DATE, AND ITS QUARANTINE BUCKET'S NAME WAS FALSE FOR THE MEMBERS IT HELD
 
 **WHAT WAS WRONG.** The future-effective-amendment sizing anchored an effective
