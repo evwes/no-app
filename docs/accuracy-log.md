@@ -52,6 +52,23 @@ because the refusal applies to EVERY candidate and a latent second cause is
 usually the SAME provision repeated. That entry predicted it in words
 (*"`latent` never means the yes is correct"*) and not in its number.
 
+**THE GRANT VETO'S OWN COST AND THE GAIN IT DOES NOT CREATE, both measured
+rather than argued.** It spares 39 mandate quotes / 60,340 readers, of which 14
+/ 29,090 survive entirely (the date test cannot reach them either). Reading all
+14: about nine are CORRECTLY spared — a real grant with no date, or one dated
+IN-YEAR (Greer's *"the January 1, **2025** … document added Roth elective
+deferrals"*, Futamura's November 2025) — and four are wrongly spared, Loyola
+(8,752) the largest, **~10,500 readers of UNFIXED residual, in the conservative
+direction: v207 published the same claim, so nothing regresses.** And the gain
+this could create is **ZERO by enumeration, not by sampling**: the only promotion
+mechanism is the v206 arm's catch-up test gaining the veto, `tax-flag-gate`'s
+population is published-yes plans and is blind to it, and a text screen for the
+exact sentence shape over all **45,616 cached filings** finds 7 candidates — all
+7 already publish roth under v207 AND v208. A direct draw of the blind class
+(20,600 plans / 28.0M readers, 89 cached) also finds 0. *A guard that withdraws
+an assertion can also PROMOTE one, and the harness that would judge the ship
+cannot see that direction at all.*
+
 **A GAP IN THE SHIPPED PREDICATE.** `required|requires|require|must|mandat\w+`
 does not match the NOUN **"requirements"**, so the 04:xxZ headline (National
 Electrical, 30,463) is a DATE finding, not a catch-up one. A `requir\w+` widening
