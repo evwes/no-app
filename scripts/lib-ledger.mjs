@@ -171,9 +171,26 @@ function custodianCell(plan) {
     : "no provider resolved from Schedule C");
 }
 
+/* THE SHARED CAUSE, AND IT IS A SOURCE GAP RATHER THAN A PARSER ONE. `!ft`
+ * means the extractor found NOT ONE of its ~18 features, which reads like a
+ * parser collapse and was briefed as the sharper target because one fix would
+ * move both fields. Measured 2026-11-22 by downloading all 4,996 filings
+ * (4,892 reachable):
+ *   1,833,372 readers / 4,734 plans  the public copy carries NO
+ *                                     plan-description note — nothing to parse
+ *     258,477 /   149                a note IS present and the extractor still
+ *                                     finds nothing — the real parser class,
+ *                                     and BELOW the 500,000-reader floor
+ *      40,592 /   104                no public copy reachable (403/withdrawn)
+ *       3,204 /     7                no extractable text layer (OCR path)
+ * 86% of its readers, and 95% of its plans, are a source gap. The 149-plan
+ * remainder is dominated by multiemployer Boards of Trustees. Largest single
+ * member is Dollar General (193,089 readers), which files the §103(a)(3)(C)
+ * opinion, the statements and the 4i schedule and no notes at all.
+ * Re-derive with `scripts/lib-plannote.mjs`. */
 function matchCell(plan, ft) {
   if (plan.sf) return cell("impossible", "short form: no audited notes by law");
-  if (!ft) return cell("absent", "no features extracted from the attachment");
+  if (!ft) return cell("absent", "no features extracted from the attachment — 86% of these readers (1.83M / 4,734 plans) have NO plan-description note in the public copy, so there is nothing to parse; the parser-addressable remainder is 258,477 readers / 149 plans (measured 2026-11-22)");
   if (ft.match) return cell("published", "formula stated", ft.match);
   /* THE WITHHELD STATE EARNS ITS KEEP HERE. v199/v200 withdraw a misread
    * formula rather than publish it and keep the withdrawn string in
@@ -183,15 +200,59 @@ function matchCell(plan, ft) {
   if (ft.matchMisread) return cell("withheld", "formula read but judged a misread (v199/v200)", ft.matchMisread);
   if (ft.matchText) return cell("withheld", "no formula parsed; the filing's own sentence is quoted instead", ft.matchText);
   if (ft.noEmployer) return cell("published", "filing states no employer contribution", "none");
-  return cell("absent", "attachment read, no match statement found");
+  /* THIS STRING USED TO READ ONLY "attachment read, no match statement found",
+   * AND THAT DESCRIBED US WHILE READING AS A DESCRIPTION OF THE FILING — the
+   * same defect, in the same file, as the custodian cell's refuted 9.45M a
+   * fortnight ago. It is the largest single line on the ledger and it told
+   * every agent that all 18.7M of it was parser-addressable work.
+   *
+   * MEASURED 2026-11-22 over 11,392 of the 11,477 filings in this bucket
+   * (99.6% of its readers; the rest is a 403 or an OCR-only text layer), by
+   * downloading every one and asking `lib-plannote.mjs` whether the public
+   * copy carries a plan-description note at ALL before asking what it says:
+   *   9,408,134 readers / 5,049 plans  notes PRESENT and silent on a match
+   *                                     — a CEILING; no parser reaches it
+   *   7,230,385 / 4,451               notes present AND carrying the match
+   *                                     vocabulary — the real parser class
+   *   1,930,170 / 1,848               NO plan-description note in the public
+   *                                     copy (Shell Provident Fund files a
+   *                                     Schedule C formula description and the
+   *                                     4i schedule; Dollar General files the
+   *                                     §103(a)(3)(C) opinion, the statements
+   *                                     and the schedule) — a SOURCE gap
+   *     157,791 /   129               unreachable or OCR-only
+   * So 61% of this line is not work. Re-derive with
+   * `scripts/lib-plannote.mjs`; do not carry these figures forward. The STATE
+   * stays `absent` on purpose — reclassifying the ceiling half as `impossible`
+   * would raise `shown` by shrinking its denominator, which is a change to the
+   * scoreboard the whole loop steers by and is the owner's call, not a
+   * parser agent's. */
+  return cell("absent", "attachment read, no match statement found — but only ~7.23M of these readers / 4,451 plans are parser-addressable: 9.41M / 5,049 have notes that are SILENT on a match and 1.93M / 1,848 have no plan-description note in the public copy at all (measured 2026-11-22 over 99.6% of the bucket)");
 }
 
 function vestingCell(plan, ft) {
   if (plan.sf) return cell("impossible", "short form: no audited notes by law");
-  if (!ft) return cell("absent", "no features extracted from the attachment");
+  /* the identical population and the identical cause — see matchCell above */
+  if (!ft) return cell("absent", "no features extracted from the attachment — 86% of these readers (1.83M / 4,734 plans) have NO plan-description note in the public copy, so there is nothing to parse; the parser-addressable remainder is 258,477 readers / 149 plans (measured 2026-11-22)");
   if (ft.vesting) return cell("published", "schedule stated", ft.vesting);
   if (ft.vestingText) return cell("withheld", "no schedule parsed; the filing's own sentence is quoted instead", ft.vestingText);
-  return cell("absent", "attachment read, no vesting statement found");
+  /* AND THE SAME CENSUS OVER THIS BUCKET GIVES THE OPPOSITE ANSWER, WHICH IS
+   * WHY ONE SENTENCE COULD NOT HAVE SERVED BOTH FIELDS. Measured 2026-11-22
+   * over 5,809 of 5,871 filings (99.5% of its readers):
+   *   10,922,417 readers / 4,801 plans  notes present AND carrying vesting
+   *                                      vocabulary — parser-addressable
+   *    1,382,410 /   979                no plan-description note in the public
+   *                                      copy — a SOURCE gap
+   *      140,943 /    90                unreachable or OCR-only
+   *          922 /     1                notes present and silent on vesting
+   * `match` is HALF a ceiling and `vesting` is 88% a parser question, over
+   * populations drawn from the same filings — so "the audited notes are the
+   * only source" is true of both fields and says nothing about which of them
+   * a parser pass can move. An auditor who describes a plan almost always
+   * states its vesting rule and very often never mentions a match, because a
+   * plan with no match has nothing to say. Of the vesting figure above, v209
+   * takes 540,929 readers. */
+  return cell("absent", "attachment read, no vesting statement found — ~10.92M of these readers / 4,801 plans ARE parser-addressable (notes present and carrying vesting vocabulary); 1.38M / 979 have no plan-description note in the public copy (measured 2026-11-22 over 99.5% of the bucket)");
 }
 
 /* PRETAX / ROTH / AFTER-TAX, and the whole difficulty of the field is that
