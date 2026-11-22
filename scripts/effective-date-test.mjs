@@ -50,9 +50,19 @@ import { readFileSync, readdirSync, writeFileSync, existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
-import { loadPlans } from "./lib-schema.mjs";
-import { materialiseAt } from "./lib-refmod.mjs";
-import { read, seededShuffle } from "./lib-filingtext.mjs";
+/* THE CORPUS MACHINERY IS IMPORTED LAZILY, AND THAT IS A TRIGGERABILITY FACT
+ * RATHER THAN A STYLE CHOICE. `--quick` is what CI runs, and it exercises only
+ * the predicates; `lib-schema`, `lib-refmod` and `lib-filingtext` are reached
+ * only by the corpus sections. Imported at the top they entered this file's
+ * import graph, and `gate-coverage.mjs` correctly reported that a change to
+ * either could not start the job running this gate — the honest repair is for
+ * the CI-run path not to depend on them, not to widen the trigger to files
+ * this gate cannot judge. */
+const lazy = async () => ({
+  ...await import("./lib-schema.mjs"),
+  ...await import("./lib-refmod.mjs"),
+  ...await import("./lib-filingtext.mjs"),
+});
 import {
   planYearEnd, futureEffectiveGrant, catchupMandate, catchupMandateRefusal,
   restrictsExisting, presupposes, grantRe,
@@ -66,6 +76,7 @@ const SAMPLE = +one("--sample", 1500), SEED = +one("--seed", 20261122);
 const BASE_REF = one("--vs", "3c0a6d2d");          /* v207 */
 
 const fails = [];
+let MUTCOUNT = 0;
 const ok = (label, cond, detail = "") => {
   console.log(`  ${cond ? "ok  " : "FAIL"}  ${label}${detail ? ` — ${detail}` : ""}`);
   if (!cond) fails.push(label);
@@ -101,7 +112,8 @@ const MEMBERS = {
 /* ---------------------------------------------------------------------------
  * --restriction: the blast radius of `restrictsExisting`, over the STORE
  * ------------------------------------------------------------------------- */
-function storePopulation() {
+async function storePopulation() {
+  const { loadPlans } = await lazy();
   const feats = new Map();
   for (const sh of readdirSync(path.join(ROOT, "data/lineups"))) {
     if (!sh.endsWith(".json")) continue;
@@ -127,7 +139,7 @@ function storePopulation() {
 }
 
 if (has("--restriction")) {
-  const pop = storePopulation();
+  const pop = await storePopulation();
   /* the question is asked of the PUBLISHED quote, which is what the parser is
    * choosing between and what the page prints — and of BOTH arms separately,
    * because `restrictsExisting` is keyed on the arm's own tax word */
@@ -306,6 +318,7 @@ if (has("--quick")) {
  * 6. EQUIVALENCE over the real corpus
  * ------------------------------------------------------------------------- */
 console.log(`\n--- 6/7 equivalence: v208 with NO plan year against v207, over the corpus ---`);
+const { materialiseAt, read, seededShuffle } = await lazy();
 const v207 = (await import(materialiseAt(BASE_REF, "lib-4i.mjs", { label: "v207" }).entryPath)).extractPlanFeatures;
 const v208 = (await import(new URL("./lib-4i.mjs", import.meta.url).href)).extractPlanFeatures;
 {
@@ -317,7 +330,7 @@ const v208 = (await import(new URL("./lib-4i.mjs", import.meta.url).href)).extra
   ok(`the two sides are DIFFERENT versions (${m207.PARSER_VERSION} vs ${m208.PARSER_VERSION})`,
     m207.PARSER_VERSION !== m208.PARSER_VERSION, `${m207.PARSER_VERSION} -> ${m208.PARSER_VERSION}`);
 }
-const pop = storePopulation();
+const pop = await storePopulation();
 const cached = pop.filter((p) => read(p.ack));
 const sample = seededShuffle(cached, SEED).slice(0, SAMPLE);
 for (const id of Object.keys(MEMBERS)) {              /* the pins are forced in */
@@ -429,6 +442,7 @@ console.log(`\n--- 7/7 mutations: each must break a NAMED member ---`);
         "  if (out.roth && futureEffectiveGrant(out.rothText, PYE, \"roth\")) out.roth = false;\n"]],
       ["asphalt-materials"]],
   ];
+  MUTCOUNT = MUTS.length;   /* a hardcoded count in a verdict line is a claim that goes stale */
   for (const [label, edits, expect] of MUTS) {
     let fn;
     try { fn = await mutate(label, edits); }
@@ -461,4 +475,4 @@ if (fails.length) {
   process.exit(1);
 }
 console.log(`\nPASSED — the predicates are gated at their source, the arms are byte-identical where the date test is silent,` +
-  ` and six mutations each break a named member.`);
+  ` and ${MUTCOUNT} mutations each break a named member.`);

@@ -64,6 +64,14 @@ on:
             # lie; both are listed. It also runs in build-data's prep gate,
             # where a red result stops a 3.5-hour parse before it starts.
             "scripts/roth-pairing-test.mjs",
+            # v208's DATE TEST and its own controls. `lib-effective-date.mjs`
+            # is imported by lib-4i, so it is transitively behind SEVEN gates
+            # in this workflow (vesting-quote, no-identity, generic-typo,
+            # lead-punct, forfeit-acct, smoke-test, roth-pairing) and
+            # gate-coverage reported all seven as BLIND SPOTS until it was
+            # listed here -- a gate a file it guards cannot start is
+            # indistinguishable from no gate.
+            "scripts/lib-effective-date.mjs", "scripts/effective-date-test.mjs",
             "scripts/lib-disclose.mjs", "scripts/build-seo-pages.mjs",
             # the SEC ticker table, its consumer's harness, and the matcher
             # whose answers it carries
@@ -383,6 +391,17 @@ jobs:
           node scripts/match-formula-test.mjs
           node scripts/wrap-repair-test.mjs
           node scripts/roth-pairing-test.mjs
+          # --quick ON PURPOSE, and the reason is the honest half of this gate:
+          # sections 6 and 7 (the byte-identical corpus equivalence and the
+          # seven mutations) read /tmp/wampo-corpus, which a CI clone does not
+          # have. Running them here would either pass vacuously on an empty
+          # population or go habitually red. So CI runs the PREDICATES -- the
+          # plan-year reconstruction, the catch-up discriminator, the
+          # suspension and deadline refusals, and SILENCE -- and the corpus
+          # half is a SHIP-TIME gate run beside tax-flag-gate.mjs, which is
+          # allowlisted as an orphan for exactly the same reason. --quick says
+          # so in its own verdict line rather than passing silently.
+          node scripts/effective-date-test.mjs --quick
       - name: The field ledger's own suite — the one number the loop steers by
         run: node scripts/ledger-test.mjs
       - name: Generic-typo gate
