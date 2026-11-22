@@ -75,6 +75,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadPlans } from "./lib-schema.mjs";
 import { read, ensure, seededShuffle, wilson95 } from "./lib-filingtext.mjs";
+import {
+  datesIn, afterPYE, EFFECTIVE_NEAR, EFFECTIVE_AFTER, EVAL_DATE, presupposes,
+  futureEffectiveGrant,
+} from "./lib-effective-date.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const argv = process.argv.slice(2);
@@ -282,130 +286,17 @@ const blankOut = (text, spans) => {
 };
 
 /* ---------------------------------------------------------------------------
- * dates
+ * dates — THE PREDICATES NOW SHIP, SO THEY LIVE IN ONE PLACE
+ *
+ * `datesIn`, `afterPYE`, `EFFECTIVE_NEAR`, `EFFECTIVE_AFTER`, `EVAL_DATE` and
+ * `presupposes` were developed here and were moved VERBATIM into
+ * `scripts/lib-effective-date.mjs` on 2026-11-22, when the parser's roth and
+ * after-tax arms began skipping a candidate sentence whose grant is not yet
+ * effective. They are imported rather than copied for the reason this record
+ * states plainly: SLICE a shipped predicate, never reproduce it from memory —
+ * and a `--selftest` that gates a SECOND COPY gates nothing. Everything
+ * `--selftest` asserts below therefore now asserts the shipped code.
  * ------------------------------------------------------------------------- */
-const MONTHS = ["january", "february", "march", "april", "may", "june", "july",
-  "august", "september", "october", "november", "december"];
-function datesIn(s) {
-  const out = [];
-  for (const m of s.matchAll(/\b(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{1,2})\s*,?\s*(\d{4})\b/gi))
-    out.push({ y: +m[3], m: MONTHS.indexOf(m[1].toLowerCase()) + 1, d: +m[2], idx: m.index, raw: m[0] });
-  for (const m of s.matchAll(/\b(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{4})\b/gi))
-    out.push({ y: +m[2], m: MONTHS.indexOf(m[1].toLowerCase()) + 1, d: 1, idx: m.index, raw: m[0] });
-  for (const m of s.matchAll(/\b(\d{1,2})\/(\d{1,2})\/(\d{2,4})\b/g)) {
-    const y = +m[3] < 100 ? 2000 + +m[3] : +m[3];
-    out.push({ y, m: +m[1], d: +m[2], idx: m.index, raw: m[0] });
-  }
-  /* A BARE YEAR IS AN EFFECTIVE DATE AND LEAVING IT OUT COST A REAL MEMBER:
-   * Industrial Marketing files "In 2026, the Plan was amended to allow
-   * participants to make Roth elective deferrals under the Plan." — the only
-   * date in its note is the auditor's evaluation date, so on a day/month/year
-   * vocabulary alone the single clearest member of the class carried NO
-   * effective date at all. Admitted only behind in/during/effective/beginning,
-   * so a dollar year or a plan name cannot supply one. */
-  for (const m of s.matchAll(/\b(?:in|during|effective(?:\s+(?:in|for))?|beginning(?:\s+in)?|commencing(?:\s+in)?)\s+(20\d\d)\b/gi))
-    out.push({ y: +m[1], m: 1, d: 1, idx: m.index, raw: m[0], bareYear: true });
-  return out.filter((x) => x.m >= 1 && x.m <= 12 && x.y >= 1990 && x.y <= 2040);
-}
-const afterPYE = (dt, p) => p.pyeY > 0 && (dt.y > p.pyeY || (dt.y === p.pyeY && dt.m > p.pyeM));
-const EFFECTIVE_NEAR = /\b(?:effective|adopted|amended|restated|amendment|as of|beginning|commencing|effectiveness|implement\w*|will (?:begin|start)|added)\b[^.]{0,70}$/i;
-/* THE DATE THAT IS ALWAYS IN THE FUTURE AND MEANS NOTHING. Every
- * subsequent-events note states the date management evaluated events through,
- * and that date is by definition after the plan-year end — it sits in 29 of
- * the 34 sections this pass classified. A screen that accepted "a future date
- * in the section" would therefore fire on almost every section it found, which
- * is a clean, meaningless rate of exactly the shape this record warns about. So
- * a future date counts only when it is ANCHORED to an effective/adopted/amended
- * word AND is not the evaluation or issuance date. */
-const EVAL_DATE = /\b(?:evaluat\w+|review\w+|through the date|available to be issued|were issued|date of (?:the )?(?:independent )?audit\w*|report date|financial statements were)\b[^.]{0,90}$/i;
-
-/* THE ANCHOR WORD IS NOT ALWAYS BEFORE THE DATE, AND A PREFIX-ONLY ANCHOR SENDS
- * REAL DEFECTS INTO A QUARANTINE BUCKET WHOSE OWN NAME IS FALSE FOR THEM.
- * Simpson Manufacturing files "On January 1, 2026, the Company amended the Plan
- * to allow after-tax employee contributions." — the amendment verb follows the
- * date, so `EFFECTIVE_NEAR` reads nothing and the member lands in
- * `causalUnanchored`, labelled "only the evaluation date". Three were known by
- * name; the shapes below are ENUMERATED from `--dump-dates` over the 4,306
- * after-tax yeses and the 44,551 roth yeses, never guessed.
- *
- * IT IS A DEDICATED DISJUNCT, NOT A TOKEN ADDED TO `EFFECTIVE_NEAR`'s
- * VOCABULARY, because that vocabulary is a closed whole-string set that
- * multiplies with every token already in it, and its blast radius is 70
- * characters of PRECEDING text. This one is bounded by `^`: it fires only on
- * the phrase IMMEDIATELY after the date, and only on the enumerated
- * announcement shape ⟨date⟩, the ⟨plan/company⟩ ⟨was⟩ ⟨amended⟩.
- *
- * FIVE SHAPES IT REFUSES, every one read in its own filing:
- *  - `the Plan WILL BE amended` / `the Plan Sponsor INTENDS TO AMEND by the
- *    deadline of <date>` — W.W. Grainger (31,290) and McCarter & English
- *    (1,167). That is the SECURE 2.0 remedial-amendment DEADLINE, which
- *    affirms that the plan already operates the provision and is being
- *    documented later. It is the opposite of a not-yet-effective grant, so the
- *    aux list admits only `was/were/is/has been/have been` — a future aux
- *    cannot reach the verb.
- *  - `participants who earned FICA wages of …` (Washington Gas Light, 1,318) —
- *    the §603 catch-up mandate, whose subject is PARTICIPANTS. Admitting it
- *    would widen the subject set over a class the v206 arm already refuses.
- *  - `the Plan's document provider … adopted an amendment` (Sharpe Dry Goods,
- *    174) — a real amendment, but reaching it needs an open noun phrase after
- *    the subject, and `the Plan's ⟨anything⟩` is how a 40-character wildcard
- *    gets into a regex that has to stay narrow.
- *  - merger / acquisition / assumption / bankruptcy / dividend dates
- *    (`the Plan was assumed by`, `ColorDynamics … merged`, `the Company made
- *    the decision to`) — a change, but not an amendment of the plan's terms.
- *  - the evaluation date under a phrasing `EVAL_DATE` misses
- *    (`through <date>, the date the financial statements were available`) — the
- *    suffix here names a DATE, never a subject, so `^…the (plan|company|…)`
- *    cannot reach it.
- * `increas\w*` and `chang\w*` are NOT in the verb set: each was necessary for
- * exactly one member and both of those members must be KEPT — see
- * PRESUPPOSITION below. */
-const EFFECTIVE_AFTER = new RegExp(
-  "^[\\s,;:—–-]*the\\s+(?:plan|company|employer|board|organization|plan\\s+sponsor|plan\\s+administrator)" +
-  "\\s+(?:was|were|is|has\\s+been|have\\s+been)?\\s*(?:amend\\w*|restat\\w*|adopt\\w*|implement\\w*)\\b", "i");
-
-/* A SENTENCE THAT CHANGES THE DEGREE OF A FEATURE PRESUPPOSES THE FEATURE, so
- * it is evidence FOR the published yes in the reported year and must never
- * license a withdrawal. Health Management Associates (1,114) files "During
- * 2026, the Plan increased the maximum annual employee after-tax contribution
- * amount from $4,000 to $9,000." — after-tax plainly existed at $4,000 in the
- * year reported. Same shape as the standing refusal that a LOAN FROM after-tax
- * money presupposes after-tax money. Counted apart, never in the headline.
- *
- * IT IS ARM-SPECIFIC, AND THE FIRST VERSION WAS NOT — which is how a guard
- * meant to protect a true answer nearly withdrew five real defects. Keyed on
- * "a degree verb and a limit noun appear in the quote", it claimed EIGHT
- * members / 17,933 readers of the after-tax headline and five of them were
- * about something else entirely: Fanatics (12,580) "a change in the matching
- * contribution formula from…", Mntn (722) "amended to PERMIT after-tax
- * contributions and the Employer matching contribution calculation increased",
- * Backblaze (491) "amended to change the age requirement … from 16", Fish &
- * Richardson (279) "an automatic annual increase of 1% in participants'
- * deferral percentages", Praetorian (188) "amended to ALLOW after-tax employee
- * contributions, limited to 10%". In each the sentence GRANTS this arm and
- * changes the degree of something else. *A witness that a row is damaged is not
- * a witness to WHICH claim the damage is on.* So the degree change must govern
- * THIS ARM's own tax word, and a GRANT of this arm vetoes outright: a new
- * permission is never a degree change, whatever else the sentence moves. */
-const TAXWORD = { roth: "roth", afterTax: "after[-\\s]?tax|post[-\\s]?tax|aftertax" };
-const grantRe = (tw) => new RegExp(
-  /* `add\w*` MATCHES "ADDITIONALLY", and that is not a grant verb. Stonepeak
-   * files "Additionally, effective January 1, 2026, the Company increased the
-   * after-tax contribution maximum from $10,000 to $29,500" — a textbook
-   * presupposition — and the first spelling of this veto threw it back into the
-   * headline on the strength of an adverb. *A character class written for a
-   * concept picks up everything that shares its shape*, met again on a stem
-   * rather than a character class. */
-  "\\b(?:permit|allow|introduc|offer|institut|implement|includ)\\w*\\b[^.]{0,70}?(?:" + tw + ")" +
-  "|\\badd(?:ed|ing|s)?\\b[^.]{0,70}?(?:" + tw + ")" +
-  "|(?:" + tw + ")[^.]{0,70}?\\b(?:are|is|were|was|became|may)\\b[^.]{0,40}?\\b(?:permitted|allowed|available|offered|added|introduced)\\b", "i");
-const degreeRe = (tw) => new RegExp(
-  "\\b(?:increas|decreas|rais|lower|chang|modif)\\w*\\b[^.]{0,60}?\\b(?:maximum|minimum|limit|cap|percentage)\\b[^.]{0,60}?(?:" + tw + ")" +
-  "|\\b(?:increas|decreas|rais|lower|chang|modif)\\w*\\b[^.]{0,40}?(?:" + tw + ")[^.]{0,60}?\\b(?:maximum|minimum|limit|cap|from)\\b", "i");
-const presupposes = (quote, arm) => {
-  const tw = TAXWORD[arm];
-  return !!quote && degreeRe(tw).test(quote) && !grantRe(tw).test(quote);
-};
 
 /* ---------------------------------------------------------------------------
  * `--selftest` — the controls for the two predicates above, and `--mutations
@@ -560,20 +451,11 @@ if (has("--published-quote")) {
   /* the quote is ONE SENTENCE, so the window is the quote and the tier is
    * `sentence` by construction — which is exactly the tier reading 25 members
    * by hand established as the reliable one */
-  const futureGrant = (quote, p, arm) => {
-    if (!quote || !p.pyeY) return null;
-    const dts = datesIn(quote);
-    if (!dts.length) return null;
-    const hit = dts.find((x) => {
-      if (!afterPYE(x, p)) return false;
-      const pre = quote.slice(Math.max(0, x.idx - 90), x.idx);
-      const suf = quote.slice(x.idx + x.raw.length, x.idx + x.raw.length + 90);
-      return (EFFECTIVE_NEAR.test(pre) || EFFECTIVE_AFTER.test(suf)) && !EVAL_DATE.test(pre);
-    });
-    if (!hit) return null;
-    if (presupposes(quote, arm)) return null;     /* a degree change presupposes the feature */
-    return hit.raw;
-  };
+  /* THE PARSER'S OWN PREDICATE, asked the same question with the same
+   * argument: the published quote is one sentence and the plan row already
+   * carries {pyeY, pyeM}. Reusing it is what makes this mode a measurement OF
+   * THE SHIP rather than of a lookalike. */
+  const futureGrant = (quote, p, arm) => futureEffectiveGrant(quote, p, arm);
   for (const arm of (ARM === "either" ? ["roth", "afterTax"] : [ARM])) {
     const popArm = pop.filter((x) => x[arm]);
     const q = (p) => (arm === "roth" ? p.rothText : p.afterTaxText);
