@@ -119,6 +119,35 @@ network and no corpus. Eleven live `parser-gate` specimens: six positives and
 **five counter-specimens**, each the only protection for one condition —
 v204 added the former and not the latter and took 21 real funds off a page.
 
+**PRE-REGISTERED, as a BAND, against the trail line of 2026-11-22 (`pv` 210,
+`vesting` 55,364, `vestQuote` 5,526) and the ledger read from the same store.**
+
+| key | registered |
+|---|---|
+| `vesting` (trail, per ENTRY) | 55,364 -> **55,905** (+541) |
+| `vestQuote` | 5,526 -> **5,502** (−24; 29 quote-only entries gain a LABEL, 5 new quote-only entries arrive) |
+| `vesting_shown` | 77.56% -> **79.29%** |
+| `vesting_gap` (absent) | 14,035,304 -> **12,132,987** (−1,902,317) |
+| `vesting_withheld` | 10,750,756 -> **10,742,196** (−8,560: 24,006 published minus 15,446 arriving) |
+| ONE SCALAR | 79.60% -> **79.94%** |
+| `match`, `matchQuote`, `roth`, `afterTax`, `contributions`, `custodian`, `lineup` | **UNCHANGED** — write set is `out.vesting` + `out.vestingText`, asserted at **0 off-vesting field moves** over all 1,411 narrowed plans and 0 differences over 800 excluded ones |
+
+**EXACT over the 56,056 filings the instrument could judge (82.1% of full-form
+readers) and a FLOOR over the run.** The unjudged remainder is **15,428 plans /
+19,732,984 readers with no cached filing text**; the cache was built from the
+GAP-census populations, so an unjudged plan is predominantly one that already
+carries an answer and that this arm cannot reach. At the judged gap-exit rate
+(2.097% of judged readers) the band is **1,902,317 to ~2,316,098 readers out of
+the gap**. Four registrations running have come in above their point estimate
+and inside their band.
+
+**SEPARATELY, and not claimed:** a `PARSER_VERSION` bump re-parses the universe,
+so `confident` / `lineups` / `entries` / `dl` / `overshoot` jitter by whatever
+the re-roll moves, v210's jitter reached FEATURE extraction with the menu keys
+flat, and the six named acks (7 plans / 6,145 readers) have degraded on every
+re-parse since v207. `PARSER_VERSION` is left at **210** in this commit on
+purpose.
+
 **DELIBERATELY WITHHELD, named rather than rounded off.** ~15.9K readers across
 seven plans (Pipe Fitters Local 597 11,618 the largest) trip
 `SPONSOR_TWO_CLAIM` on *"not SUBJECT TO forfeiture for any reason"* or
