@@ -40,6 +40,30 @@ store against the working tree that printed `pv` beside `c`. The first version o
 that check printed only `c`, which read as a clean success. *Print every field
 the next stage keys on, not only the field the repair was about.*
 
+**THE GUARD, AND THE CONDITION THAT KEEPS IT OFF THE NORMAL PATH.**
+`merge-4i` now warns before applying any delta whose `status` entries sit at a
+uniform NON-ZERO `pv` that is not the current `PARSER_VERSION`. The discriminator
+is the delta's OWN stamps, so it needs no format change and no change to the
+writer: `fetch-4i:526` stamps `pv: PARSER_VERSION` on every ack it parses, and a
+download or extraction failure stamps `pv: 0` (`fetch-4i:907`). ***The non-zero
+clause is the whole safety argument*** — a shard in which EVERY filing failed
+carries only zeros and is correctly waved through, which is exactly the case a
+naive "no entry at the current pv" test would have broken, and it would have
+broken it on the worst possible run. **Warned, not refused**, because a refusal
+here stops the merge that stands between twenty finished parse shards and a
+committed store: the asymmetry is ugly in one direction and catastrophic in the
+other. Also `.gitignore` now covers `results-*.json`, which closes how the file
+arrived rather than what it then did.
+
+**THREE CONTROLS, AND THE NEGATIVE ONE CAME FROM THE REAL WRITER.** Positive: the
+preserved stale file (6 entries, all `pv` 210, current 212) fires by name through
+the real merge. Negative: a delta produced by running `fetch-4i` in its actual
+`PARSE_SHARD` mode over one ack — a real artifact of the real writer, stamped
+`pv` 212 — reads **0 warnings**. *A hand-built control table tests the cases its
+author already imagined*, so the fresh-delta control was generated rather than
+typed; only the all-failed case is synthetic, and it is arithmetic over one field
+whose value `fetch-4i` documents at the line cited above.
+
 **THE FIX AND THE PREVENTION.** The stale file was moved out of the cwd and the
 re-parse redone: all six now at `pv 212`, `c:0->1`, five `ds:"readfail"` cleared,
 `confident` 62,210 -> 62,216, **0 other acks' `c` or `pv` moved**. 22 collateral

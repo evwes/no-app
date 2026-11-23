@@ -616,11 +616,17 @@ jobs on the free tier against a 13-shard matrix plus prep and merge; (4) the
 
 **The rules that follow:**
 
-- **Never push `build-data.mjs`, `fetch-4i.mjs`, `lib-4i.mjs`, `merge-4i.mjs`,
-  `scripts/.kick` or the workflow file while a run is in flight ON THE SAME
+- **Never push `build-data.mjs`, `fetch-4i.mjs`, `lib-4i.mjs`,
+  `lib-effective-date.mjs`, `merge-4i.mjs`, `scripts/.kick` or the workflow file
+  while a run is in flight ON THE SAME
   REF** — concurrency is `group: build-data-${{ github.ref }}`, so a dev push
   cannot cancel a run on `main`, and the push trigger's path filter is exactly
-  those six files. `audit-data.mjs`, the tests and `lib-disclose.mjs` create no
+  those **SEVEN** files. **This rule said SIX in three places until 2026-11-23
+  and the filter has carried `scripts/lib-effective-date.mjs` since v208** — so
+  a rule that ENUMERATES is wrong the moment the list it mirrors grows, and it
+  fails in the dangerous direction: a push believed safe cancels a run.
+  *Re-read the `paths:` block rather than this sentence.*
+  `audit-data.mjs`, the tests and `lib-disclose.mjs` create no
   run at all. *A rule stated more broadly than its mechanism costs real hours,
   and the cost is invisible because nothing fails.*
 - **WHAT DOES NOT RELAX: a run in flight on main is a reason not to MIRROR.**
@@ -633,9 +639,12 @@ jobs on the free tier against a 13-shard matrix plus prep and merge; (4) the
   failure from a partial store: failed downloads correctly keep the stored entry
   and an old `pv`, so nothing is lost and nothing is refreshed, while the
   coverage line rises. `audit-data` raises `download-failures` above 1%.
-- **`[skip ci]` on every commit touching one of those six files while a run is
-  in flight on the same ref**, and on parser commits made outside the 1–7 AM
-  window so work batches into one re-parse.
+- **The CI-skip directive on every commit touching one of those SEVEN files
+  while a run is in flight on the same ref**, and on parser commits made
+  outside the 1–7 AM window so work batches into one re-parse. *Spelled in prose
+  as `skip-ci` on purpose — see the token rule below, which this very line used
+  to violate by carrying the bracketed form in a file that is quoted into commit
+  messages.*
 - **One re-parse in flight at a time**, and only a `PARSER_VERSION` /
   `OCR_VERSION` bump justifies a full one — without a bump the work list is just
   the stale acks (7 minutes once). **Do not bump a version to "refresh" data.**
@@ -677,9 +686,11 @@ justification gone, holding a gated, ready change until 1 AM buys nothing and
 costs a night.
 
 - **The blocker is never the hour. It is an in-flight run.** Pushing to
-  `scripts/build-data.mjs`, `fetch-4i.mjs`, `lib-4i.mjs`, `merge-4i.mjs`,
+  `scripts/build-data.mjs`, `fetch-4i.mjs`, `lib-4i.mjs`,
+  `lib-effective-date.mjs`, `merge-4i.mjs`,
   `scripts/.kick` or the workflow file while a run is going **cancels it** and
-  destroys hours of wall clock. That is the only thing worth serialising on.
+  destroys hours of wall clock (SEVEN files — read the `paths:` block, not this
+  list). That is the only thing worth serialising on.
 - **When a change is gated and ready and no run is in flight: dispatch it now**,
   whatever the hour. Verify it started, report, and move to the next item.
 - **While a run IS in flight, keep working — do not poll and do not idle.**

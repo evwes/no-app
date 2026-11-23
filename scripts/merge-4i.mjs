@@ -3,7 +3,7 @@
  * lineups-status.json, data/lineups/ shards, lineups-index.json. */
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "node:fs";
 import vm from "node:vm";
-import { indexFlags, JUNK_NAME_RE, AGG_DISCLOSURE, GENERIC_TYPE_NAME } from "./lib-4i.mjs";
+import { indexFlags, JUNK_NAME_RE, AGG_DISCLOSURE, GENERIC_TYPE_NAME, PARSER_VERSION } from "./lib-4i.mjs";
 import { isGenericTypeName } from "./lib-4i.mjs";
 import { hasNoFundIdentity } from "./lib-disclose.mjs";
 
@@ -54,6 +54,49 @@ for (let i = 0; i < SHARDS; i++) {
 
 const files = readdirSync(".").filter((f) => /^results-\d+\.json$/.test(f));
 console.log(`merging ${files.length} delta files`);
+
+/* A STALE DELTA IS LIVE INPUT, AND NOTHING USED TO SAY SO (2026-11-23).
+ * The line above takes deltas from EVERY results-*.json in the cwd, with no
+ * freshness or provenance check — and `fc24b29` had COMMITTED one, so it sat in
+ * every clone and every CI checkout. On 2026-11-23 it was silently re-applied
+ * over a fresh in-session repair of the same six acks, stamping all six back to
+ * `pv` 210 while every per-ack line still read `ok=true`: row counts identical,
+ * `confident` correct, nothing in the repair's own output wrong. A pv-210 stamp
+ * puts those acks straight back into the next run's work list, so the repair
+ * would have undone itself and the NEXT run would have reported the loss as its
+ * own. `.gitignore` now covers `results-*.json`; this is the other half.
+ *
+ * THE DISCRIMINATOR IS THE DELTA'S OWN `pv` STAMPS, so it needs no format change
+ * and no change to the writer. `fetch-4i.mjs:526` stamps `pv: PARSER_VERSION` on
+ * every ack it parses, and a download/extraction failure stamps `pv: 0`
+ * (fetch-4i:907). So a delta from THIS parser carries at least one entry at the
+ * current version, or — if every filing in the shard failed — only zeros. A file
+ * whose entries sit at a uniform NON-ZERO pv that is not the current one cannot
+ * have come from this run. ***The non-zero clause is what keeps this off the
+ * normal path***: an all-failed shard reads pv 0 and is correctly waved through,
+ * which is the case a naive "no entry at the current pv" test would have broken.
+ * Warned rather than refused, because a refusal here stops the merge that is the
+ * only thing standing between twenty finished parse shards and a committed
+ * store — the asymmetry is ugly in one direction and catastrophic in the other. */
+for (const f of files) {
+  let pvs;
+  try {
+    pvs = Object.values(JSON.parse(readFileSync(f, "utf8")).status || {})
+      .map((m) => (m && m.pv) || 0);
+  } catch { continue; }           // the real loop below reports a malformed file
+  if (!pvs.length) continue;
+  const fresh = pvs.filter((p) => p === PARSER_VERSION).length;
+  const staleNonZero = pvs.filter((p) => p !== 0 && p !== PARSER_VERSION);
+  if (fresh === 0 && staleNonZero.length) {
+    const seen = [...new Set(staleNonZero)].sort((a, b) => a - b).join(", ");
+    console.log(`\n!! STALE DELTA: ${f} carries ${pvs.length} status entries, NONE at the`);
+    console.log(`   current PARSER_VERSION ${PARSER_VERSION} and ${staleNonZero.length} at pv ${seen}.`);
+    console.log(`   It cannot have come from this run. Applying it will stamp those acks`);
+    console.log(`   at an OLD pv, which re-queues them and silently undoes any repair —`);
+    console.log(`   every per-ack line will still read ok=true. Delete it and re-parse.`);
+    console.log(`   docs/accuracy-log.md 2026-11-23.\n`);
+  }
+}
 let applied = 0;
 for (const f of files) {
   const d = JSON.parse(readFileSync(f, "utf8"));

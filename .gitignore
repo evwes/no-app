@@ -9,6 +9,15 @@ swaps-degraded.txt
 # artifact-only: prep writes it, the parse jobs read it, it never belongs in git
 fallbacks.json
 
+# PER-RUN parse deltas. fetch-4i writes these in PARSE_SHARD mode, the merge job
+# consumes them in-job, and merge-4i takes its deltas from EVERY results-*.json
+# in the cwd with no freshness or provenance check. So a committed one is live
+# input to every later local merge: `fc24b29` tracked results-0.json on
+# 2026-11-22 via `git add -A`, and it was silently re-applied on 2026-11-23,
+# stamping six repaired acks back to pv 210 and nearly undoing the repair with
+# every per-ack line still reading ok=true. docs/accuracy-log.md 2026-11-23.
+results-*.json
+
 # session measurement harnesses, written to the repo root by hand while sizing
 # a class (before/after probes, store diffs, a copy of app.js under test). They
 # are working files, not deliverables: throwaway per cycle, and app.js.bak alone
