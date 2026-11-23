@@ -7,6 +7,53 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-23 (05:3xZ) — A REGISTRATION THAT OVER-DELIVERED IN PLANS AND UNDER-DELIVERED IN READERS, OVER A STORE THAT WAS ONLY 94.7% READ
+
+**WHAT WAS WRONG — TWO THINGS, and the smaller one is the more general.**
+(1) Run #889 left `pvTopShare` at **94.7%**: 3,578 acks were never read. All 20
+parse shards concluded SUCCESS, stopping inside a 32-48 minute band, so this is
+a per-shard TIME BUDGET, not a crash — `dl` FLAT at 214, 3,167 of the unread
+with no error code at all. `audit-data`'s `partial-store` HIGH fired exactly as
+designed and said "Do not mirror". Nothing is LOST: 3,239 of them are still
+confident on their pv-210 entries. (2) v211's registration **beat its plan
+point by 58 and fell 49,554 readers SHORT of its reader point** — `vesting`
+55,963 against 55,905 registered, `vesting_gap` −1,852,763 against −1,902,317.
+
+**THE LESSON, which four straight over-deliveries had hidden.** This record had
+begun to read "the point is what the instrument could judge and the band is what
+the run does" as though over-delivery were a property of a RUN. It is a property
+of a **KEY**. Both figures came from the same instrument over the same
+population, so neither is an instrument error: the 58 extra plans are simply
+SMALLER than the registered population's average, and *a plan count saturating
+is not a reader count moving*. Register both, and read them separately.
+
+**AND A PARTIAL STORE MAKES A REGISTRATION UNSETTLEABLE**, which is a stronger
+claim than "do not mirror". Every figure above is measured over a 94.7% read, so
+neither the over-delivery nor the shortfall can be ATTRIBUTED while 5% of the
+universe still carries its previous answer. The verdict is provisional until the
+completion run lands; the remedy needs no `PARSER_VERSION` bump, because the
+work list is already exactly "pv ≠ 211" (3,798 acks).
+
+**WHAT PREVENTS IT.** The gate already works and was already written — what
+failed was my reading of the shard logs, where twenty green jobs in a tight time
+band looked like twenty successes rather than one budget. *Twenty jobs finishing
+within sixteen minutes of each other, after thirty-plus minutes each, is a
+BUDGET and not a coincidence.* The durable fix is to make the parse step report
+its own unfinished remainder rather than exiting 0 on a truncated list — unbuilt,
+and it belongs in `fetch-4i`, beside the `ONLY_ACKS_4I` empty-run exit 1 that was
+added for the same class of silent truncation.
+
+**Separately, the six acks degraded for the SIXTH consecutive re-parse** — the
+identical set, five again on `ds: "readfail"` — and the in-session forced
+re-parse restored all six to their exact prior counts (30/35/23/25/3/9, every one
+`ok=true`, `confident` 62,210 -> 62,216). 14 collateral name-repair rows were
+read and all 14 are correct (suffix debris `il`/`ll`/`ad`/`sad`/`lal` stripped,
+"Admiral Shares" moved back behind the fund name, `RetirementIncome` spaced).
+The repair survives the completion run, because those acks are stamped at pv 211
+and so are invisible to its work list.
+
+---
+
 ## 2026-11-23 (03:5xZ) — A SHIP COMMENT THAT NAMED THE WRONG MECHANISM, FOUND BY AN INSTRUMENT THAT WAS WRONG FIRST
 
 **WHAT WAS WRONG.** v211's arm carried a comment ending its five-case list with

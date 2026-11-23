@@ -964,29 +964,53 @@ re-derive it, never bump it.
 
 ### Pre-registered for the next run that merges
 
-**v211 IS IN FLIGHT AS RUN #889** (pushed 03:56Z on `4f2bf747`; the push WAS the
-trigger, so no `workflow_dispatch` sits beside it). The whole-account vesting
-arm: a filing that states the ACCOUNT is fully vested, where every existing arm
-keys on a money NOUN and the scope gate therefore `continue`s before any quote
-fallback — the only refusal in that chain leaving a filing with no label AND no
-quote.
+**v211 DELIVERED by run #889 — BUT THE STORE IS PARTIAL AND IT MUST NOT BE
+MIRRORED UNTIL A COMPLETION RUN LANDS.** `pvTopShare` 99.7 -> **94.7**, i.e.
+**3,578 acks never got read at all** (3,167 with no error code, 3,239 still
+confident and serving their pv-210 entries, `dl` FLAT at 214 so not downloads).
+`audit-data`'s `partial-store` HIGH fired correctly and says so in words: *"this
+is a PARTIAL re-parse, not a finished one. Do not mirror; re-dispatch and let it
+complete."* All 20 parse shards concluded SUCCESS and stopped inside a 32-48
+minute band, which is a per-shard TIME BUDGET being hit, not a failure — the
+run reports success and the coverage line rises, which is this file's own
+"a run can FINISH and still not have READ the universe", seen for the first
+time from the budget side rather than the download side.
 
-| key | registered |
-|---|---|
-| `vesting` (trail, PLAN count) | 55,364 -> **55,905** (+541) |
-| `vestQuote` | 5,526 -> **5,502** (−24) |
-| `vesting_shown` | 77.56% -> **79.29%** |
-| `vesting_gap` | 14,035,304 -> **12,132,987** (−1,902,317) |
-| `vesting_withheld` | 10,750,756 -> **10,742,196** (−8,560) |
-| ONE SCALAR | 79.60% -> **79.94%** |
-| `match_shown` / `match_gap` and every non-vesting field | **UNCHANGED** — the write set is `out.vesting` + `out.vestingText`, verified by construction over the whole range (3 + 1 assignments, none removed but the one the two-pass restructure moved) |
+| key | registered | delivered |
+|---|---|---|
+| `vesting` (trail, PLAN count) | 55,905 (+541) | **55,963 (+599)** — 58 plans beyond |
+| `vestQuote` | 5,502 (−24) | **5,486 (−40)** |
+| `vesting_shown` | 79.29% | **79.25%** |
+| `vesting_gap` | 12,132,987 (−1,902,317) | **12,182,541 (−1,852,763)** — 49,554 SHORT |
+| `vesting_withheld` | 10,742,196 (−8,560) | **10,733,305 (−17,451)** |
+| ONE SCALAR | 79.94% | **79.93%** |
 
-**Readers moved to an answer: 1,902,317, band 1,902,317 to ~2,316,098** — exact
-over the 56,056 judged filings, a FLOOR over the run, the unjudged remainder
-being 15,428 plans / 19,732,984 readers with no cached text. Jitter registered
-SEPARATELY: a bump re-parses the universe, so `confident`/`lineups`/`entries`/
-`dl`/`overshoot` move by whatever the re-roll moves, and the six named acks
-(7 plans / 6,145 readers) have degraded on every re-parse since v207.
+**THE NEW FINDING, AND IT IS NOT THE PARTIAL STORE: A REGISTRATION CAN
+OVER-DELIVER IN PLANS AND UNDER-DELIVER IN READERS AT THE SAME TIME.** Four
+runs running, the point estimate was a floor and the band was right; here the
+PLAN count beat its point by 58 while the READER gap fell 49,554 SHORT of it.
+Both were registered off the same instrument over the same population, so this
+is not an instrument error — the 58 extra plans are simply SMALLER than the
+registered population's average, and a plan count saturating is not a reader
+count moving. ***Register both and read them separately; "over-delivered" is
+not a property of a run, it is a property of a KEY.***
+
+**AND THE VERDICT IS PROVISIONAL FOR A SECOND REASON that points the same way:**
+every figure above is measured over a **94.7% read**, so the completion run will
+move `vesting` and the gap further still. A partial store does not merely block
+the mirror — *it makes a registration unsettleable*, because neither an
+over-delivery nor a shortfall can be attributed while 5% of the universe is
+carrying its previous answer.
+
+**Jitter arrived as registered** — `confident` −6, `lineups` −5, with `entries`,
+`dl` and `overshoot` all FLAT — and "nothing else moves" failed small and in
+v210's NEW shape for the second run running: `match` −1, `matchAny` −1 and
+`roth` −1 on a write set provably limited to `out.vesting` + `out.vestingText`.
+**The six named acks degraded for the SIXTH consecutive re-parse**, the
+identical set, five again on `ds: "readfail"`; repaired in-session (all six back
+to their exact prior counts 30/35/23/25/3/9, every one `ok=true`, `confident`
+62,210 -> 62,216) and the repair SURVIVES the completion run, because those acks
+are stamped at pv 211 and so are invisible to its work list.
 
 **THE ARM OWNS ITS POPULATION RATHER THAN BORROWING IT, and that was checked two
 ways because the ship's own comment got the mechanism wrong.** Under the sliced
@@ -1176,22 +1200,33 @@ estimate: it refutes itself the moment a new import appears.
 
 **THE LEDGER IS THE QUEUE.** `node scripts/ledger-report.mjs` prints the one
 participant-weighted scalar and the addressable gap per field; it is DERIVED and
-must never be copied forward. Re-derived 2026-11-22 from the store run #886
-left on this branch (`pv` 210): **115,641 plans / 119,907,098 participants /
-overall 79.60%**, 87,224,940 participant-cells addressable, with addressable
-gaps below. (v208 withdrew a future-effective or catch-up-mandate Roth/after-tax
-yes from 865 plans, so `contributions` fell 66.96% -> 66.05% and the scalar
-79.25 -> 79.06 ON PURPOSE — the fifth time it has gone DOWN for accuracy; v209
-then took it 79.06 -> 79.15 on the vesting scope gate and v210 79.15 -> 79.60
-on the discretionary-match spellings.)
+must never be copied forward. Re-derived 2026-11-23 from the store run #889
+left on this branch (`pv` 211, **94.7% — a PARTIAL read, so every figure here
+moves again when the completion run lands**): **115,641 plans / 119,907,098
+participants / overall 79.93%**, 85,369,460 participant-cells addressable, with
+addressable gaps below. (v208 withdrew a future-effective or catch-up-mandate
+Roth/after-tax yes from 865 plans, so `contributions` fell 66.96% -> 66.05% and
+the scalar 79.25 -> 79.06 ON PURPOSE — the fifth time it has gone DOWN for
+accuracy; v209 then took it 79.06 -> 79.15 on the vesting scope gate, v210
+79.15 -> 79.60 on the discretionary-match spellings, and v211 79.60 -> 79.93 on
+the whole-account vesting claim.)
 
 | field | shown | readers with no answer | owner agent |
 |---|---|---|---|
 | contributions (pre-tax / Roth / after-tax / brokerage) | 66.05% | **40.70M** | `tier-a-contributions` |
 | match | 70.90% | **19.86M** (12.29M withheld on purpose) | `tier-a-plan-terms` |
-| vesting | 77.56% | **14.03M** (10.75M withheld on purpose) | `tier-a-plan-terms` |
+| vesting | 79.25% | **12.18M** (10.73M withheld on purpose) | `tier-a-plan-terms` |
 | custodian / recordkeeper | 90.22% | **11.72M** | `tier-a-custodian` |
-| fund menu | 93.52% | **0.91M** (6.25M withheld on purpose) | `tier-a-lineup` |
+| fund menu | 93.52% | **0.90M** (6.25M withheld on purpose) | `tier-a-lineup` |
+
+**RANKED BY ADDRESSABLE RATHER THAN BY GAP, vesting is still the largest class
+but the margin has halved:** contributions' 40.70M is 34.3M of closed 2K
+disjunction, match's 19.86M is HALF A CEILING at 7.23M parser-addressable, and
+custodian's 11.72M is 9.45M short-form filings with no Schedule C by law. v211
+took vesting's parser-addressable share from ~10.90M to roughly **~9.05M**, so
+it leads match by ~1.8M where it led by 3.7M yesterday. **Re-derive that split
+with `node scripts/notes-gap-census.mjs vesting` after the completion run** —
+the ~9.05M is arithmetic off a pre-v211 census, not a measurement.
 
 **THE SCALAR WENT DOWN AND THAT WAS ACCURACY, TWICE.** 79.82% -> 78.33% when
 `lib-ledger` stopped reading code **2R** as designated Roth (2R is the
