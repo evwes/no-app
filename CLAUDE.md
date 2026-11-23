@@ -975,8 +975,18 @@ re-derive it, never bump it.
 
 ### Pre-registered for the next run that merges
 
-**v212 DELIVERED and SETTLED over two runs — `pvTopShare` 99.7%, `high` back to
-the standing 6.** #892 concluded **failure** and left the store PARTIAL at 89.74%:
+**v212 DELIVERED, SETTLED over two runs, and MIRRORED as `fb1cd6e` — LIVE.**
+`mirror-gate` **0 plans / 0 participants losing service** (confident +1 / −0 by
+ack), **`sitetest-gate` a GENUINE pass on run #385** (the `ok` line printed with
+the run number — `--force` was given for the git-ahead refusal only, and it
+downgrades a REFUSAL, so a green verdict still prints), `deploy-check` pages run
+1327 success in 1.4 min. Main's two cron commits were cleared on MEASUREMENT, not
+timing: 0 plan keys either way and **0 plans whose ACK differs** in either
+direction, so not one newer filing — *and a plan-KEY comparison cannot answer
+that, because a DOL refresh replaces a plan's ack without adding a key.*
+**`merge-4i.mjs`'s stale-delta guard is live in code but UNEXERCISED IN CI**:
+`mirror.sh` rightly notes merge-side code moves no version, so the next merge is
+its first real run. `pvTopShare` 99.7%, `high` back to the standing 6. #892 concluded **failure** and left the store PARTIAL at 89.74%:
 `parse (19)` was KILLED at 82 minutes (every other shard finished in 32–49) with
 its step still `in_progress` and `upload-artifact` **`pending`**, so that shard's
 delta was never uploaded — **the `if: always()` artifact upload this file credits
