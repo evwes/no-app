@@ -964,9 +964,13 @@ re-derive it, never bump it.
 
 ### Pre-registered for the next run that merges
 
-**v211 DELIVERED and SETTLED over two runs — #889 left the store PARTIAL
-(`pvTopShare` 94.7) and #890's completion run took it to 97.2, which CLEARS the
-gate; `partial-store` is gone from the HIGH list and the ship is mirrorable.**
+**v211 DELIVERED, SETTLED over two runs, and MIRRORED as `944b38e` — LIVE.**
+`mirror-gate` 0 plans losing service, **`sitetest-gate` a GENUINE pass on run
+#379** (the `ok` line printed on the exact head, not an override — the commit
+carried `CLAUDE.md` on purpose so the push would create a run that gate can
+find), `deploy-check` pages run 1323 success in 1.5 min. #889 left the store
+PARTIAL (`pvTopShare` 94.7) and #890's completion run took it to 97.2, which
+CLEARED the gate: `partial-store` left the HIGH list.
 #889's 20 parse shards all concluded SUCCESS and stopped inside a 32-48 minute
 band: a per-shard TIME BUDGET, not a failure, leaving **3,578 acks never read**
 (3,167 with no error code, `dl` FLAT at 214, 3,239 still confident on their
