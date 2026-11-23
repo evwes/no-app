@@ -7,6 +7,130 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-23 — v211: THE WHOLE ACCOUNT IS NOT "ALL CONTRIBUTIONS", AND EVERY REFUSAL IN IT WAS EARNED BY READING
+
+**WHAT WAS WRONG.** The immediate-vesting scope gate (`lib-4i`, the
+`employerMoney` / `universal` / `strictGate` triple) decides whether a sentence
+covers EMPLOYER money, and every arm keys on a money NOUN. A filer who says the
+PARTICIPANT'S WHOLE ACCOUNT is vested satisfies none of them — `strictGate`
+wants the word "all" before "plan accounts", the others want the word
+"contributions" — and that gate's `continue` runs ahead of every quote fallback
+in the loop, so those plans published **nothing at all**: not a label, not even
+the filing's own sentence. **Lowe's (289,398 readers)** files *"Each participant
+shall at all times have a 100% vested interest in the balance of their
+account"*; Microsoft (184,329) *"fully vested in Plan accounts at all times"*;
+IBM (144,897), ABM (87,551) and U.S. Bancorp (85,667) the same shape. All five
+also fail `IMMED`, which wants its full-vest marker ADJACENT to its
+always-marker, and all five put the account in between.
+
+**HOW THE CLASS WAS FOUND, which is the reusable part.** The ledger's
+"attachment read, no vesting statement found" bucket (5,603 plans / 11.90M) was
+re-censused and is **one** sub-bucket: on 4,546 plans / 10.41M the sentence
+selection was NON-empty and every arm refused — `S-plural`, `S-nonforf`,
+`S-noperiod` and `S-vetoed` are all **ZERO**, so the anchor regex is not the
+problem and a pass aimed at it would have bought nothing.
+`scripts/vesting-absent-census.mjs` and `scripts/vesting-gate-fork.mjs` ask it;
+`scripts/lib-vestslice.mjs` slices the shipped selection and the shipped scope
+gate out of lib-4i's bytes so no instrument retypes either. That slice THREW
+`ReferenceError` twice as the gate moved under it, which is the one thing a
+retyped copy could never do.
+
+**THE CHANGE.** `wholeAccountVested(s)` — a full-vest marker, an unconditional
+marker, an account OBJECT in either word order, and the account not narrowed to
+employee money. Used at the scope gate as `wholeAcctOnly` and again at the
+label decision, and the loop now runs TWICE with the arm live only on pass 1.
+
+**SIX REFUSALS, FIVE OF THEM FOUND BY READING RATHER THAN BY REASONING.**
+1. **The account must be UN-NARROWED, per MENTION.** St. Luke's *"elective
+   deferral and rollover accounts"*, Methodist Dallas *"mandatory, voluntary,
+   and rollover accounts"*. Per mention and not sentence-wide, because **Cadence
+   Bank (7,885)** names employer money precisely to say it is NOT immediate —
+   *"The employee deferral accounts are 100% vested at all times, and employer
+   contributions have a ONE-YEAR VESTING PERIOD"* — so a sentence-wide employer
+   test publishes the opposite of the filing. An employer word inside the same
+   narrowing window is an escape: Strata Oncology's *"salary deferral, rollover,
+   and SAFE-HARBOR accounts"* is employer money by IRC 401(k)(12).
+2. **An ACCELERATION TRIGGER, refused at the GATE.** `accelerationOnlyVesting`
+   reads the word `immediate` as "a complete answer is present", so it returns
+   FALSE on Jmark's *"become immediately 100% vested in their account once they
+   attain Normal Retirement Age … or if death or disability occurs"*. Right for
+   the question that predicate asks; useless here. Refusing at the gate puts
+   that blind spot out of this arm's reach by construction. `AV_TRIGGER` is now
+   EXPORTED from lib-quote rather than retyped.
+3. **A TWO-CLAIM sentence loses the LABEL and keeps the QUOTE** — the shipped
+   `SPONSOR_TWO_CLAIM`, as a `labelBlocked` / `blockedButQuotable` pair.
+   Eastman Chemical (14,676) states a real carve-out and its sentence is the
+   best evidence the filing offers. *Blocking a wrong ANSWER must never suppress
+   the honest EVIDENCE*, seventh instance.
+4. **THE FIRST-WINS CHAIN, AND THE ONE NO COUNT COULD SEE.** Written as a plain
+   disjunct in the single loop, the differential reported **LABELS LOST 0,
+   RELABELLED 0 — and QUOTES CHANGED on 17 plans / 12,879 readers that already
+   published `Immediate`**. *Adding a WRITER to a first-wins chain RE-ORDERS
+   it*: the new admission wins at the `break` and displaces the sentence a later
+   iteration used to reach. Reading them: Archrock (1,813) moved to the IRC
+   plan-termination boilerplate this record condemns, Peacehealth (1,137) to a
+   ROLLOVER sentence, Crowley (2,257) to an unexplained "the RSA". `vesting`,
+   `vestQuote` and the ledger state are IDENTICAL on both sides, so only reading
+   the moved quotes found it. The two-pass gate removes the class entirely.
+5. **FOUR TRUE SCHEDULES WOULD HAVE BEEN REPLACED BY `Immediate`** — the worst
+   shape there is. Legacy Funeral / Retail Concepts / LBC Houston publish *"the
+   portion of their account ATTRIBUTABLE TO participant contributions"* over a
+   real 5- or 6-year employer rule; Morgan Lewis (5,179) *"ALL PARTICIPANT
+   CONTRIBUTIONS … ALLOCATED TO THE ACCOUNTS"* over a five-year one. Neither is
+   reachable by a window around the account noun. Two further arms came out of
+   the quote moves: Ditsch USA (190) *"attributable to his or her contributions
+   (including ROLLOVERS)"* over a 20%-per-period schedule, and Grant-Blackford
+   (194) *"the participant's ACCOUNT IN SALARY REDUCTION CONTRIBUTIONS"*.
+6. **A SUBSET OR A DANGLING DEMONSTRATIVE.** Re/Max (761) *"As a result,
+   AFFECTED participants immediately became 100% vested"*; Ageless Men's Health
+   and MTX *"always 100% vested in THESE contribution accounts"*, whose referent
+   is in another sentence; Murata (793) *"ALL OTHER accounts"*. `eligible` is
+   deliberately absent — it is how most filings say "everyone".
+
+**AND THE PYTHON HEREDOC ATE THE WORD BOUNDARIES.** `WA_SUBSET` was first
+written through a NON-RAW heredoc, so every `\b` became a literal BACKSPACE and
+the refusal matched nothing while reading as present — on the one arm whose job
+is to stop a false label. Caught by the slice probe in
+`vesting-wholeaccount-test.mjs` refusing to run, never by a count: a regex
+carrying invisible control characters fires on nothing and looks like a guard.
+Every file touched this pass was then swept for `chr(8)`.
+
+**MEASUREMENT.** Committed-base-vs-working-tree differential through
+`match-arm-diff.mjs --field vesting` (generalised with a `--field` flag rather
+than copied — a 260-line harness retyped for a second field measures the
+retyping, and its mapper control would have had to be re-earned). Narrowed by
+`∃ s ∈ vestSentences(text) : wholeAccountVested(s)`, which supersets the
+trigger BY CONSTRUCTION (three dropped conjuncts) and **cannot** be done on the
+flat text, because `clean()` DELETES page-heading blocks out of the middle of a
+window so a firing sentence need not be a substring of the filing. 1,338 of
+56,056 judged acks narrowed in; **800 excluded filings re-run unnarrowed, 0
+differences.** Result over 1,411 plans: **0 off-vesting field moves, 0 labels
+lost, 0 labels relabelled, 0 quotes lost.** All 546 movers READ, plus all 14
+withdrawn by the attributable/allocated arms and all 17 refused as
+employee-scoped.
+
+**PREVENTION.** `scripts/vesting-wholeaccount-test.mjs` — 8 must-fire, 17
+must-not-fire, 6 single-protection conditions and 13 sliced mutants, with a
+slice probe that throws before any mutant can pass vacuously. Two mutually
+redundant conditions (`rollovers?` and the possessive form) are priced
+TOGETHER, because one at a time each reads "necessary for 0". Wired into
+build-data's prep AND site-test, since it is a PREDICATE condition with no
+network and no corpus. Eleven live `parser-gate` specimens: six positives and
+**five counter-specimens**, each the only protection for one condition —
+v204 added the former and not the latter and took 21 real funds off a page.
+
+**DELIBERATELY WITHHELD, named rather than rounded off.** ~15.9K readers across
+seven plans (Pipe Fitters Local 597 11,618 the largest) trip
+`SPONSOR_TWO_CLAIM` on *"not SUBJECT TO forfeiture for any reason"* or
+*"COMPLETE discontinuance"*, which restate the claim rather than qualify it:
+they keep the quote and lose a label they deserve. The Bridge (489) and
+Archbishop Molloy (158) name their employer money as a CONTRIBUTION rather than
+as an account and are over-refused. Green Vale School (231) and San Marcos EMS
+(119) gain a quote that opens on table debris. All five are below the floor and
+the alternative is blanking clauses out of a shipped predicate to re-ask it.
+
+---
+
 ## 2026-11-22 (21:xxZ) — v210 DELIVERED, AND THE RE-ROLL CHANGED SHAPE, WHICH IS EVIDENCE
 
 **DELIVERED vs REGISTERED.** `match` 45,270 -> **46,619** against a registered

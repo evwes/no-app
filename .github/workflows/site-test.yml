@@ -161,6 +161,11 @@ on:
             "docs/coverage-history.jsonl", "docs/ledger-history.jsonl",
             "scripts/ledger-test.mjs", "scripts/generic-typo-test.mjs",
             "scripts/match-formula-test.mjs", "scripts/wrap-repair-test.mjs",
+            # v211's whole-account vesting predicate. Pure: lib-4i + lib-quote,
+            # no network, no corpus -- so unlike parser-gate it can run here as
+            # well as in build-data's prep, and a change to the TEST can start
+            # the job that runs it without firing a universe re-parse.
+            "scripts/vesting-wholeaccount-test.mjs",
             "scripts/schc-item1-test.mjs", "scripts/schd-name-test.mjs",
             "scripts/lib-disclose.mjs", "scripts/lib-quote.mjs",
             "data/fund-facts.json", "scripts/fund-facts-check.mjs",
@@ -401,6 +406,7 @@ jobs:
           node scripts/schc-item1-test.mjs
           node scripts/schd-name-test.mjs
           node scripts/match-formula-test.mjs
+          node scripts/vesting-wholeaccount-test.mjs
           node scripts/wrap-repair-test.mjs
           node scripts/roth-pairing-test.mjs
           # --quick ON PURPOSE, and the reason is the honest half of this gate:

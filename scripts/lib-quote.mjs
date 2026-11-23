@@ -334,7 +334,17 @@ const AV_FULL = new RegExp([
 ].join("|"), "i");
 /* each arm is an event that ACCELERATES vesting — it happens TO a participant
  * rather than being measured in service */
-const AV_TRIGGER = new RegExp([
+/* EXPORTED since v211, so the parser's whole-account scope arm can refuse a
+ * sentence carrying one of these events instead of retyping the vocabulary.
+ * It matters there for a reason specific to this file: `AV_SCHEDULE` treats the
+ * word `immediate` as "a complete answer is present", so
+ * `accelerationOnlyVesting` returns FALSE on "become IMMEDIATELY 100% vested in
+ * their account once they attain Normal Retirement Age" (Jmark Business
+ * Solutions, 178 readers) — correct for the question this file asks, and no use
+ * to a gate that must not admit such a sentence in the first place. Refusing at
+ * the gate keeps that blind spot out of the new arm's reach BY CONSTRUCTION
+ * rather than by a second judgment. */
+export const AV_TRIGGER = new RegExp([
   String.raw`\b(?:death|dies|died|deceased)\b`,
   String.raw`\bdisab`,
   String.raw`\b(?:normal|early)\s+retirement\b`,

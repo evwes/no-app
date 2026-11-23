@@ -11,7 +11,7 @@ import { dirname, join } from "node:path";
 /* v203 adds `accelerationOnlyVesting`, the same guard the two display surfaces
  * use to qualify an acceleration-only quote — so the label gate and the
  * reader-facing sentence are one predicate and cannot contradict each other. */
-import { vestingQuoteOk, matchQuoteOk, accelerationOnlyVesting } from "./lib-quote.mjs";
+import { vestingQuoteOk, matchQuoteOk, accelerationOnlyVesting, AV_TRIGGER } from "./lib-quote.mjs";
 import { futureEffectiveGrant, catchupMandateRefusal, planYearEnd } from "./lib-effective-date.mjs";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
@@ -316,6 +316,189 @@ export const SPONSOR_EMPLOYEE_WORD = new Set(["employee", "employees", "particip
  *    wrong and nothing that would have been right.
  */
 export const SPONSOR_TWO_CLAIM = /\b(?:years?|months?)\s+of\s+(?:vesting |credited |continuous |eligibility )?(?:service|employment)\b|\bcomplet\w+|\banniversar\w+|\bvesting schedule\b|\bhowever\b|\bwhereas\b|\bexcept\b|\bother than\b|\bunless\b|\bprovided that\b|\bsubject to\b|\b(?:hired?|employed|enrolled)\b[^.]{0,60}?\b(?:before|after|on or after|on or before|prior to|or later|or earlier)\b/i;
+
+/* ---- THE WHOLE ACCOUNT IS NOT "ALL CONTRIBUTIONS" ------------------------
+ * v211. The immediate-vesting loop's employer-scope gate asks whether a
+ * sentence covers EMPLOYER money, and every arm it has keys on a money NOUN:
+ * "matching/employer/company … contributions", "… accounts", "safe harbor
+ * contributions", "all plan accounts", "all contributions", or (v209) the
+ * sponsor's own name in front of "contributions". A filer who says the
+ * PARTICIPANT'S WHOLE ACCOUNT is vested satisfies none of them:
+ *
+ *   "Each participant shall at all times have a 100% vested interest in the
+ *    BALANCE OF THEIR ACCOUNT."                        Lowe's,     289,398
+ *   "Participants are fully vested in PLAN ACCOUNTS at all times."
+ *                                                      Microsoft,  184,329
+ *   "Participants in the Plan are at all times fully vested in THEIR ACCOUNT
+ *    BALANCE, including employee contributions, prior IBM contributions …"
+ *                                                      IBM,        144,897
+ *   "The value of the PARTICIPANT'S ACCOUNT, including the Company's matching
+ *    portion, is fully vested at all times."           ABM,         87,551
+ *   "… are immediately 100 percent vested in THEIR ENTIRE ACCOUNT BALANCE."
+ *                                                      U.S. Bancorp, 85,667
+ *
+ * `strictGate` wants the word "all" before "plan accounts"; `employerMoney`
+ * and the v209 sponsor arm want the word "contributions"; `universal` wants
+ * "all contributions". So all five of those plans published NOTHING — not a
+ * label and not a quote, because the scope gate's `continue` runs ahead of
+ * every quote fallback in that loop.
+ *
+ * AND THE SCOPE CLAIM IS SOUND RATHER THAN CONVENIENT: a participant's
+ * ACCOUNT holds whatever the plan credits to them, employer money included,
+ * so a full-vesting claim about the account covers employer money BY
+ * CONSTRUCTION in a way a claim about "their contributions" never does. That
+ * asymmetry is the whole reason this gate is right to refuse Charter's
+ * "immediately vested in their voluntary contributions": employee money is
+ * vested by law and says nothing about the employer's.
+ *
+ * WHICH IS WHY THE ACCOUNT NOUN ITSELF HAS TO BE UN-NARROWED, and that is the
+ * one refusal reading the filings earned rather than reasoning. An auditor
+ * narrows the account the same way:
+ *   "… fully and immediately vested in their ELECTIVE DEFERRAL AND ROLLOVER
+ *    ACCOUNTS"                                      St. Luke's Health, 750
+ *   "… 100% vested in amounts credited to their MANDATORY, VOLUNTARY, AND
+ *    ROLLOVER ACCOUNTS"                  Methodist Hospitals of Dallas, 17,325
+ *   "The EMPLOYEE DEFERRAL ACCOUNTS are 100% vested … at all times, and
+ *    employer contributions have a ONE-YEAR VESTING PERIOD."  Cadence, 7,885
+ * Cadence is why the test is PER ACCOUNT MENTION rather than "no employer word
+ * anywhere in the sentence": that sentence names employer money precisely to
+ * say it is NOT immediately vested, so a sentence-wide employer test admits it
+ * and publishes the opposite of what the filing says. Every account mention
+ * must be employee-narrowed for the refusal to fire, and an employer word
+ * inside the SAME narrowing window makes the mention count as un-narrowed —
+ * Strata Oncology's "salary deferral, rollover, and SAFE-HARBOR accounts" is
+ * employer money by statute (IRC 401(k)(12)) and must keep its answer.
+ * All seventeen members of the refusal were read; sixteen are unambiguous and
+ * the seventeenth (The Bridge, 489 readers, "rollover accounts AND
+ * discretionary non-elective contributions") is a deliberate over-refusal,
+ * because its employer money is named as a CONTRIBUTION and not as an account.
+ *
+ * NO TRAILING `\b` AFTER THE ALTERNATION IN WA_FULL. `%` is a non-word
+ * character, so `100%` followed by a space has no boundary between them —
+ * lib-quote's `AV_FULL` carries this same note, and the first cut of this
+ * predicate walked into it anyway and read Lowe's "100% vested interest" as a
+ * MISS, hiding the largest member of the class. */
+const WA_FULL = /\b100\s?%|\b100\s+percent\b|\bone\s+hundred\s+percent\b|\bfully\b/i;
+/* The claim must be UNCONDITIONAL. Without this marker "a participant is 100%
+ * vested in their account after three years" matches the object test below and
+ * would be read as immediate. */
+const WA_ALWAYS = /\bat all times\b|\balways\b|\bimmediate(?:ly)?\b|\bat any time\b/i;
+/* the vested OBJECT is the account, in either word order — "vested in Plan
+ * accounts" / "vested interest in the balance of their account" forward, and
+ * "the value of the participant's account … is fully vested" reversed */
+const WA_FWD = /\bvested\b[^.]{0,45}?\b(?:in|interest in|of|to)\b[^.]{0,45}?\baccounts?\b/i;
+const WA_REV = /\baccounts?\b[^.]{0,90}?\b(?:is|are|remain|remains|shall be|will be|be)\b[^.]{0,35}?\bvested\b/i;
+const WA_EMP_NARROW = /\b(?:elective|salary\s+(?:reduction|deferral)|defer(?:ral|red)|pre-?\s?tax|after-?\s?tax|post-?\s?tax|roth|rollover|voluntary|mandatory|employee|participant'?s?\s+own|their\s+own)\b/i;
+const WA_EMPLOYER_NARROW = /\b(?:employer|company|corporation|matching|match|non-?elective|nonelective|profit[- ]sharing|discretionary|plan\s+sponsor|safe[\s-]*harbor)\b/i;
+/* the account narrowed by a clause AFTER it: NYU Langone (50,458) writes
+ * "fully vested in their account balance FOR CONTRIBUTIONS THEY MAKE", which
+ * no preceding-window test can see and which is the largest single refusal */
+const WA_EMP_MAKES = /\baccounts?\b[^.]{0,25}?\b(?:for|attributable\s+to|consisting\s+of|from)\b[^.]{0,45}?\bcontributions?\s+(?:they|he|she|the\s+participant)\s+(?:make|makes|made)\b/i;
+/* AND THE TWO ARMS THE DIFFERENTIAL EARNED, which is the part of this change
+ * that was NOT reasoned out in advance. The first run RELABELLED four plans
+ * from a true multi-year employer schedule to `Immediate` — the worst failure
+ * shape there is, because it withdraws a correct answer and publishes its
+ * opposite — and every one of the four was a full-vest claim scoped to the
+ * PARTICIPANT'S OWN money with the word "account" appearing incidentally:
+ *
+ *   WAS "A participant becomes fully vested in Company contributions and
+ *        related earnings upon the earlier of: (1) six years of service or
+ *        (2) attainment of age 65."                     <- the plan's rule
+ *   WOULD HAVE BECOME "A participant is immediately fully vested with respect
+ *        to THE PORTION OF THEIR ACCOUNT ATTRIBUTABLE TO PARTICIPANT
+ *        CONTRIBUTIONS and related earnings."
+ *                 Legacy Funeral 1,084 / Retail Concepts 501 / LBC Houston 295
+ *   WOULD HAVE BECOME "ALL PARTICIPANT CONTRIBUTIONS and earnings thereon
+ *        ALLOCATED TO THE ACCOUNTS of participants under the Plan are fully
+ *        vested and nonforfeitable at all times."     Morgan Lewis 5,179
+ *
+ * Neither is reachable by a window around the account noun: in the first the
+ * narrowing is a trailing `attributable to` phrase, and in the second the
+ * account is merely where the contributions were PUT. Both arms are
+ * unconditional — no employer-money escape — because a sentence scoping its
+ * claim to one money type is not made plan-wide by naming another type
+ * elsewhere in the same window, and measured over the 1,411 narrowed plans the
+ * escape would have admitted nothing these arms should let through.
+ * `participant's` is deliberately NOT employee-narrowing on its own: "the value
+ * of the PARTICIPANT'S ACCOUNT" (ABM, 87,551) is the whole account, and only
+ * "the participant's OWN contributions" narrows it. */
+/* ONE vocabulary, used by three arms, because three hand-kept copies of an
+ * employee-money word list is three things to diverge — and the first cut DID
+ * diverge: `rollover` without the plural let Ditsch USA through on
+ * "attributable to his or her contributions (including ROLLOVERS)", over a
+ * filing whose employer money vests at 20% per period of service. */
+const WA_EMP_CLASS = "participant|employee|elective|voluntary|mandatory|salary(?:\\s+(?:reduction|deferral))?"
+  + "|pre-?\\s?tax|after-?\\s?tax|post-?\\s?tax|roth|defer(?:ral|rals|red)|rollovers?"
+  + "|(?:their|his|her|its)(?:\\s+or\\s+(?:his|her))?\\s+own";
+/* and the POSSESSIVE form, which is employee money without naming a type:
+ * "attributable to HIS OR HER CONTRIBUTIONS", "the portion of THEIR
+ * CONTRIBUTIONS". Kept separate from the list above because it must be
+ * followed by the word `contributions` to mean anything — bare "their" in
+ * "their account balance" is the WHOLE account and is the commonest positive. */
+const WA_EMP_POSS = "(?:the\\s+)?(?:participant'?s?|his|her|their|its)(?:\\s+or\\s+(?:his|her))?\\s+(?:own\\s+)?contributions?";
+const WA_ATTRIB = new RegExp("\\b(?:attributable\\s+to|resulting\\s+from|derived\\s+from|consisting\\s+of|that\\s+represents?|representing)\\b"
+  + `[^.]{0,45}?(?:\\b(?:${WA_EMP_CLASS})\\b|${WA_EMP_POSS})`, "i");
+const WA_EMP_ALLOC = new RegExp(`\\b(?:${WA_EMP_CLASS})\\s+contributions?\\b`
+  + "[^.]{0,70}?\\b(?:allocated|credited|contributed|deposited)\\s+to\\b[^.]{0,45}?\\baccounts?\\b", "i");
+/* the account noun followed IMMEDIATELY by the money type it holds. Grant-
+ * Blackford Mental Health (194) files "the participant's ACCOUNT IN SALARY
+ * REDUCTION CONTRIBUTIONS are fully vested immediately", where the narrowing
+ * is a bare `in` — too dangerous as a connector in the windowed arms above
+ * ("vested in their accounts in the Plan"), and safe here because the type
+ * word must follow the noun directly. */
+const WA_ACCT_OF = new RegExp(`\\baccounts?\\s+(?:in|of|from)\\s+(?:the\\s+)?(?:${WA_EMP_CLASS})(?:\\s+\\w+){0,2}\\s+contributions?\\b`, "i");
+
+/* A CLAIM ABOUT A SUBSET, OR ABOUT AN ACCOUNT THE SENTENCE DOES NOT NAME.
+ * Also earned by reading the differential's quote moves rather than reasoned
+ * out: the two-pass guard stops the arm displacing a quote where a LABEL
+ * already exists, and these are the displacements on plans with no label,
+ * where the arm sets both. Three were not plan-wide claims at all:
+ *   "As a result, AFFECTED PARTICIPANTS immediately became 100% vested in
+ *    their accounts."                                     Re/Max, 761
+ *     — and the quote it displaced states the plan's REAL rule, a ratable
+ *       three-year schedule on discretionary employer money for later hires.
+ *   "If made, participants are always 100% vested in THESE CONTRIBUTION
+ *    ACCOUNTS."                      Ageless Men's Health 721 / MTX Group 420
+ *     — a demonstrative with its referent in an earlier sentence, so the
+ *       sentence alone cannot say what is vested, and a quote that cannot be
+ *       read on its own is not evidence.
+ *   "Each participant's interest in ALL OTHER ACCOUNTS is at all times fully
+ *    vested and nonforfeitable."                          Murata, 793
+ *     — "all other" presupposes accounts that are NOT.
+ * `eligible` is deliberately absent: "eligible participants" is how most
+ * filings say "everyone the plan covers", and excluding it would cost correct
+ * answers to buy nothing. */
+/* NOTE ON THE SOURCE OF THIS LINE: it was first written through a Python
+ * heredoc with a NON-RAW string, so every \b became a literal BACKSPACE and
+ * the whole refusal matched nothing while READING as present — this record's
+ * own trap, met on the one arm whose job is to stop a false label. Caught by
+ * the slice probe in vesting-wholeaccount-test.mjs refusing to run, not by any
+ * count: a regex carrying invisible control characters fires on nothing and
+ * looks exactly like a guard. */
+const WA_SUBSET = /\b(?:affected|impacted|such|these|those|certain)\s+(?:participants?|employees?|contributions?|accounts?)\b|\ball\s+other\s+accounts?\b/i;
+
+/** True when every account the sentence names is narrowed to EMPLOYEE money. */
+export function employeeScopedAccount(s) {
+  const x = String(s || "");
+  if (WA_EMP_MAKES.test(x) || WA_ATTRIB.test(x) || WA_EMP_ALLOC.test(x) || WA_ACCT_OF.test(x)) return true;
+  let any = false;
+  for (const m of x.matchAll(/\baccounts?\b/gi)) {
+    any = true;
+    const w = x.slice(Math.max(0, m.index - 38), m.index);
+    if (!WA_EMP_NARROW.test(w) || WA_EMPLOYER_NARROW.test(w)) return false;
+  }
+  return any;
+}
+
+/**
+ * True when `s` states that the participant's WHOLE ACCOUNT is fully vested,
+ * unconditionally. A scope claim only — the caller still decides the label.
+ */
+export function wholeAccountVested(s) {
+  const x = String(s || "");
+  return WA_FULL.test(x) && WA_ALWAYS.test(x) && (WA_FWD.test(x) || WA_REV.test(x))
+    && !WA_SUBSET.test(x) && !employeeScopedAccount(x);
+}
 
 export function sponsorMoneyRe(sponsorName) {
   const tk = String(sponsorName || "").toLowerCase().split(/[^a-z0-9]+/)
@@ -8152,7 +8335,35 @@ export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
     }
   }
   // "immediate" only counts when the sentence explicitly covers employer money
-  if (!out.vesting) {
+  /* v211 RUNS THIS LOOP TWICE, AND THE SECOND PASS IS THE WHOLE SAFETY CASE.
+   *
+   * Pass 0 is byte-for-byte the shipped loop: `waPass` is 0, so `wholeAcctOnly`
+   * is false on every sentence and nothing about today's behaviour can change.
+   * Pass 1 runs ONLY if pass 0 settled no label, and it is the pass in which
+   * the whole-account arm is live.
+   *
+   * WHY, measured. The arm was first written as a plain disjunct inside this
+   * one loop, and the differential said LABELS LOST 0, LABELS RELABELLED 0 —
+   * and QUOTES CHANGED on 17 plans / 12,879 readers that ALREADY published
+   * `Immediate`. *Adding a WRITER to a first-wins chain RE-ORDERS it*: the new
+   * admission wins at the `break` below and displaces the sentence a LATER
+   * iteration used to reach, and reading those 17 shows most of the
+   * replacements are worse. Archrock Services (1,813) went from a real cohort
+   * sentence to the IRC plan-termination boilerplate this record condemns;
+   * Peacehealth (1,137) from "Employer matching contributions made starting in
+   * 2019 will vest immediately" to a sentence about ROLLOVER money; Crowley
+   * (2,113 + 144) from "employee and employer contributions" to an
+   * unexplained "the RSA". No count could have shown it — `vesting` and
+   * `vestQuote` are both unmoved, and the ledger state is `published` on both
+   * sides. Only reading the moved quotes did, which is the v202 lesson from
+   * the other direction.
+   *
+   * Gated on `!out.vesting` and not on `!out.vestingText`, on purpose: 37
+   * plans publish a quote with NO label today, and promoting those to a label
+   * is a real gain whose supporting sentence must then become the quote. */
+  for (const waPass of [0, 1]) {
+    if (waPass === 1 && out.vesting) break;
+    if (!out.vesting) {
     for (const s of vestSentences) {
       // "always 100% vested in ALL of their Plan accounts" (EP Energy)
       // covers employer money without naming it
@@ -8239,7 +8450,26 @@ export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
       // are common and the pre-existing non-elective scoping already handles
       // them. The new guards therefore police only the new admissions.
       const strictGate = /(matching|employer|company|non.?elective|profit.?sharing|plan sponsor) (?:contributions?|accounts?)|company match|all (?:of (?:their|his|her) )?(?:plan )?accounts|all contribution sources/i.test(s);
-      if (!strictGate && !employerMoney && !universal) continue;
+      /* v211: …or the sentence says the participant's WHOLE ACCOUNT is fully
+       * vested, unconditionally. See `wholeAccountVested` for the five filings
+       * and the one refusal that shaped it. `wholeAcctOnly` is deliberately
+       * keyed on the three arms above being FALSE — `mine(x) && !everything
+       * before(x)` — so every sentence this admits is one the `continue` below
+       * used to discard, and the one new label guard it carries (further down,
+       * beside the other `labelBlocked` arms) cannot therefore withdraw a label
+       * any plan has today. Additive by construction, not by sampling.
+       *
+       * AN ACCELERATION TRIGGER IS REFUSED AT THE GATE rather than at the
+       * label, because `accelerationOnlyVesting` reads the word `immediate` as
+       * "a complete answer is present" and so returns FALSE on Jmark Business
+       * Solutions' "become immediately 100% vested in their account once they
+       * attain Normal Retirement Age of age 65, or if death or disability
+       * occurs" — right for the question that predicate asks, and exactly the
+       * wrong answer here. Refusing at the gate puts that blind spot out of
+       * this arm's reach by construction. 2 plans / 305 readers, both read. */
+      const wholeAcctOnly = waPass === 1 && !strictGate && !employerMoney && !universal
+        && wholeAccountVested(s) && !AV_TRIGGER.test(s);
+      if (!strictGate && !employerMoney && !universal && !wholeAcctOnly) continue;
       /* …and the widened gate must not answer for a plan that vests the
        * PARTICIPANT's money immediately and the employer's over years:
        *   "immediately vested in their voluntary contributions as well as
@@ -8421,6 +8651,37 @@ export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
           && !matchImmNonElecGraded) labelBlocked = blockedButQuotable = true;
       if (/^[^.]{0,30}\bupon\s+(?:the\s+)?(?:completion\s+of\s+)?(?:one|two|three|four|five|six|\d)\s+years?\s+of\s+service/i.test(s)) labelBlocked = blockedButQuotable = true;
       if (/\bbut\b[^.]{0,60}?\bnot\b[^.]{0,40}?\bvest\w*[^.]{0,40}?\buntil\b/i.test(s)) labelBlocked = blockedButQuotable = true;
+      /* v211: a WHOLE-ACCOUNT sentence that also makes a SECOND claim. The
+       * gate above admits the sentence because its object is the account; this
+       * refuses the LABEL and keeps the QUOTE, which is the rule the three arms
+       * directly above already encode and which this record has paid for six
+       * times. All fourteen members were read; none would survive a label:
+       *   "Participants' accounts are fully vested at all times, EXCEPT for the
+       *    participating Employers' nonelective discretionary contributions …
+       *    which are VESTED ON A GRADED SCALE OVER FIVE YEARS"
+       *                                   Pohlad Companies, 2,114 + Pflc, 302
+       *   "… 100% vested in their account, with the exception of amounts
+       *    transferred from other plans, which may continue to be SUBJECT TO
+       *    the former plans' vesting requirements"   Eastman Chemical, 14,676
+       *   "Participants that were HIRED PRIOR TO January 1, 2017 … were
+       *    immediately fully vested in their account balances"   Berwind, 170
+       * Pohlad is why this is a `labelBlocked` arm and not a condition inside
+       * `wholeAccountVested`: its sentence satisfies `IMMED` on its own ("fully
+       * vested at all times"), so refusing it at the gate would have cost the
+       * quote while a bare `continue` here would too — and that sentence, which
+       * names the carve-out AND its five-year scale, is the best evidence the
+       * filing offers. Keyed on `wholeAcctOnly`, so it can only ever fire on a
+       * sentence the gate used to discard.
+       * DELIBERATELY WITHHELD, and recorded rather than fixed: seven of the
+       * fourteen (Pipe Fitters Local 597 11,618, Promedica 2,728, Sunflower
+       * 508, Stoughton 490, Children's Cabinet 250, Curtis School 202, City
+       * Employees Local 237 116 — ~15.9K readers) trip `SPONSOR_TWO_CLAIM` on
+       * "not SUBJECT TO forfeiture for any reason" or "COMPLETE discontinuance
+       * of contributions", which restate the vesting claim rather than
+       * qualifying it. They keep the quote and lose a label they deserve. That
+       * is 0.8% of the class, below the reader floor, and the alternative is
+       * blanking a clause out of a shipped predicate to re-ask it. */
+      if (wholeAcctOnly && SPONSOR_TWO_CLAIM.test(s)) labelBlocked = blockedButQuotable = true;
       // the immediate-vesting words can sit on EITHER side of "vest"
       // ("immediately vested" vs "vested … at all times"), so this test must
       // be order-independent — the first version required them after, and
@@ -8521,7 +8782,22 @@ export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
        * lose a false label, they gain the REAL schedule out of the same filing
        * (Arcosa "2-year cliff", Weather Shield "6-year schedule").
        * `docs/accuracy-log.md` 2026-10-09. */
-      if (IMMED.test(s)) {
+      /* v211 adds the second disjunct, and it is NOT redundant with `IMMED`.
+       * `IMMED` wants its full-vest marker ADJACENT to its always-marker —
+       * `fully vested at all times`, `immediately vested`, `100% vested at all
+       * times` — and every large member of the whole-account class puts the
+       * ACCOUNT in between: Lowe's "at all times have a 100% vested interest in
+       * the balance of their account", Microsoft "fully vested in Plan accounts
+       * at all times", IBM "at all times fully vested in their account
+       * balance", ABM "the value of the participant's account … is fully vested
+       * at all times", U.S. Bancorp "immediately 100 percent vested in their
+       * entire account balance". All five fail `IMMED` and all five are
+       * unconditional immediate-vesting statements; without this they would
+       * reach the fallback below and publish a quote with no label, which is
+       * the gap a reader of the vesting line actually feels.
+       * `accelerationOnlyVesting` is still consulted for the IMMED half and is
+       * unreachable from the new half, which carries no trigger by gate. */
+      if (IMMED.test(s) || wholeAcctOnly) {
         if (!accelerationOnlyVesting(s)) out.vesting = "Immediate";
         out.vestingText = cap(s); break;
       }
@@ -8541,6 +8817,7 @@ export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
       const offTopic = /notes receivable from participants|\bborrow\b|obtain loans|in.?service withdrawal|available for withdrawal|\bhardship|refer to the (?:basic )?plan document|reference should be made to|summary plan description|eligibility (?:requirements|rules)|payment of benefits|lump.?sum distribution|may be withdrawn/i.test(s)
         && !/years? of (?:vesting |credited |continuous )?service|vesting schedule|\bgraded\b|\bcliff\b|\d{1,2} ?% vested|percentage vested|vested percentage|immediately vested|vested immediately|fully vested (?:at all times|immediately|in all)|100 ?% vested (?:at all times|immediately|in all)|at all times|schedule below|as follows|following schedule/i.test(s);
       if ((!out.vestingText || vestingQuoteUpgrade(out, cap(s))) && !/forfeit/i.test(s) && !offTopic) out.vestingText = cap(s);
+    }
     }
   }
   // LAST of the vesting readers: a 4-6yr full-vesting horizon fills a gap

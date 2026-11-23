@@ -97,12 +97,19 @@ jobs:
       # run in under a second. They were written and never wired, so a
       # regression in Schedule C or D capture could only have been found by
       # reading the data afterwards. Fails fast, before the download.
-      - name: Ingest gate (Schedule C item 1, Schedule D names, match formula)
+      - name: Ingest gate (Schedule C item 1, Schedule D names, match formula, v211 whole-account vesting)
         run: |
           node scripts/schc-item1-test.mjs
           node scripts/schd-name-test.mjs
           node scripts/match-formula-test.mjs
           node scripts/roth-pairing-test.mjs
+          # v211. A PREDICATE condition, not a data one, so it belongs where it
+          # can stop the parse: it reads only lib-4i.mjs and lib-quote.mjs, needs
+          # no network and no corpus, and its failure means the whole-account
+          # vesting arm would publish "Immediate" over a filing that says
+          # otherwise. It also runs in site-test, which is the job a test-file
+          # edit can trigger without firing a re-parse.
+          node scripts/vesting-wholeaccount-test.mjs
       # merge-side name repairs. This one CAN live in CI where
       # merge-name-test.mjs cannot: it slices the arm out of merge-4i.mjs and
       # feeds it a FROZEN attestation map, so a DOL refresh cannot flip its

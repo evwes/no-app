@@ -2,7 +2,16 @@
 /* wampo — A FEATURES DIFFERENTIAL NARROWED ON ONE NAMED EXPORTED ARM.
  *
  *   node scripts/match-arm-diff.mjs --arm <exportName> [<base-ref>]
+ *                                   [--field match|vesting]
  *                                   [--discharge N] [--show K]
+ *
+ * `--field` (default `match`, which is what the file is named for) selects
+ * which ledger cell the state mapper projects and which field prefix counts as
+ * ON-field. It was added for v211 rather than copying this file: a 260-line
+ * harness retyped for a second field measures the retyping, and its mapper
+ * control — which is the only thing that makes the projection trustworthy —
+ * would have had to be re-earned. Everything else here is field-agnostic
+ * already, including the narrowing, the discharge and the chunking.
  *
  * A committed-base-vs-working-tree differential, so whatever this harness does
  * differently from production cancels on both sides. The baseline module graph
@@ -37,7 +46,7 @@ const argv = process.argv.slice(2);
  * made the first version read the arm name as the git ref and then refuse,
  * because `indexOf` returned 0 and the guard asked for `> 0`: two
  * off-by-one-shaped mistakes in one line of argument parsing. */
-const FLAGV = new Set(["--arm", "--discharge", "--show", "--prefilter", "--moves", "--narrow-cache", "--chunk"]);
+const FLAGV = new Set(["--arm", "--discharge", "--show", "--prefilter", "--moves", "--narrow-cache", "--chunk", "--field", "--probe"]);
 const POS = argv.filter((a, i) => !a.startsWith("--") && !FLAGV.has(argv[i - 1]));
 const REF = POS[0] || "HEAD";
 const DISCHARGE = (() => { const i = argv.indexOf("--discharge"); return i >= 0 ? +argv[i + 1] : 0; })();
@@ -57,6 +66,14 @@ const CHUNK = (() => {
   return { start: a, count: b };
 })();
 
+const FIELD = (() => { const i = argv.indexOf("--field"); return i >= 0 ? argv[i + 1] : "match"; })();
+if (!["match", "vesting"].includes(FIELD)) { console.error("--field wants match or vesting"); process.exit(2); }
+/* the field's own names, so nothing below says "match" where it means "the
+ * field under test" — a label that lies about which field it counts is how a
+ * registration gets attributed to the wrong key */
+const F = FIELD === "match"
+  ? { label: "match", quote: "matchText", on: /^match/, answer: "formula" }
+  : { label: "vesting", quote: "vestingText", on: /^vesting/, answer: "label" };
 const ARM = (() => { const i = argv.indexOf("--arm"); return i >= 0 ? argv[i + 1] : null; })();
 if (!ARM) { console.error("match-arm-diff: --arm <exportName> is required — the narrowing IS the named arm"); process.exit(2); }
 const base = materialiseAt(REF, "lib-4i.mjs", { label: "wampo-armdiff" });
@@ -81,7 +98,8 @@ const fires = (flat) => !!newLib[ARM](flat);
 const PREFILTER = (() => { const i = argv.indexOf("--prefilter"); return i >= 0 ? argv[i + 1] : null; })();
 const preRe = PREFILTER ? new RegExp(PREFILTER, "i") : null;
 if (PREFILTER) {
-  const probe = "At its discretion the Employer may make discretionary matching contributions at the discretion of the Board.";
+  const PROBE = (() => { const i = argv.indexOf("--probe"); return i >= 0 ? argv[i + 1] : null; })();
+  const probe = PROBE || "At its discretion the Employer may make discretionary matching contributions at the discretion of the Board.";
   if (!newLib[ARM](probe)) throw new Error(`--prefilter: the probe sentence does not fire ${ARM} — the prefilter cannot be validated`);
   const stripped = probe.replace(new RegExp(PREFILTER, "gi"), "XXXX");
   if (newLib[ARM](stripped)) throw new Error(`--prefilter ${PREFILTER} is NOT required by ${ARM} — it still fires with the substring removed`);
@@ -89,11 +107,16 @@ if (PREFILTER) {
 }
 
 /* the ledger's precedence, written once and controlled below */
-const stateOf = (ft) => !ft ? "absent"
-  : ft.match ? "published"
-    : ft.matchMisread ? "withheld"
-      : ft.matchText ? "withheld"
-        : ft.noEmployer ? "published" : "absent";
+const stateOf = FIELD === "match"
+  ? (ft) => !ft ? "absent"
+    : ft.match ? "published"
+      : ft.matchMisread ? "withheld"
+        : ft.matchText ? "withheld"
+          : ft.noEmployer ? "published" : "absent"
+  /* lib-ledger's vestingCell, same precedence and nothing else in it */
+  : (ft) => !ft ? "absent"
+    : ft.vesting ? "published"
+      : ft.vestingText ? "withheld" : "absent";
 
 const L = buildLedger({ withStatus: false });
 /* the EMPLOYER CONTRIBUTION per ack, read from the same store the audit reads,
@@ -116,10 +139,10 @@ for (const p of L.plans) {
   const own = p.ack ? lineups.get(p.ack) : null;
   const ft = own && own.features ? own.features : null;
   ctrlN++;
-  if (stateOf(ft) === p.cells.match.state) ctrlOk++;
-  else ctrlBad.push(`${p.sponsorName} ${p.ein}|${p.pn}: ledger=${p.cells.match.state} mapper=${stateOf(ft)}`);
+  if (stateOf(ft) === p.cells[FIELD].state) ctrlOk++;
+  else ctrlBad.push(`${p.sponsorName} ${p.ein}|${p.pn}: ledger=${p.cells[FIELD].state} mapper=${stateOf(ft)}`);
 }
-console.log(`MAPPER CONTROL: ${ctrlOk}/${ctrlN} full-form plans reproduce the ledger's own match state`);
+console.log(`MAPPER CONTROL: ${ctrlOk}/${ctrlN} full-form plans reproduce the ledger's own ${FIELD} state`);
 for (const b of ctrlBad.slice(0, 5)) console.log(`  MISMATCH ${b}`);
 if (ctrlOk !== ctrlN) { console.error("the state mapper disagrees with lib-ledger — fix it before reading anything below"); process.exit(1); }
 
@@ -165,7 +188,7 @@ console.log(`narrowed to ${narrowed.length} plans / ${ppl(narrowed).toLocaleStri
 /* ------------------------------------------------------------ the difference */
 const FIELDS = new Set();
 const moves = [];
-const nonMatch = [];
+const offField = [];
 let done = 0;
 const slice = CHUNK ? narrowed.slice(CHUNK.start, CHUNK.start + CHUNK.count) : narrowed;
 if (CHUNK) console.log(`CHUNK ${CHUNK.start}..${CHUNK.start + slice.length} of ${narrowed.length}`);
@@ -180,20 +203,20 @@ for (const p of slice) {
     if (JSON.stringify(a[k]) === JSON.stringify(b[k])) continue;
     changed = true;
     FIELDS.add(k);
-    if (!/^match/.test(k)) nonMatch.push(`${k} :: ${p.sponsorName} ${p.ack} :: ${String(a[k]).slice(0, 80)} -> ${String(b[k]).slice(0, 80)}`);
+    if (!F.on.test(k)) offField.push(`${k} :: ${p.sponsorName} ${p.ack} :: ${String(a[k]).slice(0, 80)} -> ${String(b[k]).slice(0, 80)}`);
   }
   if (!changed) continue;
   moves.push({
     p, from: stateOf(a), to: stateOf(b),
-    oldMatch: a.match || null, newMatch: b.match || null,
-    oldQuote: a.matchText || null, newQuote: b.matchText || null,
-    ledger: p.cells.match.state,
+    oldMatch: a[FIELD] || null, newMatch: b[FIELD] || null,
+    oldQuote: a[F.quote] || null, newQuote: b[F.quote] || null,
+    ledger: p.cells[FIELD].state,
     contribEmployer: empByAck.get(p.ack) || 0,
   });
 }
 console.log(`\nfields that moved anywhere: ${[...FIELDS].sort().join(", ") || "(none)"}`);
-console.log(`NON-MATCH FIELD MOVES: ${nonMatch.length}`);
-for (const n of nonMatch.slice(0, 10)) console.log("  " + n);
+console.log(`OFF-${F.label.toUpperCase()} FIELD MOVES: ${offField.length}`);
+for (const n of offField.slice(0, 10)) console.log("  " + n);
 
 const by = new Map();
 for (const m of moves) {
@@ -208,7 +231,13 @@ for (const [k, v] of [...by].sort((x, y) => y[1].reduce((s, m) => s + m.p.ppl, 0
 const lost = moves.filter((m) => m.oldMatch && !m.newMatch);
 const relabel = moves.filter((m) => m.oldMatch && m.newMatch && m.oldMatch !== m.newMatch);
 const quoteMoved = moves.filter((m) => m.oldQuote && m.newQuote && m.oldQuote !== m.newQuote);
-console.log(`\nFORMULAS LOST: ${lost.length}    FORMULAS RELABELLED: ${relabel.length}    QUOTES CHANGED (both present): ${quoteMoved.length}`);
+const U = F.answer.toUpperCase();
+console.log(`\n${U}S LOST: ${lost.length}    ${U}S RELABELLED: ${relabel.length}    QUOTES CHANGED (both present): ${quoteMoved.length}`);
+{
+  const qGained = moves.filter((m) => !m.oldQuote && m.newQuote);
+  const qLost = moves.filter((m) => m.oldQuote && !m.newQuote);
+  console.log(`QUOTES GAINED: ${qGained.length} pl / ${qGained.reduce((s, m) => s + m.p.ppl, 0).toLocaleString()} ppl    QUOTES LOST: ${qLost.length} pl / ${qLost.reduce((s, m) => s + m.p.ppl, 0).toLocaleString()} ppl`);
+}
 for (const m of [...lost, ...relabel].slice(0, 10))
   console.log(`  ${m.p.sponsorName} ${m.p.ack}  ${m.oldMatch} -> ${m.newMatch}`);
 
@@ -217,7 +246,7 @@ for (const m of [...lost, ...relabel].slice(0, 10))
  * puts the rest in `matchInZeroEmp`; `matchAny` is their sum. A registration
  * naming `match` alone under-predicts by exactly the $0-employer population, so
  * the split is printed rather than left to a band. */
-{
+if (FIELD === "match") {
   const zero = moves.filter((m) => m.newMatch && !m.oldMatch && !(m.contribEmployer > 0));
   const nonzero = moves.filter((m) => m.newMatch && !m.oldMatch && m.contribEmployer > 0);
   console.log(`\nTRAIL SPLIT of the plans that GAIN a formula:`);
@@ -226,6 +255,17 @@ for (const m of [...lost, ...relabel].slice(0, 10))
   console.log(`  matchAny       += ${nonzero.length + zero.length}`);
   const hadQuote = moves.filter((m) => m.newMatch && !m.oldMatch && m.oldQuote);
   console.log(`  matchQuote     -= ${hadQuote.filter((m) => m.contribEmployer > 0).length}  (of the gainers, had a stored quote and employer money)`);
+} else {
+  /* THE VESTING TRAIL KEYS ARE NOT GATED ON EMPLOYER MONEY — `audit-data`
+   * counts `vesting` for any entry with `f.vesting` and `vestQuote` for any
+   * entry with a quote and no label, so the split the match half needs does
+   * not exist here and inventing one would mispredict. */
+  const gain = moves.filter((m) => m.newMatch && !m.oldMatch);
+  const wasQuote = gain.filter((m) => m.oldQuote);
+  const quoteOnlyGain = moves.filter((m) => !m.newMatch && !m.oldMatch && !m.oldQuote && m.newQuote);
+  console.log(`\nTRAIL SPLIT (per ENTRY, which is how audit-data counts both keys):`);
+  console.log(`  vesting   += ${gain.length}`);
+  console.log(`  vestQuote += ${quoteOnlyGain.length} - ${wasQuote.length} = ${quoteOnlyGain.length - wasQuote.length}  (gained a quote-only entry, minus quote-only entries promoted to a label)`);
 }
 const MOVES = (() => { const i = argv.indexOf("--moves"); return i >= 0 ? argv[i + 1] : null; })();
 if (MOVES) {

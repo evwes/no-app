@@ -188,6 +188,64 @@ const FEATURE_SPECIMENS = [
    * "The Employers", which is what lets a reader see that. */
   ["v210 (was v205 {match:null}): TriNet HR III — \"at their discretion, ELECT to match up to 100%\"",
     "20261015114803NAL0007909523001", { match: "Discretionary — set year to year", quote: true }],
+  /* v211 — THE WHOLE ACCOUNT IS NOT "ALL CONTRIBUTIONS". The employer-scope
+   * gate's arms all key on a money NOUN, so a filer who says the PARTICIPANT'S
+   * ACCOUNT is fully vested satisfied none of them and published nothing at all
+   * — not a label, not even a quote, because that gate's `continue` runs ahead
+   * of every quote fallback in the loop. Six positives, and every one FAILS
+   * `IMMED` on its own: `IMMED` wants its full-vest marker adjacent to its
+   * always-marker and all six put the account in between.
+   *
+   * The sponsor names are supplied because production supplies them (v209's
+   * lesson), even though this arm reads none of them — a specimen measured
+   * with a different argument than the caller passes is not a pin. */
+  ["v211: Lowe's — 'at all times have a 100% vested interest in the balance of their account'",
+    "20260903100242NAL0011134784001", { vesting: "Immediate", quote: true }, "Lowe'S Companies, Inc."],
+  ["v211: Microsoft — 'fully vested in Plan accounts at all times' (no 'all' before the noun)",
+    "20260724135502NAL0012679475001", { vesting: "Immediate", quote: true }, "Microsoft Corporation"],
+  ["v211: IBM — 'at all times fully vested in their account balance' (reversed adjacency)",
+    "20260717114259NAL0006085105001", { vesting: "Immediate", quote: true }, "International Business Machines Corporation"],
+  ["v211: ABM — 'the value of the participant's account … is fully vested at all times' (account BEFORE the copula)",
+    "20261016000013NAL0009897697001", { vesting: "Immediate", quote: true }, "Abm Industries Incorporated"],
+  ["v211: U.S. Bancorp — 'immediately 100 percent vested in their entire account balance'",
+    "20260724143732NAL0023494754001", { vesting: "Immediate", quote: true }, "U.S. Bancorp"],
+  /* the single-protection case for the EMPLOYER escape inside
+   * `employeeScopedAccount`: a safe-harbor contribution is employer money by
+   * statute (IRC 401(k)(12)), so an account list naming it is NOT narrowed to
+   * employee money even though "salary deferral" and "rollover" sit beside it.
+   * Without that escape this reads as a refusal. */
+  ["v211: Strata Oncology — 'salary deferral, rollover, and SAFE-HARBOR accounts are 100% vested at all times'",
+    "20251015080523NAL0002004515001", { vesting: "Immediate", quote: true }, "Strata Oncology, Inc."],
+  /* …AND THE FIVE COUNTER-SPECIMENS. v204 added the positives and not the
+   * negatives and took 21 real funds off a page; each row below is the ONLY
+   * protection for one condition of this change, found by asking which other
+   * condition also fires rather than by taste. All five publish nothing today
+   * and must go on publishing nothing. */
+  ["v211 control: St. Luke's — 'vested in their ELECTIVE DEFERRAL AND ROLLOVER accounts' is employee money",
+    "20260825121332NAL0025740672002", { vesting: null, quote: null }, "St. Luke'S Health Network, Inc."],
+  /* the PER-MENTION test's own case, and the reason it is per mention rather
+   * than "no employer word anywhere in the sentence": this sentence names
+   * employer money precisely to say it is NOT immediately vested, so a
+   * sentence-wide employer test admits it and publishes the opposite of what
+   * the filing says. "The employee deferral accounts are 100% vested …, and
+   * employer contributions have a ONE-YEAR VESTING PERIOD." */
+  ["v211 control: Cadence Bank — employee-narrowed account + employer money on a one-year schedule",
+    "20260827100658NAL0002500483001", { vesting: null, quote: null }, "Cadence Bank"],
+  /* the `WA_EMP_MAKES` case: the narrowing clause follows the account noun, so
+   * no preceding-window test can see it. Largest member of the refusal. */
+  ["v211 control: NYU Langone — 'vested in their account balance FOR CONTRIBUTIONS THEY MAKE'",
+    "20261014114755NAL0006312577001", { vesting: null, quote: null }, "Nyu Langone Hospitals"],
+  /* the acceleration trigger, refused at the GATE rather than at the label —
+   * `accelerationOnlyVesting` reads this sentence's own word "immediately" as
+   * "a complete answer is present" and would let the label through. */
+  ["v211 control: Jmark — '100% vested in their account ONCE THEY ATTAIN Normal Retirement Age … or death or disability'",
+    "20261013145532NAL0004720881001", { vesting: null, quote: null }, "Jmark Business Solutions, Inc."],
+  /* the new `labelBlocked`/`blockedButQuotable` arm, and the ONLY row in the
+   * set where the quote must SURVIVE: the sentence states a real carve-out, so
+   * the label must go and the filing's own words must stay. *Blocking a wrong
+   * ANSWER must never suppress the honest EVIDENCE.* */
+  ["v211 control: Eastman Chemical — carve-out 'SUBJECT TO the former plans' vesting requirements' — no label, quote kept",
+    "20261014153917NAL0005932529001", { vesting: null, quote: true }, "Eastman Chemical Company"],
   /* v83: three false-"Immediate" shapes the v81 widening let through, found
    * by self-checking all 3,907 new Immediate labels against their own quotes.
    * Each states a service condition in the SAME sentence as the immediate
