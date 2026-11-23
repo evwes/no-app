@@ -15,7 +15,7 @@ import { vestingQuoteOk, matchQuoteOk, accelerationOnlyVesting, AV_TRIGGER } fro
 import { futureEffectiveGrant, catchupMandateRefusal, planYearEnd } from "./lib-effective-date.mjs";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 211;
+export const PARSER_VERSION = 212;
 
 /* v207: THE QUOTE'S OWN WORDS CAN DENY WHAT THE FLAG ASSERTS, and 76 plans /
  * 175,656 readers were published that way — `afterTax: true` or `roth: true`
@@ -8674,9 +8674,33 @@ export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
        * and is dead code.* Those three plans (1,862 readers) publish IRC
        * 411(d)(3) boilerplate as their vesting evidence, below the floor, and
        * widening `planTermCond`'s spellings is a LABEL-path change for the whole
-       * universe and belongs in its own pass. The label is untouched:
-       * this arm writes `out.vestingText` and nothing else, so no plan can gain,
-       * lose or change a vesting LABEL through it. */
+       * universe and belongs in its own pass.
+       *
+       * THE LABEL IS UNTOUCHED, BUT **NOT FOR THE REASON THIS COMMENT FIRST
+       * GAVE**, and the difference is the whole verification. It read: "this arm
+       * writes `out.vestingText` and nothing else, so no plan can gain, lose or
+       * change a vesting LABEL through it." The premise is true and the
+       * inference does not follow, because `out.vestingText` is READ after the
+       * write by v88's graded-horizon post-pass, which writes the LABEL:
+       *   if (out.vesting === "Graded schedule" && out.vestingText) …
+       *     out.vesting = `${n}-year graded schedule`
+       * So a write-set argument is sound only for a field nothing downstream
+       * reads; where a post-pass reads the field, the write set must be closed
+       * under what READS it. `git diff | grep -o 'out\.[A-Za-z]*'` cannot see
+       * that, and it is the cheap check this project reaches for first.
+       *
+       * The conclusion survives on a two-part argument, both parts checked:
+       *  (1) `vestingQuoteUpgrade`'s FIRST conjunct is `!out.vesting`, so the
+       *      upgrade disjunct of the end-of-function write can only fire on a
+       *      plan with NO label — where v88's `=== "Graded schedule"` is false.
+       *  (2) all NINE sites that set `"Graded schedule"` assign `out.vestingText`
+       *      in the SAME statement, so the `!out.vestingText` disjunct can never
+       *      reach a Graded-schedule plan either.
+       * Only those two disjuncts write, so v88's input is unreachable from this
+       * arm and no label can move. The differential agrees (0 relabelled over
+       * 16,691 judged filings) — but a measurement over a sampled population is
+       * not the same claim as "cannot", and this comment used to assert the
+       * stronger one from the weaker evidence. */
       if (!strictGate && (remainderGraded || carveOut)) {
         if (!guardHeldQuote && !/forfeit/i.test(s) && !offTopic && vestingQuoteOk(s))
           guardHeldQuote = cap(s);

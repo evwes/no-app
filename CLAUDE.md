@@ -964,6 +964,48 @@ re-derive it, never bump it.
 
 ### Pre-registered for the next run that merges
 
+**v212 IS IN FLIGHT — the vesting loop's SECOND bare `continue` now keeps the
+filing's sentence while still refusing the label.** 609 plans / **1,667,448
+readers** gain a verbatim quote where the page shows nothing today; the arm
+writes `out.vestingText` only. Registered against the trail line of 2026-11-23
+attributed to `5f8aa67` (`pv` 211, `pvTopShare` 97.2) and the ledger read from
+that same store:
+
+| key | registered |
+|---|---|
+| `vesting` (trail, per ENTRY) | 55,980 -> **55,980 UNCHANGED** |
+| `vestQuote` | 5,486 -> **6,095 (+609)**, band +609 .. +618 |
+| `vesting_gap` | 12,148,561 -> **10,481,113 (−1,667,448)**, band −1,667,448 .. −1,689,796 |
+| `vesting_withheld` | 10,733,305 -> **12,400,753 (+1,667,448)** |
+| `vesting_shown` | 79.28% -> **79.28% UNCHANGED** |
+| ONE SCALAR | 79.94% -> **79.94% UNCHANGED** |
+| ledger `addressable` | 85,335,329 -> **83,667,881 (−1,667,448)** |
+| every other field | **UNCHANGED** |
+
+**THE ONE SCALAR CANNOT SEE THIS SHIP, AND THE LEDGER IS THE QUEUE.** The move is
+absent -> withheld, and `shown`'s denominator is their sum, so `shown` and the
+scalar are flat BY CONSTRUCTION while 1.67M readers go from a blank cell to the
+filing's own words. The only headline key that moves is `addressable`
+(`ledger-test` asserts withheld is excluded from it), and that is the key that
+RANKS this queue. *A ledger keyed on LABEL coverage is blind to QUOTE coverage,
+so a scalar-driven queue will never select this work — a property of the
+instrument, not of the ship.* Do not read a flat scalar after this run as a
+failed registration.
+
+**AND THE WRITE-SET GREP IS NOT SUFFICIENT FOR A FIELD WITH POST-PASSES.** The
+ship's comment argued "writes `out.vestingText` and nothing else, so no plan can
+change a LABEL". Premise true, inference invalid: v88's graded-horizon post-pass
+READS `vestingText` and writes `out.vesting`. ***A write-set argument is sound
+only for a field nothing downstream reads; otherwise the write set must be closed
+under what READS it*** — and `git diff | grep -o 'out\.[A-Za-z]*'`, the first
+check reached for here, cannot see it. The conclusion holds on two checked parts
+(`vestingQuoteUpgrade` begins `!out.vesting`; all nine `"Graded schedule"` sites
+set `vestingText` in the same statement), and the comment now states those
+instead. Jitter registered separately as always: a version bump re-parses the
+universe, so `confident` / `lineups` / `entries` / `dl` / `overshoot` move by
+whatever the re-roll moves, and the six named acks (7 plans / 6,145 readers) have
+degraded on every re-parse since v207.
+
 **v211 DELIVERED, SETTLED over two runs, and MIRRORED as `944b38e` — LIVE.**
 `mirror-gate` 0 plans losing service, **`sitetest-gate` a GENUINE pass on run
 #379** (the `ok` line printed on the exact head, not an override — the commit

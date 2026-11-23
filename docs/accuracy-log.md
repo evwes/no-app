@@ -7,173 +7,123 @@ prevention machinery is listed at the bottom.
 
 ---
 
-## 2026-11-23 — v212: THE SECOND BARE `continue` IN THE VESTING LOOP, AND THE DIFFERENTIAL REFUTED MY SAFETY ARGUMENT
+## 2026-11-23 — v212: THE SECOND BARE `continue` IN THE VESTING LOOP, AND TWO SAFETY ARGUMENTS THAT WERE WRONG
 
-**WHAT WAS WRONG.** `extractPlanFeatures`'s immediate-vesting loop had TWO
-refusals that threw the filing's sentence away along with the label. v211 fixed
-the employer-scope gate; this is the other one,
-`if (!strictGate && (remainderGraded || carveOut)) continue;`. Every other
-refusal in that loop stores the sentence (v82, v83, v84, v86/87, v202, v211) —
-**this is the eighth instance of *blocking a wrong ANSWER must never suppress
-the honest EVIDENCE*.** The guard is reached only AFTER the scope gate has
-passed, so the sentence names employer money by construction, and the guard
-fires precisely on a SERVICE CONDITION or a CARVE-OUT — the most informative
-thing a filing can say short of a schedule this parser can label. **ADP
-TotalSource (339,248 readers)** published nothing over *"Vesting in the adopting
-employer's contribution portion of their accounts … is based on years of
-service RANGING FROM IMMEDIATE TO SIX YEARS GRADED, AS ELECTED BY EACH ADOPTING
-EMPLOYER"*; Tenet (141,695), Select Medical (60,990), Stryker (38,998) and
-WakeMed (16,757) the same; U.S. Foodservice (33,735) had its whole filed
-Years/Percentage ladder inside the refused window. For ADP and Tenet —
-multiple-employer plans — no single label is true for any reader, so the label
-refusal is permanent and the sentence is the whole of the available answer.
+*Over the ~25-line cap at 114 lines, cut from 167. Stated as measured rather
+than as a round intention, because this file's own habit is a figure that goes
+stale the moment it is written. It carries four separable findings and a
+registration table; per-plan detail and the quotes are in the code comment at
+the site, which is where they get re-read.*
 
-**HOW THE CLASS WAS FOUND, and the instrument defect that had to be fixed
-first.** `vesting-gate-fork.mjs` buckets the residue by SHAPE, and run against
-the post-v211 store it reported 5.24M readers under "a SCHEDULE is in the
-selection" whose best sentence — for ALL TWELVE largest members — was the Form
-5500's own printed line 6g(2), *"Number of participants who terminated
-employment … less than 100% vested"*. Its `LADDER` test matches that line, which
-is in every full-form filing. `lib-plannote` already strips it before asking its
-vocabulary question; the fork asks the SELECTION instead, so the strip never
-reached it. *The form's own printed questions are in the filing text, so a
-text-level screen must exclude the form before counting* — met from the other
-side, as a clean 60% of a bucket reporting on the query.
-`scripts/lib-formsentence.mjs` + `vesting-residue-shape.mjs` re-bucket it, and
-the real residue is **an IMMEDIATE claim (6.27M / 2,619 plans), not a schedule**.
+**WHAT WAS WRONG.** The immediate-vesting loop had TWO refusals that threw the
+filing's sentence away with the label. v211 fixed the scope gate; this is the
+other, `if (!strictGate && (remainderGraded || carveOut)) continue;`. Every other
+refusal in that loop stores the sentence — **the eighth instance of *blocking a
+wrong ANSWER must never suppress the honest EVIDENCE***. It fires only AFTER the
+scope gate passes, so the sentence names employer money by construction, and it
+fires on a SERVICE CONDITION or CARVE-OUT, the most informative thing a filing
+can say short of a labellable schedule. ADP TotalSource (339,248) published
+nothing over *"…years of service RANGING FROM IMMEDIATE TO SIX YEARS GRADED, AS
+ELECTED BY EACH ADOPTING EMPLOYER"*. For such multiple-employer plans NO single
+label is true for any reader, so the refusal is permanent and the sentence is the
+whole available answer. **THE CHANGE:** `offTopic` hoisted above the guard, the
+sentence HELD in `guardHeldQuote`, a post-loop fill writing it where nothing did.
 
-**THE CHANGE.** `offTopic` hoisted above the guard (a `const` over the loop's
-`s`, nothing between the sites touches it); the guard HOLDS its sentence in
-`guardHeldQuote`; a post-loop fill writes it where nothing else did.
+**THE DIFFERENTIAL REFUTED THE AGENT'S CODE ARGUMENT.** As the siblings' inline
+store it reported 0 labels lost and **341 plans / 595,066 readers whose
+ALREADY-PUBLISHED quote changed** — mostly a LOSS (Broadridge 8,627 from its filed
+ladder to "based on years of continuous service"). The argument that it could not
+missed a disjunct: `vestSentences` is SORTED, so the guard's sentence arrives
+while `vestingText` is empty and wins. *Adding a WRITER to a first-wins chain
+RE-ORDERS it* — **v211 paid for that on this exact loop one version earlier.**
 
-**THE DIFFERENTIAL REFUTED THE CODE ARGUMENT, WHICH IS THE PART TO CARRY
-FORWARD.** Written as the siblings' inline store —
-`if ((!out.vestingText || vestingQuoteUpgrade(out, cap(s))) …)` — it reported
-LABELS LOST 0, RELABELLED 0, QUOTES LOST 0 **and QUOTES CHANGED on 341 plans /
-595,066 readers whose old quote was ALREADY PUBLISHED.** I had argued that could
-not happen because `vestingQuoteUpgrade` only overwrites a quote the renderers
-refuse; the argument missed the OTHER disjunct. `vestSentences` is SORTED, so on
-those filings the guard's sentence comes first, `out.vestingText` is still empty,
-and the inline store wins the first-wins race against the later sentence the
-end-of-loop fallback used to reach. *Adding a WRITER to a first-wins chain
-RE-ORDERS it* — **v211 paid for that exact lesson on this exact loop one version
-ago, and I walked into it anyway.** Reading the 341 shows the re-ordering is
-mostly a LOSS: Broadridge Financial (8,627) went from its filed ladder to the
-bare "is based on years of continuous service"; Consumers Energy (27,258) to a
-BENEFITS sentence; Garney Holding (2,889) to a death/disability ACCELERATION
-clause (the 2026-10-09 defect from the other side); Lennox (6,262) and Auto Club
-(12,748) to page-header debris. The HELD form fills a blank and does nothing
-else, in the idiom `horizonFallback` and `shapeCliff` already use.
+**AND A SECOND SAFETY ARGUMENT WAS WRONG — found while verifying the ship.** The
+comment read "this arm writes `out.vestingText` and nothing else, so no plan can
+gain, lose or change a vesting LABEL." Premise true, inference invalid: v88's
+graded-horizon post-pass READS `vestingText` and writes `out.vesting`. ***A
+write-set argument is sound only for a field nothing downstream reads; where a
+post-pass reads the field, the write set must be closed under what READS it*** —
+and `git diff | grep -o 'out\.[A-Za-z]*'`, the cheap check reached for first here,
+cannot see it. The conclusion survives on two checked parts:
+`vestingQuoteUpgrade`'s first conjunct is `!out.vesting`, so that disjunct fires
+only where v88's test is false; and all NINE `"Graded schedule"` sites assign
+`vestingText` in the same statement, so the blank disjunct cannot reach one.
 
-**TWO CONDITIONS WERE BUILT AND ONE WAS REMOVED FOR BEING INERT.** The guard runs
-BEFORE v78's `planTermCond`, so plan-termination boilerplate reaches the hold and
-that `continue` never gets a turn — *a guard's position in a chain is part of
-what it does* — and reading the 609 gained quotes found three doing exactly that.
-But `planTermCond` **matches none of the three**: all its arms want "plan"
-adjacent to "termination", and Reedmark Advisers (665) files *"In the event of
-PEP TERMINATION"*, Ark National (579) *"If a PARTIAL PLAN TERMINATION OCCURS"*,
-Ops Tech Alliance (618) *"all contributions to the plan ceased"*. Adding the veto
-changed the differential by **0 plans over 16,691 judged filings**, because the
-SELECTION's own veto list already drops the spellings it can read. Correct,
-cheap, and dead — so it was removed with its measurement rather than shipped.
+**ONE CONDITION BUILT, MEASURED INERT, REMOVED:** a `planTermCond` veto, which
+matches none of its three real cases (*"PEP TERMINATION"*) and changed the
+differential by **0 plans over 16,691 filings**. Removed with its measurement.
 
-**MEASUREMENT.** `match-arm-diff.mjs --field vesting` against `dbfb624`, mapper
-control 71,484/71,484. Narrowed by
-`∃ s ∈ vestSentences(text) : gate(s).passes ∧ ¬ gate(s).strictGate`, computed with
-the shipped selection and the shipped gate through `lib-vestslice` — a superset
-by construction (one dropped conjunct) — 2,461 of 16,691 judged acks narrowed in,
-**2,500 excluded re-run unnarrowed at 0 differences**. Result: **the only field
-that moves anywhere is `vestingText`**; 609 plans / **1,667,448 readers** gain a
-quote; 0 labels lost, 0 relabelled, 0 quotes lost, 0 quotes changed, 0 off-vesting
-field moves. The population was narrowed to `absent`+`withheld` by a property of
-the change (every path that sets a vesting LABEL sets `vestingText` in the same
-statement, and a loop-1 label skips this loop entirely), and that narrowing was
-discharged by a **seeded uniform draw of 1,389 PUBLISHED plans / 3,218,054
-readers: 0 moved**, Wilson 95% upper bound 0.276%. `parse-replay --vs dbfb624`
-over all 609: **0 menus lost**, 6 must-keep pins held, confidence control
-598/598. All 609 gained quotes screened through seven published-claim screens and
-every hit printed and read: 0 benefits sentences, 0 loan/withdrawal rules, 0
-"refer to the plan document", 0 with no money-type word, 0 plan-name-only vest
-words.
+**AN INSTRUMENT DEFECT FIXED FIRST.** `vesting-gate-fork` reported 5.24M readers
+under "a SCHEDULE is in the selection" whose best sentence, for all twelve largest
+members, was the Form 5500's printed line 6g(2) — matched by its own LADDER test
+and present in every full-form filing. `lib-plannote` strips it before its
+vocabulary question; the fork asks the SELECTION, so the strip never reached it.
+*A clean 60% of a bucket reporting on the query.* `scripts/lib-formsentence.mjs`
+holds the enumerated list, instrument-only: the parser never imports it, and the
+form line reaches no label (probed alone, against a positive control, and beside a
+real sentence, which it does not displace).
 
-**PREVENTION.** `scripts/vesting-quotekeep-test.mjs` — 6 must-fire, 3
-single-protection must-not, **2 no-displacement routes** (the second is the
-end-of-loop route the differential found, which the first cannot see), 1
-strict-gate control and 7 materialised mutants, two of which price the FIX
-itself: restoring the inline store, and dropping the blank test from the fill.
-Its mutants needed a new mechanism — `lib-refmod.materialiseWorkingTree`, because
-a CONTROL-FLOW change has no predicate to slice out of a file. Wired into
-build-data's prep and site-test. **Eight live `parser-gate` specimens (123
-total): six positives and two counter-specimens drawn FROM THE DATA** by mutating
-the shipped source and asking which real filings a dropped condition would newly
-publish — Zara USA for `forfeit`, Syensqo for the `offTopic` + `vestingQuoteOk`
-PAIR, priced together because both reject loan text and *two mutually redundant
-guards each read "necessary for 0"* (alone 1 plan and 0 plans; together 4 plans /
-10,252 readers, every one a loan or hardship sentence).
+**MEASUREMENT.** `match-arm-diff --field vesting` vs `dbfb624`, mapper control
+71,484/71,484, narrowed by `∃ s : gate(s).passes ∧ ¬strictGate` through
+`lib-vestslice` (superset by one dropped conjunct), 2,461 of 16,691 judged,
+**2,500 excluded re-run unnarrowed at 0 differences**. Only `vestingText` moves:
+**609 plans / 1,667,448 readers** gain a quote; 0 labels lost or relabelled, 0
+quotes lost or changed. Narrowing discharged by a seeded uniform draw of 1,389
+PUBLISHED plans, **0 moved** (Wilson 95% upper 0.276%). `parse-replay` over all
+609: 0 menus lost, 6 pins held, control 598/598; all 609 screened seven ways,
+every hit read. **PREVENTION:** `vesting-quotekeep-test.mjs` (6 must-fire, 3
+single-protection must-not, **2 no-displacement routes** — the second is the one
+the differential found and the first cannot see — 1 strict-gate control, 7
+materialised mutants, two pricing the FIX), needing
+`lib-refmod.materialiseWorkingTree` because *a CONTROL-FLOW change has no
+predicate to slice*; wired into prep and site-test with `lib-refmod.mjs` in the
+paths filter. `parser-gate` green at **123**, with two counter-specimens drawn
+FROM THE DATA for the `offTopic` + `vestingQuoteOk` PAIR, priced together because
+two mutually redundant guards each read "necessary for 0".
 
-**PRE-REGISTERED** against the trail line of 2026-11-23 (`pv` 211, `vesting`
-55,980, `vestQuote` 5,486) and the ledger read from the same store.
+**PRE-REGISTERED** against the trail of 2026-11-23 (`pv` 211, `vesting` 55,980,
+`vestQuote` 5,486) and the ledger from the same store.
 
 | key | registered |
 |---|---|
-| `vesting` (trail, per ENTRY) | 55,980 -> **55,980 UNCHANGED** — this arm writes `out.vestingText` and cannot label |
+| `vesting` (trail, per ENTRY) | 55,980 -> **55,980 UNCHANGED** |
 | `vestQuote` | 5,486 -> **6,095 (+609)**, band +609 .. +618 |
 | `vesting_gap` | 12,148,561 -> **10,481,113 (−1,667,448)**, band −1,667,448 .. −1,689,796 |
 | `vesting_withheld` | 10,733,305 -> **12,400,753 (+1,667,448)** |
-| `vesting_shown` | 79.28% -> **79.28% UNCHANGED** — the move is absent -> withheld and `shown`'s denominator is their sum |
+| `vesting_shown` | 79.28% -> **79.28% UNCHANGED** — absent -> withheld, and `shown`'s denominator is their sum |
 | ONE SCALAR | 79.94% -> **79.94% UNCHANGED** |
+| ledger `addressable` | 85,335,329 -> **83,667,881 (−1,667,448)** |
 | `match`, `matchQuote`, `roth`, `aftertax`, `contributions`, `custodian`, `lineup` | **UNCHANGED** |
 
-The band's only uncertainty is **202 risk-population plans / 519,550 readers
-whose PDF would not download** (S3 403s); the 54,591 unsampled PUBLISHED plans
-cannot move the gap at all, because a published plan keeps its label and its
-label-setting statement sets the quote. ***`vesting_shown` deliberately does not
-move, and that is the right ship rather than a weak one***: the gate's label
-refusal is correct and permanent on these filings, and the alternative to a
-quote is the page showing the reader nothing at all.
+**THE ONE SCALAR CANNOT SEE THIS SHIP, AND THE QUEUE IS DRIVEN BY THAT SCALAR.**
+1.67M readers go from a blank cell to the filing's own sentence while `shown` and
+the scalar stay flat by construction. Only `addressable` moves — omitted from the
+agent's registration, and it is the key that RANKS the queue, so it is registered
+here. *A ledger keyed on LABEL coverage is blind to QUOTE coverage; a
+scalar-driven queue will never select this work, which is a property of the
+instrument and not of the ship's value.* Band uncertainty is 202 plans / 519,550
+readers whose PDF would not download. ***`vesting_shown` deliberately does not
+move, and that is the right ship rather than a weak one***: the label refusal is
+correct and permanent here, and the alternative to a quote is the reader seeing
+nothing. **Separately, not claimed:** a version bump re-parses the universe, so
+`confident` / `lineups` / `entries` / `dl` / `overshoot` jitter, and the six named
+acks (7 plans / 6,145 readers) have degraded on every re-parse since v207.
 
-**SEPARATELY, and not claimed:** a `PARSER_VERSION` bump re-parses the universe,
-so `confident` / `lineups` / `entries` / `dl` / `overshoot` jitter, and the six
-named acks (7 plans / 6,145 readers) have degraded on every re-parse since v207.
-`PARSER_VERSION` is left at **211** on purpose.
-
-**DELIBERATELY WITHHELD, named rather than rounded off.**
-• **33 plans / 33,322 readers** are refused by the `forfeit` veto ALONE, and the
-  class is MIXED: Sweetgreen (8,135) and Saint Francis Medical Center (4,135)
-  carry a filed ladder inside the same window as the "Forfeitures" heading that
-  follows it — the v85 shape, where the window spans the schedule and the heading
-  — while Zara USA and Coforge are pure forfeiture accounting and must stay
-  refused. The escape hatch v85 gave the LOAN guard has never been given to the
-  `forfeit` veto, which appears in several sibling arms; below the floor, and it
-  is a change to all of them rather than to this one.
-• **4 plans / 2,820 readers** publish IRC 411(d)(3) plan-termination boilerplate
-  as their vesting evidence, for the reason above. Widening `planTermCond`'s
-  spellings is a LABEL-path change for the whole universe.
-• **20 plans / 85,517 readers** display a quote whose first word is cut by a page
-  break (U.S. Foodservice's *"arch 1, 2007, …"*, Nationwide Children's *"ion
-  portion of …"*) — `quoteTrim` repairs 8 of the 28 and not these. The content
-  after the break is intact and is the plan's real schedule; the recorded
-  position for a truncation is RECONSTRUCTION, never suppression.
-• American Honda (37,819) publishes its MATCH-immediate sentence while a second
-  sentence puts "Employer service contributions" on a 2-to-5-year ladder. The
-  quote is true and scoped by its own words; it is INCOMPLETE, and *a guard that
-  withdraws a TRUE answer because it is incomplete makes the page less honest*.
-  Ranking the held candidates by schedule content is new machinery, unbuilt.
-
-**AND THREE LABEL ROUTES WERE SIZED AND REFUSED FOR BEING UNDER THE FLOOR**, all
-measured over the post-v211 ABSENT bucket with the sliced gate: the whole-account
-claim with NO full-vest marker ("Participants are immediately vested in their
-accounts" — Stanford 44,011, Entertainment Industry 31,362) is **125 plans /
-323,960 readers**; a generic institutional employer noun the scope gate's closed
-list does not read (*"the Organization's contributions"* 277 plans / 153,697,
-`firm` 35,740, `school` 8,945, `university` 7,792, `college` 5,165, `laboratory`
-5,076, `hospital` 4,349) is **~344 plans / ~229,000 readers** — v209's class one
-word-family further out; and the whole account named by a noun that is not
-"account" (Harvard's *"their accumulations under the Plan"*) is **2 plans /
-43,683**. Union ~550K across four arms, each needing its own counter-specimens.
-**The largest thing in the residue is a CORRECT refusal**: 1,469 plans /
-2,871,873 readers state immediate vesting of *"their contributions"* and nothing
-about the employer's, and employee money is vested by law.
+**WITHHELD AND REFUSED, named rather than rounded off.** 33 plans / 33,322 readers
+refused by the `forfeit` veto alone, a MIXED class (Sweetgreen 8,135 carries a
+filed ladder inside the "Forfeitures" window — the v85 shape — while Zara is pure
+forfeiture accounting; v85's escape hatch was never given to `forfeit`, which sits
+in several sibling arms, so it is a change to all of them). 4 plans / 2,820 publish
+IRC 411(d)(3) boilerplate; 20 / 85,517 show a quote whose first word a page break
+cut, where *the recorded position for a truncation is RECONSTRUCTION, never
+suppression*; American Honda (37,819) publishes a true, scoped but INCOMPLETE
+sentence. Three LABEL routes sized and refused under the floor: whole-account with
+no full-vest marker **125 plans / 323,960**; a generic institutional employer noun
+the scope gate cannot read (*"the Organization's"* 153,697, `firm` 35,740) **~344 /
+~229,000**, v209's class one word-family out; a whole account not named "account"
+**2 / 43,683**. **The largest thing in the residue is a CORRECT refusal**: 1,469
+plans / 2,871,873 readers state immediate vesting of *"their contributions"* only,
+and employee money is vested by law.
 
 ---
 
