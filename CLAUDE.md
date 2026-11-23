@@ -964,10 +964,34 @@ re-derive it, never bump it.
 
 ### Pre-registered for the next run that merges
 
-**v212 IS IN FLIGHT — the vesting loop's SECOND bare `continue` now keeps the
-filing's sentence while still refusing the label.** 609 plans / **1,667,448
-readers** gain a verbatim quote where the page shows nothing today; the arm
-writes `out.vestingText` only. Registered against the trail line of 2026-11-23
+**v212 DELIVERED by run #892 and MUST NOT BE MIRRORED — the store is PARTIAL at
+`pv` 212 on 89.74% of acks, so the registration is UNSETTLEABLE.** The run
+concluded **failure**: `parse (19)` was KILLED at 82 minutes (every other shard
+finished in 32–49) with its step still `in_progress` and
+`upload-artifact` **`pending`** — so that shard's delta was never uploaded and
+**the `if: always()` artifact upload this file credits with handing a crashed
+shard's progress to the merge DID NOT RUN.** The merge then committed under
+`if: always()` anyway. 7,388 acks are not at `pv` 212 (5,377 at 211, 1,792 still
+at 210 — the same tail #890 could not drain, 6,342 with no error code at all),
+and **6,346 of them are still confident on their old entry, so nothing is lost.**
+A completion run is dispatched; the work list is already exactly `pv != 212`.
+
+**IT HAS ALREADY EXCEEDED ITS BAND ON 89.74% OF THE UNIVERSE — the FIFTH
+registration running whose point was a floor, and the FIRST to pass its stated
+band.** Post-repair, read from the store: `vesting_gap` **10,433,508** against a
+registered 10,481,113 and a band to 10,458,765, so **−1,715,053 delivered against
+a band top of −1,689,796**, over by 25,257. `published` fell exactly **628**,
+which decomposes the move cleanly: the ARM moved 1,715,053 readers absent ->
+withheld, and the RE-ROLL moved 628 readers / **3 plans** published -> withheld by
+taking their LABEL — `vesting` 55,980 -> 55,977, registered UNCHANGED. ***So
+`vesting` and `roth` belong in the jitter list, not the unchanged list***: v210
+saw the identical `vesting` −3 and this is the third consecutive run where
+"nothing else moves" failed small on a label the write set cannot reach. ONE
+SCALAR is **79.94%**, exactly as registered — CI's log line said 79.93 because it
+ran BEFORE the six-ack repair, which is the stale-baseline defect of this morning
+seen from the other side.
+
+Registered against the trail line of 2026-11-23
 attributed to `5f8aa67` (`pv` 211, `pvTopShare` 97.2) and the ledger read from
 that same store:
 
@@ -1256,18 +1280,19 @@ estimate: it refutes itself the moment a new import appears.
 
 **THE LEDGER IS THE QUEUE.** `node scripts/ledger-report.mjs` prints the one
 participant-weighted scalar and the addressable gap per field; it is DERIVED and
-must never be copied forward. Re-derived 2026-11-23 from the store run #890
-left on this branch (`pv` 211 at **97.2%**, which clears the partial-store gate;
-1,793 acks remain at pv 210 and carry their previous answers):
-**115,641 plans / 119,907,098 participants / overall 79.94%**, 85,335,329
-participant-cells addressable, with addressable gaps below. (The trail briefly
-read 79.93 against a live store of 79.94, because a local merge appends no
-ledger line; **the next scheduled run closed it exactly as predicted**, and in
-the same commit attested the five-ack repair as `confident` +5 and took `high`
-11 -> **6**, the standing baseline. *A staleness with a named closing event is
-not a defect to carry — but the sentence describing it had to be deleted the
-moment it fired, which is the fourth time a line in this block has outlived its
-truth.*) (v208 withdrew a future-effective or catch-up-mandate
+must never be copied forward. Re-derived 2026-11-23 from the store run #892
+left on this branch — **a PARTIAL store, `pv` 212 on only 89.74% of acks**, with
+7,388 acks carrying their previous answers (6,346 of them still confident, so
+nothing is lost). A completion run is dispatched:
+**115,641 plans / 119,907,098 participants / overall 79.93%**, 83,620,586
+participant-cells addressable, with addressable gaps below. (**That 79.93 is the
+TRAIL's figure and the live store reads 79.94**, because the six-ack repair
+landed after #892's merge and a local merge appends no ledger line — the same
+shape as this morning, and `record-check` reads the trail, so writing the truer
+number would redden it and the only offered way past is `--force`, which also
+disables `sitetest-gate`. The completion run closes it. *Four generations of this
+block have now gone stale; derive it, and when a gap like this is named, delete
+the sentence the moment it fires.*) (v208 withdrew a future-effective or catch-up-mandate
 Roth/after-tax yes from 865 plans, so `contributions` fell 66.96% -> 66.05% and
 the scalar 79.25 -> 79.06 ON PURPOSE — the fifth time it has gone DOWN for
 accuracy; v209 then took it 79.06 -> 79.15 on the vesting scope gate, v210
@@ -1278,18 +1303,23 @@ the whole-account vesting claim.)
 |---|---|---|---|
 | contributions (pre-tax / Roth / after-tax / brokerage) | 66.05% | **40.70M** | `tier-a-contributions` |
 | match | 70.90% | **19.86M** (12.29M withheld on purpose) | `tier-a-plan-terms` |
-| vesting | 79.30% | **12.15M** (10.73M withheld on purpose) | `tier-a-plan-terms` |
+| vesting | 79.28% | **10.43M** (12.45M withheld on purpose) | `tier-a-plan-terms` |
 | custodian / recordkeeper | 90.22% | **11.72M** | `tier-a-custodian` |
 | fund menu | 93.52% | **0.90M** (6.25M withheld on purpose) | `tier-a-lineup` |
 
-**RANKED BY ADDRESSABLE RATHER THAN BY GAP, vesting is still the largest class
-but the margin has halved:** contributions' 40.70M is 34.3M of closed 2K
-disjunction, match's 19.86M is HALF A CEILING at 7.23M parser-addressable, and
-custodian's 11.72M is 9.45M short-form filings with no Schedule C by law. v211
-took vesting's parser-addressable share from ~10.90M to roughly **~9.05M**, so
-it leads match by ~1.8M where it led by 3.7M yesterday. **Re-derive that split
-with `node scripts/notes-gap-census.mjs vesting` after the completion run** —
-the ~9.05M is arithmetic off a pre-v211 census, not a measurement.
+**RANKED BY ADDRESSABLE RATHER THAN BY GAP — AND AFTER v212 VESTING NO LONGER
+CLEARLY LEADS.** contributions' 40.70M is 34.3M of closed 2K disjunction,
+custodian's 11.72M is 9.45M short-form filings with no Schedule C by law, and
+match's 19.86M is HALF A CEILING at **7.23M parser-addressable**. Vesting's
+parser-addressable share was ~10.90M before v211, ~9.05M after it, and v212
+moved a further 1.72M readers absent -> withheld, which puts it at roughly
+**~7.3M — level with match rather than ahead of it.** ***That number is
+arithmetic off a pre-v211 census, not a measurement, and the two fields are now
+close enough that the arithmetic cannot rank them.*** So the next field pick
+must NOT be read off this paragraph: **re-derive with
+`node scripts/notes-gap-census.mjs vesting` and `… match` once the completion
+run clears the partial store.** A ranking that was 3.7M apart two days ago is
+inside its own error bars today.
 
 **THE SCALAR WENT DOWN AND THAT WAS ACCURACY, TWICE.** 79.82% -> 78.33% when
 `lib-ledger` stopped reading code **2R** as designated Roth (2R is the

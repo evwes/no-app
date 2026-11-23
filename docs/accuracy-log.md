@@ -7,6 +7,39 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-23 (17:4xZ) — A STALE `results-*.json` IN THE WORKING DIRECTORY IS SILENTLY RE-APPLIED BY ANY LOCAL MERGE
+
+**WHAT WAS WRONG.** `merge-4i.mjs:55` takes its deltas from
+`readdirSync(".").filter(f => /^results-\d+\.json$/)` — every matching file in
+the cwd, with **no freshness check and no provenance check**. A `results-0.json`
+left over from the **v210-era** repair of the same six acks had been sitting in
+the working directory (mtime 09:24). Today's forced re-parse of those six acks
+produced correct `pv: 212` entries; `fetch-4i` in non-shard mode writes the
+stores DIRECTLY and writes no delta at all, so when the local merge ran it found
+only the stale file and applied its `status` map verbatim — stamping all six
+back to **`pv: 210`**.
+
+**WHY THAT IS WORSE THAN IT LOOKS.** The row counts were identical (30/35/23/25/
+3/9 either way), `confident` read the correct 62,216, and every per-ack line said
+`ok=true`, so *nothing in the repair's own output was wrong*. Only the pv stamp
+regressed — and a pv-210 stamp puts those acks straight back into the next run's
+`pv != 212` work list, where they degrade again. **The repair would have silently
+undone itself**, and the next run would have reported the loss as its own.
+
+**HOW IT WAS CAUGHT.** Not by the merge, which printed `CONFIDENCE DIFF +0 / -0`
+— true of itself and uninformative — but by a before/after read of the COMMITTED
+store against the working tree that printed `pv` beside `c`. The first version of
+that check printed only `c`, which read as a clean success. *Print every field
+the next stage keys on, not only the field the repair was about.*
+
+**THE FIX AND THE PREVENTION.** The stale file was moved out of the cwd and the
+re-parse redone: all six now at `pv 212`, `c:0->1`, five `ds:"readfail"` cleared,
+`confident` 62,210 -> 62,216, **0 other acks' `c` or `pv` moved**. 22 collateral
+name-repair rows were read, all 22 correct, 0 row-count moves. Unbuilt and named:
+`merge-4i` should refuse, or at least warn loudly, when a `results-*.json` is
+older than the store it is about to be applied to — a delta is a statement about
+one run and carries no evidence of which.
+
 ## 2026-11-23 — v212: THE SECOND BARE `continue` IN THE VESTING LOOP, AND TWO SAFETY ARGUMENTS THAT WERE WRONG
 
 *Over the ~25-line cap at 114 lines, cut from 167. Stated as measured rather
