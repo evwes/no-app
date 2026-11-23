@@ -7,6 +7,42 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-23 (21:3xZ) — A REGISTRATION SETTLED ON A 97% STORE IS SETTLED FOR 97% OF THE UNIVERSE, AND THE REST ARRIVES ATTRIBUTED TO THE NEXT VERSION
+
+**WHAT WAS WRONG.** v211 was declared SETTLED at `pvTopShare` 97.2 with **1,792
+acks still at `pv` 210** — acks its own arm had therefore never been read
+against. v212's completion run (#894) read them, and the delta it reported
+includes v211's arm landing late. So v212 appears to have over-delivered where
+part of the move is not its.
+
+**THE ARITHMETIC SEPARATES THEM EXACTLY, which is what makes this a finding and
+not a suspicion.** v212's gap fell **1,918,394** readers; `withheld` rose
+**1,814,655** and `published` rose **103,739**, and those two sum to 1,918,394.
+v212's write set is `out.vestingText`, which can only move absent -> withheld —
+so the `published` rise is v211's whole-account LABEL arm, and the trail agrees
+at `vesting` +16 plans on a change that cannot label. `vesting_shown`
+(79.28 -> 79.38) and the ONE SCALAR (79.94 -> 79.95) both moved while registered
+UNCHANGED, and that is the visible signature of it.
+
+**THE RULE.** *A RUN CANNOT SEE WHICH VERSION'S ARM IT IS DELIVERING* — the
+sibling of *a key that cannot see an intervening change cannot warn*, one level
+up. A settlement must name its UNREAD TAIL as part of the settlement rather than
+calling 97% finished; and the next version's registration must expect the
+previous one's remainder on top of its own. The gate's 97% threshold is the
+achievable target, which this record already says — what it did not say is that
+the 3% is not merely unread, it is **unattributed**, and it lands on whoever
+re-parses next.
+
+**WHAT ALSO HAPPENED, and is the reason the tail existed.** #892 concluded
+`failure`: `parse (19)` was KILLED at 82 minutes against every other shard's
+32–49, with its step still `in_progress` and `upload-artifact` **`pending`**. So
+that shard's delta was never uploaded, and **the `if: always()` artifact upload
+this record credits with handing a crashed shard's progress to the merge DID NOT
+RUN** — the step never got a turn, which is a different failure from the step
+failing, and no gate distinguishes them. The merge then committed a partial store
+under `if: always()` as designed, and `audit-data`'s `partial-store` HIGH fired
+correctly at 89.74%.
+
 ## 2026-11-23 (17:4xZ) — A STALE `results-*.json` IN THE WORKING DIRECTORY IS SILENTLY RE-APPLIED BY ANY LOCAL MERGE
 
 **WHAT WAS WRONG.** `merge-4i.mjs:55` takes its deltas from

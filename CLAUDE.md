@@ -975,57 +975,42 @@ re-derive it, never bump it.
 
 ### Pre-registered for the next run that merges
 
-**v212 DELIVERED by run #892 and MUST NOT BE MIRRORED — the store is PARTIAL at
-`pv` 212 on 89.74% of acks, so the registration is UNSETTLEABLE.** The run
-concluded **failure**: `parse (19)` was KILLED at 82 minutes (every other shard
-finished in 32–49) with its step still `in_progress` and
-`upload-artifact` **`pending`** — so that shard's delta was never uploaded and
-**the `if: always()` artifact upload this file credits with handing a crashed
-shard's progress to the merge DID NOT RUN.** The merge then committed under
-`if: always()` anyway. 7,388 acks are not at `pv` 212 (5,377 at 211, 1,792 still
-at 210 — the same tail #890 could not drain, 6,342 with no error code at all),
-and **6,346 of them are still confident on their old entry, so nothing is lost.**
-A completion run is dispatched; the work list is already exactly `pv != 212`.
+**v212 DELIVERED and SETTLED over two runs — `pvTopShare` 99.7%, `high` back to
+the standing 6.** #892 concluded **failure** and left the store PARTIAL at 89.74%:
+`parse (19)` was KILLED at 82 minutes (every other shard finished in 32–49) with
+its step still `in_progress` and `upload-artifact` **`pending`**, so that shard's
+delta was never uploaded — **the `if: always()` artifact upload this file credits
+with handing a crashed shard's progress to the merge DID NOT RUN**, because the
+step never got a turn, which is a different failure from the step failing. #894's
+completion run read the 7,388 remaining acks and cleared the gate.
 
-**IT HAS ALREADY EXCEEDED ITS BAND ON 89.74% OF THE UNIVERSE — the FIFTH
-registration running whose point was a floor, and the FIRST to pass its stated
-band.** Post-repair, read from the store: `vesting_gap` **10,433,508** against a
-registered 10,481,113 and a band to 10,458,765, so **−1,715,053 delivered against
-a band top of −1,689,796**, over by 25,257. `published` fell exactly **628**,
-which decomposes the move cleanly: the ARM moved 1,715,053 readers absent ->
-withheld, and the RE-ROLL moved 628 readers / **3 plans** published -> withheld by
-taking their LABEL — `vesting` 55,980 -> 55,977, registered UNCHANGED. ***So
-`vesting` and `roth` belong in the jitter list, not the unchanged list***: v210
-saw the identical `vesting` −3 and this is the third consecutive run where
-"nothing else moves" failed small on a label the write set cannot reach. ONE
-SCALAR is **79.94%**, exactly as registered — CI's log line said 79.93 because it
-ran BEFORE the six-ack repair, which is the stale-baseline defect of this morning
-seen from the other side.
+| key | registered | SETTLED (99.7%) |
+|---|---|---|
+| `vesting` (trail) | 55,980 UNCHANGED | **55,996 (+16)** |
+| `vestQuote` | 6,095 (+609), band to 6,104 | **6,230 (+744)** — past the band |
+| `vesting_gap` | 10,481,113 (−1,667,448), band to −1,689,796 | **10,230,167 (−1,918,394)** |
+| `vesting_withheld` | 12,400,753 | **12,547,960 (+1,814,655)** |
+| `vesting_shown` | 79.28% UNCHANGED | **79.4%** — MOVED |
+| ONE SCALAR | 79.94% UNCHANGED | **79.95%** |
+| ledger `addressable` | 83,667,881 | **83,417,245** |
 
-Registered against the trail line of 2026-11-23
-attributed to `5f8aa67` (`pv` 211, `pvTopShare` 97.2) and the ledger read from
-that same store:
+**THE OVER-DELIVERY IS NOT v212's, AND THE ARITHMETIC PROVES IT EXACTLY.** The
+gap fell 1,918,394; `withheld` rose **1,814,655** and `published` rose
+**103,739**, and those two sum to 1,918,394 to the reader. v212's write set is
+`out.vestingText`, which can only move absent -> withheld — so the `published`
+rise is **v211's whole-account LABEL arm landing LATE**, on the 1,792 acks that
+sat at `pv` 210 and had therefore never been read at v211 at all. The trail
+agrees: `vesting` +16 plans, registered UNCHANGED, on a change that cannot label.
 
-| key | registered |
-|---|---|
-| `vesting` (trail, per ENTRY) | 55,980 -> **55,980 UNCHANGED** |
-| `vestQuote` | 5,486 -> **6,095 (+609)**, band +609 .. +618 |
-| `vesting_gap` | 12,148,561 -> **10,481,113 (−1,667,448)**, band −1,667,448 .. −1,689,796 |
-| `vesting_withheld` | 10,733,305 -> **12,400,753 (+1,667,448)** |
-| `vesting_shown` | 79.28% -> **79.28% UNCHANGED** |
-| ONE SCALAR | 79.94% -> **79.94% UNCHANGED** |
-| ledger `addressable` | 85,335,329 -> **83,667,881 (−1,667,448)** |
-| every other field | **UNCHANGED** |
-
-**THE ONE SCALAR CANNOT SEE THIS SHIP, AND THE LEDGER IS THE QUEUE.** The move is
-absent -> withheld, and `shown`'s denominator is their sum, so `shown` and the
-scalar are flat BY CONSTRUCTION while 1.67M readers go from a blank cell to the
-filing's own words. The only headline key that moves is `addressable`
-(`ledger-test` asserts withheld is excluded from it), and that is the key that
-RANKS this queue. *A ledger keyed on LABEL coverage is blind to QUOTE coverage,
-so a scalar-driven queue will never select this work — a property of the
-instrument, not of the ship.* Do not read a flat scalar after this run as a
-failed registration.
+***SO A REGISTRATION SETTLED ON A 97% STORE IS SETTLED FOR 97% OF THE UNIVERSE,
+AND THE REMAINING 3% ARRIVES ATTRIBUTED TO THE NEXT VERSION.*** v211 was declared
+settled at `pvTopShare` 97.2 with 1,792 acks still at pv 210; its arm reached them
+only when v212's completion run did, and the delta then reads as v212's. This is
+the sibling of *a key that cannot see an intervening change cannot warn*: here the
+RUN cannot see which version's arm it is delivering. The honest form is to name
+the unread tail as part of the settlement, not to call 97% finished — and
+`vesting_shown` and the ONE SCALAR moving at all, both registered UNCHANGED, is
+the visible signature of exactly that.
 
 **AND THE WRITE-SET GREP IS NOT SUFFICIENT FOR A FIELD WITH POST-PASSES.** The
 ship's comment argued "writes `out.vestingText` and nothing else, so no plan can
@@ -1035,11 +1020,13 @@ only for a field nothing downstream reads; otherwise the write set must be close
 under what READS it*** — and `git diff | grep -o 'out\.[A-Za-z]*'`, the first
 check reached for here, cannot see it. The conclusion holds on two checked parts
 (`vestingQuoteUpgrade` begins `!out.vesting`; all nine `"Graded schedule"` sites
-set `vestingText` in the same statement), and the comment now states those
-instead. Jitter registered separately as always: a version bump re-parses the
-universe, so `confident` / `lineups` / `entries` / `dl` / `overshoot` move by
-whatever the re-roll moves, and the six named acks (7 plans / 6,145 readers) have
-degraded on every re-parse since v207.
+set `vestingText` in the same statement), and the comment now states those.
+
+**THE ONE SCALAR STILL CANNOT SEE THE SHIP ITSELF, AND THE LEDGER IS THE QUEUE.**
+v212's own move is absent -> withheld, and `shown`'s denominator is their sum, so
+it is flat by construction while 1.81M readers go from a blank cell to the
+filing's own words; only `addressable` moves. *A ledger keyed on LABEL coverage
+is blind to QUOTE coverage, so a scalar-driven queue will never select this work.*
 
 **v211 DELIVERED, SETTLED over two runs, and MIRRORED as `944b38e` — LIVE.**
 `mirror-gate` 0 plans losing service, **`sitetest-gate` a GENUINE pass on run
@@ -1291,19 +1278,15 @@ estimate: it refutes itself the moment a new import appears.
 
 **THE LEDGER IS THE QUEUE.** `node scripts/ledger-report.mjs` prints the one
 participant-weighted scalar and the addressable gap per field; it is DERIVED and
-must never be copied forward. Re-derived 2026-11-23 from the store run #892
-left on this branch — **a PARTIAL store, `pv` 212 on only 89.74% of acks**, with
-7,388 acks carrying their previous answers (6,346 of them still confident, so
-nothing is lost). A completion run is dispatched:
-**115,641 plans / 119,907,098 participants / overall 79.93%**, 83,620,586
-participant-cells addressable, with addressable gaps below. (**That 79.93 is the
-TRAIL's figure and the live store reads 79.94**, because the six-ack repair
-landed after #892's merge and a local merge appends no ledger line — the same
-shape as this morning, and `record-check` reads the trail, so writing the truer
-number would redden it and the only offered way past is `--force`, which also
-disables `sitetest-gate`. The completion run closes it. *Four generations of this
-block have now gone stale; derive it, and when a gap like this is named, delete
-the sentence the moment it fires.*) (v208 withdrew a future-effective or catch-up-mandate
+must never be copied forward. Re-derived 2026-11-23 from the store run #894
+left on this branch — **SETTLED, `pv` 212 at 99.7% of acks**, which clears the
+partial-store gate:
+**115,641 plans / 119,907,098 participants / overall 79.95%**, 83,417,245
+participant-cells addressable, with addressable gaps below. (The 79.93-vs-79.94
+gap this block named four hours ago is **closed**, exactly as predicted and by
+the predicted event — #894's merge appended a ledger line reading 79.95 against
+a live store of 79.95. *The sentence describing it is deleted rather than
+updated, which is the whole point of naming a closing event.*) (v208 withdrew a future-effective or catch-up-mandate
 Roth/after-tax yes from 865 plans, so `contributions` fell 66.96% -> 66.05% and
 the scalar 79.25 -> 79.06 ON PURPOSE — the fifth time it has gone DOWN for
 accuracy; v209 then took it 79.06 -> 79.15 on the vesting scope gate, v210
@@ -1314,7 +1297,7 @@ the whole-account vesting claim.)
 |---|---|---|---|
 | contributions (pre-tax / Roth / after-tax / brokerage) | 66.05% | **40.70M** | `tier-a-contributions` |
 | match | 70.90% | **19.86M** (12.29M withheld on purpose) | `tier-a-plan-terms` |
-| vesting | 79.28% | **10.43M** (12.45M withheld on purpose) | `tier-a-plan-terms` |
+| vesting | 79.38% | **10.23M** (12.55M withheld on purpose) | `tier-a-plan-terms` |
 | custodian / recordkeeper | 90.22% | **11.72M** | `tier-a-custodian` |
 | fund menu | 93.52% | **0.90M** (6.25M withheld on purpose) | `tier-a-lineup` |
 
