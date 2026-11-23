@@ -964,6 +964,39 @@ re-derive it, never bump it.
 
 ### Pre-registered for the next run that merges
 
+**v211 IS IN FLIGHT AS RUN #889** (pushed 03:56Z on `4f2bf747`; the push WAS the
+trigger, so no `workflow_dispatch` sits beside it). The whole-account vesting
+arm: a filing that states the ACCOUNT is fully vested, where every existing arm
+keys on a money NOUN and the scope gate therefore `continue`s before any quote
+fallback — the only refusal in that chain leaving a filing with no label AND no
+quote.
+
+| key | registered |
+|---|---|
+| `vesting` (trail, PLAN count) | 55,364 -> **55,905** (+541) |
+| `vestQuote` | 5,526 -> **5,502** (−24) |
+| `vesting_shown` | 77.56% -> **79.29%** |
+| `vesting_gap` | 14,035,304 -> **12,132,987** (−1,902,317) |
+| `vesting_withheld` | 10,750,756 -> **10,742,196** (−8,560) |
+| ONE SCALAR | 79.60% -> **79.94%** |
+| `match_shown` / `match_gap` and every non-vesting field | **UNCHANGED** — the write set is `out.vesting` + `out.vestingText`, verified by construction over the whole range (3 + 1 assignments, none removed but the one the two-pass restructure moved) |
+
+**Readers moved to an answer: 1,902,317, band 1,902,317 to ~2,316,098** — exact
+over the 56,056 judged filings, a FLOOR over the run, the unjudged remainder
+being 15,428 plans / 19,732,984 readers with no cached text. Jitter registered
+SEPARATELY: a bump re-parses the universe, so `confident`/`lineups`/`entries`/
+`dl`/`overshoot` move by whatever the re-roll moves, and the six named acks
+(7 plans / 6,145 readers) have degraded on every re-parse since v207.
+
+**THE ARM OWNS ITS POPULATION RATHER THAN BORROWING IT, and that was checked two
+ways because the ship's own comment got the mechanism wrong.** Under the sliced
+pre-v211 gate all eight pinned fixtures read `passes=false` with `employerMoney`,
+`universal` and `strictGate` all 0 (control: the new arm inert on pass 0), and
+in the committed store all eight plans publish **nothing at all, not even a
+quote**. The comment claimed *"all five fail `IMMED`"*; four of the eight
+actually MATCH `IMMED` and are dropped at the gate before it is tested, so the
+real ground is the stronger one. `docs/accuracy-log.md` 2026-11-23 (03:5xZ).
+
 **v209 DELIVERED by run #884, and the BAND held where the POINT did not — the
 third registration in a row whose point estimate was a floor.**
 

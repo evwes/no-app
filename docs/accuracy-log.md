@@ -7,6 +7,43 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-23 (03:5xZ) — A SHIP COMMENT THAT NAMED THE WRONG MECHANISM, FOUND BY AN INSTRUMENT THAT WAS WRONG FIRST
+
+**WHAT WAS WRONG.** v211's arm carried a comment ending its five-case list with
+*"All five fail `IMMED`"*. Measured against the test's own pinned fixtures,
+**four of the eight DO match `IMMED`** — ABM, U.S. Bancorp, Supplemental Income
+Trust, Strata Oncology. The comment's quotes are ELLIPSISED (`"the value of the
+participant's account … is fully vested at all times"`), and eliding the middle
+closes the exact adjacency gap the arm exists for. Not merely overstated: it
+names the wrong mechanism. `IMMED` never excluded these filings — the SCOPE
+GATE did, and its `continue` fires before `IMMED` is tested.
+
+**THE CHANGE.** The comment now states the gate as the mechanism and records
+the four matching fixtures, in `4f2bf747` alongside the version bump. No code
+moved: the arm was always gate-keyed, so this is a record defect, not a parser
+one — which is why it is logged rather than re-registered.
+
+**AND IT MAKES THE OWNERSHIP CLAIM STRONGER, which is why it was worth
+measuring rather than deleting.** Under the sliced pre-v211 gate all eight
+fixtures read `passes=false` with `employerMoney`, `universal` and `strictGate`
+all 0 (control: the new arm inert on pass 0), and in the committed store all
+eight plans publish **nothing at all, not even a quote**. A sentence `IMMED`
+matches is still dropped at the gate, so the population is owned on the
+stronger of the two grounds.
+
+**WHAT PREVENTS IT.** *A paraphrase of a fixture is not the fixture.* The
+instrument's first version typed the five sentences out of the comment and
+reported 2 of 5 "already matched" — my reconstruction matching, not the filing,
+and in the direction that makes the ship look worse. Re-pointing it at the
+test's own `FIRE` array is what made the finding real. Both sides sliced,
+neither typed: `IMMED` out of `lib-4i`'s bytes, the fixtures out of the test's.
+Two positive controls, because a regex matching nothing reads as a clean
+"premise holds" on every case. *A false sentence in a comment is worse than an
+absent one* — this file already records a day lost to one about a Schwab page's
+expense-ratio date, quoted into an agent's brief and obeyed.
+
+---
+
 ## 2026-11-23 — v211: THE WHOLE ACCOUNT IS NOT "ALL CONTRIBUTIONS", AND EVERY REFUSAL IN IT WAS EARNED BY READING
 
 **WHAT WAS WRONG.** The immediate-vesting scope gate (`lib-4i`, the
