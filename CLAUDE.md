@@ -1217,12 +1217,15 @@ participant-weighted scalar and the addressable gap per field; it is DERIVED and
 must never be copied forward. Re-derived 2026-11-23 from the store run #890
 left on this branch (`pv` 211 at **97.2%**, which clears the partial-store gate;
 1,793 acks remain at pv 210 and carry their previous answers):
-**115,641 plans / 119,907,098 participants / overall 79.93%**, 85,335,329
-participant-cells addressable, with addressable gaps below. **That 79.93 is the
-TRAIL's figure, which `record-check` reads; the live store computes 79.94 after
-the five-ack repair, because a local merge appends no ledger line.** Both are
-true and the gap is one repair wide — the same staleness that made #890's
-`confident` delta read +1 on a run that lost 5. The next pipeline run closes it. (v208 withdrew a future-effective or catch-up-mandate
+**115,641 plans / 119,907,098 participants / overall 79.94%**, 85,335,329
+participant-cells addressable, with addressable gaps below. (The trail briefly
+read 79.93 against a live store of 79.94, because a local merge appends no
+ledger line; **the next scheduled run closed it exactly as predicted**, and in
+the same commit attested the five-ack repair as `confident` +5 and took `high`
+11 -> **6**, the standing baseline. *A staleness with a named closing event is
+not a defect to carry — but the sentence describing it had to be deleted the
+moment it fired, which is the fourth time a line in this block has outlived its
+truth.*) (v208 withdrew a future-effective or catch-up-mandate
 Roth/after-tax yes from 865 plans, so `contributions` fell 66.96% -> 66.05% and
 the scalar 79.25 -> 79.06 ON PURPOSE — the fifth time it has gone DOWN for
 accuracy; v209 then took it 79.06 -> 79.15 on the vesting scope gate, v210
