@@ -964,53 +964,63 @@ re-derive it, never bump it.
 
 ### Pre-registered for the next run that merges
 
-**v211 DELIVERED by run #889 — BUT THE STORE IS PARTIAL AND IT MUST NOT BE
-MIRRORED UNTIL A COMPLETION RUN LANDS.** `pvTopShare` 99.7 -> **94.7**, i.e.
-**3,578 acks never got read at all** (3,167 with no error code, 3,239 still
-confident and serving their pv-210 entries, `dl` FLAT at 214 so not downloads).
-`audit-data`'s `partial-store` HIGH fired correctly and says so in words: *"this
-is a PARTIAL re-parse, not a finished one. Do not mirror; re-dispatch and let it
-complete."* All 20 parse shards concluded SUCCESS and stopped inside a 32-48
-minute band, which is a per-shard TIME BUDGET being hit, not a failure — the
-run reports success and the coverage line rises, which is this file's own
-"a run can FINISH and still not have READ the universe", seen for the first
-time from the budget side rather than the download side.
+**v211 DELIVERED and SETTLED over two runs — #889 left the store PARTIAL
+(`pvTopShare` 94.7) and #890's completion run took it to 97.2, which CLEARS the
+gate; `partial-store` is gone from the HIGH list and the ship is mirrorable.**
+#889's 20 parse shards all concluded SUCCESS and stopped inside a 32-48 minute
+band: a per-shard TIME BUDGET, not a failure, leaving **3,578 acks never read**
+(3,167 with no error code, `dl` FLAT at 214, 3,239 still confident on their
+pv-210 entries so nothing was lost). *This file's own "a run can FINISH and
+still not have READ the universe", seen for the first time from the budget side
+rather than the download side.* **AND ONE COMPLETION RUN IS NOT ENOUGH:** #890
+ran two hours, read ~1,785 of the 3,578, and **1,793 acks (2.49%) are STILL at
+pv 210**. 97% is reachable in two passes; 100% is not obviously reachable at
+all, so *the gate's threshold is the achievable target and not a rounding of
+"finished"*.
 
-| key | registered | delivered |
-|---|---|---|
-| `vesting` (trail, PLAN count) | 55,905 (+541) | **55,963 (+599)** — 58 plans beyond |
-| `vestQuote` | 5,502 (−24) | **5,486 (−40)** |
-| `vesting_shown` | 79.29% | **79.25%** |
-| `vesting_gap` | 12,132,987 (−1,902,317) | **12,182,541 (−1,852,763)** — 49,554 SHORT |
-| `vesting_withheld` | 10,742,196 (−8,560) | **10,733,305 (−17,451)** |
-| ONE SCALAR | 79.94% | **79.93%** |
+| key | registered | #889 (94.7%) | SETTLED #890 (97.2%) |
+|---|---|---|---|
+| `vesting` (trail, PLAN count) | 55,905 (+541) | 55,963 | **55,979 (+615)** — 74 plans beyond |
+| `vestQuote` | 5,502 (−24) | 5,486 | **5,486 (−40)** |
+| `vesting_shown` | 79.29% | 79.25% | **79.3%** |
+| `vesting_gap` | 12,132,987 (−1,902,317) | 12,182,541 | **12,148,561 (−1,886,743)** — 15,574 SHORT |
+| `vesting_withheld` | 10,742,196 (−8,560) | 10,733,305 | **10,733,305 (−17,451)** |
+| ONE SCALAR | 79.94% | 79.93% | **79.94%** — EXACT |
 
-**THE NEW FINDING, AND IT IS NOT THE PARTIAL STORE: A REGISTRATION CAN
-OVER-DELIVER IN PLANS AND UNDER-DELIVER IN READERS AT THE SAME TIME.** Four
-runs running, the point estimate was a floor and the band was right; here the
-PLAN count beat its point by 58 while the READER gap fell 49,554 SHORT of it.
-Both were registered off the same instrument over the same population, so this
-is not an instrument error — the 58 extra plans are simply SMALLER than the
-registered population's average, and a plan count saturating is not a reader
-count moving. ***Register both and read them separately; "over-delivered" is
-not a property of a run, it is a property of a KEY.***
+**THE FINDING SURVIVED THE COMPLETION RUN, WHICH IS WHAT MAKES IT REAL: A
+REGISTRATION CAN OVER-DELIVER IN PLANS AND UNDER-DELIVER IN READERS AT ONCE.**
+On the partial store I flagged the 49,554-reader shortfall as possibly an
+artifact of the 94.7% read. It is not: at 97.2% the PLAN count has over-delivered
+FURTHER (+74 against +541 registered) while the reader gap is **still 15,574
+short of its point**. Both keys were registered off the same instrument over the
+same population, so neither is an instrument error — the extra plans are simply
+SMALLER than the registered population's average. ***Register both and read them
+separately; "over-delivered" is not a property of a run, it is a property of a
+KEY.*** Four prior runs had made over-delivery look like a property of runs
+because their two keys happened to agree.
 
-**AND THE VERDICT IS PROVISIONAL FOR A SECOND REASON that points the same way:**
-every figure above is measured over a **94.7% read**, so the completion run will
-move `vesting` and the gap further still. A partial store does not merely block
-the mirror — *it makes a registration unsettleable*, because neither an
-over-delivery nor a shortfall can be attributed while 5% of the universe is
-carrying its previous answer.
+**AND THE TRAIL REPORTED `confident +1` ON A RUN THAT LOST 5 — a new instance of
+*a key that cannot see an intervening change cannot warn*.** #889's line read
+`confident` 62,210; my in-session repair took the store to 62,216 and committed
+data **with no trail line** (a local merge appends none); #890 then degraded 5
+and appended 62,211. So the audit's reparse verdict diffed its own output
+against a line **two commits stale** and printed a GAIN where the run's real
+effect was −5. *A repair that moves the store without moving the trail
+mis-attributes the next run's delta* — and the only honest reading is the
+store, not the trail.
 
 **Jitter arrived as registered** — `confident` −6, `lineups` −5, with `entries`,
-`dl` and `overshoot` all FLAT — and "nothing else moves" failed small and in
-v210's NEW shape for the second run running: `match` −1, `matchAny` −1 and
-`roth` −1 on a write set provably limited to `out.vesting` + `out.vestingText`.
-**The six named acks degraded for the SIXTH consecutive re-parse**, the
-identical set, five again on `ds: "readfail"`; repaired in-session (all six back
-to their exact prior counts 30/35/23/25/3/9, every one `ok=true`, `confident`
-62,210 -> 62,216) and the repair SURVIVES the completion run, because those acks
-are stamped at pv 211 and so are invisible to its work list.
+`dl` and `overshoot` all FLAT — and "nothing else moves" failed small in v210's
+NEW shape for the second run running: `match` −1, `matchAny` −1 and `roth` −1 on
+a write set provably limited to `out.vesting` + `out.vestingText`.
+**The named acks degraded on BOTH runs — the SIXTH and SEVENTH consecutive
+re-parses.** #889 took all six (repaired, 62,210 -> 62,216); #890 took **five of
+the six** (WD Management survived) and **two of those five were REMOVED
+OUTRIGHT rather than downgraded** — Sorinex and the Hexcel MTIA had no entry at
+all, a third variant beside "fewer rows" and `ds: "readfail"`. Repaired again:
+all six back to 30/35/23/25/3/9, every one `ok=true`, `confident` 62,216,
+**0 collateral acks touched** (against 14 rows last time, because no
+`sec-tickers.js` regen intervened).
 
 **THE ARM OWNS ITS POPULATION RATHER THAN BORROWING IT, and that was checked two
 ways because the ship's own comment got the mechanism wrong.** Under the sliced
@@ -1200,22 +1210,26 @@ estimate: it refutes itself the moment a new import appears.
 
 **THE LEDGER IS THE QUEUE.** `node scripts/ledger-report.mjs` prints the one
 participant-weighted scalar and the addressable gap per field; it is DERIVED and
-must never be copied forward. Re-derived 2026-11-23 from the store run #889
-left on this branch (`pv` 211, **94.7% — a PARTIAL read, so every figure here
-moves again when the completion run lands**): **115,641 plans / 119,907,098
-participants / overall 79.93%**, 85,369,460 participant-cells addressable, with
-addressable gaps below. (v208 withdrew a future-effective or catch-up-mandate
+must never be copied forward. Re-derived 2026-11-23 from the store run #890
+left on this branch (`pv` 211 at **97.2%**, which clears the partial-store gate;
+1,793 acks remain at pv 210 and carry their previous answers):
+**115,641 plans / 119,907,098 participants / overall 79.93%**, 85,335,329
+participant-cells addressable, with addressable gaps below. **That 79.93 is the
+TRAIL's figure, which `record-check` reads; the live store computes 79.94 after
+the five-ack repair, because a local merge appends no ledger line.** Both are
+true and the gap is one repair wide — the same staleness that made #890's
+`confident` delta read +1 on a run that lost 5. The next pipeline run closes it. (v208 withdrew a future-effective or catch-up-mandate
 Roth/after-tax yes from 865 plans, so `contributions` fell 66.96% -> 66.05% and
 the scalar 79.25 -> 79.06 ON PURPOSE — the fifth time it has gone DOWN for
 accuracy; v209 then took it 79.06 -> 79.15 on the vesting scope gate, v210
-79.15 -> 79.60 on the discretionary-match spellings, and v211 79.60 -> 79.93 on
+79.15 -> 79.60 on the discretionary-match spellings, and v211 79.60 -> 79.94 on
 the whole-account vesting claim.)
 
 | field | shown | readers with no answer | owner agent |
 |---|---|---|---|
 | contributions (pre-tax / Roth / after-tax / brokerage) | 66.05% | **40.70M** | `tier-a-contributions` |
 | match | 70.90% | **19.86M** (12.29M withheld on purpose) | `tier-a-plan-terms` |
-| vesting | 79.25% | **12.18M** (10.73M withheld on purpose) | `tier-a-plan-terms` |
+| vesting | 79.30% | **12.15M** (10.73M withheld on purpose) | `tier-a-plan-terms` |
 | custodian / recordkeeper | 90.22% | **11.72M** | `tier-a-custodian` |
 | fund menu | 93.52% | **0.90M** (6.25M withheld on purpose) | `tier-a-lineup` |
 

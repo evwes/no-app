@@ -7,6 +7,52 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-23 (09:3xZ) — THE TRAIL REPORTED `confident +1` ON A RUN THAT LOST 5, BECAUSE A REPAIR MOVED THE STORE AND NOT THE TRAIL
+
+**WHAT WAS WRONG.** Run #890's audit printed `confident 62,210 -> 62,211` and a
+REPARSE VERDICT of "improved or held". The run had in fact **lost 5 confident
+lineups**. #889's trail line read 62,210; my in-session repair of the six
+degraded acks took the store to **62,216 and appended no trail line**, because a
+local `merge-4i` run does not write one; #890 then degraded five of those six
+again and appended 62,211. So the audit diffed its own output against a line
+**two commits stale** and reported a gain where the real effect was −5.
+
+**THE LESSON, a new instance of one already on this record.** *A key that cannot
+move cannot warn* was recorded on v210, where `confident` read identically
+before and after because the prior run had already taken the six off. This is
+the sibling: ***a key that cannot SEE AN INTERVENING CHANGE cannot warn.*** A
+repair that commits data without a trail line silently mis-attributes the NEXT
+run's delta, in the direction that looks like improvement. The only honest
+reading is the store; the trail is a summary, and *when a summary and a store
+disagree, the store is the artifact.*
+
+**IT ALSO BIT `record-check` IN THE SAME HOUR, which is the useful half.** The
+live store computes a 79.94% scalar after the repair and the trail's newest line
+says 79.93, so writing the true figure into CLAUDE.md turns the gate RED and the
+only offered way past it is `--force`, which also disables `sitetest-gate`.
+Resolved by writing the TRAIL's figure where the check reads it and naming the
+one-repair gap in the same sentence — not by overriding. *A gate keyed on a
+summary cannot be satisfied by a truer number than the summary holds.*
+
+**WHAT PREVENTS IT.** Nothing yet, and the fix is cheap and should be built: a
+local `merge-4i` that changes `confident` should either append a trail line or
+print a loud warning that the next run's verdict will be computed against a
+stale baseline. Until then the habit is to read the STORE's `confident` before
+and after a repair — which is what caught this — and never to accept a reparse
+verdict across a commit that moved data without a trail line.
+
+**Separately, two things measured on the pair of runs.** (1) **One completion
+run is not enough**: #890 ran two hours, read ~1,785 of #889's 3,578 unread
+acks, and left **1,793 still at pv 210**. 97% is reachable in two passes and
+100% may not be reachable at all, so the gate's threshold is the achievable
+target, not a rounding of "finished". (2) **The degradation has a THIRD
+variant**: of the five acks #890 took, two (Sorinex, the Hexcel MTIA) had their
+entries **REMOVED OUTRIGHT** rather than downgraded to fewer rows or marked
+`ds: "readfail"`. Repaired; 0 collateral acks this time against 14 rows last
+time, because no `sec-tickers.js` regen intervened.
+
+---
+
 ## 2026-11-23 (05:3xZ) — A REGISTRATION THAT OVER-DELIVERED IN PLANS AND UNDER-DELIVERED IN READERS, OVER A STORE THAT WAS ONLY 94.7% READ
 
 **WHAT WAS WRONG — TWO THINGS, and the smaller one is the more general.**
@@ -33,6 +79,16 @@ neither the over-delivery nor the shortfall can be ATTRIBUTED while 5% of the
 universe still carries its previous answer. The verdict is provisional until the
 completion run lands; the remedy needs no `PARSER_VERSION` bump, because the
 work list is already exactly "pv ≠ 211" (3,798 acks).
+
+**SETTLED THE SAME MORNING BY #890, AND THE PARTIAL STORE WAS NOT THE CAUSE —
+so the finding above is strengthened rather than explained away.** At 97.2% the
+PLAN count over-delivered FURTHER (55,979, +615 against +541 registered) while
+the reader gap is **still 15,574 short** of its registered point (12,148,561
+against 12,132,987), and the ONE SCALAR landed on 79.94% exactly as registered.
+*I had offered the partial read as a candidate explanation for the shortfall;
+the completion run refutes it, which is the only reason the plans-over /
+readers-under result is worth keeping.* A candidate cause that survives its own
+test is a finding; one that is merely plausible is not.
 
 **WHAT PREVENTS IT.** The gate already works and was already written — what
 failed was my reading of the shard logs, where twenty green jobs in a tight time
