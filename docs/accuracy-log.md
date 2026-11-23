@@ -11,9 +11,17 @@ prevention machinery is listed at the bottom.
 
 **WHAT WAS WRONG.** `merge-4i.mjs:55` takes its deltas from
 `readdirSync(".").filter(f => /^results-\d+\.json$/)` — every matching file in
-the cwd, with **no freshness check and no provenance check**. A `results-0.json`
-left over from the **v210-era** repair of the same six acks had been sitting in
-the working directory (mtime 09:24). Today's forced re-parse of those six acks
+the cwd, with **no freshness check and no provenance check**. And the stale file
+was not working-directory litter: **`fc24b29` COMMITTED `results-0.json` INTO THE
+REPOSITORY** on 2026-11-22 (the v210-era repair of these same six acks, via
+`git add -A` over a path no `.gitignore` rule covers). It was therefore in every
+clone and in **every CI checkout**, where the merge job's cwd is exactly where it
+reads deltas from — so for a day the pipeline's own merge ran with a pv-210 delta
+sitting beside the shards' artifacts, applied or not depending only on whether
+shard 0's artifact happened to overwrite the same filename. In run #892 it did
+(the six read `pv 212` afterwards, not 210), so no published figure was harmed;
+*the hazard was latent, not realised, and it was closed by accident rather than
+by a check.* Today's forced re-parse of those six acks
 produced correct `pv: 212` entries; `fetch-4i` in non-shard mode writes the
 stores DIRECTLY and writes no delta at all, so when the local merge ran it found
 only the stale file and applied its `status` map verbatim — stamping all six
@@ -38,7 +46,11 @@ re-parse redone: all six now at `pv 212`, `c:0->1`, five `ds:"readfail"` cleared
 name-repair rows were read, all 22 correct, 0 row-count moves. Unbuilt and named:
 `merge-4i` should refuse, or at least warn loudly, when a `results-*.json` is
 older than the store it is about to be applied to — a delta is a statement about
-one run and carries no evidence of which.
+one run and carries no evidence of which — and **`results-*.json` belongs in
+`.gitignore`**, which it is not in today. Both are `scripts/**` or root changes
+deferred only because run #894 is in flight on this ref and `merge-4i.mjs` is one
+of the six files whose push would cancel it. *A delta is a per-run artifact that
+nothing stopped becoming a tracked file.*
 
 ## 2026-11-23 — v212: THE SECOND BARE `continue` IN THE VESTING LOOP, AND TWO SAFETY ARGUMENTS THAT WERE WRONG
 
