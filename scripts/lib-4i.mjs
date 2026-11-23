@@ -15,7 +15,7 @@ import { vestingQuoteOk, matchQuoteOk, accelerationOnlyVesting, AV_TRIGGER } fro
 import { futureEffectiveGrant, catchupMandateRefusal, planYearEnd } from "./lib-effective-date.mjs";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 210;
+export const PARSER_VERSION = 211;
 
 /* v207: THE QUOTE'S OWN WORDS CAN DENY WHAT THE FLAG ASSERTS, and 76 plans /
  * 175,656 readers were published that way — `afterTax: true` or `roth: true`
@@ -8791,10 +8791,28 @@ export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
        * at all times", IBM "at all times fully vested in their account
        * balance", ABM "the value of the participant's account … is fully vested
        * at all times", U.S. Bancorp "immediately 100 percent vested in their
-       * entire account balance". All five fail `IMMED` and all five are
-       * unconditional immediate-vesting statements; without this they would
-       * reach the fallback below and publish a quote with no label, which is
-       * the gap a reader of the vesting line actually feels.
+       * entire account balance". All five are unconditional immediate-vesting
+       * statements; without this they would reach the fallback below and
+       * publish a quote with no label, which is the gap a reader of the
+       * vesting line actually feels.
+       *
+       * AND THE SENTENCE THAT USED TO END THAT LIST WAS FALSE: "all five fail
+       * `IMMED`". Measured against the pinned fixtures rather than against
+       * these ellipsised quotes, FOUR of the eight DO match `IMMED` — ABM,
+       * U.S. Bancorp, Supplemental Income Trust and Strata Oncology — because
+       * eliding the middle of a quote closes the very adjacency gap the arm
+       * exists for. The claim is not merely overstated, it names the wrong
+       * mechanism, and `IMMED` is not the mechanism: the SCOPE GATE is. The
+       * `continue` above fires first, and all eight fixtures read
+       * `passes=false` under the pre-v211 gate with every arm at 0, so `IMMED`
+       * never saw one of these sentences. Ownership of the population rests on
+       * the gate — which is the stronger claim, since a sentence `IMMED`
+       * matches is still dropped before the test. Verified both ways: the
+       * sliced gate at waPass 0, and the committed store, where all eight
+       * plans publish nothing at all, not even a quote.
+       * (A paraphrase of a fixture is not the fixture: my first instrument
+       * typed these five out of this comment and read 2 of 5 "already
+       * matched", which was my reconstruction matching, not the filing.)
        * `accelerationOnlyVesting` is still consulted for the IMMED half and is
        * unreachable from the new half, which carries no trigger by gate. */
       if (IMMED.test(s) || wholeAcctOnly) {
