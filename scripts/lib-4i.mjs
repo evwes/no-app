@@ -500,6 +500,42 @@ export function wholeAccountVested(s) {
     && !WA_SUBSET.test(x) && !employeeScopedAccount(x);
 }
 
+/* ---- v212's NARROWING HANDLE, AND WHAT IT IS NOT ------------------------
+ * `match-arm-diff.mjs` narrows a differential on a NAMED EXPORTED ARM and
+ * asserts the baseline does not export it, which is what makes an excluded set
+ * genuinely excluded. v212 is a CONTROL-FLOW change — the
+ * `remainderGraded || carveOut` guard stops throwing the sentence away — so it
+ * introduces no new predicate to name, and the real narrowing is a question
+ * about the SHIPPED SELECTION and the SHIPPED GATE:
+ *
+ *     ∃ s ∈ vestSentences(text) : gate(s).passes ∧ ¬ gate(s).strictGate
+ *
+ * which supersets the trigger by dropping the `(remainderGraded || carveOut)`
+ * conjunct. That cannot be asked here, because the selection and the gate live
+ * inside `extractPlanFeatures` and are reachable only through
+ * `lib-vestslice.mjs`, which imports THIS file. So
+ * `scripts/vesting-quotekeep-narrow.mjs` computes that exact cache with the
+ * slice, and this export is the harness's required handle plus the TOKEN
+ * prefilter the narrow pass uses.
+ *
+ * IT IS A SOUND SUPERSET AND IT IS DELIBERATELY NEAR-TRIVIAL, which is stated
+ * rather than disguised: every arm of the scope gate requires one of
+ * `contribution`, `account` or `match` in the sentence (arm 1 and the sponsor
+ * arm want the word "contributions"; arm 2 wants "accounts" or the phrase
+ * "company match"; the safe-harbor arm wants "contributions"; `universal`
+ * wants "contributions"; `wholeAccountVested` wants "account"), and the
+ * selection itself requires a vest stem. Stated as TOKENS, not phrases,
+ * because `clean()` and the whitespace flatten only DELETE characters and
+ * INSERT spaces — so a token in a selected sentence is a contiguous run in the
+ * raw filing while a PHRASE need not be. Both token classes are asserted
+ * necessary by the narrow pass's own controls, the way v211's prefilter was;
+ * an arm that cannot fail is decorative, and this one's job is only to be a
+ * superset that cannot wrongly exclude. */
+export function vestingQuoteKeepTokens(text) {
+  const x = String(text || "");
+  return /\bvest/i.test(x) && /contribution|account|match/i.test(x);
+}
+
 export function sponsorMoneyRe(sponsorName) {
   const tk = String(sponsorName || "").toLowerCase().split(/[^a-z0-9]+/)
     .filter((w) => w.length > 2 && !SPONSOR_GENERIC.has(w) && !SPONSOR_EMPLOYEE_WORD.has(w))
@@ -7879,6 +7915,11 @@ export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
   // that run after the loop: 48 plans lost a real "less than 2 yr: 0%, 2 yr:
   // 20% … 6 yr: 100%" schedule to one money type's single sentence.
   let shapeCliff = null;
+  /* v212: the sentence the employer-scope-passing `remainderGraded || carveOut`
+   * guard refuses a LABEL to. HELD rather than stored, and written after every
+   * other vesting reader — see that guard for the 341 published quotes the
+   * inline form displaced. */
+  let guardHeldQuote = null;
   for (const s of vestSentences) {
     if (matchImmediate && /non.?elective|profit.?sharing/i.test(s) && !/match/i.test(s)) continue;
     // v81: an adjective between "per" and "year" is common and broke the
@@ -8528,7 +8569,119 @@ export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
       // contributions … EXCEPT for the portion attributable to Company
       // Non-Matching contributions" — the exception is the schedule
       const carveOut = /\bexcept\b[^.]{0,90}?(?:matching|employer|company|non.?elective|profit.?sharing)/i.test(s);
-      if (!strictGate && (remainderGraded || carveOut)) continue;
+      /* v82: the same wrong-topic defect v80 fixed for the match quote —
+       * measured separately here rather than ported blind, because the two
+       * fields fail differently. A sentence can mention employer money AND
+       * the word "vested" while describing loans, in-service withdrawals,
+       * hardship distributions or "refer to the plan document"; 93 stored
+       * rows display one under Vesting ("The Plan permits participants … to
+       * borrow a minimum of $500 …").
+       * The escape hatch is load-bearing and was found by measuring: 38 of
+       * the 108 sentences this pattern matches ALSO carry the plan's real
+       * schedule, because the sentence window spans the schedule and the
+       * "Notes Receivable from Participants" heading that follows it. Some
+       * carry a whole Years/Percent table. Dropping on the topic marker
+       * alone would have deleted them. */
+      const offTopic = /notes receivable from participants|\bborrow\b|obtain loans|in.?service withdrawal|available for withdrawal|\bhardship|refer to the (?:basic )?plan document|reference should be made to|summary plan description|eligibility (?:requirements|rules)|payment of benefits|lump.?sum distribution|may be withdrawn/i.test(s)
+        && !/years? of (?:vesting |credited |continuous )?service|vesting schedule|\bgraded\b|\bcliff\b|\d{1,2} ?% vested|percentage vested|vested percentage|immediately vested|vested immediately|fully vested (?:at all times|immediately|in all)|100 ?% vested (?:at all times|immediately|in all)|at all times|schedule below|as follows|following schedule/i.test(s);
+      /* v212: AND THIS GUARD MUST KEEP THE QUOTE — the EIGHTH instance of
+       * *blocking a wrong ANSWER must never suppress the honest EVIDENCE*
+       * (v82, v83, v84, v86/87, v202, v211), and the second of the two bare
+       * `continue`s left in this loop that throw the sentence away with the
+       * label. Every other refusal below stores it.
+       *
+       * WHY THE SENTENCE IS WORTH KEEPING HERE SPECIFICALLY, which is what
+       * separates this from a general widening: the `continue` is reached only
+       * after the employer-scope gate has ALREADY PASSED, so the sentence names
+       * employer money by construction — there is no employee-scope ambiguity of
+       * the kind that makes "immediately vested in their voluntary
+       * contributions" unpublishable. And the guard fires precisely on a
+       * sentence that states a SERVICE CONDITION or a CARVE-OUT, which is the
+       * most informative thing a filing can say about vesting short of a
+       * schedule this parser can label:
+       *   "Vesting in the adopting employer's contribution portion of their
+       *    accounts … is based on years of service RANGING FROM IMMEDIATE TO
+       *    SIX YEARS GRADED, AS ELECTED BY EACH ADOPTING EMPLOYER"
+       *                                   ADP TotalSource, 339,248 readers
+       *   "Vesting in the Employer's contribution portion of their accounts
+       *    plus actual earnings thereon is based on years of service."
+       *                                   Tenet Healthcare, 141,695
+       *   "Vesting in the Corporation's contribution portion of their accounts
+       *    is based on years of continuous service."
+       *                                   Select Medical, 60,990
+       *   "… the participant's vested interest in the matching and
+       *    discretionary contributions … are as follows: Vesting Years of
+       *    Service Percentage Less than 1 - % 1 to 2 33 2 to 3 67 3 or more
+       *    100"                           U.S. Foodservice, 33,735
+       * ADP's and Tenet's are multiple-employer plans where NO single label is
+       * true for every reader, so the label refusal is right and permanent and
+       * the sentence is the whole of the available answer. Measured over the
+       * post-v211 ledger ABSENT bucket: 531 plans / 1,461,840 readers publish
+       * nothing today and would gain that sentence; 19 plans / 30,457 readers
+       * are refused by the two quote conditions below and keep publishing
+       * nothing.
+       *
+       * THE SENTENCE IS HELD, NOT STORED HERE, AND THAT IS THE WHOLE SAFETY
+       * CASE — EARNED BY THE DIFFERENTIAL AFTER THE CODE ARGUMENT SAID
+       * OTHERWISE. Written as the siblings' inline store,
+       *   if ((!out.vestingText || vestingQuoteUpgrade(out, cap(s))) …)
+       *     out.vestingText = cap(s);
+       * the differential reported LABELS LOST 0, RELABELLED 0, QUOTES LOST 0
+       * — and QUOTES CHANGED on **341 plans / 595,066 readers whose old quote
+       * was ALREADY PUBLISHED**. I had argued that could not happen, because
+       * `vestingQuoteUpgrade` only overwrites a quote the renderers refuse; the
+       * argument missed the OTHER disjunct. `vestSentences` is SORTED, so on
+       * these filings the guard's sentence comes FIRST, `out.vestingText` is
+       * still empty, and the inline store wins the first-wins race against the
+       * later sentence the end-of-loop fallback used to reach. *Adding a WRITER
+       * to a first-wins chain RE-ORDERS it* — v211 paid for this exact lesson
+       * on this exact loop one version ago, and reading the 341 shows the
+       * re-ordering is mostly a LOSS: Broadridge Financial (8,627) went from its
+       * filed ladder "Less than two years … 0% / Two but less than three … 50%
+       * / Three or more …" to the bare "is based on years of continuous
+       * service"; Consumers Energy (27,258) from "vesting in Company matching
+       * contributions is based on years of completed service" to a BENEFITS
+       * sentence; Garney Holding (2,889) from its schedule to a death/disability
+       * ACCELERATION clause, which is the defect of 2026-10-09 arriving from the
+       * other side; Lennox (6,262) and Auto Club (12,748) to page-header debris.
+       *
+       * So the candidate is HELD in `guardHeldQuote` and written after every
+       * other vesting reader has had its turn, in the idiom `horizonFallback`
+       * and `shapeCliff` already use in this function: it FILLS A BLANK and
+       * does nothing else. Three conditions, all of them the siblings':
+       * `vestingQuoteOk` is the oracle BOTH renderers call, so a sentence it
+       * rejects is invisible anyway; `offTopic` is this loop's own
+       * loan/withdrawal test, hoisted from its declaration forty lines below (a
+       * `const` over the loop's `s`, with nothing between the two sites that
+       * touches `s`, so hoisting it is behaviour-preserving by construction);
+       * and `forfeit` is the veto every sibling carries.
+       *
+       * A FOURTH CONDITION WAS BUILT, MEASURED INERT AND REMOVED, which is
+       * recorded because the reasoning behind it is still true. This guard runs
+       * BEFORE v78's `planTermCond`, so a plan-termination sentence reaches the
+       * hold and that `continue` never gets a turn — *a guard's position in a
+       * chain is part of what it does* — and reading the 609 gained quotes found
+       * three publishing exactly that boilerplate: Reedmark Advisers (665) *"In
+       * the event of PEP TERMINATION, participants will become 100% vested …"*,
+       * Ark National Holdings (579) *"If a PARTIAL PLAN TERMINATION OCCURS …"*,
+       * Ops Tech Alliance (618) *"all contributions to the plan ceased …"*. But
+       * `planTermCond` DOES NOT MATCH ANY OF THE THREE — all its arms want the
+       * word "plan" adjacent to "termination", and a pooled employer plan is a
+       * "PEP" — and adding the veto changed the differential by **0 plans**
+       * over all 16,691 judged filings, because the SELECTION's own veto list
+       * already drops the spellings it can read. So the condition was correct,
+       * cheap, and dead: *a condition unreachable on the data reads as a guard
+       * and is dead code.* Those three plans (1,862 readers) publish IRC
+       * 411(d)(3) boilerplate as their vesting evidence, below the floor, and
+       * widening `planTermCond`'s spellings is a LABEL-path change for the whole
+       * universe and belongs in its own pass. The label is untouched:
+       * this arm writes `out.vestingText` and nothing else, so no plan can gain,
+       * lose or change a vesting LABEL through it. */
+      if (!strictGate && (remainderGraded || carveOut)) {
+        if (!guardHeldQuote && !/forfeit/i.test(s) && !offTopic && vestingQuoteOk(s))
+          guardHeldQuote = cap(s);
+        continue;
+      }
       /* v87: a superseded sentence is not this plan's rule on the IMMEDIATE
        * path either — "PRIOR TO MARCH 31, 2024, participants were immediately
        * vested in their elective salary deferral … and were vested on Plan
@@ -8819,21 +8972,6 @@ export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
         if (!accelerationOnlyVesting(s)) out.vesting = "Immediate";
         out.vestingText = cap(s); break;
       }
-      /* v82: the same wrong-topic defect v80 fixed for the match quote —
-       * measured separately here rather than ported blind, because the two
-       * fields fail differently. A sentence can mention employer money AND
-       * the word "vested" while describing loans, in-service withdrawals,
-       * hardship distributions or "refer to the plan document"; 93 stored
-       * rows display one under Vesting ("The Plan permits participants … to
-       * borrow a minimum of $500 …").
-       * The escape hatch is load-bearing and was found by measuring: 38 of
-       * the 108 sentences this pattern matches ALSO carry the plan's real
-       * schedule, because the sentence window spans the schedule and the
-       * "Notes Receivable from Participants" heading that follows it. Some
-       * carry a whole Years/Percent table. Dropping on the topic marker
-       * alone would have deleted them. */
-      const offTopic = /notes receivable from participants|\bborrow\b|obtain loans|in.?service withdrawal|available for withdrawal|\bhardship|refer to the (?:basic )?plan document|reference should be made to|summary plan description|eligibility (?:requirements|rules)|payment of benefits|lump.?sum distribution|may be withdrawn/i.test(s)
-        && !/years? of (?:vesting |credited |continuous )?service|vesting schedule|\bgraded\b|\bcliff\b|\d{1,2} ?% vested|percentage vested|vested percentage|immediately vested|vested immediately|fully vested (?:at all times|immediately|in all)|100 ?% vested (?:at all times|immediately|in all)|at all times|schedule below|as follows|following schedule/i.test(s);
       if ((!out.vestingText || vestingQuoteUpgrade(out, cap(s))) && !/forfeit/i.test(s) && !offTopic) out.vestingText = cap(s);
     }
     }
@@ -8875,6 +9013,15 @@ export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
     out.vesting = `${shapeCliff.num}-year cliff`;
     out.vestingText = shapeCliff.text;
   }
+  /* v212, LAST of the quote fallbacks and deliberately after the two readers
+   * above: the sentence the employer-scope-passing remainder/carve-out guard
+   * refused a label to. It FILLS A BLANK. The second disjunct is the siblings'
+   * `vestingQuoteUpgrade`, which can only replace a stored quote the renderers
+   * REFUSE — so a reader who sees a quote today keeps the one they see, and a
+   * reader who sees nothing may gain one. Measured: 609 plans / 1,667,448
+   * readers gain a quote, 0 published quotes change, 0 labels move. */
+  if (guardHeldQuote && (!out.vestingText || vestingQuoteUpgrade(out, guardHeldQuote)))
+    out.vestingText = guardHeldQuote;
   /* v96, LAST of all: whatever schedule the readers above settled on, the
    * filing may have already replaced it. Only a SCHEDULE can be superseded
    * this way — an "Immediate" label is what the replacement says anyway, so

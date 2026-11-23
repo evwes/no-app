@@ -246,6 +246,47 @@ const FEATURE_SPECIMENS = [
    * ANSWER must never suppress the honest EVIDENCE.* */
   ["v211 control: Eastman Chemical — carve-out 'SUBJECT TO the former plans' vesting requirements' — no label, quote kept",
     "20261014153917NAL0005932529001", { vesting: null, quote: true }, "Eastman Chemical Company"],
+  /* v212 — THE remainder/carve-out GUARD KEEPS THE QUOTE. That guard fires on a
+   * sentence that has ALREADY PASSED the employer-scope gate, so it names
+   * employer money by construction, and it was a BARE `continue`: the label
+   * went and the filing's own sentence went with it. Six positives assert
+   * `vesting: null, quote: true` — the label refusal is half the claim, because
+   * on these filings no single label is true for every reader.
+   * These are the four largest members and two shapes that are NOT the common
+   * one: Nationwide Children's carries the filed LADDER inside the window
+   * (and opens mid-word on a page break, which is recorded as a residue, not
+   * fixed), and American Honda states its MATCH immediate while a second
+   * sentence puts "Employer service contributions" on a 2-to-5-year ladder —
+   * which is exactly why the label must stay refused. */
+  ["v212: ADP TotalSource — vesting 'ranging from immediate to six years graded, as elected by each adopting employer'",
+    "20261015093638NAL0007583331001", { vesting: null, quote: true }, "Adp Totalsource Group, Inc."],
+  ["v212: Tenet Healthcare — 'based on years of service' with no schedule stated",
+    "20261015160338NAL0009889072001", { vesting: null, quote: true }, "Tenet Healthcare Corporation"],
+  ["v212: Select Medical — the same shape on 'years of continuous service'",
+    "20261012084159NAL0002371058001", { vesting: null, quote: true }, "Select Medical Corporation"],
+  ["v212: Coadvantage — immediate on the Adopting Employer's safe harbor money, graded on the rest",
+    "20261015104854NAL0008402465001", { vesting: null, quote: true }, "Coadvantage Corporation"],
+  ["v212: Nationwide Children's — the filed Years/Percentage ladder inside the refused sentence",
+    "20261013145448NAL0004105841001", { vesting: null, quote: true }, "Nationwide Children'S Hospital, Inc."],
+  ["v212: American Honda — match immediate, 'Employer service contributions' on a 2-to-5-year ladder",
+    "20261014133301NAL0006556961001", { vesting: null, quote: true }, "American Honda Motor Company, Inc."],
+  /* …AND THE TWO COUNTER-SPECIMENS, drawn FROM THE DATA rather than invented,
+   * by mutating the shipped source and asking which real filings a dropped
+   * condition would newly publish. v204 added positives and no negatives and
+   * took 21 real funds off a page.
+   * Zara USA is `forfeit`'s own case: pure forfeiture ACCOUNTING, which
+   * mentions vesting and states no rule. Syensqo is the `offTopic` +
+   * `vestingQuoteOk` PAIR's case — priced together on purpose, because both
+   * reject loan text and *two mutually redundant guards each read "necessary
+   * for 0"*: alone they block 1 plan and 0 plans, and together 4 plans /
+   * 10,252 readers, every one a loan or hardship sentence. Syensqo's is the v82
+   * defect verbatim: "Participants may borrow up to a maximum of 50% of their
+   * vested account balance, excluding the Company's additional retirement
+   * contribution." */
+  ["v212 control: Zara USA — forfeiture accounting mentions vesting and states no rule",
+    "20261015153921NAL0004285843001", { vesting: null, quote: null }, "Zara Usa, Inc."],
+  ["v212 control: Syensqo — a LOAN limit that names employer money and the word vested",
+    "20261015171959NAL0009877792001", { vesting: null, quote: null }, "Syensqo Usa Llc"],
   /* v83: three false-"Immediate" shapes the v81 widening let through, found
    * by self-checking all 3,907 new Immediate labels against their own quotes.
    * Each states a service condition in the SAME sentence as the immediate

@@ -34,6 +34,7 @@ import { buildLedger } from "./lib-ledger.mjs";
 import { planNoteArm, stripFormAndNameNoise, FIELD_WORD } from "./lib-plannote.mjs";
 import { read } from "./lib-filingtext.mjs";
 import { vestingSelection, scopeGate } from "./lib-vestslice.mjs";
+import { isFormSentence } from "./lib-formsentence.mjs";
 
 const argv = process.argv.slice(2);
 const TOP = (() => { const i = argv.indexOf("--top"); return i > 0 ? +argv[i + 1] : 12; })();
@@ -78,16 +79,31 @@ for (const r of rows) {
 
   const gates = sel.vestSentences.map((s) => scopeGate(s, sel.t, r.name || ""));
   const passIdx = gates.findIndex((g) => g.passes);
-  const schedule = sel.vestSentences.filter((s) => LADDER.test(s) || CLIFFISH.test(s));
-  const immediate = sel.vestSentences.filter((s) => IMMEDIATEISH.test(s));
+  /* v212 CORRECTION, AND IT CHANGED THIS SCRIPT'S HEADLINE COMPLETELY. The
+   * SHAPE question must be asked of sentences that are not the FORM's own
+   * printed text. `LADDER`'s third branch, `\bless than \d\b[^.]{0,40}\d{1,3}\s?%`,
+   * matches Form 5500 line 6g(2) — "Number of participants who terminated
+   * employment … less than 100% VESTED" — which is printed in EVERY full-form
+   * filing. Run against the post-v211 store this file reported 5.24M readers
+   * under "a SCHEDULE is in the selection" and the best sentence of all twelve
+   * largest members WAS that line. `lib-plannote` strips it before asking its
+   * vocabulary question (`[form-6g]`) and this script asks the SELECTION, so
+   * the strip never reached the shape test. With the form sentences removed the
+   * dominant bucket is an IMMEDIATE claim, not a schedule. *The form's own
+   * printed questions are in the filing text, so a text-level screen must
+   * exclude the form before counting.* The GATE question is unaffected — 6g(2)
+   * cannot pass the employer-scope gate — so only the shape split moved. */
+  const real = sel.vestSentences.filter((s) => !isFormSentence(s));
+  const schedule = real.filter((s) => LADDER.test(s) || CLIFFISH.test(s));
+  const immediate = real.filter((s) => IMMEDIATEISH.test(s));
   const shape = schedule.length ? "a SCHEDULE is in the selection"
     : immediate.length ? "an IMMEDIATE claim is in the selection"
       : "no schedule and no immediate claim in the selection";
   const head = passIdx >= 0 ? "G-passed" : "G-noscope";
-  const best = (schedule[0] || immediate[0] || sel.vestSentences[0] || "").replace(/\s+/g, " ");
-  add(`${head} — ${shape}`, r, { n: sel.vestSentences.length, best,
-    empOnly: sel.vestSentences.every((s) => EMPLOYEE_ONLY.test(s)) });
-  if (DUMP) dump.push({ ...r, head, shape, n: sel.vestSentences.length,
+  const best = (schedule[0] || immediate[0] || real[0] || "").replace(/\s+/g, " ");
+  add(`${head} — ${shape}`, r, { n: real.length, best,
+    empOnly: real.length > 0 && real.every((s) => EMPLOYEE_ONLY.test(s)) });
+  if (DUMP) dump.push({ ...r, head, shape, n: real.length,
     sentences: sel.vestSentences.map((s) => s.replace(/\s+/g, " ")) });
 }
 

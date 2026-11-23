@@ -28,7 +28,7 @@
  *  3. THE CALLER GETS THE DIRECTORY, not an import, so it can import whichever
  *     entry point it needs and so a replay can build several baselines.
  */
-import { existsSync, mkdirSync, writeFileSync, mkdtempSync, symlinkSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync, readFileSync, mkdtempSync, symlinkSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import path from "node:path";
 import os from "node:os";
@@ -40,6 +40,62 @@ const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
  * directory. `data` carries the lineup and fee shards. */
 const ASSETS = ["sec-funds.json", "plans-all.json", "mtias.json",
   "lineups-status.json", "lineups-index.json", "fund-er.js", "sec-tickers.js", "data"];
+
+/**
+ * Materialise `entry` and everything it imports from the WORKING TREE, with an
+ * optional source mutation applied to one file. Same layout and the same asset
+ * symlinks as `materialiseAt`, so the two are comparable by construction.
+ *
+ * WHY IT EXISTS (v212). A test for a NEW PREDICATE can slice that predicate out
+ * of lib-4i's bytes and mutate the slice — `vesting-wholeaccount-test.mjs` does
+ * exactly that. A test for a CONTROL-FLOW change cannot: the thing under test is
+ * a `continue` inside `extractPlanFeatures`, a 2,500-line function that cannot
+ * be lifted out of its file. Without a mutant materialiser such a change ships
+ * with no leave-one-out evidence at all, and *a control that cannot fail is
+ * decorative*. Written here rather than in the test so the ASSET list and the
+ * transitive walk are SHARED and not retyped — property 1 and 2 above are the
+ * reasons, and they are no less true for a working-tree copy.
+ *
+ * `mutate` must CHANGE the file; a mutation that does not land is thrown rather
+ * than reported, because a mutant identical to the shipped source passes every
+ * assertion vacuously and reads as "this condition is not load-bearing".
+ *
+ * @param {{file?: string, mutate?: (src: string) => string, label?: string}} [opts]
+ * @returns {{dir: string, entryPath: string, files: string[]}}
+ */
+export function materialiseWorkingTree(entry = "lib-4i.mjs", opts = {}) {
+  const root = mkdtempSync(path.join(os.tmpdir(), `${opts.label || "wtmut"}-`));
+  const dir = path.join(root, "scripts");
+  mkdirSync(dir);
+  for (const asset of ASSETS) {
+    const from = path.join(REPO, asset);
+    if (existsSync(from)) symlinkSync(from, path.join(root, asset));
+  }
+  const target = opts.file || entry;
+  let mutated = false;
+  const seen = new Set();
+  const copy = (rel) => {
+    if (seen.has(rel)) return;
+    seen.add(rel);
+    const from = path.join(REPO, "scripts", rel);
+    if (!existsSync(from))
+      throw new Error(`working tree: scripts/${rel} does not exist. The module graph cannot be assembled.`);
+    let src = readFileSync(from, "utf8");
+    if (rel === target && opts.mutate) {
+      const out = opts.mutate(src);
+      if (out === src)
+        throw new Error(`the mutation did not land in scripts/${rel} — its target string has moved, and an unmutated mutant passes vacuously`);
+      src = out; mutated = true;
+    }
+    writeFileSync(path.join(dir, rel), src);
+    for (const m of src.matchAll(/\bfrom\s+["'](\.\/[^"']+)["']/g)) copy(m[1].slice(2));
+    for (const m of src.matchAll(/\bimport\s*\(\s*["'](\.\/[^"']+)["']\s*\)/g)) copy(m[1].slice(2));
+  };
+  copy(entry);
+  if (opts.mutate && !mutated)
+    throw new Error(`the mutation target scripts/${target} is not in ${entry}'s module graph — nothing was mutated`);
+  return { dir, entryPath: path.join(dir, entry), files: [...seen] };
+}
 
 /**
  * Materialise `entry` and everything it imports, at `ref`.

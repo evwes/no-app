@@ -110,6 +110,13 @@ jobs:
           # otherwise. It also runs in site-test, which is the job a test-file
           # edit can trigger without firing a re-parse.
           node scripts/vesting-wholeaccount-test.mjs
+          # v212. The same reasoning one layer along: it asserts that the
+          # remainderGraded/carveOut guard KEEPS the filing's sentence while
+          # still refusing the label, and that it keeps nothing it should not.
+          # Its mutants materialise the working tree's module graph rather than
+          # slicing a predicate, because the thing under test is a `continue`
+          # inside extractPlanFeatures and cannot be lifted out of its file.
+          node scripts/vesting-quotekeep-test.mjs
       # merge-side name repairs. This one CAN live in CI where
       # merge-name-test.mjs cannot: it slices the arm out of merge-4i.mjs and
       # feeds it a FROZEN attestation map, so a DOL refresh cannot flip its
