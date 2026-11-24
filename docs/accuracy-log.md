@@ -45,7 +45,9 @@ unreadability or a failed reconciliation, which a download does not refute. All
 225 probed: **0 reachable, 225 still 403**, with both controls holding (live 200 /
 1,175,500 bytes; bogus ack 403 / 263 bytes). So the label is durable in FACT at 1
 reversal in 226 even though it is not durable in PRINCIPLE, and Corning's remedy
-is motivated by ONE plan / 16,330 readers — below the 500,000 floor. *The cheap
+is motivated by **ZERO published readers** — this paragraph said "ONE plan /
+16,330 readers, below the floor" until the serving condition was applied an hour
+later, and that plan never stopped being served. *The cheap
 measurement that CLOSES a class is worth more than the queue entry it replaces*;
 the general size needs prep's `fallbacks.json` and so cannot be taken in-session.
 
