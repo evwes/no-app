@@ -17,7 +17,7 @@
  * Those are different repairs, and no store-side field distinguishes them.
  */
 import { readFileSync } from "node:fs";
-import { SPONSOR_TWO_CLAIM, sponsorMoneyRe, wholeAccountVested } from "./lib-4i.mjs";
+import { SPONSOR_TWO_CLAIM, sponsorMoneyRe, wholeAccountVested, unnarrowedFullVesting } from "./lib-4i.mjs";
 import { AV_TRIGGER } from "./lib-quote.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
@@ -80,13 +80,19 @@ const S_UNIV = cut("const universal = /\\ball", "\n      const strictGate =", "u
  * `ReferenceError: wholeAccountVested is not defined` on its own controls,
  * which is the slicer doing the one thing a retyped copy could never do. The
  * two new names are passed in rather than re-derived. */
-const S_STRICT = cut("const strictGate =", "\n      if (!strictGate && !employerMoney && !universal && !wholeAcctOnly)", "strictGate");
+/* …and v214's `uvOnly` joined the same region, which moved this end anchor
+ * again — the slicer threw `end anchor not found for strictGate` the moment the
+ * parser's `continue` line grew its fifth conjunct, which is the one thing a
+ * re-typed copy of this gate could never do. The new name is PASSED IN rather
+ * than re-derived, exactly as v211's two were. */
+const S_STRICT = cut("const strictGate =", "\n      if (!strictGate && !employerMoney && !universal && !wholeAcctOnly && !uvOnly)", "strictGate");
 for (const [name, s, must] of [
   ["IMMED", S_IMMED, "always (?:fully |"],
   ["employerMoney", S_EMP, "sponsorMoneyRe(sponsorName)"],
   ["universal", S_UNIV, "all (?:of the |the )?contributions?"],
   ["strictGate", S_STRICT, "company match"],
   ["strictGate", S_STRICT, "wholeAcctOnly"],
+  ["strictGate", S_STRICT, "uvOnly"],
 ]) if (!s.includes(must)) throw new Error(`vestslice: the ${name} slice is missing ${must} — the boundaries moved`);
 
 /* `waPass` is v211's two-pass flag and the slice carries the line that reads
@@ -94,17 +100,38 @@ for (const [name, s, must] of [
  * pass on which the whole-account arm is live, because that is the gate's
  * widest behaviour and the one a census must be able to ask about. */
 const gateFn = new Function("s", "t", "sponsorName", "SPONSOR_TWO_CLAIM", "sponsorMoneyRe",
-  "wholeAccountVested", "AV_TRIGGER", "waPass",
-  [S_IMMED, S_EMP, S_UNIV, S_STRICT, "return { employerMoney, universal, strictGate, wholeAcctOnly };"].join("\n"));
+  "wholeAccountVested", "AV_TRIGGER", "waPass", "unnarrowedFullVesting",
+  [S_IMMED, S_EMP, S_UNIV, S_STRICT, "return { employerMoney, universal, strictGate, wholeAcctOnly, uvOnly, uv };"].join("\n"));
 
 /**
  * The arms of the employer-scope gate for one candidate sentence.
  * `passes` is the gate's own verdict: false means the loop `continue`s before
  * any quote fallback, so the filing stores nothing at all.
  */
-export function scopeGate(s, t = s, sponsorName = "", waPass = 1) {
-  const g = gateFn(s, t, sponsorName, SPONSOR_TWO_CLAIM, sponsorMoneyRe, wholeAccountVested, AV_TRIGGER, waPass);
-  return { ...g, passes: !!(g.strictGate || g.employerMoney || g.universal || g.wholeAcctOnly) };
+/* `uvArm` IS THE BEFORE/AFTER LEVER AND IT IS NOT A CONVENIENCE. Once v214's
+ * arm is inside the gate, `passes` is TRUE for the very sentences a census of
+ * "what the gate refuses" must count — so an instrument that asked the shipped
+ * gate would measure the post-ship state and report the class it is sizing as
+ * empty. *A before/after screen must ask the BEFORE side's index.* Passing
+ * `UV_OFF` gives the pre-v214 gate exactly, by handing the slice an arm that
+ * answers null; the slice itself is untouched, so the two readings differ in
+ * one value and nothing else. `UV_OFF_CONTROL` below proves the lever moves. */
+export const UV_OFF = () => null;
+export function scopeGate(s, t = s, sponsorName = "", waPass = 1, uvArm = unnarrowedFullVesting) {
+  const g = gateFn(s, t, sponsorName, SPONSOR_TWO_CLAIM, sponsorMoneyRe, wholeAccountVested, AV_TRIGGER, waPass, uvArm);
+  return { ...g, passes: !!(g.strictGate || g.employerMoney || g.universal || g.wholeAcctOnly || g.uvOnly) };
+}
+/* A LEVER THAT DOES NOTHING READS EXACTLY LIKE A LEVER THAT IS OFF, and this
+ * one decides every before/after number in the pass. So one sentence is pinned
+ * on which the two settings MUST disagree, and one on which they must AGREE —
+ * without the second, a stub that broke the whole gate would also "pass". */
+{
+  const S = "Vesting – Participants are immediately vested in their accounts.";
+  const on = scopeGate(S, S, "Acme Widgets"), off = scopeGate(S, S, "Acme Widgets", 1, UV_OFF);
+  if (!(on.passes && !off.passes)) throw new Error("vestslice: the UV_OFF lever does not move the gate on the pinned v214 sentence");
+  const T = "Participants are immediately vested in the Company's matching contributions.";
+  const tOn = scopeGate(T, T, "Acme Widgets"), tOff = scopeGate(T, T, "Acme Widgets", 1, UV_OFF);
+  if (!(tOn.passes && tOff.passes)) throw new Error("vestslice: UV_OFF changed a sentence the PRE-v214 gate already admitted — the stub is breaking the gate, not disabling one arm");
 }
 
 /** The anchor regex itself, for callers that need to ask where it failed. */

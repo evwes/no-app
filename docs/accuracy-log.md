@@ -7,6 +7,65 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-24 (2x:xxZ) — v214: THE VESTING SCOPE GATE WAS A CLOSED VOCABULARY AGAINST AN OPEN CLASS
+
+**WRONG.** 500 plans / 689,115 readers said under a `Vesting` heading that their
+employer money vests immediately and published **nothing at all** — that gate's
+`continue` runs ahead of every quote fallback. Its four arms key on a money NOUN
+in a fixed position, so Stanford's "immediately vested in their accounts"
+(44,011) and the Cohesity template's "fully (100%) vested in their account
+balances" (242 plans) both fail: one lacks v211's fullness word, the other its
+always-word, so `WA_FULL && WA_ALWAYS` is too strong in BOTH directions. Eight
+further spellings (reversed order, an apostrophe-less PLURAL, "Employer PORTION
+of", commas in the window, dropped ligatures, QNEC).
+
+**CHANGE.** `unnarrowedFullVesting` asks the question with NO noun list — an
+unconditional full-or-immediate claim whose OBJECT positively names employer
+money or the un-narrowed account — plus 17 refusals, each earned by reading a
+filing. Keyed on all four existing arms being false and on `waPass === 1`:
+additive by construction. Differential vs the pre-arm commit over 24,266 cached
+filings: **0 labels lost, 0 relabelled, 0 published quotes changed, 0 off-field
+moves**, narrowing discharged 900/0.
+
+**TWO REFUSALS ARE THE ENTRY.** (1) The half where the object merely FAILS the
+employee test is 109 plans / 202,606 readers, below the floor, and three readings
+of 52 members found eleven defects with every pass finding a NEW cause — *every
+syntactic proxy for an absence leaks*. (2) The arm **fills a blank and nothing
+else**: its first cut also moved 46 plans / 80,008 readers withheld -> published
+and 8 of the 14 largest were flatly wrong (MaineGeneral, 6,061, publishes "vest
+0% … 20% with each subsequent year" and would have read `Immediate`; Trustmark's
+quote IS its Years/Percent table). A plan is `withheld` BECAUSE a sentence
+already won the quote path, and there that sentence is the real schedule.
+*Adding a WRITER to a first-wins chain RE-ORDERS it*, ninth instance.
+
+**THE DIFFERENTIAL FOUND WHAT READING DID NOT:** 4 plans RELABELLED from a true
+multi-year schedule to `Immediate`, each vesting safe-harbor money immediately
+and DISCRETIONARY money over 5-6 years. `remainderGraded` misses them twice —
+`discretionary` is absent from its noun list, and one filing is a two-column
+audit whose "Basis of Accounting:" text is welded past its 140-char window.
+Fixed by keying on what would be DISPLACED (`horizonFallback || shapeCliff`),
+never on a vocabulary, since that guard serves every plan publishing today.
+
+**PREVENTION.** `vesting-gate-arm-test.mjs` (10 must-fire, 34 must-not-fire, 4
+gate-level refusals, 3 gate controls, 21 sliced mutants each with its own
+control, mutation KIND matched to condition kind); `parser-gate` green at
+**157**, +23 of which **14 are counter-specimens**. Four hand-made probes failed
+first because a SECOND condition blocked them — *a case protected by two
+conditions proves neither* — so `vesting-arm-conditions.mjs` prices every
+condition over the live store and names the plans each is the SOLE protection
+for: 16 of 17 load-bearing, the other DECLARED rather than deleted.
+
+**WRITE-SET CLOSURE BEYOND THE GREP.** v88's post-pass READS `vestingText` and
+writes the LABEL (unreachable: the arm writes only "Immediate", under
+`!out.vesting`), and `fetch-4i` holds two readers no differential can see.
+Measured: `notesMissing` costs **153 acks / 214,866 readers their only OCR
+attempt** (all already carry an `ov` stamp and 1 has an adopted OCR parse — an
+attempt that keeps coming back empty); `FEATURE_GROUPS` costs **0 by
+construction**, an empty stored group being the statement that OCR supplied
+nothing to merge.
+
+---
+
 ## 2026-11-24 (12:xxZ) — §411(d)(3) BOILERPLATE PUBLISHED AS A PLAN'S VESTING SCHEDULE
 
 **WRONG.** 15 plans / 9,186 readers published, as the whole answer to "how does

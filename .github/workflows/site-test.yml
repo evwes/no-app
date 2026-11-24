@@ -170,6 +170,14 @@ on:
             # it is built on. `lib-refmod.mjs` is listed because a change there
             # can make every mutant below pass vacuously.
             "scripts/vesting-quotekeep-test.mjs", "scripts/lib-refmod.mjs",
+            # v214's scope-gate arm. Corpus-free on purpose -- every case in it
+            # is a SENTENCE lifted from a filing that was read -- so it runs
+            # here as well as in build-data's prep. `lib-vestslice.mjs` is
+            # listed because section 3 asks the SLICED gate rather than the
+            # predicate, so a change there can make those assertions pass
+            # vacuously; the population-level pricing of each condition needs
+            # the corpus and deliberately lives outside CI.
+            "scripts/vesting-gate-arm-test.mjs", "scripts/lib-vestslice.mjs",
             "scripts/schc-item1-test.mjs", "scripts/schd-name-test.mjs",
             "scripts/lib-disclose.mjs", "scripts/lib-quote.mjs",
             "data/fund-facts.json", "scripts/fund-facts-check.mjs",
@@ -412,6 +420,7 @@ jobs:
           node scripts/match-formula-test.mjs
           node scripts/vesting-wholeaccount-test.mjs
           node scripts/vesting-quotekeep-test.mjs
+          node scripts/vesting-gate-arm-test.mjs
           node scripts/wrap-repair-test.mjs
           node scripts/roth-pairing-test.mjs
           # --quick ON PURPOSE, and the reason is the honest half of this gate:

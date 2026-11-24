@@ -287,6 +287,97 @@ const FEATURE_SPECIMENS = [
     "20261015153921NAL0004285843001", { vesting: null, quote: null }, "Zara Usa, Inc."],
   ["v212 control: Syensqo — a LOAN limit that names employer money and the word vested",
     "20261015171959NAL0009877792001", { vesting: null, quote: null }, "Syensqo Usa Llc"],
+  /* v214 — A CLOSED VOCABULARY AGAINST AN OPEN CLASS. The employer-scope gate's
+   * four arms all key on a money NOUN in a fixed position, and the census of
+   * the sentences they refuse found one CAUSE in ten SPELLINGS, each of which
+   * would have been its own disjunct. The arm asks the question with no noun
+   * list — an unconditional full-or-immediate claim whose OBJECT positively
+   * names employer money or the un-narrowed account — and `unnarrowedFull
+   * Vesting` carries the refusals that reading its own output earned.
+   *
+   * NINE POSITIVES, one per spelling, and the first two are the mirror pair
+   * that shows v211's `WA_FULL && WA_ALWAYS` is too strong in BOTH directions:
+   * Stanford has the always-word and no fullness word, the Cohesity template
+   * (242 plans) the fullness word and no always-word. Sponsor names are
+   * supplied because production supplies them, even where the arm reads none. */
+  ["v214: Stanford — 'immediately vested in their accounts', an ALWAYS word and no FULLNESS word",
+    "20261014230000NAL0003474003001", { vesting: "Immediate", quote: true }, "The Board Of Trustees Of The Leland Stanford Junior University"],
+  ["v214: Cohesity — 'fully (100%) vested in their account balance', the MIRROR (one auditor template, 242 plans)",
+    "20261007142517NAL0035485090001", { vesting: "Immediate", quote: true }, "Cohesity, Inc."],
+  ["v214: Electrical Industry — 'a fully vested, nonforfeitable INTEREST IN his (or her) account'",
+    "20261015075552NAL0007403651001", { vesting: "Immediate", quote: true }, "Board Of Trustees Of The Deferred Salary Plan Of The Electrical Ind"],
+  ["v214: Entertainment Industry — 'nonforfeitable RIGHTS TO their accounts at all times'",
+    "20261012161751NAL0002888243001", { vesting: "Immediate", quote: true }, "Board Of Trustees, Entertainment Industry 401(K) Plan"],
+  /* Yale is the GLYPH control as well as a positive: its PDF dropped every "ti"
+   * ligature to a SPACE ("Ves ng", "contribu ons") and the sentence is still
+   * readable and still correct, which is why `UV_GLYPH` keys on a SUBSTITUTED
+   * character and never on the damage itself. *A witness that a row is DAMAGED
+   * is not a witness to WHICH SIDE the damage is on.* */
+  ["v214: Yale — the ligature dropped to a SPACE throughout, and the answer is right anyway",
+    "20261013085242NAL0003443633001", { vesting: "Immediate", quote: true }, "Yale University"],
+  ["v214: TECO Energy — REVERSED order, 'the contributions OF THE COMPANY'",
+    "20251013115848NAL0000564979001", { vesting: "Immediate", quote: true }, "Teco Energy, Inc."],
+  ["v214: Turner Industries — 'the Employer PORTION of their accounts'",
+    "20261012171957NAL0003292002001", { vesting: "Immediate", quote: true }, "Turner Industries Group, Llc"],
+  ["v214: Schwan's — COMMAS inside arm 1's three-word window",
+    "20261013100839NAL0001681187001", { vesting: "Immediate", quote: true }, "Schwans Shared Services, Llc"],
+  /* the MISSING APOSTROPHE, and the pin that caught a defect in the arm itself:
+   * `\bsponsor\b` cannot match "Plan SponsorS", so the plural had to be added
+   * to `UV_OBJ_EMPLOYER` — *a class also has a NUMBER.* */
+  ["v214: Conservation International — 'the Plan SponsorS contributions', no apostrophe and a PLURAL",
+    "20261015120256NAL0007441217001", { vesting: "Immediate", quote: true }, "Conservation International Foundation"],
+  /* …AND THE COUNTER-SPECIMENS. Every one of these filings publishes NOTHING
+   * today or publishes a BETTER answer today, and must go on doing so. They are
+   * not invented: each is a plan that `scripts/vesting-arm-conditions.mjs`
+   * names as one its condition is the SOLE protection for, or a mover the
+   * differential produced and the reading rejected.
+   *
+   * THE FIRST FOUR ARE THE SHIP'S SCOPE RATHER THAN A PREDICATE'S REFUSAL, and
+   * they are the ones most likely to be broken by a later change, because
+   * nothing in `unnarrowedFullVesting` protects them — the guards do. Each
+   * vests SAFE-HARBOR or deferral money immediately and DISCRETIONARY or
+   * PROFIT-SHARING money over five or six years, so `Immediate` is wrong and
+   * the multi-year answer the filing already yields is right. */
+  ["v214 control: Dynalec — safe harbor immediate, DISCRETIONARY 20%/yr to six years; keeps its horizon",
+    "20260422133349NAL0008043986001", { vesting: "6-year schedule (shape not stated)", quote: true }, "Dynalec Corporation"],
+  ["v214 control: Mayer Bros. — '100% vested after six years of credited service' outranks the arm",
+    "20261015151413NAL0009094353001", { vesting: "6-year schedule (shape not stated)", quote: true }, "Mayer Bros. Apple Products Inc."],
+  /* Lippes Mathias is `remainderGraded`'s blind spot twice over: the schedule
+   * sits on "DISCRETIONARY profit sharing" money, and the filing is a
+   * TWO-COLUMN audit whose "Basis of Accounting:" text is welded into the
+   * middle of the vesting sentence, pushing "is based on years of service"
+   * past that guard's 140-character window. */
+  ["v214 control: Lippes Mathias — a two-column weld defeats remainderGraded; the horizon must hold",
+    "20261015163409NAL0004363907001", { vesting: "6-year schedule (shape not stated)", quote: true }, "Lippes Mathias Llp"],
+  ["v214 control: The Beach Club — 'DISCRETIONARY contributions … fully vested after the fifth year'",
+    "20261012192421NAL0001294291002", { vesting: "5-year schedule (shape not stated)", quote: true }, "The Beach Club"],
+  /* …and the FILLS-A-BLANK scope: a plan that already publishes a QUOTE keeps
+   * the quote it publishes and gains no label. All 46 members of that class
+   * were read and 8 of the 14 largest were flatly wrong; these two are the
+   * clearest. MaineGeneral's stored quote IS its graded schedule, and
+   * Trustmark's IS its Years/Percent table. */
+  ["v214 control: MaineGeneral — quote today is 'vest 0% … 20% with each subsequent year'; NO label",
+    "20260729144934NAL0018952659001", { vesting: null, quote: true }, "Mainegeneral Health"],
+  ["v214 control: Trustmark Health Benefits — quote today is the plan's own vesting TABLE; NO label",
+    "20240311154808NAL0033287281001", { vesting: null, quote: true }, "Trustmark Health Benefits, Inc."],
+  /* the predicate's own single-protection cases, each named by
+   * `vesting-arm-conditions.mjs --show <COND>` over the live store */
+  ["v214 control: Teamster-UPS — 'vested immediately in their contributions', the DOMINANT correct refusal (451,730 readers)",
+    "20261015192424NAL0015288322005", { vesting: null, quote: null }, "Teamster-Ups National 401(K) Tax Deferred Savings Plan"],
+  ["v214 control: NYU Langone — employeeScopedAccount's own case, a TRAILING narrowing (50,458)",
+    "20261014114755NAL0006312577001", { vesting: null, quote: null }, "Nyu Langone Hospitals"],
+  ["v214 control: CommonSpirit — a RANGE of schedules; the noun is PLURAL so SPONSOR_TWO_CLAIM misses it",
+    "20261014225210NAL0003471139001", { vesting: null, quote: null }, "Commonspirit Health"],
+  ["v214 control: Carnegie Mellon — 'are fully vested' as a HARDSHIP-withdrawal eligibility criterion",
+    "20261014154712NAL0006497347001", { vesting: null, quote: null }, "Carnegie Mellon University"],
+  ["v214 control: Henry Schein — 'their 401(k) Contributions' IS the employee deferral",
+    "20260717133016NAL0007912336001", { vesting: null, quote: null }, "Henry Schein, Inc."],
+  ["v214 control: Brown University — 'BEFORE the date of full vesting', a forfeiture-and-transfer mechanic",
+    "20261009084112NAL0016572595001", { vesting: null, quote: null }, "Brown University"],
+  ["v214 control: Community Foundation of NW Indiana — the 403(b) regulatory criteria boilerplate",
+    "20260921121615NAL0018574146001", { vesting: null, quote: null }, "Community Foundation Of Northwest Indiana"],
+  ["v214 control: McDermott — the plan has WOUND UP, so 'were fully vested' is its history",
+    "20261007170827NAL0031481536001", { vesting: null, quote: null }, "Mcdermott Investments, Llc"],
   /* v83: three false-"Immediate" shapes the v81 widening let through, found
    * by self-checking all 3,907 new Immediate labels against their own quotes.
    * Each states a service condition in the SAME sentence as the immediate

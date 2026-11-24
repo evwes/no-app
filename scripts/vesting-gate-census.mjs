@@ -48,7 +48,7 @@ import { buildLedger } from "./lib-ledger.mjs";
 import { loadPlans } from "./lib-schema.mjs";
 import { read } from "./lib-filingtext.mjs";
 import { vestingQuoteOk, AV_TRIGGER } from "./lib-quote.mjs";
-import { vestingSelection, scopeGate } from "./lib-vestslice.mjs";
+import { vestingSelection, scopeGate, UV_OFF } from "./lib-vestslice.mjs";
 import { SPONSOR_TWO_CLAIM, employeeScopedAccount } from "./lib-4i.mjs";
 import { PLAN_ENDS, PLAN_ENDS_IF } from "./vesting-termination-quote.mjs";
 const isTerm = (s) => /\bvest\w+/i.test(s) && PLAN_ENDS.test(s) && PLAN_ENDS_IF.test(s);
@@ -247,7 +247,7 @@ for (const p of L.plans) {
   for (const cd of sel.vestSentences || []) {
     const s = typeof cd === "string" ? cd : (cd && (cd.s || cd.text)) || "";
     if (!s || !vestingQuoteOk(s) || isForm(s)) continue;
-    if (scopeGate(s, sel.t, p.sponsorName || "").passes) { passes = true; break; }
+    if (scopeGate(s, sel.t, p.sponsorName || "", 1, UV_OFF).passes) { passes = true; break; }
     refused.push(s);
   }
   if (passes || !refused.length) continue;
@@ -272,7 +272,7 @@ for (const p of L.plans) {
   for (const cd of sel.vestSentences || []) {
     const s = typeof cd === "string" ? cd : (cd && (cd.s || cd.text)) || "";
     if (!s || !vestingQuoteOk(s) || isForm(s)) continue;
-    if (scopeGate(s, sel.t, p.sponsorName || "").passes) { passes = true; break; }
+    if (scopeGate(s, sel.t, p.sponsorName || "", 1, UV_OFF).passes) { passes = true; break; }
     refused.push(s);
   }
   if (passes || !refused.length) continue;         // REACH or NONE — not this bucket

@@ -11,7 +11,7 @@ import { dirname, join } from "node:path";
 /* v203 adds `accelerationOnlyVesting`, the same guard the two display surfaces
  * use to qualify an acceleration-only quote — so the label gate and the
  * reader-facing sentence are one predicate and cannot contradict each other. */
-import { vestingQuoteOk, matchQuoteOk, rateInMatchPosition, accelerationOnlyVesting, AV_TRIGGER } from "./lib-quote.mjs";
+import { vestingQuoteOk, matchQuoteOk, rateInMatchPosition, accelerationOnlyVesting, AV_TRIGGER, terminationOnlyVesting } from "./lib-quote.mjs";
 import { futureEffectiveGrant, catchupMandateRefusal, planYearEnd } from "./lib-effective-date.mjs";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
@@ -498,6 +498,444 @@ export function wholeAccountVested(s) {
   const x = String(s || "");
   return WA_FULL.test(x) && WA_ALWAYS.test(x) && (WA_FWD.test(x) || WA_REV.test(x))
     && !WA_SUBSET.test(x) && !employeeScopedAccount(x);
+}
+
+/* ---- v214: A CLOSED VOCABULARY AGAINST AN OPEN CLASS ---------------------
+ * THE MEASUREMENT THAT PRODUCED THIS ARM, AND WHY IT IS NOT AN EIGHTH
+ * DISJUNCT. `scripts/vesting-gate-census.mjs` decomposed the 2,868 plans /
+ * 5,386,454 readers whose only vesting sentences the scope gate refuses. 73%
+ * of it — 1,802 plans / 3,960,684 readers — is the gate being RIGHT: the
+ * sentence scopes vesting to the participant's own money, which is vested by
+ * law, and half of that is plans reporting no employer contribution at all,
+ * where the field is moot rather than missing. That population must not move
+ * and does not.
+ *
+ * The remainder is one CAUSE in many SPELLINGS, and the census earned that
+ * finding the hard way: THREE successive readings of its largest "gate right"
+ * bucket each found real gate defects inside it, and the second reading found
+ * four MORE after the first three had been reclassified —
+ *   Stanford          44,011  "immediately vested in their ACCOUNTS"
+ *                             (an always-word and no fullness word, so
+ *                              `wholeAccountVested`'s `WA_FULL` refuses it)
+ *   Cohesity + 241    209,547 "fully (100%) vested in their ACCOUNT BALANCES"
+ *                             (one auditor template across 242 plans: a
+ *                              fullness word and no always-word — the MIRROR
+ *                              of Stanford, so the conjunction is too strong
+ *                              in BOTH directions)
+ *   Jones Lang LaSalle 48,832 "ALL AMOUNTS CONTRIBUTED to the Plan are
+ *                              immediately 100% vested" (`universal` keys on
+ *                              the literal "all contributions")
+ *   Procter & Gamble  42,915  "The QNECs are immediately 100% vested"
+ *                             (a QNEC is employer money BY STATUTE, IRC
+ *                              401(k)(12); arm 1 spells out `non-elective`)
+ *   Harvard           39,413  "100% vested in their ACCUMULATIONS"
+ *   McKinsey          35,552  "CONTRIBUTIONS are 100% vested at all times"
+ *                             (the auditor's bare defined term)
+ *   Electrical Ind.   32,016  "a fully vested, nonforfeitable INTEREST IN his
+ *                              (or her) account"
+ *   Entertainment Ind. 31,362 "immediate vested and nonforfeitable RIGHTS TO
+ *                              their accounts at all times"
+ *   TECO Energy        5,416  "fully vested immediately in THE CONTRIBUTIONS
+ *                              OF THE COMPANY" (arm 1 requires the employer
+ *                              noun BEFORE the money noun — a class also has
+ *                              an ORDER)
+ *   MPD Inc              312  "the COMPANYS contributions" (no apostrophe)
+ *
+ * Every pass found another spelling. *A count keyed on a VOCABULARY measures
+ * the vocabulary*, so eight more disjuncts would buy the eight filings above
+ * and leave the ninth spelling for the next cycle. This arm therefore asks the
+ * question the other way round, with NO noun list at all: does the sentence
+ * make an UNCONDITIONAL full-or-immediate vesting claim whose OBJECT is not
+ * narrowed to the participant's own money?
+ *
+ * IT IS A SUPERSET OF THE EXISTING GATE'S QUESTION AND A SUBSET OF ITS
+ * ADMISSIONS, BY CONSTRUCTION: the caller keys it on all four existing arms
+ * being FALSE (`mine(x) && !everythingBefore(x)`) and on `waPass === 1`, which
+ * runs only when pass 0 settled no label. So no sentence any plan publishes
+ * today can reach it.
+ *
+ * `employeeScopedAccount` — the SHIPPED v211 refusal — is reused rather than
+ * retyped, and the object test extends it to the contribution nouns, because
+ * "vested in their contributions" is the DOMINANT CORRECT refusal (the largest
+ * single member of the whole bucket is Teamster-UPS, 451,730 readers, whose
+ * notes describe pre-tax, after-tax, voluntary, catch-up and rollover money
+ * and NO employer contribution at all) and must stay refused. */
+const UV_OBJ = /\bvest\w*\b[^.]{0,45}?\b(?:in|to|of|interest\s+in|rights?\s+to|with\s+respect\s+to)\s+([^.]{0,80})/i;
+/* THE FORM WORDS ARE v214's ADDITION TO THIS LIST, AND THE CENSUS FIXTURE
+ * PREDICTED THEM BEFORE THIS ARM EXISTED. Its `refuse` list records TWO members
+ * as "employee-money-only-FORM-WORD", logged as the only false positives of the
+ * bound that it could not explain by any other cause: Arrow Financial (867)
+ * "immediately vested in their 401(k) CONTRIBUTIONS" and Tampa Bay Performing
+ * Arts (635) "immediately fully vested in their CATCH-UP contributions". The
+ * ranked reading then produced the big one — Henry Schein (10,297), "(d)
+ * Vesting Participants are immediately vested in their 401(k) Contributions
+ * plus actual earnings thereon", which `IMMED` matches, so it would have
+ * published a FALSE `Immediate` over an elective-deferral sentence. A 401(k)
+ * contribution IS the participant's deferral; the gate exists for exactly this
+ * sentence. *A count keyed on a VOCABULARY measures the vocabulary* — and the
+ * vocabulary that was missing is the one the FORM uses rather than the one
+ * prose uses.
+ *   It does not cost the plans that list a deferral type BESIDE employer money:
+ * Schwan's (11,139) files "their 401(k), rollover, safe harbor matching,
+ * voluntary matching, merger accounts, and discretionary contributions" and
+ * keeps its answer, because `UV_OBJ_EMPLOYER` is tested FIRST and a sentence
+ * naming both pots is a claim about both. */
+const UV_OBJ_EMPLOYEE = /\b(?:their|his|her|participant'?s?|employees?'?)\s+(?:own\s+)?(?:\w+\s+){0,2}contributions?\b|\b(?:elective|deferral|deferrals|salary|pre-?\s?tax|after-?\s?tax|post-?\s?tax|roth|rollover|rollovers|voluntary|mandatory|individual|personal|employee|participant)\b|\b401\s?\(?k\)?\b|\b403\s?\(?b\)?\b|\b457\s?\(?[bf]\)?\b|\bcatch-?\s?up\b/i;
+/* THE PLURAL AND THE APOSTROPHE-LESS POSSESSIVE ARE PART OF THIS LIST, and the
+ * gate test is what found that out: Conservation International (675) files
+ * "vested immediately in their contributions and THE PLAN SPONSORS
+ * CONTRIBUTIONS", and `\bsponsor\b` cannot match "Sponsors" because the
+ * trailing `s` eats the word boundary. The same defeat applies to Medical
+ * Mutual of Ohio's "the COMPANYS contributions" and MPD Inc's "the Companys
+ * contributions" — the missing-apostrophe class this arm exists to reach — and
+ * to Apple Central's (5,887) "Safe harbor and discretionary MATCHES are 100 %
+ * vested immediately", where the money noun is the plural of `match`.
+ * *A class also has a NUMBER*, and this list is the fourth place in this file
+ * where that has cost a correct answer. `companie` is spelled separately
+ * because the plural of `company` is not `companys`. */
+const UV_OBJ_EMPLOYER = /\b(?:employer|company|companie|corporation|matching|match|non-?elective|nonelective|profit[- ]sharing|discretionary|safe[\s-]*harbor|QNEC|QMAC|sponsor)(?:s|es|'s|s'|’s|s’)?\b/i;
+/* …and the OBJECT IS THE ACCOUNT, which is a POSITIVE identification of
+ * employer money and not merely the absence of an employee one. v211's own
+ * argument, and it is sound rather than convenient: a participant's ACCOUNT
+ * holds whatever the plan credits to them, employer money included, so a
+ * full-vesting claim about the account covers employer money BY CONSTRUCTION
+ * in a way a claim about "their contributions" never does. That asymmetry is
+ * the whole reason the gate is right to refuse "immediately vested in their
+ * voluntary contributions". Every employee-NARROWED account is already refused
+ * above by the shipped `employeeScopedAccount`, so what reaches here is the
+ * un-narrowed account.
+ *   THE CONTROL IS WHAT FOUND THIS. The first cut asked `wholeAccountVested`
+ * for this disjunct and Stanford (44,011) — the arm's own largest motivating
+ * case — came back `employerNamed: false`, because that predicate REQUIRES the
+ * fullness word this arm exists to stop requiring. *A control that cannot fail
+ * is decorative*; this one failed by name on the member the brief names first. */
+const UV_OBJ_ACCT = /\baccounts?\b/i;
+/* UNCONDITIONAL, and this is the pair of words `wholeAccountVested` requires
+ * TOGETHER. `WA_FULL && WA_ALWAYS` is why Stanford and the 242-plan Cohesity
+ * template are both refused, and the conjunction was earned for a real reason
+ * — lib-4i's own note says that without the always-word "a participant is 100%
+ * vested in their account AFTER THREE YEARS" reads as immediate. So the
+ * disjunction here is paid for by a DIRECT unconditionality test instead: the
+ * refusals below veto a service condition, an entry/age/event trigger, a
+ * schedule, a carve-out and a cohort, which is what the always-word was
+ * standing in for. */
+const UV_UNCOND = /\b(?:100\s?%|100\s+percent|one\s+hundred\s+percent|fully|full)\b[^.]{0,40}?\bvest|\bvest\w*\s+(?:100\s?%|100\s+percent)|\b(?:immediate(?:ly)?|always|at all times)\b[^.]{0,45}?\bvest|\bvest\w*\b[^.]{0,45}?\b(?:at all times|immediate(?:ly)?|always)\b/i;
+/* FOUR REFUSALS EARNED BY READING MEMBERS OF A SEEDED DRAW, not by imagining
+ * what could go wrong — the first draw of 25 was 21/25 by plans and only 47%
+ * BY READERS, because one 10,478-reader member was a false positive, so they
+ * are priced rather than guessed.
+ *  CONTRACT — Community Foundation of Northwest Indiana (10,478, the single
+ *    largest false positive): "The individual owner of the contract is fully
+ *    vested in the contract or account." That is the 403(b) REGULATORY
+ *    CRITERIA quoted out of the regulation, not this plan's rule. The PLURAL
+ *    is load-bearing: OCLC (1,007) files the same class as "The individual
+ *    OWNERS of the CONTRACTS are fully vested in the contracts and/or
+ *    accounts", which the first cut of this refusal missed — *a fix for one
+ *    phrasing of a class is not a fix for the class*, met inside one cycle on
+ *    the one arm whose job is to stop a false label.
+ *  FORFEIT — a forfeiture sentence stating that a vesting condition EXISTS is
+ *    the strongest possible evidence against an immediate reading: Rolls-Royce
+ *    (992) files "Participants that terminate employment PRIOR TO BEING FULLY
+ *    VESTED in the annual discretionary 3% contributions, FORFEIT this portion
+ *    of their account." Mercy University (2,381) is the other direction, "As
+ *    contributions are fully vested, there are no forfeitures in the Plan" — a
+ *    forfeiture-ACCOUNTING sentence, which `vRank` already demotes in the
+ *    selection, the parser agreeing it is weak evidence.
+ *  OCR_LADDER — TakeCare Insurance (196) carries a REAL Years/Percent ladder
+ *    whose OCR mangled every anchor ("years ofservice", "Vestins", "t00%"), so
+ *    neither the service arm nor a percent arm reaches it. Keyed on the
+ *    digits-and-percent DENSITY rather than on any spelling, because the
+ *    spellings are what the OCR destroyed. *A service test keyed on a
+ *    correctly spelled unit is defeated by the filings' own typos.*
+ *  WOUND_UP — the plan has wound up, so "participants became fully vested" is
+ *    its own HISTORY and not its rule. FOUR of the second draw's eight false
+ *    positives were this, including its largest (McDermott, 11,425, "All
+ *    terminated employees … were fully vested in their account balances at the
+ *    Closing Date"). Anchored on the PAST PARTICIPLE beside the vest word and
+ *    never on the mere presence of a date, because present-tense "are fully
+ *    vested" IS the class itself and must survive. */
+const UV_CONTRACT_BOILER = /\bindividual\s+owners?\s+of\s+the\s+contracts?\b|\blegally\s+enforceable\s+against\s+the\s+insurer\b/i;
+/* THE "BEFORE FULL VESTING" ARM IS v214's, AND IT WAS EARNED BY READING THE
+ * SECOND-LARGEST MEMBER OF THE RANKED DRAW. The census's version read only
+ * "prior to", and Brown University (12,566) files
+ *   "employment terminates BEFORE THE DATE OF FULL VESTING, the contracts or
+ *    certificates issued to the University for a participant are returned to
+ *    the Plan Sponsor and amended to provide for a transfer of ownership in the
+ *    VESTED AMOUNT of the account, if any, to the participant"
+ * — a forfeiture-and-transfer MECHANIC whose every clause presupposes that a
+ * vesting schedule exists, and whose "date of full vesting" is what made
+ * `UV_UNCOND` fire. *A fix for one phrasing of a class is not a fix for the
+ * class*, and here the phrasing is one preposition. (This is also the filing
+ * the v209 comment twenty lines up already names as auditor boilerplate that
+ * must not become a quote; it is the same sentence reaching the gate from the
+ * other side.) */
+const UV_FORFEIT = /\bno\s+forfeitures?\b|\bthere\s+(?:are|were)\s+no\s+forfeit|\b(?:prior\s+to|before)\s+(?:the\s+(?:date\s+of\s+)?)?(?:being\s+|becoming\s+)?(?:\w+\s+){0,2}vest\w*|\bforfeit\w*\b[^.]{0,40}?\bnon-?vest|\bnon-?vest\w*\b[^.]{0,40}?\bforfeit|\b(?:not|never)\s+(?:\w+\s+){0,2}vest(?:ed)?\b/i;
+/* A DISTRIBUTION RULE IS NOT A VESTING RULE, and the phrase that defeats every
+ * structural test is "the VESTED VALUE of his account" — a NOUN PHRASE naming
+ * whatever happens to be vested, not a claim that anything is. Princeton
+ * (15,468) files
+ *   "Withdrawals and Distributions If the employment of any participant is
+ *    terminated, or if such employee retires or resigns, the participant is
+ *    ENTITLED TO RECEIVE THE FULL VESTED VALUE of his account."
+ * and `UV_UNCOND`'s `full … vest` arm reads it as a full-vesting claim.
+ *
+ * A COPULA REQUIREMENT WOULD BE THE OBVIOUS FIX AND IS WRONG BY MEASUREMENT:
+ * the arm's third-largest correct member is attributive in exactly the same
+ * way — the Electrical Industry plan (32,016) files "Each participant HAS A
+ * FULLY VESTED, nonforfeitable INTEREST IN his (or her) account", and Lowe's
+ * v211 fixture is "a 100% VESTED INTEREST IN the balance of their account". So
+ * the discriminator is not the grammar of the vest phrase but the verb that
+ * GOVERNS it: a payment or distribution verb means the sentence is about when
+ * money moves, which is a different question from when it is earned.
+ *
+ * Princeton is also the case that shows why a LABEL cannot be taken from the
+ * best sentence a filing offers: its OTHER selected sentence, "Participants are
+ * fully vested in the Plan when they begin making contributions", is a true
+ * immediate claim — and `vestSentences` is SORTED, so which one the loop
+ * reaches first is not this arm's choice. *Blocking a wrong ANSWER must never
+ * suppress the honest EVIDENCE*, and the converse: admitting the wrong sentence
+ * costs the right one its turn. */
+const UV_DISTRIB = /\b(?:entitled\s+to\s+(?:receive|a\s+distribution)|shall\s+(?:receive|be\s+paid)|will\s+(?:receive|be\s+paid)|may\s+receive|receives?|paid|payable|distribut\w+)\b[^.]{0,40}?\b(?:full\s+|fully\s+|100\s?%\s*)?vested\b/i;
+
+/* ---- FOUR REFUSALS FROM THE RANKED READING OF THE arm's OWN OUTPUT -------
+ * These were found by printing the arm's largest members and reading them, not
+ * by screening, and the first of the four is the only member read anywhere in
+ * this pass that would have produced a FALSE LABEL at scale.
+ *
+ * SCHEDULE — CommonSpirit Health (41,166) files
+ *   "Vesting Mergers and acquisitions have resulted in A VARIETY OF VESTING
+ *    SCHEDULES, RANGING FROM 100% fully vested immediately TO A THREE- TO
+ *    SIX-YEAR GRADED SCHEDULE."
+ * `IMMED` matches "fully vested immediately" inside it, and `IMMED` is enough
+ * on its own at the end of the loop — so admitting this sentence at the gate
+ * publishes `Immediate` for a plan that says in the same breath that its
+ * schedules RANGE up to six-year graded. **`SPONSOR_TWO_CLAIM` does not catch
+ * it, and the reason is one character:** that predicate carries
+ * `\bvesting schedule\b` and this filing writes SCHEDULES, so the trailing
+ * `\b` fails on the plural. *A fix for one phrasing of a class is not a fix
+ * for the class* — and the class also has a NUMBER.
+ *   The honest reading of this plan is the one the store already has: no label
+ * and the sentence as evidence that the answer VARIES, which is v212's
+ * quote-keep class and is what the census fixture pinned it as.
+ *
+ * HARDSHIP — Carnegie Mellon (19,279 + 6,411 on two plans) files, inside a
+ * sentence about who may take a HARDSHIP WITHDRAWAL, "(b) employees who meet
+ * all of the following: ARE FULLY VESTED; are 59½ years of age or older; and
+ * have a condition of hardship as outlined in the Plan document." Being fully
+ * vested is an ELIGIBILITY CRITERION there, not a claim that anyone is. The
+ * loop's own `offTopic` test already treats `\bhardship` as not-about-vesting
+ * for the QUOTE, so refusing it here is this file agreeing with itself rather
+ * than a new judgment — and it has to be refused HERE because `offTopic` gates
+ * only the end-of-loop quote write, never the label.
+ *
+ * DEMONSTRATIVE — Griffon Corporation (6,332): "The participants are fully
+ * vested in THESE FUNDS at all times." v211 already refused this exact shape
+ * and wrote down why — "a demonstrative with its referent in an earlier
+ * sentence, so the sentence alone cannot say what is vested, and a quote that
+ * cannot be read on its own is not evidence" — but its `WA_SUBSET` noun list
+ * is participants / employees / contributions / accounts and the word here is
+ * FUNDS. `WA_SUBSET` is NOT widened: it is v211's shipped predicate and
+ * touching it would move labels on plans that publish today. *A guard right
+ * for one arm is not a widening of its neighbour.*
+ *
+ * OWN — Nomura Securities (4,997): "Participants are fully vested at all times
+ * in CONTRIBUTIONS MADE ON THEIR OWN BEHALF." The possessive follows the money
+ * noun instead of preceding it, so `UV_OBJ_EMPLOYEE`'s windowed arm cannot see
+ * it — the positional blindness `UV_OBJ` has by construction, arriving on the
+ * employee side this time. `their own` is already an employee-money marker in
+ * `WA_EMP_CLASS`, so this is the shipped vocabulary applied where it belongs. */
+/* ---- TWO MORE, AND THE FIRST ONE IS A FINDING ABOUT A SHIPPED PREDICATE ---
+ * PLAN_TERM — IBEW Local 5 (3,525) files "PLAN TERMINATION If the Plan WAS TO
+ * BE TERMINATED, all participants WOULD BECOME fully vested in their
+ * retirement benefits." That is the §411(d)(3) counterfactual, which this
+ * record condemns in terms, and THREE separate guards miss it:
+ *   `terminationOnlyVesting` returns FALSE, because its own past-tense
+ *     EXEMPTION (`TV_PAST`) fires on the SUBJUNCTIVE "was to be terminated" and
+ *     so switches the refusal off. *A refusal's own exemption can neutralise
+ *     it*, and the exemption is right for what it was written for — a plan that
+ *     HAS wound up is stating its history — but "was to be terminated" is a
+ *     hypothetical, not a history. Measured, not reasoned: the predicate was
+ *     called on the sentence.
+ *   `UV_WOUND_UP` misses it by THREE CHARACTERS — its window is 45 and the gap
+ *     from "was" to "vested" here is 52.
+ *   the loop's own `planTermCond` misses it because its arms want "the plan
+ *     WAS TERMINATED" adjacent, and this filing writes "was TO BE terminated".
+ * So the arm carries its own test, keyed on the PLAN ending rather than on
+ * tense or on an adjacency, and `termination of employment` — the ordinary
+ * vesting trigger — cannot match it. This is NOT a fix to `lib-quote`: the
+ * display qualifier shipped today and changing `TV_PAST` would move its
+ * population, which is a different ship. Recorded there for whoever takes it.
+ *
+ * OCR WELD — FirstBank Holding (4,377) selects
+ *   "stock in the ESOP account to cash and transfer this cash to the 401(k)
+ *    savings arrangement por7on of the Plan in ac- Par7cipants become fully
+ *    vested in discre7onary contribu- cordance with the par7cipant's
+ *    investment direc7ons."
+ * Two newspaper columns welded mid-word, and `vestingQuoteOk` ACCEPTS it — so
+ * this is a quote-quality defect in the oracle as well, noted and not fixed
+ * here. The signature is a DIGIT SUBSTITUTED FOR THE "ti" LIGATURE, which is a
+ * property of the filing's text layer and makes every sentence in it
+ * unreliable. Keyed on that rather than on the weld, because the weld has no
+ * reliable spelling. The arm that does it is `UV_GLYPH`, below — this entry's
+ * own first cut was `[a-z]7[a-z]`, and the second seeded draw produced a
+ * filing that writes `te1mination`, so the digit is not a constant either; the
+ * `7`-only version was REPLACED rather than kept beside the general one.
+ *   IT MUST NOT BE KEYED ON THE *SPACE* SUBSTITUTION, which is the same damage
+ * with a different glyph: Yale (26,186) reads "Ves ng A par cipant is
+ * immediately vested in 100 percent of their contribu ons, the university core
+ * and matching contribu ons" — damaged identically, perfectly readable, and
+ * CORRECT. *A witness that a row is DAMAGED is not a witness to WHICH SIDE the
+ * damage is on.* */
+/* THE LIGATURE-DROP SPELLING IS A DEDICATED DISJUNCT, found in the WITHHELD
+ * bucket rather than the absent one. Invisible Technologies (321) files "In the
+ * event of plan TERMINA ON, par cipants will become 100 percent vested in their
+ * accounts" — the PDF dropped every "ti", so `plan\s+termination` cannot match
+ * and neither can the loop's own `planTermCond`. It CANNOT be handled by
+ * `UV_GLYPH`, which keys on a SUBSTITUTED character: this damage substitutes a
+ * SPACE, and the Yale control forbids refusing on that, because Yale's "Ves ng
+ * A par cipant is immediately vested in … the university core and matching
+ * contribu ons" is damaged identically and CORRECT. So the phrase is spelled
+ * both ways, and its blast radius is the phrase. */
+const UV_PLAN_TERM = /\bplan\s+termina(?:t\w*|\s*on\b)|\bpartial\s+(?:plan\s+)?termina(?:t\w*|\s*on\b)|\btermina(?:tion|\s*on)\s+of\s+the\s+plan\b|\bthe\s+plan\s+(?:is|was|were|be|being|should\s+be|shall\s+be|would\s+be)\s+(?:to\s+be\s+)?terminat\w+|\bterminat\w+\s+the\s+plan\b|\bplan['’]s\s+terminat/i;
+/* ---- THREE FROM THE SEEDED DRAW, which is the half of the reading that
+ * estimates a RATE rather than bounding the harm. *RANK to pick what to READ;
+ * draw RANDOMLY to estimate a RATE* — and these three are small filings that
+ * the ranked reading could not have shown me.
+ *
+ * NOT_VESTED — "a participant who is NOT FULLY VESTED in the Plan" (Novation,
+ *   8) and "Participant accounts that are NOT FULLY VESTED at the time of
+ *   termination may result in forfeitures" (Honolulu Community Action, 378).
+ *   Both are FORFEITURE sentences, so `UV_FORFEIT` is the right home — and its
+ *   existing arms want the single word `nonvested`, where these write the
+ *   NEGATION AS TWO WORDS. *A class also has a SPACE*, recorded eleven times
+ *   in this project and met again. A sentence that contemplates a participant
+ *   who is not fully vested is the strongest available evidence that a vesting
+ *   condition exists.
+ *
+ * HOURS — Bradford Preparatory School (198) files "Participants are one
+ *   hundred percent vested AFTER 1,000 HOURS OF CREDITED SERVICE." A service
+ *   condition, and `SPONSOR_TWO_CLAIM`'s service arm is spelled
+ *   `(?:years?|months?)\s+of\s+…service`, so an HOURS threshold passes
+ *   straight through it. lib-quote's `TV_OTHER_CONTENT` already carries
+ *   `hours of service`, so the vocabulary existed in the repo and not in the
+ *   predicate this arm consults. *A fix for one phrasing of a class is not a
+ *   fix for the class* — and the class also has a UNIT.
+ *
+ * AUDIT — NuWay Alliance (293) files "As all participant's accounts are fully
+ *   vested, MANAGEMENT CONCLUDED THAT NO ADJUSTMENT TO THE ACCOMPANYING
+ *   FINANCIAL STATEMENTS was required." The embedded claim is true, and the
+ *   sentence is an auditor's MATERIALITY conclusion rather than a description
+ *   of the plan — its captured object is "the accompanying financial
+ *   statements was required", which is the object test telling on itself. */
+/* ONE ARM FOR BOTH SPELLINGS OF THE SERVICE CONDITION, rather than two with
+ * the second dead. The second draw produced Otterbein University (1,261),
+ * "A participant is 100 percent vested AFTER 3 OF CREDITED SERVICE" — a
+ * three-year cliff whose word "years" the PDF text layer DROPPED, so neither
+ * `SPONSOR_TWO_CLAIM`'s `(?:years?|months?)\s+of\s+…service` nor an hours
+ * threshold can see it. Keying on the SERVICE MEASURE's own name reaches both
+ * it and Bradford's hours, so they are one condition: *a condition unreachable
+ * by construction reads as a guard and is dead code*, and an hours-only arm
+ * beside this one would be exactly that. */
+/* THE MODIFIER IS GENERALISED, and that is a THIRD spelling of this same class
+ * found by reading the withheld half: Trustmark (1,251 + 1,206) files
+ * "Participants become 100 percent vested in the remainder of their account
+ * balances GRADUATED OVER SIX YEARS OF PLAN SERVICE" — and
+ * `SPONSOR_TWO_CLAIM`'s service arm spells its modifier
+ * `(vesting |credited |continuous |eligibility )?`, so "years of PLAN service"
+ * matches none of the four and the whole sentence reads as unconditional. A
+ * sentence that measures anything in YEARS OF <anything> SERVICE is stating a
+ * service condition whatever the adjective is. */
+const UV_SERVICE = /\byears?\s+of\s+(?:\w+\s+){0,2}service\b|\b(?:credited|vesting|continuous|eligibility)\s+service\b|\bhours\s+of\s+(?:credited\s+|vesting\s+|continuous\s+|eligibility\s+)?(?:service|employment)\b|\bservice\s+(?:requirement|condition)\b/i;
+const UV_AUDIT_BOILER = /\baccompanying\s+financial\s+statements\b|\bmanagement\s+(?:has\s+)?conclude[ds]?\b/i;
+/* ---- A BROKEN FONT ENCODING MAKES EVERY WORD IN THE SENTENCE UNRELIABLE,
+ * AND TWO OF THE SECOND DRAW'S FOUR DEFECTS ARE EMPLOYEE-MONEY CLAIMS LET
+ * THROUGH BY ONE GLYPH — which is the precise harm this gate exists to
+ * prevent. G & G Organization (394) and LECS (358) both file
+ *   "ParƟicipants are immediately vested in their elecƟive contribuƟions
+ *    plus earnings thereon."
+ * — "their ELECTIVE CONTRIBUTIONS", the textbook correct refusal, and
+ * `UV_OBJ_EMPLOYEE` cannot read either word because the font mapped the "ti"
+ * ligature to U+019F. A plan whose text layer does this has no sentence this
+ * arm can trust.
+ *   TWO SUBSTITUTION ALPHABETS, BOTH MEASURED, AND THE SECOND OF THEM REPLACES
+ * THE `7`-ONLY ARM WRITTEN AN HOUR EARLIER: FirstBank wrote `por7on`, and Jack
+ * Schmitt Family of Dealerships (228) writes "In the event of Plan TE1MINATION
+ * … each respective PA1TICIPANT's account … will become fully vested" — the
+ * §411(d)(3) counterfactual, whose plan-termination word `UV_PLAN_TERM`
+ * cannot match for the same reason. *A fix for one phrasing of a class is not a
+ * fix for the class*, and here the phrasing is one digit.
+ *   IT MUST NOT MATCH TYPOGRAPHIC PUNCTUATION. A naive "non-ASCII between two
+ * letters" test fires on `Company’s`, `Organization’s` and
+ * `Laboratory’s` — the apostrophe that the arm's CORRECT members are full
+ * of, including Argonne and Purdue in this very draw. So the letter class is
+ * Latin Extended-A/B, where the substituted glyphs live, and nothing else. */
+const UV_GLYPH = /[A-Za-z][0-9Ā-ɏ][A-Za-z]/;
+const UV_SCHEDULE = /\bgrad(?:ed|uat\w+)\b|\bvesting\s+schedules\b|\brang(?:ing|e)\s+(?:from|of)\b|\bvar(?:y|ies|iety|ious)\b|\bratably\b|\bcliff\b/i;
+const UV_HARDSHIP = /\bhardship\b|\b59\s?(?:½|1\/2)\b/i;
+/* THESE TWO ARE THE SOLE PROTECTION FOR *NO* PLAN IN THE HALF THAT SHIPS, and
+ * that is measured rather than assumed — `vesting-arm-conditions.mjs` prices
+ * every condition of this predicate over the live population every run, and
+ * reports `UV_DEMONSTRATIVE` blocking 2 sentences always beside
+ * `SPONSOR_TWO_CLAIM` and `UV_AUDIT_BOILER` blocking 1 always beside
+ * `UV_PLAN_TERM`. They are KEPT rather than deleted because each is
+ * load-bearing for the OTHER half of this predicate — Griffon's "these funds"
+ * and NuWay's materiality conclusion are both `employerNamed: false`, which the
+ * gate refuses anyway, so deleting them would silently re-open two defects that
+ * were READ the moment anyone ships that half. *A 0 in leave-one-out can be a
+ * property of today's data rather than of the construction* — and here it is a
+ * property of which half consumes the predicate, which is a third thing again.
+ * The other fifteen conditions are each the sole protection for at least one
+ * plan in the shipping half. */
+const UV_DEMONSTRATIVE = /\b(?:these|those|such|the\s+foregoing)\s+(?:\w+\s+){0,1}(?:funds?|amounts?|monies|moneys|sources?|types?|accounts?|contributions?)\b/i;
+const UV_OWN = /\b(?:their|his|her|its)(?:\s+or\s+(?:his|her))?\s+own\b/i;
+const UV_WOUND_UP = /\b(?:became|were|was|has\s+been|have\s+been|had\s+been|remains?|remained)\b[^.]{0,45}?\bvest\w+|\bvest\w+[^.]{0,30}?\b(?:at\s+the\s+)?closing\s+date\b|\bplan['’]s\s+termination\b|\bceased\s+contributions\b|\bplan\s+is\s+frozen\b|\bno\s+impact\s+to\s+the\s+operations\b/i;
+const uvOcrLadder = (s) => ((s.match(/\b\d{1,3}\s?(?:%|percent)/gi) || []).length >= 3)
+  || /\bvest\w*\s+percenta/i.test(s) || /\byears?\s*of\s*vest/i.test(s);
+
+/**
+ * The scope gate's question asked without a noun vocabulary: `s` makes an
+ * unconditional full-or-immediate vesting claim whose object is NOT narrowed
+ * to the participant's own money.
+ *
+ * Returns `null` when the sentence does not qualify, otherwise
+ * `{ obj, employerNamed }` — `employerNamed` true when the object POSITIVELY
+ * names employer money or the un-narrowed whole account, false when it merely
+ * FAILS the employee test. The caller must treat those differently: *when a
+ * class is a semantic judgment, do not screen for the ABSENCE of the good
+ * case; require the PRESENCE of the bad one*, and an object that merely lacks
+ * an employee word is exactly such an absence.
+ */
+export function unnarrowedFullVesting(s) {
+  const x = String(s || "");
+  if (!UV_UNCOND.test(x)) return null;
+  if (SPONSOR_TWO_CLAIM.test(x)) return null;        // two claims, or a service condition
+  if (employeeScopedAccount(x)) return null;         // the SHIPPED v211 refusal
+  if (AV_TRIGGER.test(x)) return null;               // an acceleration trigger is not a schedule
+  /* …and the §411(d)(3) PLAN-TERMINATION counterfactual, asked through the
+   * predicate that SHIPPED on the display side today rather than through a
+   * second vocabulary — the same reuse v203 made of `accelerationOnlyVesting`,
+   * and for the same reason: a second list here is a second thing to drift. It
+   * is strictly stronger than the census's own `isTerm`, which had no
+   * terminating-PERSON arm and no past-tense arm. */
+  if (terminationOnlyVesting(x)) return null;
+  if (UV_CONTRACT_BOILER.test(x)) return null;
+  if (UV_FORFEIT.test(x)) return null;
+  if (UV_DISTRIB.test(x)) return null;
+  if (uvOcrLadder(x)) return null;
+  if (UV_WOUND_UP.test(x)) return null;
+  if (UV_SCHEDULE.test(x)) return null;
+  if (UV_HARDSHIP.test(x)) return null;
+  if (UV_PLAN_TERM.test(x)) return null;
+  if (UV_GLYPH.test(x)) return null;
+  if (UV_SERVICE.test(x)) return null;
+  if (UV_AUDIT_BOILER.test(x)) return null;
+  const m = x.match(UV_OBJ);
+  if (!m) return null;
+  const obj = m[1];
+  if (UV_DEMONSTRATIVE.test(obj)) return null;
+  if (UV_OWN.test(obj)) return null;
+  if (!UV_OBJ_EMPLOYER.test(obj) && UV_OBJ_EMPLOYEE.test(obj)) return null;
+  return { obj, employerNamed: UV_OBJ_EMPLOYER.test(obj) || UV_OBJ_ACCT.test(obj) };
 }
 
 /* ---- v212's NARROWING HANDLE, AND WHAT IT IS NOT ------------------------
@@ -8665,7 +9103,33 @@ export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
        * this arm's reach by construction. 2 plans / 305 readers, both read. */
       const wholeAcctOnly = waPass === 1 && !strictGate && !employerMoney && !universal
         && wholeAccountVested(s) && !AV_TRIGGER.test(s);
-      if (!strictGate && !employerMoney && !universal && !wholeAcctOnly) continue;
+      /* v214: …or the sentence makes an UNCONDITIONAL full-or-immediate vesting
+       * claim whose object POSITIVELY names employer money or the un-narrowed
+       * whole account. See `unnarrowedFullVesting` for the ten filings, the
+       * eleven refusals and the three seeded draws that shaped it.
+       *
+       * KEYED ON ALL FOUR EXISTING ARMS BEING FALSE — `mine(x) &&
+       * !everythingBefore(x)` — and on `waPass === 1`, which runs only when
+       * pass 0 settled no label. So every sentence this admits is one the
+       * `continue` below used to discard, and no plan that publishes a vesting
+       * LABEL today can be reached. Additive by construction, not by sampling.
+       *
+       * `uv.employerNamed` IS THE WHOLE SHIP, AND THE OTHER HALF IS A MEASURED
+       * REFUSAL RATHER THAN A FUTURE PHASE. `unnarrowedFullVesting` also
+       * qualifies sentences whose object merely FAILS the employee test; that
+       * population is 111 plans / 207,003 readers, BELOW the 500,000-reader
+       * floor on its own, and three independent readings of 52 of its members
+       * produced eleven defects with EVERY pass finding a new cause after the
+       * previous ones were repaired — ending with two filings (G & G, LECS)
+       * that publish "their elective contributions" through one substituted
+       * glyph, which is the precise harm this gate exists to prevent. Its
+       * construction is a screen on an ABSENCE, and *every syntactic proxy for
+       * an absence leaks*. The predicate still RETURNS that half so the census
+       * can keep measuring it; the gate does not take it. */
+      const uv = waPass === 1 && !strictGate && !employerMoney && !universal && !wholeAcctOnly
+        ? unnarrowedFullVesting(s) : null;
+      const uvOnly = !!uv && uv.employerNamed;
+      if (!strictGate && !employerMoney && !universal && !wholeAcctOnly && !uvOnly) continue;
       /* …and the widened gate must not answer for a plan that vests the
        * PARTICIPANT's money immediately and the employer's over years:
        *   "immediately vested in their voluntary contributions as well as
@@ -9014,6 +9478,119 @@ export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
        * is 0.8% of the class, below the reader floor, and the alternative is
        * blanking a clause out of a shipped predicate to re-ask it. */
       if (wholeAcctOnly && SPONSOR_TWO_CLAIM.test(s)) labelBlocked = blockedButQuotable = true;
+      /* v214: AND THE ARM MUST NOT DISPLACE A FULL-VESTING HORIZON OR A CLIFF
+       * THE SAME FILING ALREADY YIELDED. THIS GUARD WAS EARNED BY THE
+       * DIFFERENTIAL, NOT REASONED OUT, AND IT IS THE ONLY THING THE
+       * DIFFERENTIAL FOUND WRONG — all four of its RELABELS (1,195 readers) are
+       * one shape, and it is the worst shape there is: a true multi-year
+       * employer schedule replaced by `Immediate`.
+       *
+       *   Dynalec (173)        ARM  "immediately 100% vested in their
+       *                              contributions and the 'safe harbor'
+       *                              contributions"
+       *                        REAL "DISCRETIONARY contributions … become 20%
+       *                              vested upon completion of two years …
+       *                              until 100% vested after six years"
+       *   The Beach Club (189) ARM  "fully vested in safe harbor amounts
+       *                              contributed by the Club"
+       *                        REAL "DISCRETIONARY contributions, if any, are
+       *                              fully vested after the fifth year"
+       *   Lippes Mathias (434) ARM  deferral + nonelective safe harbor
+       *                        REAL "Vesting in the Plan Sponsor's
+       *                              discretionary profit sharing contribution
+       *                              … is based on years of service"
+       *   Mayer Bros. (399)    ARM  "become 100 percent vested in their
+       *                              accounts"
+       *                        REAL "A participant is 100% vested after six
+       *                              years of credited service"
+       * Every one of the four vests SAFE-HARBOR money immediately and
+       * DISCRETIONARY money over five or six years, so neither label is the
+       * whole truth and the horizon is the one that tells a reader something
+       * they cannot already assume. Both sentences are true; the arm picked the
+       * one that is true of the money the law already gives them.
+       *
+       * WHY `remainderGraded` DOES NOT CATCH THEM, which is the part worth
+       * keeping: that guard needs ONE sentence to satisfy both an employer-noun
+       * test and a service test, and
+       *   — its noun list is matching/employer/company/bank/partnership/
+       *     association/sponsor/non-elective/profit-sharing, and THREE of the
+       *     four filings put the schedule on "DISCRETIONARY contributions".
+       *     `discretionary` is in `strictGate`'s neighbourhood and in this
+       *     arm's own `UV_OBJ_EMPLOYER`, and not in that list. *A token added
+       *     to a closed vocabulary multiplies with every token already in it* —
+       *     which is also why this is NOT fixed by widening that list: it is
+       *     consulted for the EXISTING gate on every plan that publishes today,
+       *     and v212's quote-keep behaviour is keyed on the same guard.
+       *   — its service window is 140 characters, and Lippes Mathias is a
+       *     TWO-COLUMN audit whose "Basis of Accounting:" text is welded into
+       *     the middle of the vesting sentence, pushing "is based on years of
+       *     service" past the window. *A fix for one phrasing of a class is not
+       *     a fix for the class*, and the class also has a COLUMN.
+       *
+       * SO THE GUARD IS KEYED ON WHAT WOULD BE DISPLACED RATHER THAN ON A
+       * VOCABULARY. `horizonFallback` and `shapeCliff` are assigned above this
+       * loop and consulted below it on `!out.vesting`, so their presence IS the
+       * statement "this filing yields a multi-year employer answer" — in the
+       * parser's own words, with no list to keep. Keyed on `uvOnly`, so it can
+       * fire only on a sentence the gate used to discard and cannot withdraw a
+       * label from any plan publishing today.
+       *
+       * THE QUOTE IS KEPT in the siblings' idiom even though both post-loop
+       * readers overwrite `vestingText` unconditionally, so today it changes
+       * nothing: *blocking a wrong ANSWER must never suppress the honest
+       * EVIDENCE* is a property of the code's shape, not of this version's
+       * control flow, and the one `labelBlocked` arm written without it had to
+       * be repaired twice (v84, v202). Measured: all four plans return to their
+       * exact prior label AND prior quote. */
+      if (uvOnly && (horizonFallback || shapeCliff)) labelBlocked = blockedButQuotable = true;
+      /* v214: AND IT FILLS A BLANK AND DOES NOTHING ELSE. THIS IS THE SHIP'S
+       * SCOPE AND THE DIFFERENTIAL IS WHAT SET IT — the arm's first cut also
+       * moved 46 plans / 80,008 readers from `withheld` to `published`, and
+       * READING ALL 46 shows that half is mostly WRONG. It is the same cause as
+       * the relabels above, arriving where the parser never managed a label for
+       * the schedule, so `horizonFallback || shapeCliff` is blind to it:
+       *   MaineGeneral Health (6,061)  quote today, verbatim: "As it relates to
+       *     Company matching contributions, participants vest 0% with their
+       *     first year of service and 20% with each subsequent year." The arm
+       *     publishes `Immediate`.
+       *   Day & Zimmermann (5,690)     "employer matching and profit sharing
+       *     contributions vest GRADUALLY OVER A FIVE-YEAR PERIOD" -> `Immediate`
+       *     off a sentence about QNECs and prevailing-wage money.
+       *   Trustmark (1,251 + 1,206)    the stored quote is the plan's own
+       *     Years/Percent TABLE; the arm replaces it with "…vested in the
+       *     remainder of their account balances GRADUATED OVER SIX YEARS of
+       *     plan service" AND LABELS IT `Immediate` — a label contradicting its
+       *     own quote, which no count can see because `audit-data`'s
+       *     correctness check asks whether the formula's NUMBERS appear in the
+       *     quote, and "Immediate" has none.
+       *   Arxada (1,271), New York Central Mutual (1,090), Neurealm (462),
+       *     TripAdvisor (1,937), Focus Operating (1,927), TNC US (8,066),
+       *     Construction Employees Group (2,328) — all the same shape.
+       * And where the label happens to be right the QUOTE still goes backwards:
+       * LEL Home Services (1,025) and Birmingham-Southern (893) each publish a
+       * complete employer-money sentence today and would be moved to §411(d)(3)
+       * boilerplate and to a wind-down sentence respectively.
+       *
+       * THE RATE IS WHAT DECIDES IT: 8 of the 14 largest are flatly wrong, and
+       * the ABSENT half read 58 members across three draws with none. The two
+       * halves differ BY CONSTRUCTION, which is why one ships and one does not —
+       * a plan is `withheld` precisely BECAUSE some sentence already got through
+       * the quote path, and on these filings that sentence is the plan's real
+       * schedule while the arm's is the immediate pot beside it. *Adding a
+       * WRITER to a first-wins chain RE-ORDERS it*, v212 paid for that lesson on
+       * this very loop, and here the re-ordering is mostly a loss again.
+       *
+       * `out.vestingText` is the exact test, not a proxy for one: it is what the
+       * earlier readers of THIS extraction have already stored, so a non-empty
+       * value is the statement "this filing already yields evidence". The quote
+       * is KEPT — `blockedButQuotable` with `vestingQuoteUpgrade` in the write
+       * below, so the stored sentence can only be replaced by one the renderers
+       * REFUSE. A reader who sees a quote today keeps the one they see.
+       *
+       * It costs the 80,008 readers a LABEL they would mostly have been wrong
+       * to get, and it is a refusal rather than a deferral: nothing here says a
+       * later pass should revisit them without a different instrument. */
+      if (uvOnly && out.vestingText) labelBlocked = blockedButQuotable = true;
       // the immediate-vesting words can sit on EITHER side of "vest"
       // ("immediately vested" vs "vested … at all times"), so this test must
       // be order-independent — the first version required them after, and
@@ -9147,7 +9724,26 @@ export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
        * matched", which was my reconstruction matching, not the filing.)
        * `accelerationOnlyVesting` is still consulted for the IMMED half and is
        * unreachable from the new half, which carries no trigger by gate. */
-      if (IMMED.test(s) || wholeAcctOnly) {
+      /* v214 adds the third disjunct, and it reaches this line only after EVERY
+       * guard between the gate and here has had its turn — which is the reason
+       * the arm was put at the GATE rather than given a path of its own. In
+       * order: `remainderGraded || carveOut` (another sentence puts employer
+       * money behind a service condition — holds the quote), `supersededRule`,
+       * `planTermCond`, the spelled-out-ladder guard, the four `labelBlocked`
+       * arms and the loan guard. An arm that admitted its sentences straight to
+       * a label would have to reproduce all nine, and *a hand-rebuilt predicate
+       * measures the re-typing*.
+       *
+       * NO `uvOnly && SPONSOR_TWO_CLAIM` LABEL GUARD IS ADDED BESIDE v211's,
+       * deliberately: `unnarrowedFullVesting` refuses `SPONSOR_TWO_CLAIM`
+       * INTERNALLY, so `uvOnly` implies its negation and such an arm would be
+       * unreachable by construction — *worse than an inert one, because it
+       * reads as a guard and is dead code*. The same is true of
+       * `accelerationOnlyVesting` on this line: `AV_TRIGGER` is already a
+       * refusal inside the predicate, so for a `uvOnly` sentence that call can
+       * only return false. It is left as it stands because it is the IMMED
+       * half's guard and v211's note already records the same relationship. */
+      if (IMMED.test(s) || wholeAcctOnly || uvOnly) {
         if (!accelerationOnlyVesting(s)) out.vesting = "Immediate";
         out.vestingText = cap(s); break;
       }
