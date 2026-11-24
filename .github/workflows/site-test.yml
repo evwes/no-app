@@ -178,6 +178,14 @@ on:
             # vacuously; the population-level pricing of each condition needs
             # the corpus and deliberately lives outside CI.
             "scripts/vesting-gate-arm-test.mjs", "scripts/lib-vestslice.mjs",
+            # v215's employer-role scope arm, on the same footing: its cases
+            # are sentences lifted from filings that were read, and its
+            # section 4 asks `extractPlanFeatures` ITSELF, because the two
+            # label guards are CONTROL FLOW and no predicate test can see
+            # them. Listed so a change to the test can start the job that
+            # runs it -- gate-coverage raised exactly that as a FINDING when
+            # the run line was added and this entry was not.
+            "scripts/vesting-entity-arm-test.mjs",
             "scripts/schc-item1-test.mjs", "scripts/schd-name-test.mjs",
             "scripts/lib-disclose.mjs", "scripts/lib-quote.mjs",
             "data/fund-facts.json", "scripts/fund-facts-check.mjs",
@@ -421,6 +429,7 @@ jobs:
           node scripts/vesting-wholeaccount-test.mjs
           node scripts/vesting-quotekeep-test.mjs
           node scripts/vesting-gate-arm-test.mjs
+          node scripts/vesting-entity-arm-test.mjs
           node scripts/wrap-repair-test.mjs
           node scripts/roth-pairing-test.mjs
           # --quick ON PURPOSE, and the reason is the honest half of this gate:

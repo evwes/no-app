@@ -378,6 +378,109 @@ const FEATURE_SPECIMENS = [
     "20260921121615NAL0018574146001", { vesting: null, quote: null }, "Community Foundation Of Northwest Indiana"],
   ["v214 control: McDermott — the plan has WOUND UP, so 'were fully vested' is its history",
     "20261007170827NAL0031481536001", { vesting: null, quote: null }, "Mcdermott Investments, Llc"],
+  /* v215 — THE EMPLOYER NAMED BY ITS ROLE. The scope gate's employer-money
+   * vocabulary enumerates six role nouns (matching / employer / company /
+   * corporation / bank / partnership / association / plan sponsor), and the
+   * filings say "the ORGANIZATION'S contributions", "the FIRM'S", "the
+   * HOSPITAL'S", "the AGENCY'S". `sponsorMoneyRe` cannot reach them either: it
+   * wants the sponsor's own NAME and these write the role instead. The
+   * vocabulary below was ENUMERATED FROM THE DATA — every possessive noun
+   * beside `contributions` in the gated bucket, kept only where it is the SOLE
+   * reach for a plan — and five more possessors were read and refused.
+   *
+   * Every expectation here was MEASURED through both module graphs on the real
+   * filing, never predicted: `vesting: "Immediate"` where the sentence makes an
+   * unconditional claim, and `vesting: null, quote: true` where it states a
+   * SCHEDULE or makes two claims — the arm licenses no label of its own, so
+   * those plans publish the filing's own words and nothing more, which is this
+   * ship's whole position on the honest-evidence rule. */
+  ["v215: Children's Hospital of Orange County — `the ORGANIZATION'S contributions`, the sole reach for 282 plans",
+    "20261012162702NAL0003079985001", { vesting: "Immediate", quote: true }, "Childrens Hospital Of Orange County"],
+  ["v215: Orrick Herrington — `the FIRM'S contributions`",
+    "20261008145044NAL0034005811001", { vesting: "Immediate", quote: true }, "Orrick, Herrington & Sutcliffe Llp"],
+  ["v215: Woodward Academy — `the SCHOOL'S contributions`",
+    "20250708091841NAL0002135459001", { vesting: "Immediate", quote: true }, "Woodward Academy, Inc."],
+  ["v215: UChicago Argonne — `the LABORATORY'S contributions`",
+    "20260820081454NAL0020267920001", { vesting: "Immediate", quote: true }, "Uchicago Argonne, Llc Argonne National Laboratory"],
+  /* `credit union` and not `union`: all five members of that token are CREDIT
+   * unions, where the Credit Union is the employer, and a bare `union` would
+   * read "the Union's contributions" in a Taft-Hartley plan where the money
+   * comes from signatory EMPLOYERS. */
+  ["v215: Redstone Federal Credit Union — `the CREDIT UNION'S contributions`, the narrowed token",
+    "20260831154349NAL0007225312001", { vesting: "Immediate", quote: true }, "Redstone Federal Credit Union"],
+  /* the PLURAL POSSESSIVE, and the pin that caught a defect in the arm itself:
+   * a suffix enumerating the four singular spellings read 0 plans for
+   * `companies` while the data carries eleven — *a class also has an
+   * APOSTROPHE.* Greater Omaha's sentence is a SCHEDULE, so it gains the quote
+   * and no label, which is the arm's intended behaviour and not a shortfall. */
+  ["v215: Greater Omaha Packing — `the COMPANIES' contribution portion`, a plural possessive and a SCHEDULE",
+    "20261007141953NAL0015489427001", { vesting: null, quote: true }, "Greater Omaha Packing Co., Inc."],
+  ["v215: Columbia University — ALL-MOD, an intervening word in `all PLAN contributions`",
+    "20260930104428NAL0038117954001", { vesting: "Immediate", quote: true }, "Trustees Of Columbia University"],
+  ["v215: Dungarvin — ALL-MOD, the `all SOURCES OF contributions` spelling",
+    "20260904083903NAL0012291728001", { vesting: "Immediate", quote: true }, "Dungarvin Group, Inc."],
+  ["v215: George Washington University — ALL-SUBJ, the un-narrowed phrase is the SUBJECT",
+    "20261012170058NAL0003293152001", { vesting: "Immediate", quote: true }, "The George Washington University"],
+  ["v215: Worthington Enterprises — ALL-PREFIX, `universal`'s veto firing on `all participantS are`",
+    "20260630131415NAL0015685216001", { vesting: "Immediate", quote: true }, "Worthington Enterprises, Inc."],
+  ["v215: West Penn Allegheny — the SPONSOR'S OWN INITIALISM, `WPAHS's contributions`, which needs no vocabulary",
+    "20261014162109NAL0003203683001", { vesting: "Immediate", quote: true }, "West Penn Allegheny Health System"],
+  /* PAST TENSE IS NOT A WIND-DOWN. A `UV_WOUND_UP` label guard was written for
+   * this arm and removed by measurement: over the whole gated population it
+   * blocked exactly two sentences / 2,935 readers and both are ordinary
+   * immediate-vesting statements in the past tense, because audited notes are
+   * historical. This specimen is what keeps that decision from being quietly
+   * reversed. */
+  ["v215: New England Baptist Hospital — `Participants WERE vested immediately … and the HOSPITAL'S contributions`",
+    "20241015124014NAL0028450737001", { vesting: "Immediate", quote: true }, "New England Baptist Hospital"],
+  /* …AND THE QUOTE-ONLY HALF, which is 93 plans of the class: the admitted
+   * sentence is a SCHEDULE, `IMMED` does not match it, and it reaches the
+   * quote fallback. The filing's own words under no label is the most
+   * informative thing available — v212 shipped exactly this for the
+   * strict-gate half of the same loop. */
+  ["v215: St. Jude Children's Research Hospital — the HOSPITAL'S ladder as the evidence, NO label",
+    "20260910102506NAL0004656881001", { vesting: null, quote: true }, "St. Jude Children'S Reseach Hospital"],
+  ["v215: Phoebe Putney — `Vesting in the SYSTEM'S contributions is based on years of continuous service`",
+    "20260927202714NAL0014866145002", { vesting: null, quote: true }, "Phoebe Putney Health System, Inc."],
+  /* THE TWO-CLAIM GUARD'S OWN SOLE-PROTECTION CASE, and the worst thing this
+   * arm could publish. `IMMED` matches "vested immediately"; the employee half
+   * is immediate and the employer half is a three-year cliff; and NOTHING ELSE
+   * in the loop stops it — `remainderGraded` needs a second sentence or the
+   * "is based on years" phrasing, and the ladder guard and `labelBlocked` arm 1
+   * both need a percentage this sentence does not carry. */
+  ["v215 control: University of Redlands — TWO CLAIMS in one sentence; the quote states the real three-year rule and there must be NO label",
+    "20260415214649NAL0021689680001", { vesting: null, quote: true }, "University Of Redlands"],
+  ["v215 control: The Metropolitan Museum of Art — `after COMPLETING two plan years`, a real cliff: quote, no label",
+    "20260729075745NAL0026474656001", { vesting: null, quote: true }, "The Metropolitan Museum Of Art"],
+  /* …AND THE COUNTER-SPECIMENS, every one verified unchanged through both
+   * module graphs. Teamsters-UPS (451,730 readers, the single largest member of
+   * the gated bucket and a CORRECT refusal) and NYU Langone are already pinned
+   * by v214's controls directly above, and so is Procter & Gamble's filing —
+   * which is also this ship's QNEC refusal, pinned at `quote: null` since v82.
+   * These four are the ones v215 could newly have reached. */
+  ["v215 control: UPMC (109,112) — the participant's own pots named one by one, and a Match Account whose schedule the notes never state",
+    "20261014120228NAL0006674672001", { vesting: null, quote: null }, "Upmc"],
+  ["v215 control: Novant Health (62,825) — `immediately vested in their contributions plus actual earnings thereon`, employee money",
+    "20261007085813NAL0031971667001", { vesting: null, quote: null }, "Novant Health, Inc."],
+  /* a QNEC is a CORRECTIVE pot and prevailing-wage money is a DAVIS-BACON pot;
+   * neither is the plan's general employer money, and v214's own record names
+   * the harm (Day & Zimmermann, whose match vests over FIVE YEARS, labelled
+   * `Immediate` off a QNEC-and-prevailing-wage sentence). Both arms were built,
+   * measured at 54,862 readers and refused. */
+  ["v215 control: Inter-Con Security — PREVAILING WAGE money is not the plan's employer money",
+    "20261015135455NAL0007712609001", { vesting: null, quote: null }, "Inter-Con Security Systems, Inc."],
+  ["v215 control: Qualtek USA — `all participants BECAME 100% vested` upon a resolution to TERMINATE the plan; the tense is what refuses it",
+    "20250826135604NAL0008563537001", { vesting: null, quote: null }, "Qualtek Usa, Llc"],
+  /* the differential's ONE real regression, and the specimen that pins its
+   * repair: this plan publishes "fully vested in their contributions, EMPLOYER
+   * MATCHING contributions … AT ALL TIMES" today, and the arm admits a second
+   * sentence — "100% vested in all COMPANIES' contributions AFTER ATTAINING
+   * NORMAL RETIREMENT AGE of 65" — which `IMMED` matches and v203's
+   * acceleration branch writes UNCONDITIONALLY before breaking. The expectation
+   * is the quote it has today; a change that lets the age-65 clause through
+   * fails here. */
+  ["v215 control: Audubon Engineering — an age-65 ACCELERATION clause must not displace the plan's real rule",
+    "20260930135320NAL0020763792001", { vesting: null, quote: true }, "Audubon Engineering Company, L.L.C."],
   /* v83: three false-"Immediate" shapes the v81 widening let through, found
    * by self-checking all 3,907 new Immediate labels against their own quotes.
    * Each states a service condition in the SAME sentence as the immediate

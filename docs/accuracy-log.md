@@ -7,6 +7,98 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-24 (2x:xxZ) — v215: THE EMPLOYER NAMED BY ITS ROLE, AND THE GATE'S NOUN LIST WAS AN ENUMERATION
+
+**WRONG.** 444 plans / 468,691 readers published **nothing at all, not even a
+quote** about how their employer money vests, while their notes say "vested
+immediately in their contributions and **the Organization's contributions**".
+The scope gate's `continue` (`lib-4i.mjs:9132`) runs ahead of every quote
+fallback and its vocabulary enumerates six role nouns; `sponsorMoneyRe` wants
+the sponsor's NAME and these write the ROLE. *A fix for one phrasing of a class
+is not a fix for the class*, and the class also has a ROLE NOUN.
+
+**CHANGE.** `employerEntityMoney`, a SCOPE predicate (possessive role noun /
+un-narrowed "all X contributions" / the sponsor's own initialism), keyed on all
+five existing arms being false and `waPass === 1`, so additive by construction.
+It licenses **no label of its own**: `IMMED` plus the nine intervening guards
+decide that, and a SCHEDULE sentence reaches the quote fallback instead — 95
+plans / 175,432 readers get the filing's own words under no label, which is the
+honest-evidence rule applied rather than quoted.
+
+**MEASURED** — differential vs HEAD over 24,266 cached filings, narrowing
+discharged at 3,000 excluded / 0 differences: **458 plans / 484,808 readers
+move, 359 gain a LABEL and 95 a QUOTE; LABELS LOST 0, RELABELLED 0, QUOTES LOST
+0, OFF-VESTING FIELD MOVES 0.** 60 of the 360 gains read (rank 30 + seeded draw
+30), 0 defects. `parse-replay` over all 459 acks: 0 menus lost, 6 pins held.
+
+**THE REFUSALS ARE THE WORK.** Vocabulary ENUMERATED FROM THE DATA (all 44
+possessive nouns in the bucket; kept only where one is a plan's SOLE reach;
+eleven dropped at 0 plans each). Five possessors read and refused — `union`,
+because all five members are CREDIT unions and a bare token reads a
+Taft-Hartley `Union's contributions`, plus `plan`, `management`,
+`administrator`, `house`. **Two whole arms built, measured at 54,862 readers and
+refused on v214's own record**: a QNEC is a CORRECTIVE pot and prevailing-wage
+money a DAVIS-BACON pot, and v214 priced the harm (Day & Zimmermann's match
+vests over FIVE YEARS). Safe harbor is the opposite case — IRC 401(k)(12) makes
+it the plan's employer money. *Co-occurrence of employer money and a vesting
+claim is not governance of the money the reader is asking about.*
+
+**THE GENERAL `all contributions` ARM WAS REFUTED BY ITS OWN SAFETY CONDITION.**
+`universal`'s employee veto fires on `all participantS are`, a PREFIX of `all
+participant`. Telling a right veto from a prefix accident needs a
+narrowing-word-plus-MONEY-NOUN test, and over all 24,266 filings that test is
+reachable on **0 sentences** against 87 for the prefix reading — most of them
+plan WIND-DOWNS. *A condition unreachable on the data reads as a guard and is
+dead code*; *a count keyed on a condition measures the condition.* Replaced by a
+subject-and-object shape: 14 corpus sentences, all read.
+
+**ONE GUARD FROM READING, ONE FROM THE DIFFERENTIAL, ONE REMOVED BY
+MEASUREMENT.** `SPONSOR_TWO_CLAIM` blocks the label and keeps the quote; sole
+case University of Redlands (1,650), one sentence saying the employee half is
+immediate **and the University's vests after three years**, which nothing else
+in the loop stops. `out.vestingText && accelerationOnlyVesting` was the
+differential's only finding — Audubon Engineering (2,065) had its real rule
+replaced by an age-65 clause, because v203's acceleration branch writes
+UNCONDITIONALLY before breaking (*adding a WRITER to a first-wins chain
+RE-ORDERS it*, fourth instance on this loop). v214's blanket `out.vestingText`
+guard was REFUSED: all five plans with a stored quote were read and it helps one,
+harms four. A `UV_WOUND_UP` guard was written and removed — its cases went
+unreachable when the prefix arm tightened, and it then blocked two sentences /
+2,935 readers, both ordinary PAST-TENSE immediate rules. *A guard that withdraws
+a TRUE answer makes the page less honest, not more.*
+
+**THE WRITE SET IS A CLEAN ZERO AND THAT IS THE COMFORTABLE DIRECTION.**
+`git diff | grep -o 'out\.[A-Za-z]*\s*='` over the added lines finds
+**nothing**: the arm assigns no field, it sets `eemOnly` and PRE-EXISTING lines
+do the writing — v214's shape exactly. Closed over the PATH instead: the block
+newly reached writes only `out.vesting`, `out.vestingText` and
+`guardHeldQuote`; v88's graded-horizon post-pass READS `vestingText` but keys on
+`out.vesting === "Graded schedule"`, unreachable because pass 1 runs only on
+`!out.vesting`. The two readers outside `lib-4i` were MEASURED, not reasoned:
+`fetch-4i:662`'s `notesMissing` flips true->false on **134 movers / 160,700
+readers**, of which 9 keep their OCR attempt anyway (lineup not confident) and
+**125 / 155,730 are confident, still have no match feature, and lose the only
+OCR attempt they were getting** — a cost that falls on MATCH, not vesting, and
+one all 134 are `ocr: 0` today, so the attempt they lose has produced nothing for
+any of them on the current store. `FEATURE_GROUPS` costs 0 by measurement: 0 of
+the 458 gain a vesting LABEL without its QUOTE, so the merge cannot split the
+pair.
+
+**PREVENTION.** `scripts/vesting-entity-arm-test.mjs` — 32 must-fire, 17
+must-not-fire, 6 sliced-gate assertions, 4 for the acceleration guard in BOTH
+directions, 9 end-to-end through `extractPlanFeatures` (5 counter-specimens, the
+only honest test of two CONTROL-FLOW guards), 9 kind-matched sliced mutants each
+with a control — in `site-test.yml`'s run block AND its `paths` filter, because
+`gate-coverage` raised exactly that as a FINDING when only the run line was
+added. `parser-gate` green at **178**, 20 of them v215's, including
+Teamsters-UPS (451,730 readers, the bucket's largest member and a CORRECT
+refusal). `lib-vestslice.mjs` THREW on the gate's sixth conjunct — the third
+consecutive version it has caught, and the one thing a re-typed copy could not.
+`scripts/vesting-gated-read.mjs --pre-v215` keeps the BEFORE side askable:
+2,401 plans / 4,729,690 readers gated before, 1,957 / 4,260,999 after.
+
+---
+
 ## 2026-11-24 (18:xxZ) — A WELDED VALUE COLUMN HID THE SYMBOL THE FILING PRINTS
 
 **WRONG.** IBEW Local 4 (759 readers) published **PTTRX** — PIMCO Total Return's

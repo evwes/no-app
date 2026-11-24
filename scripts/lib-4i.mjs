@@ -15,7 +15,7 @@ import { vestingQuoteOk, matchQuoteOk, rateInMatchPosition, accelerationOnlyVest
 import { futureEffectiveGrant, catchupMandateRefusal, planYearEnd } from "./lib-effective-date.mjs";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 214;
+export const PARSER_VERSION = 215;
 
 /* v207: THE QUOTE'S OWN WORDS CAN DENY WHAT THE FLAG ASSERTS, and 76 plans /
  * 175,656 readers were published that way — `afterTax: true` or `roth: true`
@@ -936,6 +936,156 @@ export function unnarrowedFullVesting(s) {
   if (UV_OWN.test(obj)) return null;
   if (!UV_OBJ_EMPLOYER.test(obj) && UV_OBJ_EMPLOYEE.test(obj)) return null;
   return { obj, employerNamed: UV_OBJ_EMPLOYER.test(obj) || UV_OBJ_ACCT.test(obj) };
+}
+
+/* ---- v215: THE EMPLOYER IS NAMED BY ITS ROLE, AND THE GATE'S NOUN LIST IS AN
+ * ENUMERATION OF SIX ROLES ---------------------------------------------------
+ *
+ * THE MEASUREMENT. `scripts/vesting-gated-read.mjs` dumps the 2,401 plans /
+ * 4,729,690 readers whose only vesting sentences the scope gate refuses, and a
+ * seeded draw of 40 put EIGHT of them on one shape:
+ *   "Participants are vested immediately in their contributions and the
+ *    ORGANIZATION'S CONTRIBUTIONS plus actual earnings thereon."
+ * — an unambiguous employer-money immediate-vesting statement, refused because
+ * `employerMoney`'s first arm enumerates `matching|employer|company|
+ * corporation|bank|partnership|association|non-elective|profit-sharing|plan
+ * sponsor|sponsor` and the auditor wrote `Organization`. *A fix for one
+ * phrasing of a class is not a fix for the class*, and the class also has a
+ * ROLE NOUN: an audited note names the plan sponsor as the Organization, the
+ * Firm, the Hospital, the Agency, the University, the College, the School, the
+ * Laboratory, the Museum, the Credit Union. `sponsorMoneyRe` cannot reach them
+ * either — it wants the sponsor's own NAME in the sentence, and these say the
+ * role instead.
+ *
+ * THE VOCABULARY IS ENUMERATED FROM THE DATA, NOT FROM IMAGINATION. Every
+ * possessive noun phrase sitting beside `contributions` in a gated candidate
+ * was tallied (44 distinct), and the list below is exactly those with a
+ * SOLE-REACH plan in that population — eleven more were written down first and
+ * dropped at 0 plans each (`district`, `church`, `authority`, `library`,
+ * `clinic`, `practice`, `cooperative`, plus the four the shipped arm already
+ * carries), because *a condition unreachable on the data reads as a guard and
+ * is dead code*.
+ *
+ * FIVE CANDIDATE POSSESSORS WERE READ AND REFUSED, and the refusals are the
+ * part worth keeping:
+ *   `union`   — all five members are CREDIT UNIONS, where the Credit Union IS
+ *               the employer. A bare `union` token would also read "the
+ *               Union's contributions" in a Taft-Hartley plan, where the money
+ *               comes from signatory EMPLOYERS and the union is not the
+ *               sponsor. `credit union` is the measured case; the general one
+ *               is a different claim. 4,173 readers, all kept by the narrower
+ *               token.
+ *   `plan`    — "Vesting in the PLAN'S contribution is based on years of
+ *               service" means the employer's money in all three members, but
+ *               "the Plan's contributions" can equally name the total
+ *               contributions MADE TO the plan, which includes the
+ *               participant's own. 3 plans / 1,323 readers, refused.
+ *   `management`, `administrator`, `house` — one plan each (858, 463, 745
+ *               readers). Every one is the SPONSOR'S OWN NAME wearing a role
+ *               word ("MidPen Management's Contributions", "Unity House's
+ *               discretionary contribution"), so the general repair for them is
+ *               `sponsorMoneyRe`'s `IMMED` gating and not a noun. Refused;
+ *               2,066 readers, below any floor.
+ *
+ * AND TWO WHOLE ARMS WERE BUILT, MEASURED AT 54,862 READERS AND REFUSED ON
+ * THIS PROJECT'S OWN RECORD. A `QNEC|QMAC` arm (3 plans / 43,506, Procter &
+ * Gamble's "The QNECs are immediately 100% vested to the employees") and a
+ * `prevailing wage contributions` arm (9 plans / 11,356) both name employer
+ * money by statute — and v214's entry already records the harm: Day &
+ * Zimmermann's notes say "employer matching and profit sharing contributions
+ * vest GRADUALLY OVER A FIVE-YEAR PERIOD" and an arm firing on its QNEC and
+ * prevailing-wage sentence published `Immediate`. A QNEC is a CORRECTIVE pot
+ * and prevailing-wage money is a DAVIS-BACON pot; neither is the plan's general
+ * employer money, so "this pot vests immediately" says nothing about the match.
+ * Safe-harbor money — which the shipped arm does accept — is the opposite case:
+ * under IRC 401(k)(12) it IS the plan's employer money and is 100% vested by
+ * statute. *Co-occurrence of employer money and a vesting claim is not
+ * governance of the employer money the reader is asking about.*
+ *
+ * Returns `{ kind }` or null. A SCOPE claim only: it says the sentence names
+ * employer money, never that the claim is immediate — the caller's `IMMED`
+ * test and the nine guards between the gate and the label branch decide that,
+ * which is why this arm licenses no label of its own.
+ */
+const EE_ENTITY = "organi[sz]ation|firm|agency|hospital|universit(?:y|ies)|colleges?|school|academy|institutes?|institution|foundation|museum|laborator(?:y|ies)|system|cent(?:er|re)|group|society|club|conservatory|council|credit\\s+union|compan(?:y|ies)";
+/* `s?['’]s?` and not `(?:'s|’s|s'|s’)`: the plural possessive is written
+ * `the Companies' contributions` and `the Colleges' contributions`, and an
+ * enumeration keyed on the four singular/plural spellings read 0 plans for
+ * `companies` while the data carries eleven. *A fix for one phrasing of a
+ * class is not a fix for the class*, and the class also has an APOSTROPHE. */
+const EE_POSS = new RegExp(`\\b(?:${EE_ENTITY})s?['’]s?\\s+(?:[a-z\\-]+\\s+){0,3}contributions?`, "i");
+/* THE `universal` ARM'S THREE SPELLING GAPS, each with its own sole-reach
+ * member, because its positive test is the literal `all (of the )?contributions`
+ * and the filings put a word in the middle or move the phrase to the subject:
+ *   MOD  "100% vested in ALL PLAN CONTRIBUTIONS once they are made"
+ *                                      Columbia University, 32,861
+ *   SUBJ "ALL PLAN CONTRIBUTIONS and benefits derived therefrom ARE immediately
+ *         fully VESTED"                George Washington University, 14,802
+ *   PFX  "ALL PARTICIPANTS are 100% vested in all contributions and related
+ *         earnings credited to their accounts" — here the positive arm DOES
+ *         match and the employee-narrowing VETO fires on `all participant`,
+ *         a PREFIX of `all participants are`. *A token keyed on a concept picks
+ *         up everything that shares its shape*, and this one costs the plan its
+ *         whole answer.                 Worthington Enterprises, 4,209
+ *   AMT  "ALL AMOUNTS CONTRIBUTED to the Plan are immediately 100% vested"
+ *                                       Jones Lang LaSalle, 48,832 */
+const EE_ALL_MOD = /\bvest\w*(?:\s+[a-z]+){0,3}\s+in\s+all\s+(?:(?:plan|sources?\s+of|types?\s+of|forms?\s+of|such)\s+contributions?\b|contributions?\s+(?:types?|sources?)\b|contribution\s+(?:types?|sources?)\b|amounts?\s+contributed\b)/i;
+const EE_ALL_SUBJ = /\ball\s+(?:plan\s+)?contributions?(?:\s+and\s+[^.]{0,40}?)?\s+(?:are|is|were|was)\b[^.]{0,30}?\bvested\b/i;
+/* `All AMOUNTS CONTRIBUTED to the Plan are immediately 100% vested` is a FOURTH
+ * spelling and not a case of the SUBJECT arm above — Jones Lang LaSalle (48,832)
+ * failed that arm because `to the Plan` sits between the subject and the verb,
+ * and the obvious repair (letting any 40 characters intervene) would also admit
+ * "all contributions MADE BY PARTICIPANTS are fully vested", which is employee
+ * money. *A fix for one phrasing of a class is not a fix for the class*, and
+ * the class also has a PREPOSITIONAL PHRASE — so this is its own tight arm
+ * rather than a loosening of its neighbour. */
+const EE_ALL_AMT = /\ball\s+amounts?\s+contributed\s+(?:to\s+the\s+plan\s+)?(?:are|is|were|was)\b[^.]{0,40}?\bvested\b/i;
+/* THE PREFIX ARM IS THE TIGHT ONE, AND THE GENERAL ONE WAS BUILT, MEASURED AND
+ * REFUSED. The obvious repair is "`universal`'s positive arm matched and its
+ * employee veto fired for a reason that is only a PREFIX" — i.e. the veto fired
+ * and a narrowing-word-plus-MONEY-NOUN test does not. It was written, and over
+ * all 24,266 cached filings the money-noun test is reachable on **0
+ * sentences** while the prefix reading reaches 87, so the safety condition
+ * could not be shown load-bearing at all: *a condition unreachable on the data
+ * reads as a guard and is dead code*, and without it the arm reduces to "the
+ * veto fired", which is far wider than the defect. Worse, READING those 87
+ * shows the arm's dominant population is not the defect it was written for —
+ * most are plan WIND-DOWNS ("all benefit accruals ceased, ALL PARTICIPANTS
+ * BECAME FULLY VESTED in their accounts, and ALL CONTRIBUTIONS ceased"), which
+ * the `UV_WOUND_UP` label guard would catch but whose sentences would still
+ * become quotes. *A count keyed on a condition measures the condition.*
+ * So the arm requires the un-narrowed phrase to be the OBJECT OF THE VESTING
+ * CLAIM with `all participants` as the subject, which is exactly the shape that
+ * trips the prefix: 14 sentences over the whole corpus, every one read, every
+ * one a real un-narrowed claim, and the wind-downs refused because they say
+ * `vested in their accounts` and `became` rather than `are`. ~13 plans /
+ * ~20,000 readers, below the reader floor on its own and carried because it is
+ * one line inside a ship already justified. */
+const EE_ALL_PFX = /\ball participants?\s+(?:are|were)\b[^.]{0,60}?\bvested\s+in\s+all\s+contributions?\b/i;
+/* THE SPONSOR'S OWN INITIALISM, which needs no vocabulary at all and is the
+ * most general form of this cause: `WPAHS's contributions` where the sponsor is
+ * West Penn Allegheny Health System. A bare ALL-CAPS-possessive shape test
+ * would also read `EE's contributions` (EE = employee) and reaches 15 plans; it
+ * is narrowed to an IDENTITY test — the letters must be the initials of this
+ * plan's own sponsor name — which refuses 7 of the 15 and leaves 8, all read.
+ * *Require the PRESENCE of the good case, not the absence of the bad one.* */
+const EE_ACRO = /\b([A-Z]{2,8})(?:'s|’s)\s+(?:[a-z\-]+\s+){0,3}contributions?/g;
+const EE_STOP = /\b(?:of|and|the|for|a|at|in|dba|d\/b\/a|inc|llc|llp|lp|pc|sc|co|corp|incorporated)\b/gi;
+const eeInitials = (name) => String(name || "").toUpperCase().replace(/[^A-Z ]/g, " ")
+  .split(/\s+/).filter(Boolean).map((w) => w[0]).join("");
+export function employerEntityMoney(s, sponsorName = "") {
+  const x = String(s || "");
+  if (EE_POSS.test(x)) return { kind: "poss" };
+  if (EE_ALL_MOD.test(x)) return { kind: "all-mod" };
+  if (EE_ALL_SUBJ.test(x)) return { kind: "all-subj" };
+  if (EE_ALL_AMT.test(x)) return { kind: "all-amt" };
+  if (EE_ALL_PFX.test(x)) return { kind: "all-prefix" };
+  if (sponsorName) {
+    const a = eeInitials(sponsorName), b = eeInitials(String(sponsorName).replace(EE_STOP, " "));
+    for (const m of x.matchAll(EE_ACRO))
+      if ((a && a.includes(m[1])) || (b && b.includes(m[1]))) return { kind: "acronym" };
+  }
+  return null;
 }
 
 /* ---- v212's NARROWING HANDLE, AND WHAT IT IS NOT ------------------------
@@ -9129,7 +9279,33 @@ export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
       const uv = waPass === 1 && !strictGate && !employerMoney && !universal && !wholeAcctOnly
         ? unnarrowedFullVesting(s) : null;
       const uvOnly = !!uv && uv.employerNamed;
-      if (!strictGate && !employerMoney && !universal && !wholeAcctOnly && !uvOnly) continue;
+      /* v215: …or the sentence NAMES EMPLOYER MONEY by the sponsor's ROLE
+       * ("the Organization's contributions"), by an un-narrowed "all <word>
+       * contributions", or by the sponsor's own initialism. See
+       * `employerEntityMoney` for the enumerated vocabulary, the five refused
+       * possessors and the two whole arms refused on v214's record.
+       *
+       * KEYED ON ALL FIVE EXISTING ARMS BEING FALSE — `mine(x) &&
+       * !everythingBefore(x)` — and on `waPass === 1`, which runs only when
+       * pass 0 settled no label. So every sentence this admits is one the
+       * `continue` below used to discard, and no plan that publishes a vesting
+       * LABEL today can be reached. Additive by construction, not by sampling.
+       *
+       * IT LICENSES NO LABEL OF ITS OWN, which is what separates it from v211's
+       * and v214's arms: both of those are predicates on the CLAIM (an
+       * unconditional full-or-immediate statement) and so appear in the label
+       * branch below. This one is a predicate on the SCOPE only. A sentence it
+       * admits reaches a label exactly when `IMMED` matches it after all nine
+       * intervening guards, and otherwise reaches the quote fallback — which is
+       * the right outcome for the 93 plans whose admitted sentence is a
+       * SCHEDULE ("Vesting in the Hospital's contribution portion of their
+       * accounts is based on years of service, as follows: …"): the filing's
+       * own words with no label, which is the most informative thing available
+       * and is what v212 shipped for the strict-gate half of the same loop. */
+      const eem = waPass === 1 && !strictGate && !employerMoney && !universal && !wholeAcctOnly && !uvOnly
+        ? employerEntityMoney(s, sponsorName) : null;
+      const eemOnly = !!eem;
+      if (!strictGate && !employerMoney && !universal && !wholeAcctOnly && !uvOnly && !eemOnly) continue;
       /* …and the widened gate must not answer for a plan that vests the
        * PARTICIPANT's money immediately and the employer's over years:
        *   "immediately vested in their voluntary contributions as well as
@@ -9591,6 +9767,97 @@ export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
        * to get, and it is a refusal rather than a deferral: nothing here says a
        * later pass should revisit them without a different instrument. */
       if (uvOnly && out.vestingText) labelBlocked = blockedButQuotable = true;
+      /* v215: TWO LABEL GUARDS, EACH EARNED BY A FILING THAT WAS READ AND EACH
+       * WITH A MEMBER WHERE IT IS THE ONLY PROTECTION — *a case protected by
+       * two conditions proves neither*. Both KEEP THE QUOTE, in the siblings'
+       * idiom: the admitted sentence names employer money by construction, so
+       * there is no employee-scope ambiguity, and in both shapes the sentence
+       * is the plan's real rule written out.
+       *
+       * TWO CLAIMS IN ONE SENTENCE. `employerEntityMoney` is a scope test with
+       * no two-claim refusal of its own (`unnarrowedFullVesting` has one
+       * INTERNALLY, which is why no such guard sits beside v214's), and the
+       * measured case is the worst shape there is:
+       *   University of Redlands (1,650)  "Participants are vested immediately
+       *     in their contributions, plus actual earnings thereon, AND THE
+       *     UNIVERSITY'S CONTRIBUTIONS ARE VESTED AFTER THREE YEARS OF
+       *     SERVICE." `IMMED` matches "vested immediately"; the employee half
+       *     is immediate and the employer half is a three-year cliff, so
+       *     `Immediate` is the opposite of the truth for the money the reader
+       *     is asking about. Checked against every other guard in this loop:
+       *     `remainderGraded` needs a SECOND sentence or the "is based on
+       *     years" phrasing, the ladder guard and `labelBlocked` arm 1 both
+       *     need a PERCENTAGE, and this sentence has none — so nothing else
+       *     stops it. SOLE PROTECTION, and the quote it keeps states the real
+       *     three-year rule.
+       *   Jones Lang LaSalle (48,832)     "All amounts contributed to the Plan
+       *     are immediately 100% vested, EXCEPT under a prior retirement plan
+       *     that was merged into the Plan may be SUBJECT TO a different vesting
+       *     schedule." True and incomplete; the sentence names its own
+       *     exception and is the better answer.
+       *   The Metropolitan Museum (2,810 + 2,328) and Madison-Ridgeland Academy
+       *     (252) are real cliffs phrased with `completing`/`after … years of
+       *     service`; the Shedd Aquarium (606) is a superseded cohort.
+       * The known cost is v211's recorded one, from the same predicate: Oahu
+       * Country Club (199) trips it on "not SUBJECT TO forfeiture for any
+       * reason", which restates the claim rather than qualifying it. It keeps
+       * the quote and loses a label it deserves.
+       *
+       * AND A SECOND GUARD WAS WRITTEN, MEASURED AND REMOVED — recorded because
+       * the reasoning that produced it was right and the guard became harmful
+       * under its own ship. `UV_WOUND_UP` was added here to refuse vesting
+       * caused by the plan WINDING UP, which `planTermCond` twenty lines above
+       * cannot see (its arms want "plan" ADJACENT to "termination" and the
+       * condition BEFORE the verb). Its two cases were Qualtek USA (1,054)
+       * "UPON THE RESOLUTION TO TERMINATE THE PLAN, all participants BECAME
+       * 100% vested in all contributions" and PCSB Bank (204) "AS A RESULT OF
+       * PLAN TERMINATION … all participants BECAME fully vested in all
+       * contributions types" — and BOTH became unreachable when the all-prefix
+       * arm was tightened to `all participants ARE … vested in all
+       * contributions`, because each says `became`. Re-measured over the whole
+       * gated population afterwards, the guard blocks a label on exactly TWO
+       * sentences / 2,935 readers and NEITHER is a wind-down: Misericordia
+       * University (714) and New England Baptist Hospital (2,221) both file an
+       * ordinary "Participants WERE vested immediately in their contributions
+       * and the Organization's contributions", past tense only because audited
+       * notes are historical. *A guard that withdraws a TRUE answer makes the
+       * page less honest, not more*, and a guard whose own cases have gone is
+       * dead code wearing a safety argument. Removed; the remaining
+       * plan-termination protection is `planTermCond` and the fact that
+       * `became`-shaped wind-downs are not reached at all. */
+      if (eemOnly && SPONSOR_TWO_CLAIM.test(s)) labelBlocked = blockedButQuotable = true;
+      /* v215: …AND AN ACCELERATION CLAUSE MUST NOT DISPLACE A QUOTE THE READER
+       * ALREADY SEES. This guard was EARNED BY THE DIFFERENTIAL and is the only
+       * thing it found wrong, on one plan:
+       *   Audubon Engineering (2,065) publishes, today, "A participant is fully
+       *     vested in their contributions, EMPLOYER MATCHING contributions, and
+       *     related earnings AT ALL TIMES" — the plan's real rule. The arm
+       *     admits a second sentence, "A participant becomes 100% vested in all
+       *     COMPANIES' contributions AFTER ATTAINING NORMAL RETIREMENT AGE of
+       *     65, disability or death", and `IMMED`'s "100% vested in all" arm
+       *     matches it. `accelerationOnlyVesting` correctly withholds the
+       *     LABEL — but that branch then writes `out.vestingText` UNCONDITIONALLY
+       *     and `break`s, so the reader's quote is replaced by the age-65
+       *     clause. *Telling a 40-year-old their match is theirs today because
+       *     the plan vests them at 65 is the worst shape this project can
+       *     publish*, and v203 made that write unconditional on purpose, for a
+       *     population where the quote was the only thing available.
+       * So the unconditional write is left exactly as v203 left it and this arm
+       * simply does not reach it when a quote is already stored AND the sentence
+       * is an acceleration clause. *Adding a WRITER to a first-wins chain
+       * RE-ORDERS it* — v211, v212 and v214 each paid for that on this loop, and
+       * here it arrives through the one branch that writes without asking.
+       * DELIBERATELY NOT the blanket `eemOnly && out.vestingText` guard v214
+       * carries: all five plans with a stored quote in this arm's population
+       * were read, and that version would help ONE (this plan) and harm FOUR —
+       * Cornell Scott-Hill (991) would keep "The amendment did not otherwise
+       * change the Plan's eligibility, employer contribution or vesting
+       * provisions" instead of its real immediate rule AND lose a correct label,
+       * and Gibbons P.C. (483), Kansas City Art Institute (309) and Electrical
+       * Construction Industry (5,280) would each keep a worse sentence under an
+       * unchanged label. *A guard right for one arm is not right for its
+       * neighbour*, and the difference is measured rather than assumed. */
+      if (eemOnly && out.vestingText && accelerationOnlyVesting(s)) labelBlocked = blockedButQuotable = true;
       // the immediate-vesting words can sit on EITHER side of "vest"
       // ("immediately vested" vs "vested … at all times"), so this test must
       // be order-independent — the first version required them after, and
