@@ -66444,3 +66444,57 @@ passes, and it was SIGTERMed at its timeout having printed nothing — three-way
 CPU contention on one container, 25 minutes for no result. *One container, one
 heavy pass at a time*, and a measurement that returns nothing is indistinguishable
 from one that found nothing.
+
+## 2026-11-24 — THE VESTING SCOPE GATE: 73% IS THE GUARD BEING RIGHT, AND THE REMAINDER IS A DIFFERENT DEFECT
+
+**No ship; the class was measured and 79 filings read.** 2,868 plans / 5,386,454
+readers are GATED (the scope gate's `continue` runs ahead of every quote
+fallback, so nothing is stored). Re-derived exactly, split by cause in
+`scripts/vesting-gate-census.mjs`, every sentence read pinned in
+`data/fixtures/vesting-gate-read.json` and checked by `--verify-fixture`.
+
+**THE GATE IS RIGHT ABOUT 3,960,684 readers / 1,802 plans (73%)**: half a SOURCE
+ceiling (1,988,907 — the notes report employer money and never state its
+vesting), half plans with NO employer contribution (1,971,777), where the field
+is moot. Teamster-UPS, the largest member at 451,730, names no employer
+contribution anywhere in its Contributions note. A further 292,011 / 135 is an
+EARLIER-arm defect misfiled as gate work (BJC, 59,969: a real ladder the GRADED
+arms missed — admitting it at the gate would be the wrong repair).
+
+**THE REMAINDER CLEARS THE FLOOR AND IS ONE CAUSE, NOT ONE SHAPE: 612 plans /
+976,460 readers**, third-draw precision 21/23 plans and 97% by readers, centre
+~900K. A CLOSED VOCABULARY AGAINST AN OPEN CLASS — a comma or hyphen inside arm
+1's `{0,3}` window ("employer, and rollover contributions", "non- elective"
+across a line break), reversed order ("the contributions of the Company", TECO
+5,416), a missing apostrophe ("the Companys contributions"), institutional nouns
+(Organization 255 of 342 hits, Firm, Hospital, Agency), other money nouns ("all
+amounts contributed", JLL 48,832; "accumulations", Harvard 39,413; the bare
+defined term "Contributions", McKinsey 35,552), QNEC as an abbreviation (P&G
+42,915), and a whole-account claim missing EITHER v211's fullness word (Stanford
+44,011) OR its always-word (242 plans of one auditor template). **v211 required
+BOTH and the filings supply one or the other**, so the repair is
+`WA_FULL || WA_ALWAYS` plus a direct unconditionality test, not another disjunct.
+
+**THE LESSON, PAID FOR TWICE.** Both readings of EMPONLY_EMP — the bucket whose
+size carries the refusal — found real defects inside it, the second four MORE
+after the first three were reclassified, so each shape bucket is a FLOOR and
+"gate right" is a CEILING. *A screen that finds its own conclusion in every
+member it reads has not been shown the members that would refute it.* The bound
+needed seven refusals, each earned by reading its largest false positive, and
+two are this record's own rules: the 403(b) contract-criteria boilerplate was
+refused in the SINGULAR and recurred in the PLURAL an hour later (OCLC), and
+`\b\d{1,3}\s?%\b` read a whole Years/Percent table as holding no percentage —
+**`%` is a non-word character with no trailing boundary**, the note `lib-4i`
+already carries about `AV_FULL`. That one would have withdrawn a real schedule.
+
+**SEPARATELY: 18 plans / 9,362 readers publish the §411(d)(3) plan-termination
+counterfactual as their vesting sentence, 17 with no label** — boilerplate true
+of every plan, read as the answer; the selection veto misses them on ONE WORD
+("in the event **that** the Plan is terminated").
+`scripts/vesting-termination-quote.mjs` enumerates them. **The remedy is NOT
+withdrawal** (lib-quote's settled position on the sibling acceleration-only
+class), and the exported `AV_TRIGGER` must NOT absorb plan termination, because
+v211's gate imports it and parser LABELS would move. *A safety argument belongs
+to a MECHANISM, not to the file it happens to sit in.* **PREVENTION:** the
+fixture is verified rather than recorded, and earned its keep at once by failing
+BY NAME on a pin whose ack year I transcribed 2026 for 2025.
