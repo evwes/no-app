@@ -898,8 +898,22 @@ and per-version history goes in `docs/accuracy-log.md` and
 `docs/closed-classes.md`. What belongs HERE is the state a new session needs
 before it acts, the standing decisions, the live queue, and rules that outlive
 the version that earned them. ***A shipped entry is not queue state — the moment
-a class closes, move it.*** The tell that this has drifted again is a `grep -c
-SHIPPED CLAUDE.md` above single digits.
+a class closes, move it.***
+
+**AND THE TELL THIS RULE USED TO NAME COUNTS THE WORD, NOT THE MARKER — measured
+2026-11-24 while obeying it.** It read: *the tell is a `grep -c SHIPPED
+CLAUDE.md` above single digits*. That grep reads **12** today and the real marker
+count — a list item opening `- **SHIPPED` — is **7**. Five of the twelve are
+PROSE, and ***two of those five are the sentences describing the metric, this one
+included***: a count keyed on a VOCABULARY measures the vocabulary, met on the
+project's own health metric, where the vocabulary contains the rule that states
+the count. **The tell that actually fired was `grep -c DELIVERED`**, at 12 with
+twelve settled registrations stacked in a section headed "next run" — cut to 5
+by moving v208–v213 out, −26,571 bytes. So: **`grep -cE '^- \*\*(SHIPPED|REFUTED|
+CLOSED)'` for the queue (single digits) and `grep -c DELIVERED` for the
+registration stack (keep the in-flight one and its BEFORE side, nothing older).**
+*A metric stated as a grep must be read once against the file before it is
+trusted, because the file describes it.*
 
 ### Store — DERIVE IT, and the commands are here instead of the numbers
 
@@ -974,6 +988,75 @@ and moves the longest streak by 2.5x. *A key set is NOT fully named by "all" or
 re-derive it, never bump it.
 
 ### Pre-registered for the next run that merges
+
+**v215 IS IN FLIGHT as run #902** (queued 23:14Z on `2d235a4`, `event: push` on
+the dev branch — so **no `workflow_dispatch` is owed and one would kill it**).
+The ship is the employer-scope gate's SECOND arm: its noun list enumerates six
+roles, and an auditor who writes *"vested immediately in their contributions and
+the ORGANIZATION'S contributions"* is refused by a gate whose `continue` runs
+ahead of every quote fallback, so 444 plans / 468,691 readers publish **nothing
+at all, not even a quote**. `employerEntityMoney` is a SCOPE predicate only —
+possessive role noun, un-narrowed *"all X contributions"*, or the sponsor's own
+initialism — and **licenses no label of its own**, which is what separates it
+from v211's and v214's arms.
+
+| key | registered |
+|---|---|
+| `vesting` published (ledger) | 88,398,283 -> **88,701,587** (+303,304) |
+| `vesting` withheld | 12,554,102 -> **12,728,543** (+174,441) |
+| `vesting` absent (**gap**) | 9,501,066 -> **9,023,321** (−477,745) |
+| `vesting_shown` | 80.032% -> **80.307%** |
+| ONE SCALAR | 80.079% -> **80.132%** |
+| `vesting` (trail, PLAN count) | 56,558 -> **56,918** (+360) |
+| `vestQuote` | 6,241 -> **6,335** (+94) |
+| `custodian` / `match` / `contributions` / `lineup` | **IDENTICAL** |
+
+**BAND** +303,304 to **+827,500** published. The top end is the WHOLE reachable
+unjudged remainder (202 plans / 524,196 readers) and **not a rate applied to
+it** — v213's band was blown 11x that way. Here the remainder is narrowed by a
+CONSTRUCTION rather than a rate: 47,016 of the 47,218 unjudged plans already
+publish a label, and pass 1 of the loop never runs for them.
+
+***AND THE WRITE-SET GREP RETURNED A CLEAN ZERO FOR THE SECOND SHIP RUNNING, so
+the PATH closure is now the default and the grep is the decoration.*** The arm
+assigns no field; it sets `eemOnly` and pre-existing lines write. Closed by
+listing every write site between the gate and the end of the `waPass` loop:
+**there are FOUR, and all four write `out.vesting` or `out.vestingText`.**
+***But the four are NOT ALIKE, which the v214 closure did not have to say.***
+Three are gated `(!out.vestingText || vestingQuoteUpgrade(out, cap(s)))` — the
+two quote fallbacks and the `labelBlocked` branch — so a changed quote passes a
+SHIPPED judgment. The fourth, **v203's write in the label branch, is
+UNCONDITIONAL by design.** So *"fills a blank" is true of every LABEL* (pass 1
+runs only when pass 0 set none) *and is NOT true of every QUOTE*: the label
+branch can replace a stored one. That is what the ship's acceleration guard
+exists for, and its population is enumerated at five plans, every one read.
+**The harness line is `QUOTES CHANGED (both present)`, not "quotes lost"** — a
+changed quote and a lost quote are different claims, and the first is the one
+this arm can make.
+
+**JITTER, registered separately:** a bump re-parses the universe, so
+`confident` / `lineups` / `entries` / `dl` / `overshoot` move by whatever the
+re-roll moves, `high` 6 -> ~13 in CI (self-clearing `reparse-loss` findings),
+and the six-to-seven named acks have degraded on **every** re-parse since v207 —
+expect to repair them again after the merge, and expect `lineup` published to
+fall by ~6,145 readers until that repair.
+
+**THE OUT-OF-`lib-4i` COST IS NAMED RATHER THAN ROUNDED OFF:** `fetch-4i`'s
+`notesMissing` is the OCR trigger and a base `vestingText` makes it false, so
+125 acks / **155,730 readers** that are confident and still match-absent lose
+the only OCR attempt they had. That cost falls on **match**, not vesting, and
+all 134 movers are `ocr: 0` today. `FEATURE_GROUPS` costs 0 by measurement.
+
+**GATES: all 45 green, and the list was DERIVED from `site-test.yml`'s own run
+block** rather than chosen — this morning's lesson, paid for by a merge-side fix
+that ran seven named suites green and went red on an eighth. `smoke-test` and
+`sec-tickers-stamp-test` are among the 45, so **no regen is owed.** Five
+browser-driven suites failed first for a reason that is neither the change nor
+the repo: the container holds `chromium_headless_shell-1243` while the installed
+Playwright resolves `-1255`, which reports as a **missing executable PATH, not a
+failed assertion** — bridged locally with a symlink, and CI installs its own
+browser. *A red that names a path rather than an assertion is an environment
+question; diagnose which before attributing it to the ship.*
 
 **v214 DELIVERED by run #900** (16:08Z–17:06Z on `2baaabf`, all 22 jobs SUCCESS,
 `pv` 214 at 99.7% — NOT partial, so no completion run is owed) **and MIRRORED as
@@ -1067,424 +1150,27 @@ ACK differs** — the question a plan-KEY comparison cannot answer — with the
 control that makes the zero mean something (one perturbed ack must be seen, and
 was).
 
-**v213 DELIVERED by run #897 (04:01Z–05:18Z on `724b941`, all 22 jobs SUCCESS,
-`pv` 213 at 99.7% — NOT partial, so no completion run) and MIRRORED as
-`b393496` — LIVE.** Every gate reported its genuine form with **no override of
-any kind**: `mirror-gate: ok` (0 plans / 0 participants stop being served),
-**`sitetest-gate: ok — site-test run #393 on this exact commit concluded
-success`**, and `deploy-check: DEPLOYED — pages run 1329 on b3934960 concluded
-success in 1.9 min`. The log-only commit at the head would have created no
-site-test run (that filter deliberately omits `docs/accuracy-log.md`), so the run
-was DISPATCHED on the ref rather than reaching for `--force`, which would have
-disabled the very gate being satisfied. `mirror.sh` also confirmed main holds a
-MATCHED pair — `PARSER_VERSION` 213 against a dominant store `pv` 213 — so no run
-on main is needed. Settled against the registration:
+**The settled registrations for v208 – v213 are in `docs/closed-classes.md`**,
+moved there verbatim on 2026-11-24 when `grep -c SHIPPED CLAUDE.md` read 11 and
+twelve `DELIVERED` blocks were stacked here — 418 lines that nothing diffs
+against any more, re-read on every turn. v214 stays because it is v215's own
+BEFORE side. **Two live threads were lifted out of that region rather than moved
+with it:**
 
-| key | registered | DELIVERED |
-|---|---|---|
-| `matchQuote` (trail) | 5,645 (+689) | **5,757 (+801)** — 112 plans beyond |
-| `matchQuoteShown` | 2,724 (+689) | **2,837 (+802)** |
-| `match` withheld (ledger) | 13,425,274 (+1,139,384) | **13,625,520 (+1,339,630)** |
-| `match` absent (**gap**) | 18,717,622 (−1,139,384) | **18,523,061 (−1,333,945)** |
-| `match` published | UNCHANGED | **78,304,870 (−5,685)** — moved |
-| `match_shown` | 70.90% FLAT | **70.89%** |
-| ONE SCALAR | 79.95% FLAT | **79.95% — EXACT** |
-| ledger `addressable` | 82,277,861 | **82,087,713** |
-| `aftertax` | UNCHANGED | **4,203 — byte-identical** |
-| `match` / `matchAny` / `vesting` / `roth` (trail) | UNCHANGED | **−6 / −6 / −7 / −2** |
+- **A WORSE READABLE PARSE OF A NEWER FILING PRE-EMPTS A BETTER PARSE OF AN OLDER
+  ONE** (Corning, found settling v213). The prior-year fallback is tried only when
+  the newest filing has **no readable schedule**, so a trustee-statement that
+  parses to 5 junk rows beats a confident 17-row menu from the year before. The
+  remedy — prefer a prior-year CONFIDENT parse over a newest-filing NON-confident
+  one — lives in `fetch-4i`, so it needs a `PARSER_VERSION` bump. **Worth ZERO
+  published readers**: `servedLineup` falls back to the linked trust, so the plan
+  keeps a published menu throughout. A STORE-QUALITY question, not a reader-facing
+  loss, and the general size cannot be measured in-session because
+  `fallbacks.json` is a prep-stage artifact.
+- **The degraded-ack cause is STILL OPEN** and the per-run repair is still by hand
+  (`ONLY_ACKS_4I`). The full diagnosis is in the gotchas section above, whose own
+  heading records that the OCR framing of it is refuted.
 
-***THE BAND WAS BLOWN BY 11x ON ITS OWN STATED MECHANISM, AND THE CAUSE IS
-EXACT.*** The arm moved **1,333,945** readers absent -> withheld against a
-registered 1,139,384 and a band top of ~1,157,000. The decomposition closes to
-the reader: withheld rose 1,339,630 = 1,333,945 (absent -> withheld, the ARM)
-+ 5,685 (published -> withheld, the RE-ROLL taking match LABELS off ~6 plans).
-The 194,561-reader excess is **the UNJUDGED remainder firing**: 187 plans /
-297,659 readers had no cached text, and 112 of those plans (59.9%) and ~65% of
-their readers fired, at 1,737 readers per plan against the judged population's
-1,653 — within 5%, so they are the same kind of plan, not a few giants.
-**The band's top end was built by applying the JUDGED fire rate to the unjudged
-set (~+17,000), when the right ceiling was the unjudged set's WHOLE size**
-(1,139,384 + 297,659 = 1,437,043, which delivery sits inside). *A band's top end
-is the whole unjudged population whenever the unjudged set is systematically
-different from the judged one* — and here it was: uncached correlates with "not
-in the census corpus", not with "unreachable". The tight top end was justified
-in writing as "all 403/withdrawn, which production cannot download either", and
-**that premise is refuted in this same wake by the Corning probe below.**
-
-**Jitter arrived as registered in shape** — `confident` −7, `lineups` −6,
-`entries` −1, `dl` +9, with `overshoot` (683) and `vestQuote` (6,230) FLAT, and
-`high` 6 -> 13 (the 6 standing plus 7 CI-only `reparse-loss` findings, which the
-next scheduled run clears). "Nothing else moves" failed small for the fourth
-consecutive run on a write set provably limited to `out.matchText`.
-
-**AND THE DEGRADED-ACK SET GREW FOR THE FIRST TIME — IT IS NOT A FIXED SIX.**
-Run #897's `READ BEFORE MIRRORING` list named **7** acks: the recorded six plus
-**Corning Incorporated**. All seven are `ocr: 0`; five carry `ds: "readfail"` and
-two were REMOVED outright. *Nine consecutive re-parses have been described as
-hitting "the six named acks"; the set is not closed.*
-***BUT THE READER COST DID NOT GROW, AND MY FIRST SCREEN SAID IT TRIPLED.***
-Measured under the SERVING condition: **7 plans / 6,280 readers lost service**,
-against the recorded 6,145 — universe drift, not escalation — and **Corning lost
-NOTHING**, because `servedLineup` falls back to the LINKED TRUST and its master
-trust's menu is confident, so its `lineup` cell still reads *published — "the
-plan's own menu is unusable; its master trust's menu is served"*. My screen
-counted owner-plus-member plans and never asked the second question, reporting
-16,330 readers lost and a 2.7x escalation. *A measurement of what a page
-PUBLISHES must apply every condition the page applies, in order* — the rule was
-quoted in that screen's own header comment and then not applied.
-**`mirror-gate` GOT THIS RIGHT WHERE THE HAND SCREEN DID NOT**, printing `-1 by
-ACK` and `0 plan(s) / 0 participants actually stop being served`. This record
-already retired the hand-rolled force-push because reading the git check by eye
-failed once; the LOSS check now has the same history, and the gate is the
-instrument.
-Six were repaired by `ONLY_ACKS_4I` to their exact prior counts (3, 23, 35, 9,
-25, 30, every one `ok=true`), `confident` 62,210 -> 62,216, **`pv` held at 213
-on all six** and **0 collateral acks moved**.
-
-**CORNING DID NOT REPAIR, AND IT IS A DIFFERENT DEFECT — queued, with the fix
-named.** It re-parses deterministically to 5 rows at 0% coverage (`dx: "stmt"`),
-because its stored entry was **prior-year FALLBACK-served** (`fb: 2024`,
-`fbAck` 20250711111703…) and `fallbacks.json` is a prep-stage artifact, exactly
-as this record warns. But the interesting half is WHY the run lost it: **the
-newest filing's public copy was withdrawn when the fallback was chosen and is
-BACK in the bucket now** — probed this wake at `http=200 bytes=1175500`, with
-the 2024 copy also live at `bytes=2623375`. Its own 4i is a trustee-statement
-that parses to 5 junk rows, and the fallback is tried only when the newest
-filing has **no readable schedule**, so ***a WORSE readable parse of a newer
-filing pre-empts a BETTER parse of an older one.*** A re-dispatch would
-reproduce the loss rather than fix it; the remedy is to prefer a prior-year
-CONFIDENT parse over a newest-filing NON-confident one, which lives in
-`fetch-4i` and so needs a `PARSER_VERSION` bump. **THE LARGER CLASS THIS SUGGESTED IS
-CLOSED BY MEASUREMENT — do not reopen it without a new one.** All 1,974 fallback
-lineups are PUBLISHED and carry one of eight provenance sentences; only **225 /
-286,665 readers** make the refutable WITHDRAWAL claim (the other 1,749 claim
-unreadability or a failed reconciliation, which a successful download does not
-refute). All **225 probed: 0 reachable, 225 still 403** — so the claim is TRUE
-everywhere it is published, with both controls holding (Corning's live copy 200 /
-1,175,500 bytes, a bogus ack 403 / 263 bytes). *A withdrawal label is not durable
-in principle and is durable in fact at 1 observed reversal in 226* — which also
-re-prices Corning's remedy at **ZERO published readers**, not 16,330: its plan
-keeps a published menu throughout, so this is a STORE-QUALITY question (the
-plan's own 17-row menu replaced by its trust's) and not a reader-facing loss.
-Worth one caveat and no more: a trust's menu can cover a small fraction of a
-member plan, so the answer may be less representative without being absent. The
-general size cannot be measured in-session because `fallbacks.json` is a
-prep-stage artifact.
-
-**`merge-4i`'s stale-delta guard is STILL unexercised:** the repair's local merge
-ran with no `results-*.json` present (checked before running, after the
-2026-11-23 near-miss), so the guard printed nothing. That is the correct
-behaviour and not a test of it.
-
-**v212 DELIVERED, SETTLED over two runs, and MIRRORED as `fb1cd6e` — LIVE.**
-`mirror-gate` **0 plans / 0 participants losing service** (confident +1 / −0 by
-ack), **`sitetest-gate` a GENUINE pass on run #385** (the `ok` line printed with
-the run number — `--force` was given for the git-ahead refusal only, and it
-downgrades a REFUSAL, so a green verdict still prints), `deploy-check` pages run
-1327 success in 1.4 min. Main's two cron commits were cleared on MEASUREMENT, not
-timing: 0 plan keys either way and **0 plans whose ACK differs** in either
-direction, so not one newer filing — *and a plan-KEY comparison cannot answer
-that, because a DOL refresh replaces a plan's ack without adding a key.*
-**`merge-4i.mjs`'s stale-delta guard is live in code but UNEXERCISED IN CI**:
-`mirror.sh` rightly notes merge-side code moves no version, so the next merge is
-its first real run. `pvTopShare` 99.7%, `high` back to the standing 6. #892 concluded **failure** and left the store PARTIAL at 89.74%:
-`parse (19)` was KILLED at 82 minutes (every other shard finished in 32–49) with
-its step still `in_progress` and `upload-artifact` **`pending`**, so that shard's
-delta was never uploaded — **the `if: always()` artifact upload this file credits
-with handing a crashed shard's progress to the merge DID NOT RUN**, because the
-step never got a turn, which is a different failure from the step failing. #894's
-completion run read the 7,388 remaining acks and cleared the gate.
-
-| key | registered | SETTLED (99.7%) |
-|---|---|---|
-| `vesting` (trail) | 55,980 UNCHANGED | **55,996 (+16)** |
-| `vestQuote` | 6,095 (+609), band to 6,104 | **6,230 (+744)** — past the band |
-| `vesting_gap` | 10,481,113 (−1,667,448), band to −1,689,796 | **10,230,167 (−1,918,394)** |
-| `vesting_withheld` | 12,400,753 | **12,547,960 (+1,814,655)** |
-| `vesting_shown` | 79.28% UNCHANGED | **79.4%** — MOVED |
-| ONE SCALAR | 79.94% UNCHANGED | **79.95%** |
-| ledger `addressable` | 83,667,881 | **83,417,245** |
-
-**THE OVER-DELIVERY IS NOT v212's, AND THE ARITHMETIC PROVES IT EXACTLY.** The
-gap fell 1,918,394; `withheld` rose **1,814,655** and `published` rose
-**103,739**, and those two sum to 1,918,394 to the reader. v212's write set is
-`out.vestingText`, which can only move absent -> withheld — so the `published`
-rise is **v211's whole-account LABEL arm landing LATE**, on the 1,792 acks that
-sat at `pv` 210 and had therefore never been read at v211 at all. The trail
-agrees: `vesting` +16 plans, registered UNCHANGED, on a change that cannot label.
-
-***SO A REGISTRATION SETTLED ON A 97% STORE IS SETTLED FOR 97% OF THE UNIVERSE,
-AND THE REMAINING 3% ARRIVES ATTRIBUTED TO THE NEXT VERSION.*** v211 was declared
-settled at `pvTopShare` 97.2 with 1,792 acks still at pv 210; its arm reached them
-only when v212's completion run did, and the delta then reads as v212's. This is
-the sibling of *a key that cannot see an intervening change cannot warn*: here the
-RUN cannot see which version's arm it is delivering. The honest form is to name
-the unread tail as part of the settlement, not to call 97% finished — and
-`vesting_shown` and the ONE SCALAR moving at all, both registered UNCHANGED, is
-the visible signature of exactly that.
-
-**AND THE WRITE-SET GREP IS NOT SUFFICIENT FOR A FIELD WITH POST-PASSES.** The
-ship's comment argued "writes `out.vestingText` and nothing else, so no plan can
-change a LABEL". Premise true, inference invalid: v88's graded-horizon post-pass
-READS `vestingText` and writes `out.vesting`. ***A write-set argument is sound
-only for a field nothing downstream reads; otherwise the write set must be closed
-under what READS it*** — and `git diff | grep -o 'out\.[A-Za-z]*'`, the first
-check reached for here, cannot see it. The conclusion holds on two checked parts
-(`vestingQuoteUpgrade` begins `!out.vesting`; all nine `"Graded schedule"` sites
-set `vestingText` in the same statement), and the comment now states those.
-
-**THE ONE SCALAR STILL CANNOT SEE THE SHIP ITSELF, AND THE LEDGER IS THE QUEUE.**
-v212's own move is absent -> withheld, and `shown`'s denominator is their sum, so
-it is flat by construction while 1.81M readers go from a blank cell to the
-filing's own words; only `addressable` moves. *A ledger keyed on LABEL coverage
-is blind to QUOTE coverage, so a scalar-driven queue will never select this work.*
-
-**v211 DELIVERED, SETTLED over two runs, and MIRRORED as `944b38e` — LIVE.**
-`mirror-gate` 0 plans losing service, **`sitetest-gate` a GENUINE pass on run
-#379** (the `ok` line printed on the exact head, not an override — the commit
-carried `CLAUDE.md` on purpose so the push would create a run that gate can
-find), `deploy-check` pages run 1323 success in 1.5 min. #889 left the store
-PARTIAL (`pvTopShare` 94.7) and #890's completion run took it to 97.2, which
-CLEARED the gate: `partial-store` left the HIGH list.
-#889's 20 parse shards all concluded SUCCESS and stopped inside a 32-48 minute
-band: a per-shard TIME BUDGET, not a failure, leaving **3,578 acks never read**
-(3,167 with no error code, `dl` FLAT at 214, 3,239 still confident on their
-pv-210 entries so nothing was lost). *This file's own "a run can FINISH and
-still not have READ the universe", seen for the first time from the budget side
-rather than the download side.* **AND ONE COMPLETION RUN IS NOT ENOUGH:** #890
-ran two hours, read ~1,785 of the 3,578, and **1,793 acks (2.49%) are STILL at
-pv 210**. 97% is reachable in two passes; 100% is not obviously reachable at
-all, so *the gate's threshold is the achievable target and not a rounding of
-"finished"*.
-
-| key | registered | #889 (94.7%) | SETTLED #890 (97.2%) |
-|---|---|---|---|
-| `vesting` (trail, PLAN count) | 55,905 (+541) | 55,963 | **55,979 (+615)** — 74 plans beyond |
-| `vestQuote` | 5,502 (−24) | 5,486 | **5,486 (−40)** |
-| `vesting_shown` | 79.29% | 79.25% | **79.3%** |
-| `vesting_gap` | 12,132,987 (−1,902,317) | 12,182,541 | **12,148,561 (−1,886,743)** — 15,574 SHORT |
-| `vesting_withheld` | 10,742,196 (−8,560) | 10,733,305 | **10,733,305 (−17,451)** |
-| ONE SCALAR | 79.94% | 79.93% | **79.94%** — EXACT |
-
-**THE FINDING SURVIVED THE COMPLETION RUN, WHICH IS WHAT MAKES IT REAL: A
-REGISTRATION CAN OVER-DELIVER IN PLANS AND UNDER-DELIVER IN READERS AT ONCE.**
-On the partial store I flagged the 49,554-reader shortfall as possibly an
-artifact of the 94.7% read. It is not: at 97.2% the PLAN count has over-delivered
-FURTHER (+74 against +541 registered) while the reader gap is **still 15,574
-short of its point**. Both keys were registered off the same instrument over the
-same population, so neither is an instrument error — the extra plans are simply
-SMALLER than the registered population's average. ***Register both and read them
-separately; "over-delivered" is not a property of a run, it is a property of a
-KEY.*** Four prior runs had made over-delivery look like a property of runs
-because their two keys happened to agree.
-
-**AND THE TRAIL REPORTED `confident +1` ON A RUN THAT LOST 5 — a new instance of
-*a key that cannot see an intervening change cannot warn*.** #889's line read
-`confident` 62,210; my in-session repair took the store to 62,216 and committed
-data **with no trail line** (a local merge appends none); #890 then degraded 5
-and appended 62,211. So the audit's reparse verdict diffed its own output
-against a line **two commits stale** and printed a GAIN where the run's real
-effect was −5. *A repair that moves the store without moving the trail
-mis-attributes the next run's delta* — and the only honest reading is the
-store, not the trail.
-
-**Jitter arrived as registered** — `confident` −6, `lineups` −5, with `entries`,
-`dl` and `overshoot` all FLAT — and "nothing else moves" failed small in v210's
-NEW shape for the second run running: `match` −1, `matchAny` −1 and `roth` −1 on
-a write set provably limited to `out.vesting` + `out.vestingText`.
-**The named acks degraded on BOTH runs — the SIXTH and SEVENTH consecutive
-re-parses.** #889 took all six (repaired, 62,210 -> 62,216); #890 took **five of
-the six** (WD Management survived) and **two of those five were REMOVED
-OUTRIGHT rather than downgraded** — Sorinex and the Hexcel MTIA had no entry at
-all, a third variant beside "fewer rows" and `ds: "readfail"`. Repaired again:
-all six back to 30/35/23/25/3/9, every one `ok=true`, `confident` 62,216,
-**0 collateral acks touched** (against 14 rows last time, because no
-`sec-tickers.js` regen intervened).
-
-**THE ARM OWNS ITS POPULATION RATHER THAN BORROWING IT, and that was checked two
-ways because the ship's own comment got the mechanism wrong.** Under the sliced
-pre-v211 gate all eight pinned fixtures read `passes=false` with `employerMoney`,
-`universal` and `strictGate` all 0 (control: the new arm inert on pass 0), and
-in the committed store all eight plans publish **nothing at all, not even a
-quote**. The comment claimed *"all five fail `IMMED`"*; four of the eight
-actually MATCH `IMMED` and are dropped at the gate before it is tested, so the
-real ground is the stronger one. `docs/accuracy-log.md` 2026-11-23 (03:5xZ).
-
-**v209 DELIVERED by run #884, and the BAND held where the POINT did not — the
-third registration in a row whose point estimate was a floor.**
-
-| key | registered | delivered |
-|---|---|---|
-| `vesting` (trail, PLAN count) | 55,346 (+258) | **55,366 (+278)** — 20 plans beyond |
-| `vesting_shown` | 77.55% | **77.56%** |
-| `vesting_gap` | 14,043,903 (−540,317) | **14,034,505 (−549,715)** — inside the registered band |
-| `vesting_withheld` | 10,749,991 (−612) | **10,750,756 (+153)** — moved the OTHER WAY |
-| ONE SCALAR | 79.15% | **79.15%** — exact |
-| `match`, `matchQuote`, `matchAny`, `roth`, `aftertax` | UNCHANGED | **all five byte-identical** |
-
-**THE BAND IS WHAT EARNED ITS KEEP.** The registration carried +540,929 as a
-FLOOR with a band to ~600,000, because the instrument could judge only 56,056
-filings; delivery landed at **+549,715**, inside the band and past the point.
-*A registration is only as exact as the population its instrument could judge*
-— stated as a band for the first time on v209, and the first time the band was
-the correct shape rather than the humble one.
-
-**ONE KEY MOVED THE WRONG WAY AND IS NOT EXPLAINED BY THE WRITE SET.**
-`vesting_withheld` was registered to FALL by 612 (3 plans moving withheld ->
-published) and ROSE by 153. The write set is `out.vesting` + `out.vestingText`,
-so a withheld rise is the re-roll's doing, not the arm's — `lineup_withheld`
-rose 5,994 on the same line and the six degraded acks are its visible half.
-Recorded rather than rounded off: a key registered in one direction that moves
-in the other is a finding even when its magnitude is small.
-
-**THE JITTER REGISTERED SEPARATELY ARRIVED AS PREDICTED:** `confident` −6,
-`lineups` −5, `entries` −2, `vestQuote` −3, with `dl` and `overshoot` FLAT and
-`high` 6 -> 12 (CI's `reparse-loss` findings, which the next scheduled run
-clears). **And the six named acks degraded for the FOURTH consecutive
-re-parse** — the identical set and the identical 6,145 readers as v207, v208 and
-#875, five of the six again landing on `ds: "readfail"`, zero gained.
-`mirror-gate` refuses on exactly them, which is still the only watcher that
-sees it. The repair is deliberately DEFERRED to after v210's merge: a full
-re-parse undoes it, so repairing before a dispatch is paying twice.
-
-**v210 DELIVERED by run #886 (17:34Z–18:29Z, on `325afdc8`) and MIRRORED as
-`3e6026a2`** — `mirror-gate` 0 plans losing service, `sitetest-gate` a GENUINE
-pass on run #373 (the `ok` line printed, not an override), `deploy-check` pages
-run 1320 success. v209, v210 and the six-ack repair are all live. **It
-over-delivered — the FOURTH registration running whose point was a floor.**
-
-| key | registered | delivered |
-|---|---|---|
-| `match` (trail, PLAN count) | 46,213 (+943) | **46,619 (+1,349)** |
-| `matchAny` | 49,778 (+1,305) | **50,315 (+1,842)** |
-| `matchQuote` | 5,277 (−488) | **4,957 (−808)** |
-| `matchQuoteShown` | 2,109 (−133) | **2,035 (−207)** |
-| `match_shown` | 70.50% | **70.90%** |
-| `match_gap` | −871,315 | **−1,007,457** |
-| `match_withheld` | −1,255,157 | **−1,556,583** |
-| ONE SCALAR | 79.52% | **79.60%** |
-
-**READERS MOVED TO AN ANSWER: 2,564,040** (gap −1,007,457 plus withheld
-−1,556,583), against a point estimate of 2,126,472 and a registered band of
-**+2.13M to ~+2.6M** — near the band's top edge, past the point. Four runs in a
-row now: *the point is what the instrument could judge and the band is what the
-run does.* The band has been the right shape every time it was stated.
-
-**AND "NOTHING ELSE MOVES" FAILED AGAIN, SMALLLY AND IN A NEW SHAPE.** `vesting`
-55,366 -> **55,363** (−3) and `roth` 43,595 -> **43,593** (−2) were registered
-UNCHANGED, and the write set is provably `out.match` + `out.matchText`, so five
-plans' non-match flags moved on a change that cannot write them. What is NEW is
-the rest: `confident`, `lineups`, `entries`, `dl` and `overshoot` were all
-**FLAT**, where every prior re-parse jittered them. So this re-roll reached the
-FEATURE extraction and not the menu — the same text path the 2026-11-21 finding
-named, seen from the other side. *Register the change's keys, then say
-separately what a full re-parse jitters; and when the jitter changes shape,
-that is evidence about the cause, not noise to absorb.*
-
-**THE SIX ACKS DEGRADED FOR THE FIFTH CONSECUTIVE RE-PARSE and `confident` could
-not say so.** The trail read 62,210 BEFORE and AFTER, because v209's run had
-already taken those six off and v210's took them off a baseline that already
-lacked them — *a key that cannot move cannot warn*, and only `mirror-gate`'s
-plan-keyed refusal named them. Repaired in `fc24b29f`: all six back to `c=1` at
-`pv` 210, merge `+6 / -0`, `confident` 62,216. That commit also had to READ 31
-rows in 25 OTHER acks that the local merge moved, because `sec-tickers.js` was
-regenerated at 19:57Z AFTER #886's merge and the name repairs decline any row
-the table is keyed on — all 31 read, all 31 correct, 0 row-count moves.
-
-The match is
-DISCRETIONARY in three spellings the shipped `disc` trigger's six do not read
-(`discMatchWidened`, `lib-4i.mjs`). Derived from a committed-base-vs-working-tree
-differential against `006ef459` over all 56,056 cached filings, narrowed by the
-arm itself (superset by construction) and DISCHARGED over 6,000 excluded filings
-at 0 differences; `parser-gate` green at **104** specimens; `parse-replay --vs
-006ef459` over all 1,305 affected acks — **0 menus lost, 6 must-keep pins held,
-its own confidence control 1,289/1,289**.
-
-| key | registered |
-|---|---|
-| `match` (trail, PLAN count) | 45,270 -> **46,213** (+943) |
-| `matchAny` | 48,473 -> **49,778** (+1,305; the split is `match` +943 and `matchInZeroEmp` +362, because the trail gates `match` on reported employer money and the ledger does not) |
-| `matchQuote` | 5,765 -> **5,277** (−488) and `matchQuoteShown` 2,242 -> **2,109** (−133) — those plans now publish a LABEL, so this fall is the gain |
-| `match_shown` | 68.58% -> **70.50%** |
-| `match_gap` (absent) | 20,864,008 -> **19,992,693** (−871,315) |
-| `match_withheld` | 13,842,783 -> **12,587,626** (−1,255,157 moving withheld -> published, i.e. a quote-only cell becoming an answer) |
-| ONE SCALAR | 79.15% -> **79.52%** |
-| `vesting`, `roth`, `aftertax`, `contributions`, `custodian`, `lineup` | **UNCHANGED** — the write set is `out.match` + `out.matchText`, asserted at **0 non-match field moves** over the whole 12,964-plan narrowed population and 0 differences over the 6,000-filing discharge |
-
-**RE-SEATED ON THE POST-#884 STORE, AND THE RE-SEATING IS ITSELF A CHECK.** The
-differential was measured against a store at `pv` 208; run #884 landed `pv` 209
-on this branch mid-pass. Re-derived against the new store, **every `match` key
-is byte-identical** — `match` 45,270, `matchQuote` 5,765, `matchQuoteShown`
-2,242, `matchAny` 48,473, published 75,746,660 / withheld 13,842,783 / absent
-20,864,008 — because v209's write set is `out.vesting` + `out.vestingText`, which
-is what its own registration claimed. Only the ONE SCALAR baseline moved
-(79.06% -> 79.15%), so that row carries the new one. *A delta measured on one
-store and a baseline read from another is the diff-of-the-wrong-two-lines
-defect; re-deriving both from the same store is the cheap way out.*
-
-**EXACT over the 56,056 filings the instrument could judge (82.1% of full-form
-readers) and a FLOOR over the run.** The UNJUDGED remainder is **15,428 plans /
-19,732,984 readers with no cached filing text**, and the band's upper end is
-loose in a way worth stating: the cache was built from the GAP-census
-populations, so an unjudged plan is predominantly one that already carries a
-parsed answer and that this arm cannot reach. Judged move rate 2.33% of plans
-would put the band at **+2.13M to ~+2.6M readers published**; the absent /
-withheld split of any remainder is not estimated.
-
-**AND NO PUBLISHED QUOTE CHANGES, which is structural rather than sampled.** The
-label is written AFTER the two quote fallback loops and replaces their sentence
-only where `matchQuoteOk` REFUSES it. 90 stored quotes still change and **0 of
-them were published before** — verified through the guard both renderers call.
-
-**SEPARATELY, and not claimed:** a `PARSER_VERSION` bump re-parses the universe,
-so `confident` / `lineups` / `entries` / `dl` / `overshoot` jitter by whatever
-the re-roll moves, and the six named acks (7 plans / 6,145 readers) have
-degraded on every re-parse since v207.
-
-**AND ONE PRE-EXISTING RED GATE, NOT MINE — AND THE DIAGNOSIS RECORDED HERE WAS
-WRONG FOR THE CURRENT FAILURE, measured 2026-11-24.** This entry said
-`scripts/effective-date-test.mjs` fails on its fixture list (*"member
-national-electrical / ultra-clean / american-eagle / mavis-tire is not in the
-published-yes population"*) and that the fix is that list. It is not: the test
-pins `BASE_REF = "3c0a6d2d"` (`effective-date-test.mjs:76`, a v207-era SHA) and
-that is **not a valid object in this clone at all**, so the run dies in
-`lib-refmod`'s `fetchAt` — *"the baseline's module graph cannot be assembled"* —
-**before asserting anything**. The fixture failure is upstream of nothing; it no
-longer happens. CI invokes the test `--quick`, whose own closing line reads
-*"the corpus equivalence and the mutations were SKIPPED and prove nothing"*, so
-`site-test` is green and has been while **the half of that test which does the
-judging has been dead since its baseline SHA was orphaned**. The repair is a live
-pin (or a ref the test resolves itself), and it is the fourth instance of *a
-guard that does not fire is a PREMISE to check, not a failure to report* —
-***but the new half is sharper: a red whose cause is already recorded is a red
-nobody re-reads***, which is exactly how a dead gate stays dead for weeks while
-every cycle names it and passes on.
-
-**v208 was dispatched as run #881 and DELIVERED**; that registration is settled
-below and must not be re-dispatched. `docs/accuracy-log.md` 2026-11-22.
-
-**v208 DELIVERED — registered against delivered, and one key over-delivered.**
-
-| key | registered | delivered |
-|---|---|---|
-| `aftertax` | 4,203 | **4,203** — exact |
-| `roth` | 43,668 (−883) | **43,595 (−956)** — 73 FURTHER withdrawals |
-| `contributions_shown` | 66.13% | **66.05%** |
-| ONE SCALAR | 79.07% | **79.06%** |
-
-**THE OVER-DELIVERY IS THE ONE THING TO CARRY FORWARD.** The registration was
-derived as "exact over the gate's JUDGED population", and the gate's own output
-said **5,793 plans / 7,180,042 readers UNTESTED** (no cached filing text), so
-the figure was exact over a subset and silently a FLOOR over the run. 73 plans
-is 8% beyond it. *A registration is only as exact as the population its
-instrument could judge, and the honest form names the untested remainder as a
-band rather than carrying the judged number as the whole.*
-
-**THE JITTER REGISTERED SEPARATELY AND ARRIVED AS PREDICTED:** `confident −6`,
-`lineups −5`, `vesting −1`, `entries −2`, with `dl` and `overshoot` FLAT. The
-six degraded acks were **the identical set and reader count as v207's**, so that
-is no longer a jitter prediction but a standing defect — repaired in `8a31a74f`,
-cause still open, see the accuracy log for 2026-11-22 (09:xxZ).
 
 **Every registration through 2026-11-05 was delivered and verified;**
 the record of each is in `docs/closed-classes.md` and `docs/accuracy-log.md`.
