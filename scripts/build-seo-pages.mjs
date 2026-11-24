@@ -9,7 +9,7 @@
  * "not stated in the public filings" — never a guess. Filenames are
  * EIN-PN (stable forever, no orphans when a sponsor renames). */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
-import { matchQuoteOk, vestingQuoteOk, quoteTrim, accelerationOnlyVesting } from "./lib-quote.mjs";
+import { matchQuoteOk, vestingQuoteOk, quoteTrim, accelerationOnlyVesting, terminationOnlyVesting } from "./lib-quote.mjs";
 import { coverageBand, filedUnit, cleanFiledName, isParticipantLoanRow, isNamelessFundRow, hasNoFundIdentity, isLoanDescriptionRow, isLoanAnswerRow, isLoanMaturityRow, isLoanVocabularyRow, isLoanAccountRow, isDateHeaderRow, isDirectionCaptionRow, isOfficeListRow, isPageBreakCaptionRow, isLabelOnlyName, isSentenceRow, isNonIssuerCell, captionFiledType, trustShareBound, trustScheduleDMenu, isForfeitureAccountRow } from "./lib-disclose.mjs";
 import { isGenericTypeName } from "./lib-4i.mjs";
 
@@ -195,6 +195,13 @@ for (const r of d.plans.slice(0, TOP_N)) {
    * lib-quote.mjs carries the measurement and the three refusals. */
   const vestQuote = quoteTrim(ff.vestingText);
   const vestAccelOnly = !ff.vesting && accelerationOnlyVesting(vestQuote);
+  /* The plan-termination counterfactual, qualified on the same condition and
+   * AFTER the acceleration one: a sentence can be both (Republic Of Tea, 147
+   * readers, states death/disability acceleration AND the sponsor's right to
+   * terminate), and the acceleration wording is the accurate one there because
+   * the sentence's real content is the accelerating events. One qualifier per
+   * quote, and the precedence is stated identically in app.js. */
+  const vestTermOnly = !ff.vesting && !vestAccelOnly && terminationOnlyVesting(vestQuote);
 
   /* QUALIFIERS THE REPORT APPLIES AND THIS PAGE DID NOT. Enumerated on
    * 2026-09-10 by diffing every field name app.js renders against the ones
@@ -417,7 +424,8 @@ ${ff.nec ? `<h2>Employer nonelective contribution, as filed</h2>
 <p>This plan contributes <strong>${esc(ff.nec)}</strong> regardless of what a participant puts in — separate from any matching contribution.</p>
 ${ff.necText ? `<blockquote>${esc(ff.necText)}</blockquote>` : ""}` : ""}
 ${vestingQuoteOk(ff.vestingText) ? `<h2>Vesting, as filed</h2><blockquote>${esc(vestQuote)}</blockquote>${vestAccelOnly ? `
-<p class="muted"><strong>This says when vesting is accelerated, not how it is earned.</strong> The sentence above gives the events that make a participant fully vested regardless of service. It does not say how employer money vests for a participant who leaves before then — check the plan's summary plan description.</p>` : ""}` : ""}
+<p class="muted"><strong>This says when vesting is accelerated, not how it is earned.</strong> The sentence above gives the events that make a participant fully vested regardless of service. It does not say how employer money vests for a participant who leaves before then — check the plan's summary plan description.</p>` : ""}${vestTermOnly ? `
+<p class="muted"><strong>This says what happens if the plan ends, not how vesting is earned.</strong> Federal law (IRC §411(d)(3)) requires full vesting when a plan terminates or employer contributions permanently cease, so the sentence above is true of every plan and says nothing particular about this one. It does not state how employer money vests for a participant who leaves while the plan continues — check the plan's summary plan description.</p>` : ""}` : ""}
 ${funds ? `<h2>Fund lineup${lineupVia ? ` (via ${esc(lineupVia)})` : ""} — top holdings</h2>
 ${/* THE NEWLINE LIVES INSIDE THE CONDITIONAL, and the block six lines down
      already says why: an unconditionally emitted newline adds a blank line to

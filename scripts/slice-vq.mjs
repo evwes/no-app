@@ -40,14 +40,20 @@ let slice = src.slice(a, b).trimEnd();
  * new constant added to the guard and left outside these boundaries would make
  * the twin throw `ReferenceError` in the browser and nothing else would say so. */
 for (const must of ["VQ_RULE_WORD", "VQ_VESTS", "VQ_OTHER_RULE", "export function vestingQuoteOk",
-  "AV_FULL", "AV_TRIGGER", "AV_SCHEDULE", "export function accelerationOnlyVesting"])
+  "AV_FULL", "AV_TRIGGER", "AV_SCHEDULE", "export function accelerationOnlyVesting",
+  /* the plan-termination qualifier's five constants and its predicate. Listed
+   * for the same reason as the AV_ ones: a constant added to the guard and left
+   * outside the boundaries makes the twin throw ReferenceError in the browser
+   * and NOTHING ELSE SAYS SO — `node --check` parses it and the page is blank. */
+  "TV_PLAN_ENDS", "TV_PLAN_ENDS_IF", "TV_PERSON_ENDS", "TV_PAST", "TV_OTHER_CONTENT",
+  "export function terminationOnlyVesting"])
   if (!slice.includes(must)) throw new Error(`the slice is missing ${must} — it is outside the boundaries`);
 if (/--selftest|process\.(argv|exit)|readFileSync/.test(slice))
   throw new Error("the slice reaches into the selftest block");
 /* every identifier the sliced code READS must be something the slice DEFINES or
  * the browser provides — the ReferenceError check the generic-twin failure
  * wanted and did not have */
-for (const id of (slice.match(/\b(?:VQ|AV|Q)_[A-Z_0-9]+\b/g) || []))
+for (const id of (slice.match(/\b(?:VQ|AV|TV|Q)_[A-Z_0-9]+\b/g) || []))
   if (!new RegExp(`const ${id}\\s*=`).test(slice)) throw new Error(`the slice reads ${id} without defining it`);
 
 /* A MODULE `export` IN A CLASSIC SCRIPT BREAKS THE WHOLE FILE, AND
@@ -91,8 +97,15 @@ const HEAD = `  /* ---- vesting-quote guard ------------------------------------
  * too, so BOTH tethers belong to this one block. They used to be two blocks and
  * the quoteTrim half was hand-written — which is how `--check` found its first
  * drift. */
+/* THE TAIL IS GENERATED, NOT HAND-EDITED, and adding the fourth line here
+ * rather than in app.js is not a style choice: these three lines sit INSIDE the
+ * block boundaries below, so a `window.__wampo…` tether typed into app.js is
+ * deleted by the next run of this generator — the failure this project has lost
+ * four browser twins to. `--check` caught exactly that on the termination
+ * qualifier's first slice. */
 const TAIL = "  window.__wampoVestingQuoteOk = vestingQuoteOk;   // read by the smoke test only\n"
   + "  window.__wampoAccelOnly = accelerationOnlyVesting; // read by the smoke test only\n"
+  + "  window.__wampoTermOnly = terminationOnlyVesting;  // read by the smoke test only\n"
   + "  window.__wampoQuoteTrim = quoteTrim;             // read by the smoke test only\n";
 const twin = HEAD + body + "\n" + TAIL;
 

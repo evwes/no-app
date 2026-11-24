@@ -48,7 +48,7 @@
    "text": "The Company makes a dollar-per-dollar matching contribution of up to a maximum of $500 per year for each participant."
   },
   {
-   "why": "no number at all \u2014 cannot be a formula",
+   "why": "no number at all — cannot be a formula",
    "hasFormula": false,
    "expect": false,
    "text": "They may select from among several funds in which to invest their contributions, employer matching contributions and profit-sharing contributions."
@@ -78,7 +78,7 @@
    "text": "Any pre-tax and/or Roth (after-tax) contributions made prior to completing 12 months of service are not eligible for the company matching contribution."
   },
   {
-   "why": "a YEAR'S TOTAL in dollars is not a rate \u2014 El Valor published this as a formula",
+   "why": "a YEAR'S TOTAL in dollars is not a rate — El Valor published this as a formula",
    "hasFormula": false,
    "expect": false,
    "text": "There were $29,342 and $23,639 of employer matching contributions for the years ended December 31, 2024 and 2023, respectively."
@@ -153,7 +153,7 @@
   {
    "why": "Atos Syntel -- an AMENDMENT adding In-Plan Roth Conversions",
    "expect": false,
-   "text": "Effective January 1, 2024, the Plan was amended to allow \u201cIn-Plan Roth Conversions,\u201d which allow the conversion of existing participant account balances that are considered pre-tax, including pre-tax contributions, and vested employer contributions."
+   "text": "Effective January 1, 2024, the Plan was amended to allow “In-Plan Roth Conversions,” which allow the conversion of existing participant account balances that are considered pre-tax, including pre-tax contributions, and vested employer contributions."
   },
   {
    "why": "a rule stated with no arithmetic at all -- refuted screen 1",
@@ -228,12 +228,12 @@
   {
    "text": "6g(2) Number of participants who terminated employment during the plan year with accrued benefits that were less than 100% vested",
    "expect": false,
-   "why": "(c) the Form 5500's own printed line 6g(2) question \u2014 a vest word and a percentage, so VQ_VESTS accepts it and (b) returns true before (a) is consulted. An accepted candidate in all 364 filings measured; identical on every filing, so it says nothing about any plan"
+   "why": "(c) the Form 5500's own printed line 6g(2) question — a vest word and a percentage, so VQ_VESTS accepts it and (b) returns true before (a) is consulted. An accepted candidate in all 364 filings measured; identical on every filing, so it says nothing about any plan"
   },
   {
    "text": "Number of participants who terminated employment during the plan year with accrued benefits that were h less than 100% vested .",
    "expect": false,
-   "why": "(c) the same printed question as pdftotext renders it, with an OCR stray and no line number \u2014 the veto must not depend on the 6g(2) label"
+   "why": "(c) the same printed question as pdftotext renders it, with an OCR stray and no line number — the veto must not depend on the 6g(2) label"
   },
   {
    "text": "A participant who terminated employment during the plan year is 100% vested after three years of service.",
@@ -249,8 +249,8 @@
   },
   {
    "why": "Lithia Motors 30,021 ppl: THE MOTIVATING CASE, a Schedule-H column bar",
-   "text": "| Contributions \u2014 The Plan provides for employee contributions, discretionary matching contributions, and discretionary profit sharing contributions.",
-   "expect": "Contributions \u2014 The Plan provides for employee contributions, discretionary matching contributions, and discretionary profit sharing contributions."
+   "text": "| Contributions — The Plan provides for employee contributions, discretionary matching contributions, and discretionary profit sharing contributions.",
+   "expect": "Contributions — The Plan provides for employee contributions, discretionary matching contributions, and discretionary profit sharing contributions."
   },
   {
    "why": "Aaron's 8,615 ppl: a lone closing paren left by a (d) list marker",
@@ -274,8 +274,8 @@
   },
   {
    "why": "REFUSE Steak N Shake 1,281 ppl: a page-furniture run whose residue is not a sentence (the -6- stripper was dropped for touching 0 of 105,220 quotes; the sentence gate refuses this anyway)",
-   "text": "| | -6- 1 | | ) | | | Vesting \u2014 Participants are immediately vested in their contributions",
-   "expect": "| | -6- 1 | | ) | | | Vesting \u2014 Participants are immediately vested in their contributions"
+   "text": "| | -6- 1 | | ) | | | Vesting — Participants are immediately vested in their contributions",
+   "expect": "| | -6- 1 | | ) | | | Vesting — Participants are immediately vested in their contributions"
   },
   {
    "why": "REFUSE Yusen Logistics 2,617 ppl: the comma is the INSIDE of $23,000, not leading punctuation -- a comma is not in LEAD at all",
@@ -284,8 +284,8 @@
   },
   {
    "why": "CONTROL United Airlines 88,204 ppl: a BULLET is the audited notes' own list formatting, not debris",
-   "text": "\u2022 Management and Administrative Participants and UAFC Participants - Participants are always 100% vested in their Employer contributions.",
-   "expect": "\u2022 Management and Administrative Participants and UAFC Participants - Participants are always 100% vested in their Employer contributions."
+   "text": "• Management and Administrative Participants and UAFC Participants - Participants are always 100% vested in their Employer contributions.",
+   "expect": "• Management and Administrative Participants and UAFC Participants - Participants are always 100% vested in their Employer contributions."
   },
   {
    "why": "CONTROL an ordinary sentence is untouched",
@@ -294,8 +294,8 @@
   },
   {
    "why": "CONTROL a quote that legitimately OPENS on a quotation mark keeps it",
-   "text": "\u201cVesting\u201d means the portion of a participant's account that is nonforfeitable.",
-   "expect": "\u201cVesting\u201d means the portion of a participant's account that is nonforfeitable."
+   "text": "“Vesting” means the portion of a participant's account that is nonforfeitable.",
+   "expect": "“Vesting” means the portion of a participant's account that is nonforfeitable."
   },
   {
    "why": "CONTROL a leading parenthetical the filer wrote is a sentence opener, not a stray closer",
@@ -309,8 +309,8 @@
   },
   {
    "why": "CONTROL Pentegra Services 1,800 ppl: protected ONLY by the comma's absence from LEAD -- trimming the comma merely uncovers a page-header run",
-   "text": ", CONTINUED Note 1 \u2013 Description of Plan, Continued Vesting Participants are immediately vested in their individual contributions.",
-   "expect": ", CONTINUED Note 1 \u2013 Description of Plan, Continued Vesting Participants are immediately vested in their individual contributions."
+   "text": ", CONTINUED Note 1 – Description of Plan, Continued Vesting Participants are immediately vested in their individual contributions.",
+   "expect": ", CONTINUED Note 1 – Description of Plan, Continued Vesting Participants are immediately vested in their individual contributions."
   },
   {
    "why": "CONTROL Union Avenue Healthcare 598 ppl: protected ONLY by the SENTENCE gate -- stripping the punctuation leaves MORE debris (' The)",
@@ -319,8 +319,8 @@
   },
   {
    "why": "CONTROL Revela Foods 384 ppl: a bar followed by OCR noise, not punctuation -- a wider vocabulary is the wrong answer",
-   "text": "| \u00a3 a a The Company contributes a safe harbor match of 100% of the first 3% of base compensation.",
-   "expect": "| \u00a3 a a The Company contributes a safe harbor match of 100% of the first 3% of base compensation."
+   "text": "| £ a a The Company contributes a safe harbor match of 100% of the first 3% of base compensation.",
+   "expect": "| £ a a The Company contributes a safe harbor match of 100% of the first 3% of base compensation."
   },
   {
    "why": "Walmart 1,996,659 ppl: a page number and the table-of-contents header, the largest plan in the universe",
@@ -397,7 +397,7 @@
   {
    "why": "Smith And Nephew, 9,307 ppl -- the largest member of the class, and the SOLE case for AV_FULL's forward arm (`fully ... vested`)",
    "expect": true,
-   "text": "A participant becomes fully vested in Company contributions and earnings thereon if the participant\u2019s termination of employment occurs due to death, disability or normal retirement."
+   "text": "A participant becomes fully vested in Company contributions and earnings thereon if the participant’s termination of employment occurs due to death, disability or normal retirement."
   },
   {
    "why": "Patriot Transportation, 755 ppl -- SOLE case for the `retirement age` trigger arm, and the shape AV_VEST_AS_CONDITION must NOT catch: `If Participants were employed ... were fully vested` is a main-clause claim, not a precondition",
@@ -407,7 +407,7 @@
   {
    "why": "Saratoga Hospital, 4,085 ppl -- SOLE case for the bare `age NN` trigger arm (`NRA (age 59 1/2)`), which no retirement-word arm reaches",
    "expect": true,
-   "text": "Employees who achieve NRA (age 59\u00bd) are fully vested in all employer contributions."
+   "text": "Employees who achieve NRA (age 59½) are fully vested in all employer contributions."
   },
   {
    "why": "Manko Window Systems, 423 ppl -- SOLE case for AV_FULL's REVERSED arm (`will be vested 100% in`); the forward-only arm missed a textbook member",
@@ -417,12 +417,12 @@
   {
    "why": "Gilster-Mary Lee, 2,288 ppl -- SOLE case for the year-COUNT arm, and a FILER'S TYPO: `after six (6) yeas of vesting services` is a complete six-year rule that neither a service-word arm nor a digit test reaches",
    "expect": false,
-   "text": "Participants are 100% vested in the Company\u2019s discretionary matching contribution plus actual earnings thereon after six (6) yeas of vesting services unless the participant reaches normal retirement age (65), dies or becomes disabled while an employee."
+   "text": "Participants are 100% vested in the Company’s discretionary matching contribution plus actual earnings thereon after six (6) yeas of vesting services unless the participant reaches normal retirement age (65), dies or becomes disabled while an employee."
   },
   {
    "why": "Onestream Software, 1,028 ppl -- SOLE case for the bare `schedule` arm: the whole ladder is inside the quote with no percent signs on its steps and the year column spelled `Service (Years)`",
    "expect": false,
-   "text": "Company matching contributions vest in accordance with the following schedule: Vesting Service (Years) Vesting (%) Less than 1 - 1 but less than 2 25 2 but less than 3 50 3 but less than 4 75 4 or more 100 Participants become fully vested in the event of retirement, death, and disability, as defi\u2026"
+   "text": "Company matching contributions vest in accordance with the following schedule: Vesting Service (Years) Vesting (%) Less than 1 - 1 but less than 2 25 2 but less than 3 50 3 but less than 4 75 4 or more 100 Participants become fully vested in the event of retirement, death, and disability, as defi…"
   },
   {
    "why": "The Eby Group, 2,492 ppl -- SOLE case for the 1-99% arm: a ladder table bled into the quote ahead of the acceleration sentence",
@@ -432,7 +432,7 @@
   {
    "why": "Precision Machine Works, 109 ppl -- SOLE case for the years-of-service arm: `100% vested following two full years of service, as defined, or upon attaining ...` states BOTH the schedule and the exception",
    "expect": false,
-   "text": "The Company\u2019s matching contributions plus actual earnings thereon, become 100% vested following two full years of service, as defined, or upon attaining normal retirement age, death or disability."
+   "text": "The Company’s matching contributions plus actual earnings thereon, become 100% vested following two full years of service, as defined, or upon attaining normal retirement age, death or disability."
   },
   {
    "why": "Upper Iowa University, 1,003 ppl -- SOLE case for the `completing/completion` arm",
@@ -452,12 +452,12 @@
   {
    "why": "Akins Ford, 384 ppl -- SOLE case for AV_VEST_AS_CONDITION: an age trigger and a full-vest claim where the vesting is the CONDITION of a withdrawal rule, not the rule",
    "expect": false,
-   "text": "Upon attainment of age 59 \u00bd, benefits attributable to any employer contributions allocated to a participant are available for withdrawal if the participant is 100% vested in those benefits."
+   "text": "Upon attainment of age 59 ½, benefits attributable to any employer contributions allocated to a participant are available for withdrawal if the participant is 100% vested in those benefits."
   },
   {
    "why": "Bridgestone Hosepower, 882 ppl -- the second shape of AV_VEST_AS_CONDITION (`accounts THAT ARE fully vested`), and the case that made a VQ_OTHER_RULE refusal necessary-for-0",
    "expect": false,
-   "text": "Participants may receive an in-service distribution upon the attainment of age 59 \u00bd years from all of their accounts that are fully vested."
+   "text": "Participants may receive an in-service distribution upon the attainment of age 59 ½ years from all of their accounts that are fully vested."
   },
   {
    "why": "Lehigh Heavy Forge, 163 ppl -- SOLE case for AV_INCLUDING: universal vesting with the trigger words inside an appositive, so the sentence IS a complete answer",
@@ -488,6 +488,83 @@
    "why": "same, the Koroseal wording the record quotes",
    "expect": true,
    "text": "However, a participant will be deemed fully vested in Company contributions upon death, disability, or attainment of the normal retirement age."
+  }
+ ],
+ "terminationCases": [
+  {
+   "why": "Willkie Farr & Gallagher, 2,887 ppl -- the largest member of the class and the SOLE case for TV_PLAN_ENDS's `discontinu` spelling",
+   "expect": true,
+   "text": "In the event there is a discontinuance of the Plan, all Plan accounts will be fully vested and the assets of the Plan, after payment of any expenses properly chargeable against the Plan, will be distributed to the participants as prescribed by the Plan in accordance with ERISA and related regulations."
+  },
+  {
+   "why": "Compass Senior Living, 2,370 ppl -- second largest, the `full or partial Plan termination` shape with an intervening phrase",
+   "expect": true,
+   "text": "In the event of full or partial Plan termination, affected participants would become 100 percent vested in their employer contributions."
+  },
+  {
+   "why": "the intervening THAT, which escapes every arm of lib-4i's selection veto -- the phrasing this class exists for",
+   "expect": true,
+   "text": "In the event that the Plan is terminated, participants would become 100% vested in their accounts."
+  },
+  {
+   "why": "North Florida Medical Centers, 206 ppl -- SOLE case for TV_PLAN_ENDS's REVERSED arm: `termination` precedes `the Plan`, so the forward arm cannot fire",
+   "expect": true,
+   "text": "Upon permanent discontinuance of contributions or termination of the Plan, all accounts of the participants become fully vested."
+  },
+  {
+   "why": "S & S Automotive, 103 ppl -- the `should ... decide to terminate` spelling, claim after condition",
+   "expect": true,
+   "text": "If the Company should decide to terminate the Plan, participants would become 100% vested in the Company contribution portion of their accounts."
+  },
+  {
+   "why": "SOLE case for TV_PERSON_ENDS: T & T Electrical, 187 ppl, `A terminating MEMBER of the Plan` -- a distribution rule for a leaver, which TV_PLAN_ENDS's 25-character window reads as a terminating plan. Found by reading all seventeen members; no count can see it",
+   "expect": false,
+   "text": "A terminating member of the Plan has the opti on to maintain their account (if the balance is over 7,000) or be paid the current value of their contribution and any vested Employer contributions to the Plan ."
+  },
+  {
+   "why": "SOLE case for TV_PAST: Cornell Dubilier, 613 ppl, is a plan that HAS wound up, so `became fully vested` is a fact about this plan and not the counterfactual",
+   "expect": false,
+   "text": "Effective October 31, 2023, when the Plan began the termination process, all participants became fully vested in all employer contributions."
+  },
+  {
+   "why": "SOLE case for TV_PLAN_ENDS_IF: Signature Health Services, 360 ppl -- `DUE TO the termination` is historical with no condition word, another wind-up stating its own facts",
+   "expect": false,
+   "text": "All employees are fully vested in employer contributions due to the termination of the Plan."
+  },
+  {
+   "why": "TV_OTHER_CONTENT, the percentage arm with NO trailing word boundary: Kansas City Royals, 1,130 ppl, publishes its real ladder as a table and names plan termination only as an accelerator. `\\b\\d{1,3}\\s?%\\b` would read this as having no percentage at all and withdraw a real schedule",
+   "expect": false,
+   "text": "Service Percent Less than 1 0% 1 20% 2 40% 3 60% 4 80% 5 or more 100% In the event of permanent disability, death, reaching normal retirement age, or termination of the Plan, the Company contributions become fully vested."
+  },
+  {
+   "why": "TV_OTHER_CONTENT's service arm: a real five-year cliff that names Plan termination as one accelerator beside death and disability must be KEPT -- v82 measured 38 of 108 such sentences carrying the real schedule",
+   "expect": false,
+   "text": "A participant is 100% vested after five years of credited service or upon death, total disability, normal retirement age, or Plan termination."
+  },
+  {
+   "why": "TV_OTHER_CONTENT's `years?\\s*of` is starred, not spaced: Commencement Bay's filing lost the space in the PDF text layer, and a service test keyed on a correctly spelled unit is defeated by the filings' own typos",
+   "expect": false,
+   "text": "A participant is 100% vested after three yearsof credited service or upon termination of the Plan."
+  },
+  {
+   "why": "TV_OTHER_CONTENT's `immediate` arm: a real immediate-vesting statement is a COMPLETE answer and must not be qualified",
+   "expect": false,
+   "text": "Participants are immediately vested in Company matching contributions, and upon termination of the Plan all accounts remain fully vested."
+  },
+  {
+   "why": "termination of EMPLOYMENT is not termination of the PLAN, and this one carries no plan-ending phrase for TV_PLAN_ENDS to match either",
+   "expect": false,
+   "text": "Participants may terminate employment and receive their vested account balance."
+  },
+  {
+   "why": "the counterfactual's own words `100% vested` must NOT count as other vesting content -- tvStripFull is what makes that so, and without it this class is empty",
+   "expect": true,
+   "text": "Should the Plan terminate, all participants will be 100% vested in the employer contributions."
+  },
+  {
+   "why": "SOLE case for TV_PLAN_ENDS: Albertsons, 239,818 ppl -- a plain full-vesting statement whose `(if applicable)` satisfies the condition word and which names no plan ending at all. The largest single sentence the plan-ending requirement keeps out; leave-one-out puts 588,116 readers behind this condition",
+   "expect": false,
+   "text": "Participants are 100% vested in their elective deferrals and earnings, and the amounts credited to their Haggen Union Matching Account (if applicable)."
   }
  ]
 }

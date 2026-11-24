@@ -123,6 +123,24 @@
     return !AV_SCHEDULE.test(t);
   }
 
+  const TV_PLAN_ENDS = /\bplans?\b[^.]{0,45}?\b(?:terminat\w+|discontinu\w+)|\b(?:terminat\w+|discontinu\w+)\b[^.]{0,25}?\bthe\s+plans?\b/i;
+  const TV_PLAN_ENDS_IF = /\b(?:in the event|if|when|should|upon|in case of|in the case of)\b/i;
+  const TV_OTHER_CONTENT = /\byears?\s*of\s+(?:vesting\s+|credited\s+|continuous\s+|eligibility\s+)?(?:service|employment)\b|\bcomplet\w+\s+(?:\w+\s+){0,3}years?\b|\b\d{1,3}\s?(?:%|percent)|\bvesting schedule\b|\bgraded\b|\bcliff\b|\bratably\b|\bimmediate(?:ly)?\b|\bat all times\b|\banniversar\w+|\bhours of service\b|\bnormal retirement\b|\bage \d\d\b/i;
+  const TV_PERSON_ENDS = /\bterminat\w+\s+(?:\w+\s+){0,2}?(?:member|participant|employee|employment)s?\b/i;
+  const TV_PAST = /\b(?:became|were|was|has\s+been|have\s+been)\b[^.]{0,60}?\bvest\w+|\bbegan\s+the\s+termination\b|\bamendment\s+to\s+terminate\b|\beffective\s+\w+\s+\d{1,2},?\s+\d{4}\b/i;
+  const tvStripFull = (s) => s.replace(/\b(?:100\s?%|100\s+percent|one\s+hundred\s+percent|fully)\s*vest\w*/gi, " vested ");
+
+  function terminationOnlyVesting(text) {
+    const t = String(text || "").replace(/\s+/g, " ").trim();
+    if (!t) return false;
+    if (!/\bvest\w+/i.test(t)) return false;
+    if (!TV_PLAN_ENDS.test(t)) return false;
+    if (!TV_PLAN_ENDS_IF.test(t)) return false;
+    if (TV_PERSON_ENDS.test(t)) return false;
+    if (TV_PAST.test(t)) return false;
+    return !TV_OTHER_CONTENT.test(tvStripFull(t));
+  }
+
   const Q_LEAD = /^(?:[|│┃]|[)\]}]|[;:]|_)+[\s|)\]};:_.\-–]*/;
   const Q_SENTENCE = /^(?:[A-Z]|\d+(?:\.\d+)?\s*%|["“(])/;
 
@@ -199,6 +217,7 @@
   }
   window.__wampoVestingQuoteOk = vestingQuoteOk;   // read by the smoke test only
   window.__wampoAccelOnly = accelerationOnlyVesting; // read by the smoke test only
+  window.__wampoTermOnly = terminationOnlyVesting;  // read by the smoke test only
   window.__wampoQuoteTrim = quoteTrim;             // read by the smoke test only
 
   /* Coverage band — canonical copy in scripts/lib-disclose.mjs, which carries
@@ -3961,6 +3980,7 @@ const DOUBLED_CLASS_HEAD = /^(?:(?:class(?:es)?|cl)\b[\s.\-]*([a-z]{1,2}\d?|\d{1
       ${ff.vesting ? `<p class="max-benefit">Employer-money vesting: <strong>${esc(ff.vesting)}</strong></p>` : ""}
       ${vestingQuote ? `<blockquote class="quote">“${esc(vestingQuote)}”</blockquote>` : ""}
       ${vestingQuote && !ff.vesting && accelerationOnlyVesting(vestingQuote) ? `<p class="max-benefit">The sentence above states when vesting is <strong>accelerated</strong> — the events that make a participant fully vested regardless of service. It does not say how employer money vests for a participant who leaves before then; check the plan's SPD.</p>` : ""}
+      ${vestingQuote && !ff.vesting && !accelerationOnlyVesting(vestingQuote) && terminationOnlyVesting(vestingQuote) ? `<p class="max-benefit">The sentence above says what would happen <strong>if the plan itself ended</strong> or employer contributions permanently ceased. Federal law (IRC §411(d)(3)) requires full vesting then, so it is true of every plan and says nothing particular about this one. It does not state how employer money vests for a participant who leaves while the plan continues; check the plan's SPD.</p>` : ""}
       ${!ff.vesting && !vestingQuote ? (
         ff.safeHarbor && !/QACA|qualified automatic/i.test((ff.matchText || "") + (ff.necText || ""))
           ? `<p class="max-benefit">Employer-money vesting: <strong>immediate for the safe-harbor contribution</strong> — required by law (IRC §401(k)(12)); the audited notes don't state a schedule for any other employer money.</p>`

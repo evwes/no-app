@@ -447,6 +447,109 @@ export function accelerationOnlyVesting(text) {
   return !AV_SCHEDULE.test(t);
 }
 
+/* THE PLAN-TERMINATION COUNTERFACTUAL, published as the vesting answer.
+ *
+ * §411(d)(3) makes every participant fully vested when a plan terminates or
+ * contributions permanently cease, so "in the event the Plan is terminated,
+ * participants would become 100% vested" is TRUE OF EVERY PLAN and says nothing
+ * about this one. Published under "Employer-money vesting" with no label above
+ * it, where app.js's own comment says a quote with no label *is the whole
+ * answer*, it reads as a statement that this plan vests in full — the opposite
+ * of what a reader with a graded schedule needs to know.
+ *
+ * WHY THIS IS A SECOND PREDICATE AND NOT AN ARM OF `AV_TRIGGER`, which is the
+ * obvious move and is wrong. `AV_TRIGGER` is EXPORTED and `lib-4i.mjs` imports
+ * it for v211's whole-account scope gate, so a `terminat` arm there would make
+ * the GATE refuse sentences it admits today and move parser LABELS — a parser
+ * change, needing a version bump and a full re-parse, to fix a display defect.
+ * Plan termination is also not quite the same kind of event as the rest of that
+ * list: death, disability and retirement age happen to a PARTICIPANT, and this
+ * one happens to the PLAN. So the vocabulary is its own.
+ *
+ * Measured by `scripts/vesting-termination-quote.mjs`, whose regexes these are
+ * verbatim; the fixture file carries one case per condition where that
+ * condition is the only protection, and the reading that earned each is noted
+ * at its own line. The display qualifier is DELIBERATELY the same shape as
+ * `accelerationOnlyVesting`'s: the caller must also have no vesting label,
+ * because where a label exists the schedule already reaches the reader.
+ */
+/* THE PLAN ENDING, in either word order. Two directed arms because "the Plan is
+ * terminated" and "termination of the Plan" are one claim with the nouns
+ * swapped, and *alternation is FIRST-match, not longest-match*, so a single arm
+ * written for both would silently serve only the shorter. */
+const TV_PLAN_ENDS = /\bplans?\b[^.]{0,45}?\b(?:terminat\w+|discontinu\w+)|\b(?:terminat\w+|discontinu\w+)\b[^.]{0,25}?\bthe\s+plans?\b/i;
+/* …CONDITIONED rather than historical. A plan that HAS wound up is describing
+ * its own facts; a plan saying what WOULD happen is quoting §411(d)(3). This is
+ * also what keeps "a participant may terminate employment and receive their
+ * vested balance" out of the class: termination of EMPLOYMENT is not
+ * termination of the PLAN, and that sentence carries no condition word. */
+const TV_PLAN_ENDS_IF = /\b(?:in the event|if|when|should|upon|in case of|in the case of)\b/i;
+/* …AND THE PART THAT DECIDES WHETHER IT IS A DEFECT. Nearly every sentence the
+ * two arms above catch ALSO states the plan's real rule and names plan
+ * termination only as one accelerating event beside death and disability —
+ * "100% vested after five years of credited service OR upon … Plan
+ * termination". Qualifying those would be *a guard that blocks a wrong answer
+ * discarding the honest evidence*, and v82's own note measured 38 of 108 such
+ * sentences carrying the real schedule. So the qualifier is for the sentence
+ * whose ONLY vesting content is the counterfactual; each arm here is a
+ * different kind of real content that must be ABSENT.
+ *
+ * NO TRAILING `\b` AFTER THE PERCENTAGE ALTERNATION. `%` is a non-word
+ * character, so `0%` followed by a space has no boundary after it and
+ * `\b\d{1,3}\s?%\b` reads a whole Years/Percent table as containing no
+ * percentage at all — Hillis-Carnes (551 readers) publishes
+ * "less than 2 0% 2 20% 3 40% 4 60% 5 80% 6 100%" and would have been qualified
+ * as a sentence with no vesting content. `AV_FULL` carries this same note.
+ * `years?\s*of` is starred, not spaced: Commencement Bay's filing reads
+ * "three yearsof credited service" with the space lost in the PDF text layer,
+ * and *a service test keyed on a correctly spelled unit is defeated by the
+ * filings' own typos* — that one cost a three-year cliff its quote. */
+const TV_OTHER_CONTENT = /\byears?\s*of\s+(?:vesting\s+|credited\s+|continuous\s+|eligibility\s+)?(?:service|employment)\b|\bcomplet\w+\s+(?:\w+\s+){0,3}years?\b|\b\d{1,3}\s?(?:%|percent)|\bvesting schedule\b|\bgraded\b|\bcliff\b|\bratably\b|\bimmediate(?:ly)?\b|\bat all times\b|\banniversar\w+|\bhours of service\b|\bnormal retirement\b|\bage \d\d\b/i;
+/* A TERMINATING *PERSON* IS NOT A TERMINATING PLAN, and `TV_PLAN_ENDS`'s second
+ * arm cannot tell them apart on its own: it asks for a termination word within
+ * 25 characters of "the Plan", which "a terminating MEMBER of the Plan" also
+ * satisfies. T & T Electrical Contractors (187 readers) files
+ *   "A terminating member of the Plan has the opti on to maintain their account
+ *    (if the balance is over 7,000) or be paid the current value of their
+ *    contribution and any vested Employer contributions to the Plan"
+ * — a DISTRIBUTION rule for a leaver, with no plan-termination content at all.
+ * Found by reading all seventeen members, and invisible to every count: the
+ * sentence is a true positive for "not a vesting schedule" and a false positive
+ * for "this is about the plan ending", so a qualifier naming plan termination
+ * would have published a NEW false claim about it.
+ *
+ * A DEDICATED DISJUNCT rather than a narrowing of the arm, because the arm's
+ * window is what reaches "termination of the Plan" in the first place and
+ * *a token added to a closed vocabulary multiplies with every token already in
+ * it*; this one's blast radius is the phrase. */
+const TV_PERSON_ENDS = /\bterminat\w+\s+(?:\w+\s+){0,2}?(?:member|participant|employee|employment)s?\b/i;
+/* A plan that HAS terminated is stating its own history, not the boilerplate.
+ * Cornell Dubilier (613) and Critigen (281) are winding up, so "all
+ * participants became fully vested" is a FACT about those plans. */
+const TV_PAST = /\b(?:became|were|was|has\s+been|have\s+been)\b[^.]{0,60}?\bvest\w+|\bbegan\s+the\s+termination\b|\bamendment\s+to\s+terminate\b|\beffective\s+\w+\s+\d{1,2},?\s+\d{4}\b/i;
+/* `100%`/`fully` is NOT other content — "would become 100% vested" is the
+ * counterfactual's OWN words — so the percentage arm must not read the
+ * full-vesting figure. Measured: without this the class is empty, which is why
+ * it is stated rather than assumed. */
+const tvStripFull = (s) => s.replace(/\b(?:100\s?%|100\s+percent|one\s+hundred\s+percent|fully)\s*vest\w*/gi, " vested ");
+
+/**
+ * True when a published vesting quote's only vesting content is what happens
+ * if the PLAN terminates — universal §411(d)(3) boilerplate, not this plan's
+ * schedule. The caller must also have NO vesting label to show.
+ * @param {string} text the quote as published (post-`quoteTrim`)
+ */
+export function terminationOnlyVesting(text) {
+  const t = String(text || "").replace(/\s+/g, " ").trim();
+  if (!t) return false;
+  if (!/\bvest\w+/i.test(t)) return false;
+  if (!TV_PLAN_ENDS.test(t)) return false;
+  if (!TV_PLAN_ENDS_IF.test(t)) return false;
+  if (TV_PERSON_ENDS.test(t)) return false;
+  if (TV_PAST.test(t)) return false;
+  return !TV_OTHER_CONTENT.test(tvStripFull(t));
+}
+
 /* TABLE DEBRIS LEADING A PUBLISHED QUOTE — 2026-10-03, found by the 15:0xZ
  * participant-weighted draw.
  *
@@ -665,7 +768,15 @@ if (process.argv[1] && process.argv[1].endsWith("lib-quote.mjs") && process.argv
       console.log(`FAIL accel expected ${c.expect} got ${got} [${c.why}]\n     "${c.text.slice(0, 120)}"`);
     }
   }
-  const { trimCases, accelCases } = JSON.parse(readFileSync(url, "utf8"));
+  for (const c of (JSON.parse(readFileSync(url, "utf8")).terminationCases) || []) {
+    const got = terminationOnlyVesting(c.text);
+    if (got !== c.expect) {
+      bad++;
+      console.log(`FAIL termination expected ${c.expect} got ${got} [${c.why}]\n     "${c.text.slice(0, 120)}"`);
+    }
+  }
+  const { trimCases, accelCases, terminationCases } = JSON.parse(readFileSync(url, "utf8"));
+  if (!(terminationCases || []).length) throw new Error("no terminationCases in the fixture file — the predicate would be untested machinery");
   for (const c of trimCases || []) {
     const got = quoteTrim(c.text);
     if (got !== c.expect) {
@@ -673,7 +784,8 @@ if (process.argv[1] && process.argv[1].endsWith("lib-quote.mjs") && process.argv
       console.log(`FAIL trim [${c.why}]\n     in   "${c.text.slice(0, 110)}"\n     want "${c.expect.slice(0, 110)}"\n     got  "${got.slice(0, 110)}"`);
     }
   }
-  const n = cases.length + (vestingCases || []).length + (trimCases || []).length + (accelCases || []).length;
+  const n = cases.length + (vestingCases || []).length + (trimCases || []).length + (accelCases || []).length
+    + (terminationCases || []).length;
   console.log(bad ? `\n${bad} of ${n} fixtures FAILED` : `all ${n} quote-guard fixtures pass`);
   process.exit(bad ? 1 : 0);
 }

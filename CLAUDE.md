@@ -1619,6 +1619,26 @@ the publish gate applied before any reader figure, and an accuracy-log entry.
 
 #### Paid for and not yet rendered — do these first
 
+- **SHIPPED 2026-11-24, DISPLAY-ONLY — §411(d)(3) boilerplate published as a
+  plan's vesting schedule.** 15 plans / 9,186 readers read, as the whole answer
+  to "how does employer money vest", a sentence saying only what happens **if
+  the plan terminates** — universally true, so it says nothing about that plan,
+  and with no label above it the quote IS the answer. `terminationOnlyVesting`
+  in `lib-quote.mjs` qualifies it on BOTH surfaces. **A `terminat` arm in
+  `AV_TRIGGER` is the obvious route and is WRONG: that constant is exported and
+  `lib-4i` imports it for v211's scope gate**, so it would move parser LABELS —
+  a bump and a 1.5h re-parse for a display defect. The new predicate's
+  consumers are the two renderers, `slice-vq` and the gate, so **0 labels move
+  and no re-parse is owed**; `parser-gate` green at 104 confirms it. Gated by
+  `vesting-quote-test.mjs` section 4c (15 fixtures, a ceiling AND a floor, the
+  accel/termination precedence both ways, the composed gate asserted in BOTH
+  renderers, a mutation per condition load-bearing by name). Verified on the
+  ARTIFACT: regenerating 5,000 crawlable pages changed **exactly one file**.
+  **PENDING: `sec-tickers-stamp-test` is RED on `apppath-slice`** (the vq twin
+  is inside app.js's fingerprinted prologue, 12->3293). No table key can move —
+  neither generator reads this predicate — so dispatch `sec-tickers.yml` and
+  read `sec-key-loss.mjs`'s reader price; never regenerate in-session.
+  `docs/accuracy-log.md` 2026-11-24 (12:xxZ).
 - **SHIPPED as v207, 2026-11-21 — "✓ Available" published on filings that say
   "not permitted".** 76 plans / 175,656 published readers; the store held the
   refutation ONE KEY AWAY (`afterTax: true` beside `afterTaxText: "After-tax
@@ -2104,6 +2124,25 @@ reason the queue was — it is re-read at the start of every turn.
   whether the function fired** — an arm "necessary for 0" was load-bearing for
   2,009,873 readers, and two arms read 0 alone because they can only fire after
   another arm has run.
+- **A MUTATION MUST MATCH THE *KIND* OF CONDITION IT MUTATES.** Neutering a
+  REQUIRED condition (`if (!X) return false`) to a never-matching regex makes
+  the predicate always false, so every case "flips" and nothing is proved —
+  two of five conditions read as "not load-bearing" that way on 2026-11-24.
+  Widen a requirement to always-match; neuter a refusal. And give every
+  mutation a control that some OTHER case still answers correctly, or a mutant
+  that simply broke the predicate reads as a successful flip.
+- **A QUALIFIER THAT NAMES A CAUSE IS A STRONGER CLAIM THAN ONE THAT ONLY
+  DENIES A SCHEDULE.** "This is not how vesting is earned" can be TRUE of a row
+  while "this says what happens if the plan ends" is FALSE of it — T & T
+  Electrical's "a terminating MEMBER of the Plan" is a leaver's distribution
+  rule. So a hedge naming a mechanism must have its members READ, not counted,
+  and two qualifiers that can both fire need an asserted PRECEDENCE.
+- **`vestingQuoteOk` ACCEPTS BY DEFAULT and guarantees no vesting word.** It
+  vetoes the blank form's printed question and sentences stating a different
+  rule, and otherwise publishes. A caller's condition that looks redundant
+  against it usually is not: on 2026-11-24 a control written to DOCUMENT that
+  redundancy failed and refuted it. *A 0 in leave-one-out can be a property of
+  today's data rather than of the construction.*
 - **DERIVE A MUTATION SET FROM THE REFUSALS, NOT FROM IMAGINATION, and anchor
   each mutation on the line it is meant to mutate.** `String.replace` takes the
   FIRST occurrence, so a mutation whose token also appears in a trigger mangles

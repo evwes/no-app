@@ -17,7 +17,7 @@
  * Run: node scripts/vesting-quote-test.mjs
  */
 import { readFileSync, existsSync } from "node:fs";
-import { vestingQuoteOk, quoteTrim, accelerationOnlyVesting } from "./lib-quote.mjs";
+import { vestingQuoteOk, quoteTrim, accelerationOnlyVesting, terminationOnlyVesting } from "./lib-quote.mjs";
 import { vestingQuoteUpgrade } from "./lib-4i.mjs";
 import { loadPlans } from "./lib-schema.mjs";
 
@@ -226,6 +226,178 @@ if (!/!ff\.vesting && accelerationOnlyVesting\(vestingQuote\)/.test(appjs))
   fail("app.js renders the acceleration qualifier without the `!ff.vesting` gate, or not at all");
 if (!/!ff\.vesting && accelerationOnlyVesting\(vestQuote\)/.test(seo))
   fail("scripts/build-seo-pages.mjs renders the acceleration qualifier without the `!ff.vesting` gate, or not at all");
+
+/* ---- 4c. the PLAN-TERMINATION qualifier, 2026-11-24 ----
+ * Same shape of risk as 4b and the same direction: this adds a sentence rather
+ * than withholding one, so a false positive is a WRONG PUBLISHED CLAIM. It is
+ * also the sharper case, because the qualifier NAMES A CAUSE — "what would
+ * happen if the plan ended" — so a member that is not about the plan ending
+ * gets a sentence that is false about it even where "this is not a schedule"
+ * is true. That is exactly what reading all seventeen members found: T & T
+ * Electrical's "a terminating MEMBER of the Plan" is a distribution rule for a
+ * leaver, and no count could see it.
+ *
+ * `TV_PERSON_ENDS` is the refusal that earned, and the mutation block below
+ * asserts each of the five conditions is LOAD-BEARING by neutering it and
+ * requiring its OWN fixture case to flip. Measured on the live store
+ * (`drop <cond> -> +N readers newly qualified`): planEnds +588,116,
+ * notOther +11,416, notPast +1,022, notPerson +187 (exactly T & T and nothing
+ * else), vestWord +0. */
+const { terminationCases } = JSON.parse(readFileSync(`${R}/docs/quote-guard-cases.json`, "utf8"));
+if (!terminationCases?.length) fail("docs/quote-guard-cases.json carries no terminationCases");
+for (const c of terminationCases || []) {
+  const got = terminationOnlyVesting(c.text);
+  if (got !== c.expect) fail(`termination fixture: expected ${c.expect} got ${got} — ${c.why}`);
+}
+console.log(`termination fixtures: ${terminationCases.length} cases (${terminationCases.filter((c) => c.expect).length} must-fire, ${terminationCases.filter((c) => !c.expect).length} must-not-fire)`);
+
+/* `vestWord` MOVES 0 PLANS ON THE LIVE STORE AND IS STILL LOAD-BEARING, and the
+ * first version of this block got that backwards. It claimed the condition was
+ * unreachable because the caller's oracle already requires a vesting word —
+ * and THIS ASSERTION REFUTED IT on the first run: `vestingQuoteOk` ACCEPTS BY
+ * DEFAULT (it vetoes the blank form's question and sentences stating a
+ * different rule, and otherwise publishes), so it guarantees no such thing.
+ * The condition reads 0 in leave-one-out only because `vestingText` is written
+ * by a selector that looks for vesting sentences, which is a property of
+ * TODAY'S DATA and not of the construction. So the guard is real: a sentence
+ * the oracle would publish, naming the plan's end and no vesting at all, is
+ * stopped by this line alone. *An arm real in principle and inert on the data
+ * is untested machinery* — so it is pinned here against the live oracle rather
+ * than argued about. */
+{
+  const noVest = "In the event the Plan is terminated, the assets will be distributed to participants as permitted by law.";
+  if (/\bvest\w+/i.test(noVest)) fail("the vest-word control's own text contains a vesting word — it cannot show what it claims");
+  if (!vestingQuoteOk(noVest))
+    fail("the oracle no longer publishes the vest-word control's sentence — this condition is no longer reachable and the control is vacuous");
+  if (terminationOnlyVesting(noVest) !== false)
+    fail("a sentence with NO vesting word is qualified as the plan-termination counterfactual — the vest-word condition is dead");
+  console.log("termination vest-word condition: live — the oracle publishes the control sentence and this condition alone refuses it");
+}
+
+/* ---- MUTATIONS: each condition neutered in a COPY of lib-quote.mjs, asserted
+ * to flip its OWN case and no other must-not-fire case. Derived from the
+ * refusals rather than imagined, and each anchored on the line it mutates —
+ * `String.replace` takes the FIRST occurrence, so a token that also appears in
+ * a sibling constant would mangle the sibling and read as "not load-bearing".
+ * Every anchor below is asserted unique in the source first. */
+{
+  const srcPath = `${R}/scripts/lib-quote.mjs`;
+  const src = readFileSync(srcPath, "utf8");
+  /* TWO KINDS OF MUTATION, BECAUSE THE PREDICATE HAS TWO KINDS OF CONDITION,
+   * and conflating them is what the first version of this block did. A
+   * REQUIRED condition (`if (!X) return false`) neutered to a never-matching
+   * regex makes the predicate ALWAYS FALSE — every case "flips", which proves
+   * nothing about that condition, and this block's own surviving-control check
+   * is what said so on the first run. A required condition is instead widened
+   * to ALWAYS match, and the case it alone keeps out must flip to true. A
+   * REFUSAL (`if (X) return false`) is the opposite: neuter it, and the case it
+   * alone refuses must flip. */
+  const NEVER = "(?!x)x";                     /* a regex body that cannot match */
+  const ALWAYS = "(?:)";                      /* …and one that always matches */
+  const MUTANTS = [
+    { cond: "TV_PLAN_ENDS", kind: "required", flipWhy: "Albertsons — a full-vest claim naming no plan ending",
+      pick: (c) => /Haggen Union/.test(c.text) },
+    { cond: "TV_PLAN_ENDS_IF", kind: "required", flipWhy: "Signature Health — historical `due to the termination`",
+      pick: (c) => /due to the termination/.test(c.text) },
+    { cond: "TV_PERSON_ENDS", kind: "refusal", flipWhy: "T & T Electrical — a terminating MEMBER",
+      pick: (c) => /A terminating member/.test(c.text) },
+    { cond: "TV_PAST", kind: "refusal", flipWhy: "Cornell Dubilier — a plan that HAS wound up",
+      pick: (c) => /began the termination process/.test(c.text) },
+    { cond: "TV_OTHER_CONTENT", kind: "refusal", flipWhy: "Kansas City Royals — a real ladder as a table",
+      pick: (c) => /Less than 1 0% 1 20%/.test(c.text) },
+  ];
+  const { writeFileSync: wf, mkdtempSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const dir = mkdtempSync(`${tmpdir()}/tvmut-`);
+  let mutRan = 0;
+  for (const m of MUTANTS) {
+    const anchor = `const ${m.cond} = /`;
+    const at = src.indexOf(anchor);
+    if (at < 0) { fail(`mutation anchor not found: ${anchor} — the constant was renamed and this control is blind`); continue; }
+    if (src.indexOf(anchor, at + 1) >= 0) { fail(`mutation anchor is not unique: ${anchor}`); continue; }
+    /* rebuild only THAT line, so the mutation cannot reach a sibling constant */
+    const lineEnd = src.indexOf("\n", at);
+    const body = m.kind === "required" ? ALWAYS : NEVER;
+    const mutated = src.slice(0, at) + `const ${m.cond} = /${body}/i;` + src.slice(lineEnd);
+    if (mutated === src) { fail(`mutation for ${m.cond} changed nothing`); continue; }
+    const f = `${dir}/lq-${m.cond}.mjs`;
+    wf(f, mutated);
+    const mod = await import(f);
+    const target = terminationCases.find(m.pick);
+    if (!target) { fail(`no fixture case matches the ${m.cond} mutation's picker`); continue; }
+    const got = mod.terminationOnlyVesting(target.text);
+    if (got === target.expect)
+      fail(`${m.cond} is NOT load-bearing (${m.kind}): mutating it leaves its own case (${m.flipWhy}) at ${got}`);
+    mutRan++;
+    /* THE MUTATION MUST NOT BE A BLANKET SWITCH. For either kind, some other
+     * must-not-fire case has to stay FALSE: if the mutant answers true for
+     * everything, the flip above is not evidence about this condition. */
+    const stillRefused = terminationCases.find((c) => !c.expect && c !== target && !mod.terminationOnlyVesting(c.text));
+    if (!stillRefused)
+      fail(`mutating ${m.cond} made the predicate answer true for every case — the flip is not evidence about this condition`);
+  }
+  if (mutRan !== MUTANTS.length) fail(`only ${mutRan} of ${MUTANTS.length} mutations ran`);
+  console.log(`termination mutations: ${mutRan} conditions each shown load-bearing by name, each with a surviving refusal control`);
+}
+
+/* ---- the live class, through every condition the display applies IN ORDER:
+ * published by the oracle, served from the plan's OWN ack, no vesting label,
+ * and the ACCELERATION qualifier not already claiming the quote. */
+const TERM_CEILING = 60;          /* 16 plans measured 2026-11-24; headroom, not a measurement */
+const TERM_PPL_CEILING = 60_000;  /* 8,978 ppl measured; a figure above means read the members */
+let term = 0, termPpl = 0, termLabelled = 0, termAccel = 0;
+for (let s = 0; s < 64; s++) {
+  const f = `${R}/data/lineups/${String(s).padStart(2, "0")}.json`;
+  if (!existsSync(f)) continue;
+  for (const [ack, e] of Object.entries(JSON.parse(readFileSync(f, "utf8")))) {
+    const t = e?.features?.vestingText;
+    if (!t || !vestingQuoteOk(t) || !ownAck.has(ack)) continue;
+    const q = quoteTrim(t);
+    if (!terminationOnlyVesting(q)) continue;
+    if (e.features.vesting) { termLabelled++; continue; }
+    if (accelerationOnlyVesting(q)) { termAccel++; continue; }   /* 4b's sentence is the accurate one there */
+    term++; termPpl += ownAck.get(ack) || 0;
+  }
+}
+console.log(`termination class: ${term} plans / ${termPpl.toLocaleString()} ppl qualified; ${termLabelled} gated off by a LABEL; ${termAccel} claimed by the acceleration qualifier first`);
+if (term === 0)
+  fail("the termination qualifier reaches 0 plans — on a store holding Willkie Farr and Compass Senior Living, a clean zero reports on the query");
+if (term > TERM_CEILING) fail(`qualifier reaches ${term} plans, ceiling ${TERM_CEILING} — read the members before raising it`);
+if (termPpl > TERM_PPL_CEILING) fail(`qualifier reaches ${termPpl} ppl, ceiling ${TERM_PPL_CEILING}`);
+/* THE PRECEDENCE IS HALF THE CLAIM, so it is asserted on frozen text in both
+ * directions: a sentence that is only the counterfactual must be qualified, and
+ * one that ALSO states an acceleration trigger must fall to 4b instead. Republic
+ * Of Tea (147 readers) is the live member of the second shape. */
+{
+  const fires = terminationCases.find((c) => c.expect);
+  if (!fires) fail("terminationCases carries no must-fire case — the gate control has nothing to gate");
+  const shows = (ff) => !ff.vesting && !accelerationOnlyVesting(quoteTrim(ff.vestingText))
+    && terminationOnlyVesting(quoteTrim(ff.vestingText));
+  if (!shows({ vestingText: fires.text, vesting: null }))
+    fail("the termination sentence is suppressed with NO label present — the gate is inverted or the qualifier does not fire");
+  if (shows({ vestingText: fires.text, vesting: "3-year cliff" }))
+    fail("the termination sentence is published BESIDE a vesting label — the `!ff.vesting` gate does not suppress");
+  const bothShapes = "Employees are 100% vested in all accounts if the distribution results from disability or death, Plan Termination Although it has not expressed any interest to do so, the Company has the right under the Pian to terminate the Plan at any time.";
+  if (!accelerationOnlyVesting(bothShapes))
+    fail("Republic Of Tea's sentence no longer fires the ACCELERATION qualifier — the precedence control has lost its subject");
+  if (!terminationOnlyVesting(bothShapes))
+    fail("Republic Of Tea's sentence no longer fires the TERMINATION qualifier — the precedence control is vacuous, since nothing needs deciding");
+  if (shows({ vestingText: bothShapes, vesting: null }))
+    fail("a sentence firing BOTH qualifiers gets the termination one too — the reader would see two qualifiers on one quote");
+  console.log("termination gate: frozen fixtures — shown alone, suppressed by a label, and yielded to the acceleration qualifier");
+}
+/* both surfaces, and the FULL composed gate on each, because a qualifier right
+ * in app.js and absent from the crawlable pages is half a ship */
+if (!/window\.__wampoTermOnly/.test(appjs))
+  fail("app.js does not expose __wampoTermOnly — the browser twin cannot be cross-checked by the smoke test");
+if (!/!ff\.vesting && !accelerationOnlyVesting\(vestingQuote\) && terminationOnlyVesting\(vestingQuote\)/.test(appjs))
+  fail("app.js renders the termination qualifier without the `!ff.vesting` gate or without yielding to the acceleration qualifier, or not at all");
+if (!/!ff\.vesting && !vestAccelOnly && terminationOnlyVesting\(vestQuote\)/.test(seo))
+  fail("scripts/build-seo-pages.mjs renders the termination qualifier without the `!ff.vesting` gate or without yielding to the acceleration qualifier, or not at all");
+/* and the twin must be IN SYNC, or the browser runs a different predicate from
+ * the one every assertion above was made about */
+if (!/function terminationOnlyVesting/.test(appjs))
+  fail("app.js carries no terminationOnlyVesting — re-slice the twin with `node scripts/slice-vq.mjs`");
 
 /* ---- 5. the v201 UPGRADE predicate, which makes this guard an ORACLE ----
  * `vestingQuoteUpgrade` lets a guard-ACCEPTED sentence displace a stored quote

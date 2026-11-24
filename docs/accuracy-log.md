@@ -7,6 +7,63 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-24 (12:xxZ) — §411(d)(3) BOILERPLATE PUBLISHED AS A PLAN'S VESTING SCHEDULE
+
+**WRONG.** 15 plans / 9,186 readers published, as the whole answer to "how does
+employer money vest", a sentence saying only what happens **if the plan
+terminates** — Willkie Farr (2,887): "In the event there is a discontinuance of
+the Plan, all Plan accounts will be fully vested". §411(d)(3) requires that of
+EVERY plan, so it is universally true and says nothing about this one; with no
+label above it, where `app.js:3928` says a quote with no label *is the whole
+answer*, it reads as "this plan vests in full" — the opposite of a six-year
+ladder's position. Found by `tier-a-plan-terms` sizing the vesting scope gate.
+
+**CHANGE — DISPLAY-ONLY.** `terminationOnlyVesting` in `lib-quote.mjs`,
+qualified by BOTH surfaces. **The obvious route is wrong: a `terminat` arm in
+`AV_TRIGGER` would move parser LABELS**, since that constant is exported and
+`lib-4i` imports it for v211's scope gate — a bump and a 1.5h re-parse for a
+display defect. The new predicate's consumers are the two renderers, the slicer
+and the gate; no parser file, so **0 labels can move and no re-parse is owed**.
+An import-graph registration refutes itself when a new import appears.
+
+**WHAT READING ALL 17 MEMBERS FOUND AND NO COUNT COULD.** Two must not get it.
+T & T Electrical (187): "a terminating **member** of the Plan" is a leaver's
+distribution rule, which `TV_PLAN_ENDS`'s 25-char window reads as a terminating
+plan — a true positive for "not a schedule" and a false positive for "this is
+about the plan ending", **and the qualifier NAMES THAT CAUSE**, so it would have
+published a new false claim. Refused by a dedicated `TV_PERSON_ENDS`; costs
+exactly that one plan. Republic Of Tea (147) fires BOTH qualifiers (death /
+disability acceleration AND the sponsor's termination right), so the termination
+one yields. ***A qualifier that names a cause is a stronger claim than one that
+only denies a schedule, and it needs its members read, not counted.***
+
+**PREVENTION.** `vesting-quote-test.mjs` section 4c (already in `site-test`'s
+paths): 15 fixtures, a ceiling and a floor on the live class, precedence
+asserted both ways, the composed gate asserted in BOTH renderers by source, and
+**a mutation per condition proved load-bearing BY NAME** with its live
+leave-one-out price (planEnds +588,116 readers, notOther +11,416, notPast
++1,022, notPerson +187, vestWord +0). Verified on the ARTIFACT: regenerating all
+5,000 crawlable pages changed **exactly one file**, adding one line in the right
+place — positive control and 4,999-page negative control in one measurement.
+
+**THREE COSTS, EACH A RULE ALREADY HERE.** (1) ***A mutation must match the KIND
+of condition***: neutering a REQUIRED condition makes the predicate always
+false, so every case "flips" and nothing is proved — two of five read as "not
+load-bearing" that way, and the block's own surviving-control check said so.
+Widen a requirement, neuter a refusal. (2) ***`vestWord` is inert on the data
+and still load-bearing, and my stated reason was refuted by my own assertion***:
+I claimed the caller's oracle already demands a vesting word, and
+`vestingQuoteOk` **ACCEPTS BY DEFAULT**. The 0 is a property of today's
+`vestingText`, not of the construction. (3) A `window.__wampo…` tether typed
+into `app.js` sits INSIDE the generated twin block and the next slice deletes
+it — four twins lost to that; `slice-vq --check` caught it in a minute and the
+generator's TAIL now emits it.
+
+**EXPECTED RED:** `sec-tickers-stamp-test` reddens on `apppath-slice` (the twin
+is inside app.js's fingerprinted prologue). No table key can move — neither
+generator reads this predicate — so dispatch `sec-tickers.yml` and read
+`sec-key-loss.mjs`'s reader price; never regenerate in-session.
+
 ## 2026-11-24 (05:xxZ) — A BAND BLOWN 11x BY ITS OWN STATED PREMISE, AND A WITHDRAWAL LABEL THAT IS NOT DURABLE
 
 **WHAT WAS WRONG — TWO THINGS, AND THE SECOND REFUTES THE FIRST'S EXCUSE.**
