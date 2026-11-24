@@ -1431,18 +1431,49 @@ match|vesting|nofeatures`; never read these.
 | | plans | readers | share of bucket judged |
 |---|---|---|---|
 | **match** C — notes carry the vocabulary | 3,783 | **6.37M** | 98.5% |
-| — of which a sentence the page's GUARD would publish | **731** | **1.35M** | |
+| — of which a sentence the page's GUARD would publish | 731 | **1.35M** | |
+| — **REMAINING after v213 took 1,333,945 of it** | — | **~15K** | |
 | **vesting** C — notes carry the vocabulary | 3,436 | **6.87M** | 97.1% |
-| — its equivalent guard ceiling | **UNMEASURED** | | |
+| — its guard ceiling, MEASURED 2026-11-24 | **3,456** | **6.98M** | 97.0% |
+| — of which the SCOPE GATE refuses first | **2,868** | **5.39M** | |
+| — gate passes, a later ARM refused it | 588 | **1.60M** | |
+| — no publishable candidate at all (true ceiling) | 792 | 0.97M | |
 
 **`matchQuoteOk(s, false)` IS THE REAL CEILING AND IT IS 4.7x BELOW BUCKET C.**
 The guard both renderers call requires a rate in match position when no formula
 is parsed, so a filing whose match sentences state no rate can never yield a
 quote however wide the selector gets: 3,052 plans / **5.03M readers of bucket C
 are a ceiling, not a backlog**. *A count of a condition is not a measure of a
-defect* — and C is exactly such a count, so **the fields cannot be ranked on it
-until vesting's own guard ceiling is measured the same way.**
-`scripts/match-quote-ceiling.mjs` is the instrument; the vesting half is unbuilt.
+defect* — and C is exactly such a count.
+
+**THE VESTING HALF IS NOW MEASURED, AND THE MATCH FINDING DID NOT TRANSFER —
+`scripts/vesting-quote-ceiling.mjs`, 2026-11-24.** Match's ceiling sits 4.7x
+below its vocabulary bucket; **vesting's is essentially the whole of it** (6.98M
+over a 4,308-plan / 8.20M absent bucket, 97.0% judged), because the two guards
+have DIFFERENT SHAPES: `matchQuoteOk` demands a rate in match position, while
+`vestingQuoteOk` has no numeric requirement at all — it vetoes the blank form's
+printed question, accepts anything reading as a vesting rule, and otherwise
+accepts unless the sentence states a different rule. ***A ceiling is a property
+of the guard, not of the field, so it must be measured once per guard and never
+carried across.*** (The two denominators differ — the notes census excludes A0 /
+A1 / D0 and this pass excludes only `no features` and the unjudged — so the
+figures are adjacent partitions, not a bucket exceeded.)
+
+**AND THE SPLIT NAMES THE REPAIR: 5.39M READERS / 2,868 PLANS SIT BEHIND ONE
+GATE.** `lib-vestslice`'s own slice records that a false `scopeGate` verdict
+`continue`s BEFORE every quote fallback, so the filing stores **nothing at all** —
+which is exactly this bucket. v212's quote-keep arm holds a quote where the
+guard refuses the LABEL and therefore could never reach these, because the
+`continue` happens first. 1.60M / 588 plans clear the gate and were refused by a
+later ARM; 0.97M / 792 have no publishable candidate and are the true ceiling.
+**The gate exists for a reason** — it refuses sentences that do not name employer
+money — so "the gate refuses it" is a POPULATION, not a defect, and *when a class
+is a semantic judgment, require the PRESENCE of the bad case rather than the
+absence of the good one.*
+Both controls are in the instrument's own output: plans whose store already
+publishes a vesting quote read at the ceiling on **92.7%** of 398 judged (a low
+figure there would mean the pipeline is broken rather than the data empty), and
+the oracle must REFUSE the blank form's 6g question or the script throws.
 
 ***AND THIS BLOCK'S OWN RANKING FLIPPED TWICE IN ONE DAY, which is the part to
 carry forward.*** It read vesting-leads, then match-leads-by-359K this morning,
@@ -1459,6 +1490,10 @@ explained away:*** the 2026-11-22 census's own buckets sum to **18.73M against a
 17.80M bucket**, a 930K residual I attributed to rounding. It was v210's match
 delivery, which landed BETWEEN the census and the comparison. *An unexplained
 residual reports on the query exactly as a clean zero does.*
+***AND THE RANKING IS NOW SETTLED ON THE RIGHT UNIT, directly above:*** on the
+guard CEILING it is vesting **6.98M** against match's **~15K remaining**, so the
+`C` figures are superseded as a ranking input and must not be quoted as a size.
+The three flips were all on a unit that could not answer the question.
 
 **A CENSUS RE-RUN WITHOUT `--download` IS NOT A MEASUREMENT OF ITS FIELD.** The
 match re-run judged **42.2%** of readers and put 10,284,985 / 7,662 plans in
