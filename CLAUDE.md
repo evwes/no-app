@@ -1728,6 +1728,37 @@ the publish gate applied before any reader figure, and an accuracy-log entry.
 
 #### Paid for and not yet rendered — do these first
 
+- **SHIPPED 2026-11-24 and MIRRORED as `15a1ac5` — LIVE: both standing
+  `ticker-conflict` findings, and only ONE of them was ours.** Owner asked
+  directly. **IBEW Local 4** (759 readers) published **PTTRX**, PIMCO Total
+  Return's INSTITUTIONAL class, on a row reading `PIMCO Total Return A (PTTAX)
+  236,653 il` — the 4i VALUE cell had glued onto the name, and
+  `resolveTrailingFiledTicker` is `$`-anchored, so the symbol the filing PRINTS
+  was invisible and the pattern table answered. Fixed MERGE-SIDE (`ftk` is
+  written by `merge-4i`), so **no `PARSER_VERSION` bump and no re-parse**: the
+  resolver retries once with a value-shaped tail stripped and asks the SHIPPED
+  body, leaving the corroboration literally unchanged. A wider regex was
+  rejected on measurement — dropping the `$` takes the FIRST of two
+  parentheticals in a welded row, which `audit-data`'s suppression B records.
+  Measured over all 1,789,712 rows: **14 gain an `ftk`, 0 change**; through
+  `lookupTicker`, **1 CORRECTION and 12 rows that published nothing gain a
+  symbol**, all 14 read against the registry's series name with the
+  2045/2050/2055/2060 vintages as the transposition check.
+  ***AND THE SECOND FINDING IS THE FILER'S ERROR, NOT OURS — do not "fix" it by
+  adopting the filed symbol.*** St. Jude (11,230 readers, $41.9M) files
+  `Vanguard Total Bond Market Index Fund Institutional (VBITX)`, and VBITX is
+  registered — SOURCED — to the **SHORT-TERM** Bond fund, so the filer
+  transposed VBTIX and the audit's own prescription would have published the
+  wrong FUND. The pipeline already knew: the two-funds test refused it, which is
+  why the row has no `ftk`. Stripping the parenthetical changes nothing either —
+  `lookupTicker` answers VBTLX with or without it — so the real defect is
+  `fund-er.js` reading a stated-**Institutional** name as **Admiral**, a member
+  of owner decision #3's pending ship (3,169 rows / 9.1M readers). Its exact
+  shape is **1 row in the whole store**. `audit-data`'s finding now NAMES WHICH
+  SIDE IS WRONG, because *a finding whose remedy is harmful is the same failure
+  wearing a true sentence.* Gated by `sec-tickers-test` section 4 assertions;
+  the regen moved **0 of 23,954 keys** and `sec-key-loss` THREW rather than
+  report that zero. `docs/accuracy-log.md` 2026-11-24 (18:xxZ).
 - **SHIPPED 2026-11-24, DISPLAY-ONLY — §411(d)(3) boilerplate published as a
   plan's vesting schedule.** 15 plans / 9,186 readers read, as the whole answer
   to "how does employer money vest", a sentence saying only what happens **if
@@ -2510,6 +2541,16 @@ reason the queue was — it is re-read at the start of every turn.
   *The witness names the data it needs and the data says which stage can ask* —
   a browser holds one plan's shard, so an attestation map belongs at merge.
 - **A one-column claim is a MEASUREMENT, not a property of the file edited.**
+- **"SEVEN SUITES GREEN" IS NOT "CI GREEN" UNLESS THE LIST WAS DERIVED FROM THE
+  WORKFLOW.** On 2026-11-24 a merge-side ticker fix ran seven named suites
+  locally, all green, and site-test went RED on an EIGHTH —
+  `sec-tickers-stamp-test`, whose own assertion reads *"mutating
+  `scripts/match-sec-tickers.mjs` moves the fingerprint"*, so the file edited was
+  in its surface BY DESIGN. The suite list was chosen, not derived. Read
+  `site-test.yml`'s run block for the list, the same way the `paths:` block is
+  read instead of the prose that mirrors it. Sibling of the rule below: *a
+  commit message saying "tests green" was true locally for ten consecutive red
+  runs.*
 - **Verify STARTS, not just finishes** — after any push meant to trigger a run,
   confirm within a minute that the run exists. **Then wait ≥2 minutes and
   re-read: if a `push` run has appeared, do NOT dispatch**, because a
