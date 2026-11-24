@@ -324,7 +324,60 @@ if (has("--quick")) {
  * ------------------------------------------------------------------------- */
 console.log(`\n--- 6/7 equivalence: v208 with NO plan year against v207, over the corpus ---`);
 const { materialiseAt, read, seededShuffle } = await lazy();
-const v207 = (await import(materialiseAt(BASE_REF, "lib-4i.mjs", { label: "v207" }).entryPath)).extractPlanFeatures;
+
+/* WHY THIS PIN DIES, AND IT IS NOT THE FIXTURE LIST — measured 2026-11-24.
+ *
+ * CLAUDE.md recorded this test's red as a fixture-population problem (*"member
+ * national-electrical / ultra-clean / american-eagle / mavis-tire is not in the
+ * published-yes population"*) and that is upstream of nothing: it no longer
+ * happens. The real cause is the BASELINE, and it is structural rather than a
+ * stale list:
+ *
+ *   1. EVERY SESSION GETS A SHALLOW CLONE. `.git/shallow` grafts history at
+ *      `cee7951` with 105 commits, and `cee7951` IS the commit that added
+ *      `lib-effective-date.mjs` — so **nothing pre-v208 exists in a fresh
+ *      clone at all**, and the window slides forward every day. A pin is not
+ *      orphaned by a rebase here; it simply ages out of the depth.
+ *   2. AND THE PIN IS AN ABBREVIATION, so even deepening is not the whole
+ *      answer: `git fetch origin 3c0a6d2d` returns *"couldn't find remote ref"*
+ *      because a wanted object must be a FULL sha. A pin written for a human
+ *      reader cannot be fetched by a machine.
+ *   3. DEEPENING IS NOT CHEAP ENOUGH TO DO BLIND. `data/` is ~300 MB and a data
+ *      commit lands every few hours, so `--deepen=200` is hundreds of
+ *      megabytes against this session's fixed disk allowance. Not attempted on
+ *      purpose.
+ *
+ * SO THE PIN STAYS AS THE DEFAULT, because it is the SEMANTICALLY right
+ * baseline and no in-window substitute exists. `HEAD~N` would satisfy the
+ * version-difference assertion below and still carry the v208 arm on BOTH
+ * sides, so the equivalence pass would report 0 differences and read as *"the
+ * arm does nothing"* — *a broken arm and an inert arm read the same zero*, and
+ * a silently-weakened baseline is worse than an absent one. What changes is
+ * only that the failure NAMES ITSELF instead of dying inside `lib-refmod`'s
+ * `fetchAt`, because *a red whose cause is already recorded is a red nobody
+ * re-reads* — and here the recorded cause was wrong, so every cycle that named
+ * it passed on.
+ *
+ * THE DURABLE FIX IS A MUTATION, NOT A REF. The judging half wants "the same
+ * parser with this arm absent", and this repo already has that mechanism:
+ * slice the shipped predicate and neuter it, the way `lib-vestslice` does for
+ * the vesting gate. That needs its own controls and is queued rather than
+ * improvised here. */
+const resolveBaseline = (ref) => {
+  const g = (...a) => { try { return execFileSync("git", a, { cwd: ROOT, encoding: "utf8" }).trim(); } catch { return ""; } };
+  const sha = g("rev-parse", "--verify", "--quiet", `${ref}^{commit}`);
+  if (sha) return ref;
+  const shallow = existsSync(path.join(ROOT, ".git", "shallow"));
+  console.log(`\n  FAIL  the baseline ref ${ref} does not resolve in this clone`);
+  console.log(`        clone is ${shallow ? "SHALLOW" : "complete"}, ${g("rev-list", "--count", "HEAD") || "?"} commits, grafted at ${(g("rev-list", "--max-parents=0", "HEAD") || "?").slice(0, 10)}`);
+  console.log(`        that graft point is the commit that ADDED lib-effective-date.mjs, so no pre-v208`);
+  console.log(`        tree exists here and the full pass CANNOT run; --quick's predicate half still does.`);
+  console.log(`        This is NOT the fixture list, and it is not fixed by re-pinning: see the comment above.`);
+  console.log(`        To run the judging half: clone with more depth and pass --vs <full-40-char-sha>.`);
+  console.log(`\neffective-date-test: 1 FAILED — baseline unreachable (shallow clone), judging half not run`);
+  process.exit(1);
+};
+const v207 = (await import(materialiseAt(resolveBaseline(BASE_REF), "lib-4i.mjs", { label: "v207" }).entryPath)).extractPlanFeatures;
 const v208 = (await import(new URL("./lib-4i.mjs", import.meta.url).href)).extractPlanFeatures;
 {
   /* THE BASELINE PIN: a ref that does not exist throws inside materialiseAt, so

@@ -7,6 +7,51 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-24 (23:xxZ) — THE DEAD GATE'S CAUSE IS A SHALLOW CLONE, AND BOTH EARLIER DIAGNOSES WERE WRONG
+
+**WRONG, TWICE, AND THE SECOND TIME BY ME NINE HOURS AGO.** `effective-date-test`'s
+judging half is dead. Diagnosis one was its fixture list — refuted at 16:xxZ,
+it no longer happens. Diagnosis two, in that same entry, was that
+`BASE_REF = "3c0a6d2d"` is *"Not a valid object name"*, **orphaned "most likely
+by one of this project's own history rewrites."** The symptom is right and the
+cause is not: **every session gets a SHALLOW clone.** `.git/shallow` grafts
+history at `cee7951` with 105 commits, and ***`cee7951` IS the commit that added
+`lib-effective-date.mjs`***, so **no pre-v208 tree exists in a fresh clone at
+all**. The pin was never orphaned; it aged out of the depth, and the window
+slides forward every day.
+
+**AND THAT ENTRY'S OWN PRESCRIPTION IS REFUTED BY IT.** It said the fix is for
+the test to *"resolve its own baseline (a tag, a merge-base, or a ref read from
+the trail)"*. **No in-window ref can serve**: the graft point is the v208 commit,
+so every resolvable ref carries the v208 arm on BOTH sides, the equivalence pass
+would report 0 differences, and that reads as *"the arm does nothing"* — *a
+broken arm and an inert arm read the same zero*. A re-pin would have made the
+gate GREEN and meaningless, which is worse than red. Two further measurements
+the rewrite theory does not predict: the pin is an **ABBREVIATION**, so
+`git fetch origin 3c0a6d2d` answers *"couldn't find remote ref"* (a wanted
+object needs a full 40-char sha, so deepening alone would not recover it); and
+`--deepen` is not cheap enough to try blind, with `data/` at ~300 MB and a
+commit every few hours against a fixed disk allowance.
+
+**THE CHANGE.** The baseline is resolved through `resolveBaseline`, which on a
+miss prints the clone's shape, says the judging half cannot run here and why,
+and exits 1 — *a red whose cause is already recorded is a red nobody re-reads*,
+and the recorded cause being WRONG is how four cycles named this gate and passed
+on. The pin deliberately stays. CI's `--quick` path is untouched. **Control, in
+the test's own output:** `--vs HEAD~1` gets past the resolver, so it is not
+always-fail, and the test's existing assertion catches the fake baseline at
+`215 vs 215`. The guards were always right; they were never reached.
+
+**PREVENTION.** The durable fix is a MUTATION, not a ref — slice the shipped
+predicate and neuter it, as `lib-vestslice` does for the vesting gate — so the
+judging half needs no git history. Queued, with its own controls owed. **And the
+general lesson: a differential pinned to a historical SHA is structurally
+fragile wherever clones are shallow.** Surveyed: this is the ONLY script in the
+repo with a hardcoded historical baseline; every other differential takes its
+ref as an argument and defaults to `HEAD`.
+
+---
+
 ## 2026-11-24 (2x:xxZ) — v215: THE EMPLOYER NAMED BY ITS ROLE, AND THE GATE'S NOUN LIST WAS AN ENUMERATION
 
 **WRONG.** 444 plans / 468,691 readers published **nothing at all, not even a
@@ -178,6 +223,12 @@ nothing."* So `site-test` has been green on a suite whose corpus-equivalence and
 mutation halves — the halves that do the judging — have not run since the
 baseline SHA was orphaned, most likely by one of this project's own history
 rewrites. The green is truthful about the predicates and silent about the rest.
+***[SUPERSEDED 2026-11-24 23:xxZ: "orphaned by a history rewrite" is WRONG. The
+clone is SHALLOW and grafted at the very commit that added
+`lib-effective-date.mjs`, so the pin aged out of the depth rather than being
+rewritten away — and the prescription below, "resolve its own baseline", is
+refuted by that, because no in-window ref carries a pre-v208 arm. See the
+23:xxZ entry.]***
 
 ***AND THE RECORDED CAUSE IS WHAT KEPT IT INVISIBLE.*** This record already
 carries *a guard that does not fire is a PREMISE to check, not a failure to

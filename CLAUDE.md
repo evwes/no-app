@@ -1414,6 +1414,44 @@ the publish gate applied before any reader figure, and an accuracy-log entry.
 
 #### Paid for and not yet rendered — do these first
 
+- **THE DEAD GATE'S CAUSE IS NOW MEASURED, AND IT IS NEITHER OF THE TWO CAUSES
+  THIS FILE HAS RECORDED (2026-11-24).** `scripts/effective-date-test.mjs`'s
+  judging half has been dead for days. The first recorded cause was its fixture
+  list — refuted, it no longer happens. The second, written this morning, was
+  that `BASE_REF = "3c0a6d2d"` is *"not a valid object in this clone"*, which is
+  true and implies the wrong thing: it reads as a SHA orphaned by a rebase, and
+  the real cause is that **every session gets a SHALLOW clone.** `.git/shallow`
+  grafts history at `cee7951` with 105 commits, and ***`cee7951` IS the commit
+  that added `lib-effective-date.mjs`*** — so **no pre-v208 tree exists in a
+  fresh clone at all**, and the window slides forward daily. A pin does not get
+  orphaned here; it ages out. Two things follow that a rebase theory does not:
+  the pin is an **ABBREVIATION**, so `git fetch origin 3c0a6d2d` answers
+  *"couldn't find remote ref"* — a wanted object needs a full 40-char sha, so
+  deepening alone would not recover it; and `--deepen` is **not cheap enough to
+  try blind**, because `data/` is ~300 MB with a commit every few hours against
+  this session's fixed disk allowance.
+  **SHIPPED: the failure now NAMES ITSELF** rather than dying inside
+  `lib-refmod`'s `fetchAt` — *a red whose cause is already recorded is a red
+  nobody re-reads*, and here the recorded cause was WRONG, so every cycle that
+  named it passed on. CI's `--quick` path is untouched and still says in its own
+  closing line that it proves nothing. **The pin deliberately STAYS**: `HEAD~N`
+  would satisfy the version-difference assertion and carry the v208 arm on BOTH
+  sides, so the equivalence pass would report 0 differences and read as *"the
+  arm does nothing"* — *a broken arm and an inert arm read the same zero*. The
+  control demonstrates it: `--vs HEAD~1` gets past the new resolver (so it is
+  not always-fail) and the test's OWN assertion catches the fake baseline at
+  `215 vs 215`. **QUEUED — the durable fix is a MUTATION, not a ref:** slice the
+  shipped predicate and neuter it, the way `lib-vestslice` does for the vesting
+  gate, so the judging half needs no git history. It needs its own controls.
+  ***AND THE HONEST PART: this entry had to be WRITTEN AFRESH because the note
+  carrying the old diagnosis was swept into `docs/closed-classes.md` by the
+  2026-11-24 registration trim, an hour before I went to work it.*** Two live
+  threads were lifted out of that region on purpose and this was a THIRD that
+  was missed — found by going to do the work, not by any check in the move. *A
+  verbatim move is safe for the record and not for the QUEUE: the only reliable
+  check is to grep the moved region for live markers and read each hit, which
+  was done and still missed this one because the note says "red gate" and not
+  "queued".*
 - **SHIPPED 2026-11-24 and MIRRORED as `15a1ac5` — LIVE: both standing
   `ticker-conflict` findings, and only ONE of them was ours.** Owner asked
   directly. **IBEW Local 4** (759 readers) published **PTTRX**, PIMCO Total
