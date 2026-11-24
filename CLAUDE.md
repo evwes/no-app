@@ -1311,19 +1311,46 @@ the whole-account vesting claim.)
 | custodian / recordkeeper | 90.22% | **11.72M** | `tier-a-custodian` |
 | fund menu | 93.52% | **0.90M** (6.25M withheld on purpose) | `tier-a-lineup` |
 
-**RANKED BY ADDRESSABLE RATHER THAN BY GAP — AND AFTER v212 VESTING NO LONGER
-CLEARLY LEADS.** contributions' 40.70M is 34.3M of closed 2K disjunction,
-custodian's 11.72M is 9.45M short-form filings with no Schedule C by law, and
-match's 19.86M is HALF A CEILING at **7.23M parser-addressable**. Vesting's
-parser-addressable share was ~10.90M before v211, ~9.05M after it, and v212
-moved a further 1.72M readers absent -> withheld, which puts it at roughly
-**~7.3M — level with match rather than ahead of it.** ***That number is
-arithmetic off a pre-v211 census, not a measurement, and the two fields are now
-close enough that the arithmetic cannot rank them.*** So the next field pick
-must NOT be read off this paragraph: **re-derive with
-`node scripts/notes-gap-census.mjs vesting` and `… match` once the completion
-run clears the partial store.** A ranking that was 3.7M apart two days ago is
-inside its own error bars today.
+**RANKED BY ADDRESSABLE — MEASURED 2026-11-24, AND THE RANKING FLIPPED.** Both
+figures are bucket `C` of `notes-gap-census.mjs` over the field's whole absent
+bucket, which is the only comparable unit:
+
+| | plans | readers | share of bucket judged |
+|---|---|---|---|
+| **match** C — parser candidate | 4,448 | **7.23M** | 99.6% (2026-11-22) |
+| **vesting** C — parser candidate | 3,436 | **6.87M** | 97.1% (2026-11-24) |
+
+**So MATCH leads vesting by ~359,000 addressable readers**, where this block
+previously claimed vesting led or was level. contributions' 40.70M is 34.3M of
+closed 2K disjunction and custodian's 11.72M is 9.45M short-form with no
+Schedule C by law, so match is the largest addressable class.
+
+***THE ARITHMETIC THIS REPLACES WAS WRONG BY 430K AND WRONG IN THE FLATTERING
+DIRECTION.*** It read vesting at "~7.3M", reached by subtracting v212's 1.72M
+from a pre-v211 census — i.e. a delta against a remembered number, which is the
+thing *a re-size is a NEW MEASUREMENT* forbids. It over-stated the field that had
+just been shipped. **Re-derive; never subtract.**
+
+**AND THE COMPARABILITY WAS PROVEN BY THE BUCKET'S OWN SIZE, not by argument.**
+The worry was that match's census predated v210's delivery. Measured: the match
+bucket is **10,708 plans / 17,802,751 readers today** against **10,700 /
+17,799,471** at census time — 8 plans apart, so the bucket has not moved and the
+census is over the current population. *A first attempt to settle this by summing
+the census's own rounded buckets printed a conclusion those numbers did not
+support; comparing the POPULATION then and now is the check that works.*
+
+**A CENSUS RE-RUN WITHOUT `--download` IS NOT A MEASUREMENT OF ITS FIELD.** The
+match re-run judged **42.2%** of readers and put 10,284,985 / 7,662 plans in
+`D0`, whose label reads "no public copy reachable (403 / withdrawn)" — but
+UNCACHED filings land there too, and `/tmp/wampo-corpus` was built for the
+VESTING populations. Its `C` of 2,326,353 is a floor over a biased subset and
+must never be quoted as match's figure. *The script says a census under 70% is a
+floor; the bucket NAME says 403, and those are two different claims.*
+
+**THE CORPUS SURVIVES A CONTAINER RESTART.** `/tmp/wampo-corpus` holds 16,691
+filings / 2.3 GB, rebuilt 2026-11-23 and still present after the restart that
+followed. An agent brief asserting it was wiped cost a rebuild once; check
+`cachedAcks()` before assuming.
 
 **THE SCALAR WENT DOWN AND THAT WAS ACCURACY, TWICE.** 79.82% -> 78.33% when
 `lib-ledger` stopped reading code **2R** as designated Roth (2R is the
