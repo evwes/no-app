@@ -7,6 +7,67 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-24 (05:xxZ) — A BAND BLOWN 11x BY ITS OWN STATED PREMISE, AND A WITHDRAWAL LABEL THAT IS NOT DURABLE
+
+**WHAT WAS WRONG — TWO THINGS, AND THE SECOND REFUTES THE FIRST'S EXCUSE.**
+
+**(1) v213's band.** The arm moved **1,333,945** readers absent -> withheld
+against a registered 1,139,384 and a band top of ~1,157,000 — over the top end
+by 11x its stated width. The decomposition closes to the reader and so the cause
+is exact, not plausible: `withheld` rose 1,339,630 = **1,333,945** (the ARM) +
+**5,685** (the RE-ROLL moving ~6 plans published -> withheld by taking their
+match LABEL). The 194,561-reader excess is the **UNJUDGED remainder firing** —
+187 plans / 297,659 readers had no cached filing text, and 112 of those plans
+(59.9%) fired at **1,737 readers per plan** against the judged population's
+1,653, within 5%. Same kind of plan, not a few giants. The band's top end was
+built by applying the JUDGED fire rate to the unjudged set; the right ceiling was
+that set's WHOLE size (1,139,384 + 297,659 = 1,437,043, which delivery sits
+inside). ***A band's top end is the whole unjudged population whenever the
+unjudged set is systematically different from the judged one*** — and "uncached"
+correlates with "not in the census corpus", never with "unreachable". Four prior
+registrations landed inside their bands and made the band look well-calibrated;
+it was the POINT that had been conservative, not the width.
+
+**(2) The premise the tight top end rested on, in writing, was**
+*"all 403/withdrawn, which production cannot download either"* — and the same
+wake refuted it. Corning Incorporated's stored lineup was prior-year
+FALLBACK-served, its entry publishing *"the newest filing's public copy has been
+withdrawn from the EFAST2 public bucket"*. Probed: the newest copy answers
+**`http=200 bytes=1175500`** and the 2024 copy **`bytes=2623375`**. ***A
+withdrawal label is not durable — an error code is a published claim, so
+re-probe rather than inherit one***, met before on four whole-population HEAD
+probes and met here from the opposite direction: the label was TRUE when written
+and is FALSE now. 1,974 fallback lineups are in the store, each publishing such a
+provenance sentence; the class is unsized.
+
+**AND THE DEGRADED-ACK SET IS NOT CLOSED.** Nine consecutive re-parses have been
+written up as hitting "the six named acks". Run #897 named **seven**: the six
+plus **Corning at 16,330 readers**, 73% of the new total of 8 plans / **22,610**
+against the recorded 7 / 6,145. All seven `ocr: 0`, five `ds: "readfail"`, two
+removed outright. *A recurring defect described by an enumerated set is wrong the
+moment the set grows, and it fails in the flattering direction — the recorded
+cost was 3.7x too low.*
+
+**THE CHANGE.** Six repaired by `ONLY_ACKS_4I` to their exact prior row counts
+(3, 23, 35, 9, 25, 30; `confident` 62,210 -> 62,216), with `pv` held at 213 on all
+six and **0 collateral acks moved**. **Corning is a DIFFERENT defect and is
+queued rather than repaired:** its newest filing is readable again and its own 4i
+is a trustee-statement parsing to 5 rows at 0% coverage, and the fallback is
+tried only when the newest filing has **no readable schedule** — so ***a WORSE
+readable parse of a NEWER filing pre-empts a BETTER parse of an older one.*** A
+re-dispatch reproduces the loss rather than fixing it. The remedy is to prefer a
+prior-year CONFIDENT parse over a newest-filing NON-confident one; it lives in
+`fetch-4i` and needs a `PARSER_VERSION` bump.
+
+**PREVENTION.** The verification printed `pv` and `ds` beside `c` and carried a
+control that no unnamed ack moved either — the 2026-11-23 stale-delta near-miss
+regressed `pv` alone while every per-ack line read `ok=true`. `results-*.json`
+was checked absent before the local merge, so `merge-4i`'s stale-delta guard
+printed nothing and remains **unexercised**; that is correct behaviour and not a
+test of it. The loss screen asked the **BEFORE** index (`a0f20ba`), with its own
+control printing index disagreement 7 of 7 — against the AFTER index v207's
+identical screen read `served: 0` on every loss.
+
 ## 2026-11-24 — v213: THE MATCH CEILING IS 1.35M AND NOT 6.37M, A GUTTER INVENTED A NUMBER, AND A WRITE SET WAS CLOSED IN THE WRONG FILE
 
 **WHAT WAS WRONG.** The match gap's "parser-addressable" bucket was sized as

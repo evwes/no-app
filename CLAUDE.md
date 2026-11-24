@@ -975,53 +975,82 @@ re-derive it, never bump it.
 
 ### Pre-registered for the next run that merges
 
-**v213 DISPATCHED — a third match-quote fallback. Baseline RE-SEATED on the trail
-line introduced by `d4edff3` (main's run #896), which is the line the audit will
-diff against; main's data commit moved ZERO ledger keys the registration names
-and ZERO of the arm's 689 acks** (only `data/lineups/21.json` moved, by one ack,
-not in the population; 0 plans' acks differ in either direction).
+**v213 DELIVERED by run #897 (04:01Z–05:18Z on `724b941`, all 22 jobs SUCCESS,
+`pv` 213 at 99.7% — NOT partial, so no completion run).** Settled against the
+registration:
 
-| key | baseline | registered |
+| key | registered | DELIVERED |
 |---|---|---|
-| `matchQuote` (trail) | 4,956 | **5,645 (+689)** |
-| `matchQuoteShown` | 2,035 | **2,724 (+689)** — 100% publishable |
-| `match` withheld (ledger) | 12,285,890 | **13,425,274 (+1,139,384)** |
-| `match` absent (**gap**) | 19,857,006 | **18,717,622 (−1,139,384)** |
-| `match` published | 78,310,555 | **UNCHANGED** |
-| `match_shown` | 70.90% | **70.90% — FLAT BY CONSTRUCTION** |
-| ONE SCALAR | 79.95% | **79.95% — FLAT BY CONSTRUCTION** |
-| ledger `addressable` | 83,417,245 | 82,277,861 (−1,139,384) |
-| `match`, `matchAny`, `matchInZeroEmp` (trail) | 46,618 / 50,314 | **UNCHANGED** |
-| `vesting`, `roth`, `aftertax`, contributions, custodian, lineup | — | **UNCHANGED** |
+| `matchQuote` (trail) | 5,645 (+689) | **5,757 (+801)** — 112 plans beyond |
+| `matchQuoteShown` | 2,724 (+689) | **2,837 (+802)** |
+| `match` withheld (ledger) | 13,425,274 (+1,139,384) | **13,625,520 (+1,339,630)** |
+| `match` absent (**gap**) | 18,717,622 (−1,139,384) | **18,523,061 (−1,333,945)** |
+| `match` published | UNCHANGED | **78,304,870 (−5,685)** — moved |
+| `match_shown` | 70.90% FLAT | **70.89%** |
+| ONE SCALAR | 79.95% FLAT | **79.95% — EXACT** |
+| ledger `addressable` | 82,277,861 | **82,087,713** |
+| `aftertax` | UNCHANGED | **4,203 — byte-identical** |
+| `match` / `matchAny` / `vesting` / `roth` (trail) | UNCHANGED | **−6 / −6 / −7 / −2** |
 
-**THE TWO FIGURES DISAGREE BY 155 AND THE 155 HAS A NAME.** The differential
-reports 689 plans / **1,139,539** readers moving absent -> withheld; the ledger
-projection registers **1,139,384**. The difference is exactly one plan —
-Southwestern Wisconsin CAP, 155 readers — which the store ALREADY has at
-`withheld`, because its stored quote is absent from the cached filing text
-entirely, so the differential sees a gain where production has one already.
-***The ledger figure is the one to settle against, because it reads the store;
-the differential reads the instrument's copy of the text.*** Measured generally:
-19 of 1,387 stored quotes (1.37%) are not substrings of the cached text, almost
-all page-header welds. `docs/accuracy-log.md` 2026-11-24.
+***THE BAND WAS BLOWN BY 11x ON ITS OWN STATED MECHANISM, AND THE CAUSE IS
+EXACT.*** The arm moved **1,333,945** readers absent -> withheld against a
+registered 1,139,384 and a band top of ~1,157,000. The decomposition closes to
+the reader: withheld rose 1,339,630 = 1,333,945 (absent -> withheld, the ARM)
++ 5,685 (published -> withheld, the RE-ROLL taking match LABELS off ~6 plans).
+The 194,561-reader excess is **the UNJUDGED remainder firing**: 187 plans /
+297,659 readers had no cached text, and 112 of those plans (59.9%) and ~65% of
+their readers fired, at 1,737 readers per plan against the judged population's
+1,653 — within 5%, so they are the same kind of plan, not a few giants.
+**The band's top end was built by applying the JUDGED fire rate to the unjudged
+set (~+17,000), when the right ceiling was the unjudged set's WHOLE size**
+(1,139,384 + 297,659 = 1,437,043, which delivery sits inside). *A band's top end
+is the whole unjudged population whenever the unjudged set is systematically
+different from the judged one* — and here it was: uncached correlates with "not
+in the census corpus", not with "unreachable". The tight top end was justified
+in writing as "all 403/withdrawn, which production cannot download either", and
+**that premise is refuted in this same wake by the Corning probe below.**
 
-**Band:** exact over 98.5% of the readers of the population the arm can reach;
-unjudged 187 plans / 297,659 readers, all 403/withdrawn, which production cannot
-download either — so **−1,139,384 to ~−1,157,000**, the top end soft.
-**Readers who gain a VISIBLE cell** (the interactive report needs
-`contribEmployer != 0`): 661 plans / 1,091,317 there, 75 plans / 733,452 on the
-crawlable pages, union **664 plans / 1,120,265** — and **25 plans / 19,274
-readers move in the store and no reader sees anything**, stated rather than
-folded in.
+**Jitter arrived as registered in shape** — `confident` −7, `lineups` −6,
+`entries` −1, `dl` +9, with `overshoot` (683) and `vestQuote` (6,230) FLAT, and
+`high` 6 -> 13 (the 6 standing plus 7 CI-only `reparse-loss` findings, which the
+next scheduled run clears). "Nothing else moves" failed small for the fourth
+consecutive run on a write set provably limited to `out.matchText`.
 
-**One registered key is NOT a trail key:** `noMatchBacklog` (−476). `audit-data`
-prints it and never writes it, so it settles only from the merge job's log.
+**AND THE DEGRADED-ACK SET GREW FOR THE FIRST TIME — IT IS NOT A FIXED SIX.**
+Run #897's `READ BEFORE MIRRORING` list named **7** acks: the recorded six plus
+**Corning Incorporated at 16,330 readers**, which is 73% of the new total of
+**8 plans / 22,610 readers** against the recorded 7 plans / 6,145. All seven are
+`ocr: 0`; five carry `ds: "readfail"` and two were REMOVED outright. *Nine
+consecutive re-parses have been described as hitting "the six named acks"; the
+set is not closed, and the one that joined it is 2.7x the whole recorded cost.*
+Six were repaired by `ONLY_ACKS_4I` to their exact prior counts (3, 23, 35, 9,
+25, 30, every one `ok=true`), `confident` 62,210 -> 62,216, **`pv` held at 213
+on all six** and **0 collateral acks moved**.
 
-**Jitter, registered separately because it is the RUN and not the change:** a
-`PARSER_VERSION` bump re-parses the universe, so `confident` (62,217), `lineups`
-(61,869), `entries` (68,040), `dl` (214) and `overshoot` (683) move by whatever
-the re-roll moves, and the six named acks (7 plans / 6,145 readers) have degraded
-on every re-parse since v207.
+**CORNING DID NOT REPAIR, AND IT IS A DIFFERENT DEFECT — queued, with the fix
+named.** It re-parses deterministically to 5 rows at 0% coverage (`dx: "stmt"`),
+because its stored entry was **prior-year FALLBACK-served** (`fb: 2024`,
+`fbAck` 20250711111703…) and `fallbacks.json` is a prep-stage artifact, exactly
+as this record warns. But the interesting half is WHY the run lost it: **the
+newest filing's public copy was withdrawn when the fallback was chosen and is
+BACK in the bucket now** — probed this wake at `http=200 bytes=1175500`, with
+the 2024 copy also live at `bytes=2623375`. Its own 4i is a trustee-statement
+that parses to 5 junk rows, and the fallback is tried only when the newest
+filing has **no readable schedule**, so ***a WORSE readable parse of a newer
+filing pre-empts a BETTER parse of an older one.*** A re-dispatch would
+reproduce the loss rather than fix it; the remedy is to prefer a prior-year
+CONFIDENT parse over a newest-filing NON-confident one, which lives in
+`fetch-4i` and so needs a `PARSER_VERSION` bump. **A second, larger class falls
+out of it:** 1,974 fallback lineups are in the store and each publishes a
+provenance sentence — Corning's reads *"the newest filing's public copy has been
+withdrawn from the EFAST2 public bucket"* — which **is false for Corning right
+now**. *An error code is a published claim, and a withdrawal label is not
+durable: re-probe rather than inherit one.* Unsized.
+
+**`merge-4i`'s stale-delta guard is STILL unexercised:** the repair's local merge
+ran with no `results-*.json` present (checked before running, after the
+2026-11-23 near-miss), so the guard printed nothing. That is the correct
+behaviour and not a test of it.
 
 **v212 DELIVERED, SETTLED over two runs, and MIRRORED as `fb1cd6e` — LIVE.**
 `mirror-gate` **0 plans / 0 participants losing service** (confident +1 / −0 by
@@ -1336,10 +1365,10 @@ estimate: it refutes itself the moment a new import appears.
 
 **THE LEDGER IS THE QUEUE.** `node scripts/ledger-report.mjs` prints the one
 participant-weighted scalar and the addressable gap per field; it is DERIVED and
-must never be copied forward. Re-derived 2026-11-23 from the store run #894
-left on this branch — **SETTLED, `pv` 212 at 99.7% of acks**, which clears the
-partial-store gate:
-**115,641 plans / 119,907,098 participants / overall 79.95%**, 83,417,245
+must never be copied forward. Re-derived 2026-11-24 from the store run #897
+left on this branch plus the six-ack repair — **SETTLED, `pv` 213 at 99.7% of
+acks**, which clears the partial-store gate:
+**115,641 plans / 119,907,098 participants / overall 79.95%**, 82,087,713
 participant-cells addressable, with addressable gaps below. (The 79.93-vs-79.94
 gap this block named four hours ago is **closed**, exactly as predicted and by
 the predicted event — #894's merge appended a ledger line reading 79.95 against
@@ -1349,15 +1378,19 @@ Roth/after-tax yes from 865 plans, so `contributions` fell 66.96% -> 66.05% and
 the scalar 79.25 -> 79.06 ON PURPOSE — the fifth time it has gone DOWN for
 accuracy; v209 then took it 79.06 -> 79.15 on the vesting scope gate, v210
 79.15 -> 79.60 on the discretionary-match spellings, and v211 79.60 -> 79.94 on
-the whole-account vesting claim.)
+the whole-account vesting claim. v212 and v213 moved it NOT AT ALL by
+construction — both move absent -> withheld, and `shown`'s denominator is their
+sum, so between them 2.95M readers went from a blank cell to the filing's own
+words with the scalar flat at 79.95%. *The queue's own metric cannot see two
+consecutive ships.*)
 
 | field | shown | readers with no answer | owner agent |
 |---|---|---|---|
 | contributions (pre-tax / Roth / after-tax / brokerage) | 66.05% | **40.70M** | `tier-a-contributions` |
-| match | 70.90% | **19.86M** (12.29M withheld on purpose) | `tier-a-plan-terms` |
-| vesting | 79.38% | **10.23M** (12.55M withheld on purpose) | `tier-a-plan-terms` |
+| match | 70.89% | **18.52M** (13.63M withheld on purpose) | `tier-a-plan-terms` |
+| vesting | 79.37% | **10.24M** (12.55M withheld on purpose) | `tier-a-plan-terms` |
 | custodian / recordkeeper | 90.22% | **11.72M** | `tier-a-custodian` |
-| fund menu | 93.52% | **0.90M** (6.25M withheld on purpose) | `tier-a-lineup` |
+| fund menu | 93.52% | **0.90M** (6.26M withheld on purpose) | `tier-a-lineup` |
 
 **RANKED BY ADDRESSABLE — RE-MEASURED 2026-11-24 WITH `--download`, AND BUCKET
 `C` IS NOT THE RIGHT UNIT.** Re-derive with `node scripts/notes-gap-census.mjs
