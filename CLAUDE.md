@@ -976,7 +976,17 @@ re-derive it, never bump it.
 ### Pre-registered for the next run that merges
 
 **v214 DELIVERED by run #900** (16:08Z–17:06Z on `2baaabf`, all 22 jobs SUCCESS,
-`pv` 214 at 99.7% — NOT partial, so no completion run is owed). The vesting
+`pv` 214 at 99.7% — NOT partial, so no completion run is owed) **and MIRRORED as
+`74de582` — LIVE.** Every gate reported its genuine form with **no override of
+any kind**: `mirror-gate: ok` (0 plans / 0 participants stop being served, +0/−0
+by ack), **`sitetest-gate: ok — site-test run #402 on this exact commit
+concluded success`**, and `deploy-check: DEPLOYED — pages run 1333 on 74de5829
+concluded success in 1.5 min (attempt 1)`. `mirror.sh` also confirmed main holds
+a MATCHED pair — `PARSER_VERSION` 214 against a dominant store `pv` 214 — so no
+run on main is needed. The data commit carried only stores, and `site-test`'s
+`paths` filter DID fire on it, so the gate found its run without a dispatch;
+*predicting that filter from a partial read of it was wrong, and checking before
+dispatching is what stopped a duplicate run from killing the original.* The vesting
 scope gate's four arms key on a money NOUN in a fixed position, so 500 plans /
 689,115 readers said under a `Vesting` heading that their employer money vests
 immediately and published **nothing at all, not even a quote** — that gate's
