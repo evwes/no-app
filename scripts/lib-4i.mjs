@@ -15,7 +15,7 @@ import { vestingQuoteOk, matchQuoteOk, rateInMatchPosition, accelerationOnlyVest
 import { futureEffectiveGrant, catchupMandateRefusal, planYearEnd } from "./lib-effective-date.mjs";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 213;
+export const PARSER_VERSION = 214;
 
 /* v207: THE QUOTE'S OWN WORDS CAN DENY WHAT THE FLAG ASSERTS, and 76 plans /
  * 175,656 readers were published that way — `afterTax: true` or `roth: true`
