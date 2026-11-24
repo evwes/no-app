@@ -1634,11 +1634,22 @@ the publish gate applied before any reader figure, and an accuracy-log entry.
   accel/termination precedence both ways, the composed gate asserted in BOTH
   renderers, a mutation per condition load-bearing by name). Verified on the
   ARTIFACT: regenerating 5,000 crawlable pages changed **exactly one file**.
-  **PENDING: `sec-tickers-stamp-test` is RED on `apppath-slice`** (the vq twin
-  is inside app.js's fingerprinted prologue, 12->3293). No table key can move —
-  neither generator reads this predicate — so dispatch `sec-tickers.yml` and
-  read `sec-key-loss.mjs`'s reader price; never regenerate in-session.
-  `docs/accuracy-log.md` 2026-11-24 (12:xxZ).
+  **MIRRORED as `332d447` — LIVE**, every gate genuine and nothing overridden:
+  `mirror-gate: ok` (0 plans / 0 participants stop being served), **`sitetest-gate:
+  ok — site-test run #397 on this exact commit concluded success`**, `deploy-check:
+  DEPLOYED — pages run 1331 in 2.5 min`, pushed as a FAST-FORWARD.
+  **AND THE FINGERPRINT REDDENING WAS CONFIRMED A FALSE POSITIVE BY THE REGEN
+  ITSELF.** `sec-tickers-stamp-test` went red on `apppath-slice` because the vq
+  twin sits inside app.js's fingerprinted prologue (12->3293); regen #34 then
+  moved **0 keys — 23,954 before, 23,954 after, 0 removed / 0 added / 0
+  changed-value** — so the only real change was the code-hash stamp catching up,
+  and `sec-key-loss.mjs` THREW rather than print a zero it could not distinguish
+  from a broken comparison. *The conservative fingerprint cannot tell a display
+  predicate added to that region from a resolver change that would move thousands
+  of keys, so any display-only change touching the prologue pays a ~20-minute
+  regen to move nothing.* The regen also DISPATCHED site-test on its own head,
+  which is the recorded "the regen leaves the tip unverified" closure working —
+  that hand step is retired. `docs/accuracy-log.md` 2026-11-24 (12:xxZ).
 - **SHIPPED as v207, 2026-11-21 — "✓ Available" published on filings that say
   "not permitted".** 76 plans / 175,656 published readers; the store held the
   refutation ONE KEY AWAY (`afterTax: true` beside `afterTaxText: "After-tax

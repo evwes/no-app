@@ -59,10 +59,21 @@ into `app.js` sits INSIDE the generated twin block and the next slice deletes
 it — four twins lost to that; `slice-vq --check` caught it in a minute and the
 generator's TAIL now emits it.
 
-**EXPECTED RED:** `sec-tickers-stamp-test` reddens on `apppath-slice` (the twin
-is inside app.js's fingerprinted prologue). No table key can move — neither
-generator reads this predicate — so dispatch `sec-tickers.yml` and read
-`sec-key-loss.mjs`'s reader price; never regenerate in-session.
+**EXPECTED RED, AND THE REGEN CONFIRMED THE PREDICTION RATHER THAN MERELY
+CLEARING IT.** `sec-tickers-stamp-test` reddened on `apppath-slice` (the twin is
+inside app.js's fingerprinted prologue, 12->3293). The claim was that no table
+key could move, since neither `gen-sec-tickers.mjs` nor `match-sec-tickers.mjs`
+reads this predicate. Regen #34: **23,954 keys before, 23,954 after, 0 removed,
+0 added, 0 changed-value** — the only real change the embedded code-hash stamp.
+`sec-key-loss.mjs` THREW rather than printing a zero, because its control
+refuses a no-difference it cannot tell from a broken comparison. *A conservative
+fingerprint cannot distinguish a display predicate added to that region from a
+resolver change that would move thousands of keys, so every display-only change
+touching the prologue pays a ~20-minute regen to move nothing* — the cost of
+the gate being right to be blunt. The regen also dispatched site-test on its own
+head (#397 green on the exact commit), retiring the hand dispatch this record
+used to prescribe. **MIRRORED as `332d447`, a FAST-FORWARD, every gate genuine
+and nothing overridden; pages run 1331 success in 2.5 min.**
 
 ## 2026-11-24 (05:xxZ) — A BAND BLOWN 11x BY ITS OWN STATED PREMISE, AND A WITHDRAWAL LABEL THAT IS NOT DURABLE
 
