@@ -975,34 +975,65 @@ re-derive it, never bump it.
 
 ### Pre-registered for the next run that merges
 
-**v214 IN FLIGHT as run #900** (started 16:08Z on `2baaabf`, push-triggered by
-the `PARSER_VERSION` 213 -> 214 bump; site-test #399 on the same SHA). The
-vesting scope gate's four arms key on a money NOUN in a fixed position, so 500
-plans / 689,115 readers said under a `Vesting` heading that their employer money
-vests immediately and published **nothing at all, not even a quote** — that
-gate's `continue` runs ahead of every quote fallback. `unnarrowedFullVesting`
-asks the question with no noun list, plus 17 refusals.
+**v214 DELIVERED by run #900** (16:08Z–17:06Z on `2baaabf`, all 22 jobs SUCCESS,
+`pv` 214 at 99.7% — NOT partial, so no completion run is owed). The vesting
+scope gate's four arms key on a money NOUN in a fixed position, so 500 plans /
+689,115 readers said under a `Vesting` heading that their employer money vests
+immediately and published **nothing at all, not even a quote** — that gate's
+`continue` runs ahead of every quote fallback. `unnarrowedFullVesting` asks the
+question with no noun list, plus 17 refusals.
 
-| key | registered |
-|---|---|
-| `vesting` published (ledger) | 87,669,639 -> **88,358,433** (+688,794) |
-| `vesting` withheld | 12,547,960 -> **12,553,261** (+5,301) |
-| `vesting` absent (**gap**) | 10,235,852 -> **9,541,757** (−694,095) |
-| `vesting_shown` | 79.372% -> **79.996%** |
-| ONE SCALAR | 79.952% -> **80.072%** |
-| `vesting` (trail, PLAN count) | 55,990 -> **56,490** (+500) |
-| `vestQuote` | 6,230 -> **6,238** (+8) |
-| `custodian` / `match` / `contributions` / `lineup` | **IDENTICAL** |
+**THE SIXTH CONSECUTIVE REGISTRATION WHOSE POINT WAS A FLOOR AND WHOSE BAND
+HELD.** Figures below are POST-REPAIR, which is what was mirrored:
 
-**BAND: +688,794 to +1,214,029 published**, and its top end is the WHOLE
-reachable unjudged remainder (208 plans / 525,235 readers) rather than a rate on
-it — because 47,010 of the 47,218 unjudged plans already publish a label and
-cannot be reached, which is a construction and not a rate. That is this record's
-own band rule applied in the direction it was learned. The withheld RISE is the
-arm's refusals working: a sentence it declines to LABEL but can QUOTE moves
-absent -> withheld. Jitter registered separately: a bump re-parses the universe,
-so `confident` / `lineups` / `entries` / `dl` / `overshoot` move by whatever the
-re-roll moves and the named degraded acks may degrade again.
+| key | registered | DELIVERED |
+|---|---|---|
+| `vesting` published (ledger) | 88,358,433 (+688,794) | **88,398,283 (+728,644)** |
+| `vesting` withheld | 12,553,261 (+5,301) | **12,554,102 (+6,142)** |
+| `vesting` absent (**gap**) | 9,541,757 (−694,095) | **9,501,066 (−734,786)** |
+| `vesting_shown` | 79.996% | **80.03%** |
+| ONE SCALAR | 80.072% | **80.08%** — past 80% for the first time |
+| `vesting` (trail, PLAN count) | 56,490 (+500) | **56,558 (+568)** |
+| `vestQuote` | 6,238 (+8) | **6,241 (+11)** |
+| ledger `addressable` | — | **81,353,599** |
+
+Delivery sits **inside the registered band** (+688,794 to +1,214,029), 39,579
+past the point, and the decomposition closes to the reader: published +728,373
+plus withheld +6,142 is exactly the 734,515 the gap fell, before the repair
+added its own 271. *The point is what the instrument could judge and the band is
+what the run does* — six for six now, every time it was stated as a band.
+
+**AND "NOTHING ELSE MOVES" FAILED AGAIN, in the shape that is now routine:**
+`custodian` byte-identical, but `match` published −216, `contributions` −1,248
+and `lineup` −6,145, on a write set provably limited to `out.vesting` +
+`out.vestingText`. **The `lineup` figure is not noise and it has a name: it is
+exactly the 6,145 readers of the six recorded degraded acks**, and the repair
+restored `lineup` published to **103,302,062, byte-identical to its pre-run
+value.** *So the ledger measured the standing degradation to the reader, at
+precisely the size this record already carries* — the first time that defect has
+been priced by the metric rather than by a bespoke screen.
+
+**THE SIX DEGRADED FOR THE TENTH CONSECUTIVE RE-PARSE, and the set is still the
+recorded one** — Sorinex, St. Vincent De Paul, Belay, the Hexcel MTIA, Impact
+Wellness, WD Management, resolved by ACK rather than assumed. All six `c:0`,
+five `ds:"readfail"`, rows down to 2/6/2/2/3/2, and all six stamped at the
+CURRENT `pv` 214, which is the trap that makes it permanent. `ONLY_ACKS_4I`
+restored all six exactly (30, 35, 23, 25, 3, 9), `confident` 62,210 -> 62,216,
+0 collateral row-count moves. The durable cure is still unbuilt.
+
+***AND THE COLLATERAL NAME REPAIRS NEEDED THE RESOLVER, NOT THE STORE DIFF.***
+22 shards moved for a six-ack repair: 31 rows in 25 other acks, the recorded
+precedent at the identical 31/25, every one READ and correct (suffix debris,
+share-class tokens rotated back behind the fund name, a self-wrapping `Class R1`,
+a `RetirementIncome` space). Store TYPE and VALUE moves: **0**. But the fee and
+the symbol resolve at RENDER time from the name, so the store diff cannot
+settle it — priced through `lookupTicker(f)`, **4 of 31 rows GAIN a symbol**
+(FFIKX, FFIZX, RFJTX, PRRIX), all four read, all four `comparable: false`, and
+**0 switched from one symbol to another**. *A name strip must be priced through
+the columns that are computed from the name, which the store does not hold.*
+The harness's own control refused its first version — `fundTickerInfo` returns
+`tk`/`comparable`, not `ticker`/`star`, so it answered `undefined` for two
+different funds and a "0 moves" verdict would have been decorative.
 
 ***THE WRITE SET CANNOT BE READ OFF THE DIFF, AND THIS IS THE FIRST CHANGE ON
 THIS RECORD WHERE THE RECORDED HABIT RETURNS A CLEAN ZERO.***
@@ -1459,32 +1490,38 @@ estimate: it refutes itself the moment a new import appears.
 
 **THE LEDGER IS THE QUEUE.** `node scripts/ledger-report.mjs` prints the one
 participant-weighted scalar and the addressable gap per field; it is DERIVED and
-must never be copied forward. Re-derived 2026-11-24 from the store run #897
-left on this branch plus the six-ack repair — **SETTLED, `pv` 213 at 99.7% of
+must never be copied forward. Re-derived 2026-11-24 from the store run #900
+left on this branch plus the ten-ack repair — **SETTLED, `pv` 214 at 99.7% of
 acks**, which clears the partial-store gate:
-**115,641 plans / 119,907,098 participants / overall 79.95%**, 82,087,713
-participant-cells addressable, with addressable gaps below. (The 79.93-vs-79.94
-gap this block named four hours ago is **closed**, exactly as predicted and by
-the predicted event — #894's merge appended a ledger line reading 79.95 against
-a live store of 79.95. *The sentence describing it is deleted rather than
-updated, which is the whole point of naming a closing event.*) (v208 withdrew a future-effective or catch-up-mandate
-Roth/after-tax yes from 865 plans, so `contributions` fell 66.96% -> 66.05% and
-the scalar 79.25 -> 79.06 ON PURPOSE — the fifth time it has gone DOWN for
-accuracy; v209 then took it 79.06 -> 79.15 on the vesting scope gate, v210
-79.15 -> 79.60 on the discretionary-match spellings, and v211 79.60 -> 79.94 on
-the whole-account vesting claim. v212 and v213 moved it NOT AT ALL by
+**115,641 plans / 119,907,098 participants / overall 80.08%**, 81,353,599
+participant-cells addressable, with addressable gaps below.
+**THE SCALAR CROSSED 80% FOR THE FIRST TIME on v214**, and the history is the
+reason the number means anything: v208 withdrew a future-effective or
+catch-up-mandate Roth/after-tax yes from 865 plans, so `contributions` fell
+66.96% -> 66.05% and the scalar 79.25 -> 79.06 ON PURPOSE — the fifth time it
+has gone DOWN for accuracy; v209 took it 79.06 -> 79.15 on the vesting scope
+gate, v210 79.15 -> 79.60 on the discretionary-match spellings, v211
+79.60 -> 79.94 on the whole-account vesting claim, and v214 79.95 -> **80.08**
+on the un-narrowed full-vesting claim. v212 and v213 moved it NOT AT ALL by
 construction — both move absent -> withheld, and `shown`'s denominator is their
 sum, so between them 2.95M readers went from a blank cell to the filing's own
-words with the scalar flat at 79.95%. *The queue's own metric cannot see two
-consecutive ships.*)
+words with the scalar flat. *The queue's own metric cannot see two consecutive
+ships*, which is the standing argument for not driving the queue by this number
+alone.
 
 | field | shown | readers with no answer | owner agent |
 |---|---|---|---|
-| contributions (pre-tax / Roth / after-tax / brokerage) | 66.05% | **40.70M** | `tier-a-contributions` |
+| contributions (pre-tax / Roth / after-tax / brokerage) | 66.05% | **40.71M** | `tier-a-contributions` |
 | match | 70.89% | **18.52M** (13.63M withheld on purpose) | `tier-a-plan-terms` |
-| vesting | 79.37% | **10.24M** (12.55M withheld on purpose) | `tier-a-plan-terms` |
+| vesting | 80.03% | **9.50M** (12.55M withheld on purpose) | `tier-a-plan-terms` |
 | custodian / recordkeeper | 90.22% | **11.72M** | `tier-a-custodian` |
-| fund menu | 93.52% | **0.90M** (6.26M withheld on purpose) | `tier-a-lineup` |
+| fund menu | 93.52% | **0.90M** (6.25M withheld on purpose) | `tier-a-lineup` |
+
+***CONTRIBUTIONS NOW LEADS BY 22.2M READERS, which is more than the next two
+fields combined*** — and its 40.71M is `partial`, not `absent`: 34.35M of it is
+the 2K disjunction, where the page already tells the reader something true and
+checkable. Re-derive before acting; the ranking has flipped three times on a
+unit that could not answer the question.
 
 **RANKED BY ADDRESSABLE — RE-MEASURED 2026-11-24 WITH `--download`, AND BUCKET
 `C` IS NOT THE RIGHT UNIT.** Re-derive with `node scripts/notes-gap-census.mjs
@@ -2350,6 +2387,13 @@ reason the queue was — it is re-read at the start of every turn.
 - **A rename, a ticker, a fee and a return are FACTS that must be SOURCED, never
   inferred** — `data/fund-facts.json` via the `fund-facts` agent, with a source
   URL and an as-of date.
+- **AND THE STORE IS THE WRONG WITNESS FOR THAT PRICING, because those columns
+  are computed at RENDER time from the name.** 31 collateral name repairs on
+  2026-11-24 moved the store's TYPE on 0 rows and its VALUE on 0 rows, and
+  still moved the published answer on 4 — each `null` -> an asserted symbol —
+  because `lookupTicker` resolves from the name every time the page draws the
+  row. *A store diff cannot clear a name change*; ask the resolver, with the
+  whole row as the argument.
 - **A legibility fix must be priced against the guards that READ names**, and
   **a name strip must be priced through the TYPE and FEE columns**: a caption
   that looks like furniture can be the page's only witness for a claim the page
