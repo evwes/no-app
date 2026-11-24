@@ -975,6 +975,57 @@ re-derive it, never bump it.
 
 ### Pre-registered for the next run that merges
 
+**v214 IN FLIGHT as run #900** (started 16:08Z on `2baaabf`, push-triggered by
+the `PARSER_VERSION` 213 -> 214 bump; site-test #399 on the same SHA). The
+vesting scope gate's four arms key on a money NOUN in a fixed position, so 500
+plans / 689,115 readers said under a `Vesting` heading that their employer money
+vests immediately and published **nothing at all, not even a quote** — that
+gate's `continue` runs ahead of every quote fallback. `unnarrowedFullVesting`
+asks the question with no noun list, plus 17 refusals.
+
+| key | registered |
+|---|---|
+| `vesting` published (ledger) | 87,669,639 -> **88,358,433** (+688,794) |
+| `vesting` withheld | 12,547,960 -> **12,553,261** (+5,301) |
+| `vesting` absent (**gap**) | 10,235,852 -> **9,541,757** (−694,095) |
+| `vesting_shown` | 79.372% -> **79.996%** |
+| ONE SCALAR | 79.952% -> **80.072%** |
+| `vesting` (trail, PLAN count) | 55,990 -> **56,490** (+500) |
+| `vestQuote` | 6,230 -> **6,238** (+8) |
+| `custodian` / `match` / `contributions` / `lineup` | **IDENTICAL** |
+
+**BAND: +688,794 to +1,214,029 published**, and its top end is the WHOLE
+reachable unjudged remainder (208 plans / 525,235 readers) rather than a rate on
+it — because 47,010 of the 47,218 unjudged plans already publish a label and
+cannot be reached, which is a construction and not a rate. That is this record's
+own band rule applied in the direction it was learned. The withheld RISE is the
+arm's refusals working: a sentence it declines to LABEL but can QUOTE moves
+absent -> withheld. Jitter registered separately: a bump re-parses the universe,
+so `confident` / `lineups` / `entries` / `dl` / `overshoot` move by whatever the
+re-roll moves and the named degraded acks may degrade again.
+
+***THE WRITE SET CANNOT BE READ OFF THE DIFF, AND THIS IS THE FIRST CHANGE ON
+THIS RECORD WHERE THE RECORDED HABIT RETURNS A CLEAN ZERO.***
+`git show | grep -o 'out\.[A-Za-z]*\s*='` over the added lines finds
+**nothing**: the arm assigns no field itself. It sets `uvOnly`, which lets a
+sentence past the gate's `continue` at `lib-4i.mjs:9132` so that PRE-EXISTING
+lines do the writing. The real closure is the **PATH** — the label block the arm
+newly reaches assigns only `out.vesting` and `out.vestingText` — and the
+"fills a blank" claim closes by construction three ways: an earlier sentence that
+set a LABEL already `break`ed the loop, one that set only a QUOTE is blocked at
+line 9593 (`uvOnly && out.vestingText`), and the two displaceable post-passes
+fire on `!out.vesting`, which line 9545 keys on directly. Nothing is exported and
+every consumer outside `lib-4i.mjs` is a gate or an instrument — not `fetch-4i`,
+not `merge-4i`, not `app.js`, not `build-seo-pages`. `notesMissing` costs 153
+acks / 214,866 readers their only OCR attempt, a standing cost that falls on
+**match** rather than vesting; `FEATURE_GROUPS` costs 0 by construction.
+
+**Main's cron commit was cleared on MEASUREMENT, not timing:** its coverage line
+is BYTE-IDENTICAL to the branch's, 0 plan keys either way, and **0 plans whose
+ACK differs** — the question a plan-KEY comparison cannot answer — with the
+control that makes the zero mean something (one perturbed ack must be seen, and
+was).
+
 **v213 DELIVERED by run #897 (04:01Z–05:18Z on `724b941`, all 22 jobs SUCCESS,
 `pv` 213 at 99.7% — NOT partial, so no completion run) and MIRRORED as
 `b393496` — LIVE.** Every gate reported its genuine form with **no override of
@@ -1349,13 +1400,24 @@ so `confident` / `lineups` / `entries` / `dl` / `overshoot` jitter by whatever
 the re-roll moves, and the six named acks (7 plans / 6,145 readers) have
 degraded on every re-parse since v207.
 
-**AND ONE PRE-EXISTING RED GATE, NOT MINE:** `scripts/effective-date-test.mjs`
-fails with *"member national-electrical / ultra-clean / american-eagle /
-mavis-tire is not in the published-yes population — the store changed under this
-test"*, and it fails IDENTICALLY at `006ef459` in a clean worktree over the same
-store. It is v208's withdrawals having emptied those fixture members out of the
-roth/after-tax published population; the fix is that test's fixture list, not a
-parser change.
+**AND ONE PRE-EXISTING RED GATE, NOT MINE — AND THE DIAGNOSIS RECORDED HERE WAS
+WRONG FOR THE CURRENT FAILURE, measured 2026-11-24.** This entry said
+`scripts/effective-date-test.mjs` fails on its fixture list (*"member
+national-electrical / ultra-clean / american-eagle / mavis-tire is not in the
+published-yes population"*) and that the fix is that list. It is not: the test
+pins `BASE_REF = "3c0a6d2d"` (`effective-date-test.mjs:76`, a v207-era SHA) and
+that is **not a valid object in this clone at all**, so the run dies in
+`lib-refmod`'s `fetchAt` — *"the baseline's module graph cannot be assembled"* —
+**before asserting anything**. The fixture failure is upstream of nothing; it no
+longer happens. CI invokes the test `--quick`, whose own closing line reads
+*"the corpus equivalence and the mutations were SKIPPED and prove nothing"*, so
+`site-test` is green and has been while **the half of that test which does the
+judging has been dead since its baseline SHA was orphaned**. The repair is a live
+pin (or a ref the test resolves itself), and it is the fourth instance of *a
+guard that does not fire is a PREMISE to check, not a failure to report* —
+***but the new half is sharper: a red whose cause is already recorded is a red
+nobody re-reads***, which is exactly how a dead gate stays dead for weeks while
+every cycle names it and passes on.
 
 **v208 was dispatched as run #881 and DELIVERED**; that registration is settled
 below and must not be re-dispatched. `docs/accuracy-log.md` 2026-11-22.
@@ -2375,6 +2437,14 @@ reason the queue was — it is re-read at the start of every turn.
   and the re-roll moves what it moves. v206 did the same and this file predicted
   it; v207 registered it wrongly anyway. Register the change's keys, then say
   separately what a full re-parse is expected to jitter.
+- **A WRITE-SET GREP OVER A DIFF MEASURES THE DIFF, NOT THE WRITE SET.** v214's
+  arm assigns no field at all: it sets a flag that lets a sentence past a gate's
+  `continue`, and PRE-EXISTING lines do the writing, so
+  `git show | grep -o 'out\.[A-Za-z]*\s*='` returns a clean zero in the
+  comfortable direction. Close the set over the **PATH the change newly reaches**,
+  then over what READS the fields that path writes. The sibling already here —
+  the write set must be closed under its readers — is about the second step; this
+  is the first one failing.
 - **A SAFETY ARGUMENT BELONGS TO A MECHANISM, NOT TO A FILE.** Reusing one
   verbatim on a change in the same function mispredicted by 15x, because the new
   arm fired on a different disjunct. Name the disjunct. **And adding a WRITER to

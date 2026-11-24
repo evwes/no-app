@@ -7,6 +7,46 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-24 (16:xxZ) — A GATE WHOSE JUDGING HALF HAS BEEN DEAD FOR WEEKS, BEHIND A RED THAT WAS ALREADY EXPLAINED
+
+**WRONG.** `scripts/effective-date-test.mjs` is red, and CLAUDE.md recorded the
+cause as its fixture list ("member national-electrical / ultra-clean /
+american-eagle / mavis-tire is not in the published-yes population ... the fix is
+that test's fixture list, not a parser change"). That is not the current failure.
+The test pins `BASE_REF = "3c0a6d2d"` at line 76 — a v207-era SHA — and
+`git cat-file -t 3c0a6d2d` answers **"Not a valid object name"**, so the run dies
+inside `lib-refmod`'s `fetchAt` with *"the baseline's module graph cannot be
+assembled, and resolving it against the working tree instead would mix two
+versions into one baseline"*. It never reaches an assertion. The fixture
+complaint the record describes no longer occurs at all.
+
+**WHY NOTHING SURFACED IT.** CI invokes the test `--quick`, and that path passes.
+Its own closing line is honest about what it bought: *"--quick PASSED —
+predicates only; the corpus equivalence and the mutations were SKIPPED and prove
+nothing."* So `site-test` has been green on a suite whose corpus-equivalence and
+mutation halves — the halves that do the judging — have not run since the
+baseline SHA was orphaned, most likely by one of this project's own history
+rewrites. The green is truthful about the predicates and silent about the rest.
+
+***AND THE RECORDED CAUSE IS WHAT KEPT IT INVISIBLE.*** This record already
+carries *a guard that does not fire is a PREMISE to check, not a failure to
+report*. The sharper form this cost: **a red whose cause is already written down
+is a red nobody re-reads.** Four cycles have named this gate as "pre-existing,
+not mine" and moved on — correctly on the attribution and wrongly on the
+diagnosis — because the entry answered the question before it was asked. A
+diagnosis in the record is a claim with a shelf life, exactly like a number.
+
+**PREVENTION / REPAIR — NOT YET BUILT, and named rather than hand-waved.** The
+fix is for the test to resolve its own baseline instead of pinning a bare SHA
+that a rewrite can orphan (a tag, a merge-base, or a ref read from the trail),
+and for `lib-refmod`'s `fetchAt` failure to be loud at the level that reads it.
+Until then the honest statement is that `effective-date-test` tests its
+predicates and nothing else. Found while verifying v214's gates: the failure
+TEXT did not match the failure this record predicted, which is the only reason it
+was read rather than counted.
+
+---
+
 ## 2026-11-24 (2x:xxZ) — v214: THE VESTING SCOPE GATE WAS A CLOSED VOCABULARY AGAINST AN OPEN CLASS
 
 **WRONG.** 500 plans / 689,115 readers said under a `Vesting` heading that their
