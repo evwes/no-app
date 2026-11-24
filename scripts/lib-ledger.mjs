@@ -226,8 +226,22 @@ function matchCell(plan, ft) {
    * stays `absent` on purpose — reclassifying the ceiling half as `impossible`
    * would raise `shown` by shrinking its denominator, which is a change to the
    * scoreboard the whole loop steers by and is the owner's call, not a
-   * parser agent's. */
-  return cell("absent", "attachment read, no match statement found — but only ~7.23M of these readers / 4,448 plans are parser-addressable: 9.41M / 5,049 have notes that are SILENT on a match and 1.93M / 1,851 have no plan-description note in the public copy at all (measured 2026-11-22 over 99.6% of the bucket)");
+   * parser agent's.
+   *
+   * AND RE-DERIVED 2026-11-24, WHICH MOVED THE FIGURE AND THEN FOUND THAT THE
+   * FIGURE WAS THE WRONG QUESTION. Over a 24,266-filing corpus (98.5% of this
+   * bucket's readers) the vocabulary-present class is **3,783 plans / 6.37M**,
+   * not 4,448 / 7.23M. More to the point, *the share of it a parser can
+   * publish is far smaller*: `matchQuoteOk(s, false)` — the guard BOTH
+   * renderers call — requires a RATE IN MATCH POSITION when no formula is
+   * parsed, so a filing whose match sentences state no rate has a quote
+   * ceiling of ZERO however wide the selector gets. Asked through that guard
+   * (`scripts/match-quote-ceiling.mjs`): **731 plans / 1,349,149 readers have
+   * ANY publishable sentence, and 3,052 plans / 5,025,351 readers have none.**
+   * v213 takes 689 plans / 1,139,539 readers of that ceiling. *A count keyed
+   * on a VOCABULARY measures the vocabulary* — the question the reason string
+   * has to answer is what the PAGE would publish, not what the notes mention. */
+  return cell("absent", "attachment read, no match statement found — and most of it is NOT parser work: of 3,783 plans / 6.37M readers whose notes carry the match vocabulary, only 731 plans / 1.35M have a sentence `matchQuoteOk` would publish at all (5.03M / 3,052 have none, a ceiling); a further 9.46M / 5,071 have notes SILENT on a match and 1.63M / 1,728 have no plan-description note in the public copy (re-derived 2026-11-24 over 98.5% of the bucket)");
 }
 
 function vestingCell(plan, ft) {

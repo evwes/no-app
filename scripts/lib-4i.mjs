@@ -11,7 +11,7 @@ import { dirname, join } from "node:path";
 /* v203 adds `accelerationOnlyVesting`, the same guard the two display surfaces
  * use to qualify an acceleration-only quote — so the label gate and the
  * reader-facing sentence are one predicate and cannot contradict each other. */
-import { vestingQuoteOk, matchQuoteOk, accelerationOnlyVesting, AV_TRIGGER } from "./lib-quote.mjs";
+import { vestingQuoteOk, matchQuoteOk, rateInMatchPosition, accelerationOnlyVesting, AV_TRIGGER } from "./lib-quote.mjs";
 import { futureEffectiveGrant, catchupMandateRefusal, planYearEnd } from "./lib-effective-date.mjs";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
@@ -7176,6 +7176,161 @@ export function vestingQuoteUpgrade(out, candidate) {
     && !vestingQuoteOk(out.vestingText) && vestingQuoteOk(candidate);
 }
 
+/* ---- v213: the third match-quote fallback's own machinery ----------------
+ *
+ * A TWO-COLUMN PAGE AND A FLATTENED TABLE ARE THE SAME DEFECT once the
+ * extractor's `\s+ -> " "` has run: words on opposite sides of a layout gutter
+ * are WELDED into one sentence, and by the time any guard sees the result it
+ * reads as well-formed prose. Goldman Sachs' notes are two-column and produce
+ *   "Restricted from transferring into or out of the Stock Fund during The Plan
+ *    offers a dollar-for-dollar Matching Contribution on certain periods in
+ *    accordance with the firm's compliance participants' elective deferrals up
+ *    to 6% of Safe Harbor procedures designed to avoid violations…"
+ * which passes `matchQuoteOk` and says nothing the filing says. JHM Hotels is
+ * worse: its gutter welds two columns into "a safe harbor match of 100 4
+ * percent of eligible compensation" — *the weld INVENTED a number*.
+ *
+ * A FILING-LEVEL GUTTER SHARE CANNOT SEE IT (Goldman 19.6%, Amgen 21.4%,
+ * Intermountain 28.0% — the good and the bad are indistinguishable), and
+ * marking each gutter with a sentinel PERTURBS the text: it moved `cap()`'s
+ * 300-character boundary and flipped `matchQuoteOk`'s verdict on Intermountain.
+ * So the witness is taken without touching the text at all — for every PROSE
+ * gutter in the RAW filing, record the three words before and the three after
+ * as they will read once flattened. A sentence containing one of those phrases
+ * crossed a gutter. Measured: 13 plans / 146,343 readers, ALL THIRTEEN READ,
+ * and every one is damaged.
+ *
+ * Both sides must carry PROSE (>=3 letters), or a numeric table's own columns
+ * weld every row into a phrase and the set explodes; the table is caught
+ * anyway, through the HEADER row that names its columns. */
+export function matchWeldPhrases(raw) {
+  const out = new Set();
+  for (const ln of String(raw || "").split("\n")) {
+    const segs = ln.split(/[ \t]{4,}/).map((s) => s.trim()).filter(Boolean);
+    if (segs.length < 2) continue;
+    for (let i = 0; i + 1 < segs.length; i++) {
+      if ((segs[i].match(/[A-Za-z]/g) || []).length < 3) continue;
+      if ((segs[i + 1].match(/[A-Za-z]/g) || []).length < 3) continue;
+      const p = [...segs[i].split(/\s+/).slice(-3), ...segs[i + 1].split(/\s+/).slice(0, 3)].join(" ");
+      if (p.split(" ").length >= 4) out.add(p);
+    }
+  }
+  return out;
+}
+/** The weld phrase a candidate sentence crosses, or null. */
+export function crossesWeldPhrase(sentence, phrases) {
+  for (const p of phrases) if (sentence.includes(p)) return p;
+  return null;
+}
+
+/* A VESTING SENTENCE IS NOT A MATCH SENTENCE, AND `matchQuoteOk` CANNOT SAY SO
+ * — by design. Its `RATE_IN_MATCH_POSITION` test short-circuits BEFORE
+ * `MENTIONS_VESTING`, which is right for its original job (a sentence stating a
+ * match rate that also mentions vesting keeps its quote) and wrong for a
+ * selector keyed on the match word alone: Qualcomm's "Participants vest in the
+ * Company's matching and discretionary contributions … at the rate of 50% on
+ * the first anniversary date" passes it. 31 plans / 64,355 readers, and reading
+ * all of them, 28 are vesting schedules. The three it costs are match
+ * statements using "vested" as an ADJECTIVE ("100% vested matching
+ * contributions for the first 4% of salary deferral" — McFarland Clinic,
+ * 1,843 + Iowa Network 553 + Travis Credit Union 874 = 3,270 readers). This
+ * arm ADDS a claim, so refusing on ambiguity is the conservative direction. */
+export const MQ3_VEST = /\bvest(?:s|ed|ing)?\b|\bnon-?forfeitable\b/i;
+/* THE MATCH IS GONE, STATED IN THE SENTENCE ITSELF. The bad case is PRESENT,
+ * not inferred from an absence: Quarles & Brady "amended to set the
+ * nondiscretionary profit sharing contribution percentage to 7% … and to remove
+ * matching contributions", PAE "elected not to make any safe harbor or matching
+ * contributions", Tecumseh "eliminated the Company match and instituted a
+ * qualified non-elective contribution equal to 10%". In each the rate in the
+ * sentence belongs to something that is not the match. */
+export const MQ3_NO_MATCH = new RegExp([
+  "(?:remove|removing|removal of|eliminat\\w+|discontinu\\w+|suspend\\w+|sunset\\w*|freez\\w+|ceas(?:e[sd]?|ing))[^.]{0,60}?match",
+  "(?:elected|chose|decided|opted) not to (?:make|contribute|provide)[^.]{0,60}?match",
+  "(?:there (?:were|was|are|is)|made) no [^.]{0,60}?match(?:ing)? contributions?",
+  "match(?:ing)? contributions? (?:were|was|are|is) (?:not|no longer)",
+  "prior to the (?:plan )?termination date",
+].join("|"), "i");
+/* A CAP STATED AS A NEGATIVE IS NOT AN ABSENCE, and three of the first ten
+ * members the rule above refused were exactly that: "There will be no matching
+ * contribution in excess of 5% of the compensation" (Producers Dairy, 1,813),
+ * "will not make matching contributions on matchable contributions that exceed
+ * 6%" (B. Fernandez, 999), "will not make Matching Contributions on a
+ * Participant's Salary Deferral Contributions above 4%" (Home Orthopedics,
+ * 163). All three state the plan's cap and must be published. */
+export const MQ3_MATCH_CAP = /\b(?:no|not)\b[^.]{0,50}?match\w*[^.]{0,80}?(?:in excess of|exceeds?|exceeding|above|over)\b/i;
+/* A COMBINED HEADING WELDED TO THE OTHER HALF'S SENTENCE. "Employer match and
+ * profit sharing contributions – The University makes contributions … at a rate
+ * of 10% of compensation" (University of San Francisco, 3,937) and Santiam
+ * Memorial (915): the heading names both, the body states the PROFIT-SHARING
+ * rate, and a reader would take 10% for the match. Exactly 2 plans / 4,852
+ * readers, kept because a WRONG published claim outranks a missing one at any
+ * size. The wider version of this screen — "the match word occurs only in the
+ * first 70 characters" — was REFUTED by reading it: 495 plans / 774,534
+ * readers, and every member read is a complete match statement. */
+export const MQ3_COMBINED_HEAD = /^(?:…\s*)?(?:employer |company )?match(?:ing)? and (?:profit[- ]sharing|non-?elective)(?:[a-z ]{0,20})contributions?\b/i;
+/* THREE OF THE SHIPPED LOOPS' REJECTIONS ARE DELIBERATELY ABSENT, every one
+ * because the leave-one-out reading said so rather than because it was
+ * convenient.
+ *
+ * THE LENGTH FLOOR IS GONE, NOT LOWERED. The shipped loops refuse `s.length <=
+ * 60`, and all SIX sentences that refuses on this population are complete match
+ * statements — "The Company matches 50%, up to 6%, of employee deferrals."
+ * (Jubitz, 57 characters), "The Organization matches 3% of the employee
+ * deferrals." (54). A floor of 25 was written instead and then removed as dead
+ * machinery: the SHORTEST sentence this arm accepts anywhere in the population
+ * is 38 characters, so no plan's answer depends on it, and the first short
+ * sentence it ever refused would be a true one, because `matchQuoteOk` already
+ * requires a rate in match position and no heading fragment carries one. *A
+ * condition that can never be the only protection reads as a guard and is dead
+ * code* — asserted over the population by `match-quote3-gate.mjs` instead.
+ *
+ * `ACCT_MECH` is INERT — removing it changes no plan's answer, since
+ * `matchQuoteOk`'s own ACCOUNT_MECHANICS covers the class — and so is omitted
+ * on the same ground.
+ * `!HAS_RATE && (OTHER_TOPIC || DOLLAR_TOTAL)` refuses FOUR plans / 2,859
+ * readers and all four state the match in DOLLARS and are true ("a matching
+ * contribution of $100 per month", Fedway; "$0.50 on each dollar contributed",
+ * Inland; "up to $25 for each payroll period", Marathon Coach) — DOLLAR_TOTAL's
+ * `contributions? of \$` arm reads a dollar RATE as a year's TOTAL. Dropping it
+ * re-opens the El Valor exposure `lib-quote.mjs` records (a year's total
+ * published as a formula through LEADIN_RATE's "equal to $29,342"), so that was
+ * screened over the whole accepted population: 4 picks carry a "totaling $…"
+ * clause and THREE state a real rate beside it, the fourth being the
+ * combined-heading case refused above. The exposure is measured, not assumed. */
+export const MQ3_REFUSE = [
+  ["vest", (s) => MQ3_VEST.test(s)],
+  ["no-match", (s) => MQ3_NO_MATCH.test(s) && !MQ3_MATCH_CAP.test(s)],
+  ["combined-head", (s) => MQ3_COMBINED_HEAD.test(s)],
+];
+
+/* THE DIFFERENTIAL'S NARROWING, AND IT SUPERSETS THE ARM BY CONSTRUCTION.
+ * `match-arm-diff.mjs` narrows on a NAMED EXPORTED predicate of the flattened
+ * filing text, so the arm — which also needs `sentence()` and the raw text's
+ * line breaks — cannot be the predicate itself. This is its envelope, and the
+ * supersetting is an argument rather than a sample:
+ *
+ *   with `hasFormula = false` every branch of `matchQuoteOk` but
+ *   `RATE_IN_MATCH_POSITION` RETURNS FALSE, so the arm can only ever store a
+ *   sentence for which that test is true; it is a plain substring search and
+ *   therefore MONOTONE, so it is also true of any WINDOW containing that
+ *   sentence. `sentence()` never reaches further than ~300 characters either
+ *   side of the match word it was given, so the window below contains whatever
+ *   sentence the arm would have picked.
+ *
+ * Every refusal is deliberately ABSENT here: a narrowing must be WIDER than the
+ * change, and adding the refusals would make it narrower and could exclude a
+ * filing the arm reaches. `--discharge` re-runs excluded filings unnarrowed and
+ * must find 0 differences. */
+export function mq3Candidate(flatText) {
+  const t = String(flatText || "");
+  const re = /\bmatch(?:es|ed|ing)?\b/gi;
+  let m;
+  while ((m = re.exec(t))) {
+    if (rateInMatchPosition(t.slice(Math.max(0, m.index - 320), m.index + 340))) return true;
+  }
+  return false;
+}
+
 /* v208: THE THIRD ARGUMENT IS THE PLAN YEAR, AND WITHOUT IT THERE IS NO DATE
  * TEST AT ALL. `{pyb, pye}` exactly as `build-data.mjs` writes them; the roth
  * and after-tax arms use it to skip a candidate sentence whose grant is not yet
@@ -9509,6 +9664,66 @@ export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
       if (!BOILER.test(s) && !/name of contributing employer|dollar amount contributed|date collective bargaining agreement/i.test(s)) {
         out.nec = "Set by collective bargaining agreement"; out.necText = s;
       }
+    }
+  }
+
+  /* v213 — A THIRD MATCH-QUOTE FALLBACK, SELECTED BY THE MATCH WORD AND JUDGED
+   * BY THE PAGE'S OWN GUARD. It FILLS A BLANK and can do nothing else.
+   *
+   * WHAT WAS MEASURED. Of the match-absent bucket (10,708 plans / 17.80M
+   * readers, 98.5% of its readers judged), the parser-addressable part is
+   * 3,783 plans / 6.37M — and the CEILING on a quote is far lower than that:
+   * `matchQuoteOk(s, false)` requires a RATE IN MATCH POSITION when no formula
+   * is parsed, so only 731 plans / 1.35M readers have ANY sentence a reader
+   * could lawfully be shown. On 728 of those 731 the shipped selectors are the
+   * gap: neither `mre` (which needs an employer noun BEFORE "match", or one of
+   * six connectives after "matching contributions") nor `MF_FVERB` reaches the
+   * sentence. The guards are the gap on 3 plans / 5,129 readers.
+   * So the selector here is the match WORD, and every judgment is made by the
+   * guard rather than by the vocabulary.
+   *
+   * WHY IT IS ADDITIVE BY CONSTRUCTION, which is the whole safety argument.
+   * `!out.match && !out.matchText && !out.matchMisread` — so the two shipped
+   * loops, the formula arms, the discretionary labels and v210's `discW` all
+   * keep priority and NO published quote can change. *Adding a writer to a
+   * first-wins chain re-orders it*, and this one is appended rather than
+   * inserted.
+   * AND IT IS PLACED HERE, AFTER THE CBA ARM, RATHER THAN BESIDE ITS SIBLINGS,
+   * because the write set has to be closed under what READS `matchText`:
+   * (named rather than numbered, because a line number in a comment goes stale
+   * the next time anything above it moves):
+   *   the "(none made for plan year N)" append       — needs out.match
+   *   the v199/v200 `misread` gate                   — needs out.match
+   *   the DECLARED-RATE relabel, which READS matchText and WRITES out.match —
+   *     needs out.match, AND runs before this point
+   *   hireSplitLabel("match")                        — needs out.match
+   *   the CBA arm `out.nec = "Set by collective bargaining agreement"`, gated
+   *     on `!out.matchText` — the one reader this arm could SUPPRESS, which is
+   *     why it is placed after it. Measured: 0 plans in this arm's population
+   *     take their NEC from it today, so the ordering costs nothing and closes
+   *     the exposure by construction rather than by that measurement.
+   *   app.js's safe-harbor vesting line, suppressed when matchText
+   *                mentions QACA. Measured: 4 plans reach it and all four have
+   *                `out.vesting` set, so that branch (`!ff.vesting &&
+   *                !vestingQuote`) is unreachable on every one.
+   *   audit-data.mjs's FORM_QUESTION check — a quote carrying FORM-QUESTION text is a HIGH finding.
+   *                Measured ZERO over the whole population.
+   * `out.match` is falsy here on every path that reaches this arm and nothing
+   * after it writes `out.match`, so no plan can gain or change a match LABEL.
+   *
+   * THE REFUSALS ARE EARNED BY READING, never by screening for the absence of
+   * the good case — see `MQ3_REFUSE` and the accuracy log for 2026-11-24. */
+  if (!out.match && !out.matchText && !out.matchMisread) {
+    const welds = matchWeldPhrases(text);
+    const mq3 = /\bmatch(?:es|ed|ing)?\b/gi;
+    let q3;
+    while ((q3 = mq3.exec(t))) {
+      const s = sentence(q3.index);
+      if (BOILER.test(s)) continue;
+      if (!matchQuoteOk(s, false)) continue;
+      if (MQ3_REFUSE.some(([, f]) => f(s))) continue;
+      if (crossesWeldPhrase(s, welds)) continue;
+      out.matchText = s; break;
     }
   }
 

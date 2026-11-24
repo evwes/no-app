@@ -40,6 +40,7 @@ import { buildLedger } from "./lib-ledger.mjs";
 import { read } from "./lib-filingtext.mjs";
 import { loadPlans } from "./lib-schema.mjs";
 import { materialiseAt } from "./lib-refmod.mjs";
+import { matchQuoteOk } from "./lib-quote.mjs";
 
 const argv = process.argv.slice(2);
 /* flag VALUES are not positional arguments. `--arm discMatchWidened HEAD~1`
@@ -255,6 +256,16 @@ if (FIELD === "match") {
   console.log(`  matchAny       += ${nonzero.length + zero.length}`);
   const hadQuote = moves.filter((m) => m.newMatch && !m.oldMatch && m.oldQuote);
   console.log(`  matchQuote     -= ${hadQuote.filter((m) => m.contribEmployer > 0).length}  (of the gainers, had a stored quote and employer money)`);
+  /* AND THE QUOTE-ONLY HALF, WHICH THIS BRANCH DID NOT PRINT AND THE VESTING
+   * BRANCH DID. A change that adds a QUOTE and no formula moves none of the
+   * four keys above — v213 registered `match += 0` on a ship worth 689 plans —
+   * so the keys it DOES move are derived here from audit-data's own branch
+   * order (`else if (f.matchText) { matchQuote++; if (matchQuoteOk) ... }`),
+   * which is not gated on employer money the way `match` is. */
+  const quoteOnlyGain = moves.filter((m) => !m.newMatch && !m.oldMatch && !m.oldQuote && m.newQuote);
+  const shown = quoteOnlyGain.filter((m) => matchQuoteOk(m.newQuote, false));
+  console.log(`  matchQuote      += ${quoteOnlyGain.length}  (gained a quote-only entry)`);
+  console.log(`  matchQuoteShown += ${shown.length}  (of those, the sentence the page's own guard will publish)`);
 } else {
   /* THE VESTING TRAIL KEYS ARE NOT GATED ON EMPLOYER MONEY — `audit-data`
    * counts `vesting` for any entry with `f.vesting` and `vestQuote` for any

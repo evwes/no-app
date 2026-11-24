@@ -7,6 +7,79 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-24 — v213: THE MATCH QUOTE CEILING IS 1.35M AND NOT 6.37M, AND A COLUMN GUTTER INVENTED A NUMBER
+
+**WHAT WAS WRONG.** The match gap's "parser-addressable" bucket was sized as
+"notes present, match vocabulary present" — 3,783 plans / 6.37M readers on
+today's re-derivation (24,266-filing corpus, 98.5% of the bucket's readers
+judged). **That is not the addressable figure.** `matchQuoteOk(s, false)`, the
+guard BOTH renderers call, requires a rate in match position when no formula is
+parsed, so a filing whose match sentences state no rate has a quote ceiling of
+ZERO however wide the selector gets. Asked through that guard: **731 plans /
+1,349,149 readers have any publishable sentence; 3,052 / 5,025,351 have none** —
+*a count of a condition is not a measure of a defect.* The ceiling is the
+SELECTOR's: on 728 of the 731 neither `mre` nor `MF_FVERB` reaches the accepted
+sentence; the shipped guards are the gap on 3 plans / 5,129 readers.
+
+**THE CHANGE.** A third quote fallback selecting on the match WORD, judged by
+`matchQuoteOk` plus four refusals, writing only `out.matchText` and only into a
+blank. **Placed at the END of the match work, which is the whole safety
+argument**: the DECLARED-RATE relabel READS `matchText` and WRITES `out.match`,
+and the CBA arm is gated on `!out.matchText` and would be SUPPRESSED — *a
+write-set grep sees neither.* After both, `out.match` is falsy on every path
+reaching the arm and nothing later writes it, so no plan can gain or change a
+LABEL; `app.js`'s QACA-suppressed safe-harbor vesting line is unreachable on all
+4 plans that reach the arm because each has `out.vesting`.
+
+**THE REFUSALS, EACH READ RATHER THAN SCREENED FOR** (priced per condition in
+`lib-4i.mjs`; three shipped rejections are omitted on leave-one-out grounds).
+**weld, 13 plans / 146,343 readers, all 13 read:** a two-column page and a
+flattened table are one defect once `\s+ -> " "` has run — Goldman Sachs (50,430)
+reads as prose and says nothing its filing says, and **JHM Hotels' gutter welded
+two columns into "a safe harbor match of 100 4 percent", INVENTING a number.** A
+filing-level gutter share cannot separate them (Goldman 19.6%, Amgen 21.4%,
+Intermountain 28.0%) and a sentinel PERTURBS the text — it moved `cap()`'s
+300-character boundary and flipped `matchQuoteOk` on Intermountain — so the
+witness is the three words either side of every prose gutter, taken without
+touching the text. **vest, 31 / 64,355:** `matchQuoteOk`'s rate test
+short-circuits BEFORE its vesting test, so Qualcomm's "Participants vest … at the
+rate of 50% on the first anniversary date" passes it. **no-match, 7 / 7,025**,
+with its own exception: **a cap stated as a negative is not an absence.**
+**combined-head, 2 / 4,852** — and **its wider form was REFUTED by reading it:**
+"the match word occurs only in the first 70 characters" is 495 plans / 774,534
+readers and every member read is a complete match statement.
+
+**MEASURED.** Differential vs the committed base, narrowed by the exported
+`mq3Candidate` (a superset BY CONSTRUCTION: with `hasFormula=false` every branch
+of `matchQuoteOk` but the MONOTONE rate test returns false), discharged over
+6,000 excluded filings: **only `matchText` moved anywhere; off-match field moves
+0; 689 plans / 1,139,539 readers absent -> withheld; formulas lost 0, relabelled
+0, quotes changed 0, quotes lost 0.** `match_shown` and the ONE SCALAR are FLAT
+BY CONSTRUCTION — `possible` is published+withheld+absent — while 1.14M readers
+go from a blank cell to the filing's own words. *A ledger keyed on LABEL coverage
+is blind to QUOTE coverage.*
+
+**PREVENTION.** `scripts/match-quote3-gate.mjs`: 7 positive pins by ACK with the
+QUOTE pinned, 8 negative controls each asserting EXACTLY ONE condition rejects
+its case and NAMING it (and that removing that one leaves it accepted), 7
+counter-specimens asserting byte-identical features, `--population` re-asking the
+four claims above, and a `--selftest` that shifts every expectation to a
+DIFFERENT condition and requires all 8 to fail. `parser-gate` green at 134 with 4
+v213 positives and 7 v213 controls; two v210 controls move `quote: null -> true`
+in the QUOTE and not the LABEL, the distinction they exist to hold.
+**TWO MISTAKES THE INSTRUMENTS CAUGHT:** my first three counter-specimens were
+the arm's own GAINERS, so the gate failed on the change working — *a
+counter-specimen has to be a plan that already answers*; and the selftest's first
+shuffle shifted expectations BY POSITION, so two of the three consecutive `weld`
+fixtures got their own condition back and passed, reporting 6 of 8 as a failure
+of the gate rather than of the shuffle.
+
+**NOT CLAIMED.** Bucket C's two largest plans stay blank on purpose
+(Intermountain 87,660, Goldman 50,430 — both welds), and its 5,025,351 readers /
+3,052 plans with no publishable sentence are a ceiling, not a backlog.
+
+---
+
 ## 2026-11-23 (21:3xZ) — A REGISTRATION SETTLED ON A 97% STORE IS SETTLED FOR 97% OF THE UNIVERSE, AND THE REST ARRIVES ATTRIBUTED TO THE NEXT VERSION
 
 **WHAT WAS WRONG.** v211 was declared SETTLED at `pvTopShare` 97.2 with **1,792

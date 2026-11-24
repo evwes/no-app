@@ -474,14 +474,56 @@ const FEATURE_SPECIMENS = [
     "20261015135704NAL0004121251001", { match: "Discretionary — set year to year", quote: true }],
   ["v210: Select Rehabilitation — \"one year of service\" is ELIGIBILITY on a real grant, not a vesting schedule",
     "20261013095543NAL0004081153001", { match: "Discretionary — set year to year", quote: true }],
-  ["v210 control: Gilead — a NON-discretionary match is the opposite claim",
-    "20260730163631NAL0022760017001", { match: null, quote: null }],
-  ["v210 control: Compass Health — a SECONDARY match beside a stated safe-harbor formula",
-    "20261015121554NAL0003966483001", { match: null, quote: null }],
+  /* TWO OF THESE FOUR MOVED AT v213, ON PURPOSE, AND THE MOVE IS IN THE QUOTE
+   * AND NOT THE LABEL — which is exactly the distinction these controls exist
+   * to hold. v213's third quote fallback reaches Gilead's "non-discretionary
+   * match of 100% of the first $15,000 of compensation" and Compass Health's
+   * "safe harbor matching contribution … of 100% of the participants'
+   * contributions, up to a limit of 6% of the participants' monthly base
+   * salary". Both were READ; both are the plan's real formula; and `match`
+   * stays null on both, so the claim these specimens guard — that a NON
+   * discretionary match never takes the discretionary LABEL — is untouched.
+   * Medisys and Major League Soccer keep `quote: null`, so the junk-quote half
+   * of the comment above is still exercised by two of the four. */
+  ["v210 control: Gilead — a NON-discretionary match is the opposite claim (v213 adds its real quote)",
+    "20260730163631NAL0022760017001", { match: null, quote: true }],
+  ["v210 control: Compass Health — a SECONDARY match beside a stated safe-harbor formula (v213 adds its real quote)",
+    "20261015121554NAL0003966483001", { match: null, quote: true }],
   ["v210 control: Medisys — a vesting sentence whose vest word is MISSPELLED (\"fully bested\")",
     "20261015184529NAL0004502675001", { match: null, quote: null }],
   ["v210 control: Major League Soccer — a FORFEITURE sentence",
     "20261005093330NAL0031800162001", { match: null, quote: null }],
+
+  /* v213 — THE THIRD MATCH-QUOTE FALLBACK. The selector is the match WORD and
+   * every judgment is `matchQuoteOk` plus four refusals, so the counter
+   * specimens outnumber the positives on purpose: the risk here is not a wrong
+   * LABEL (the arm writes none) but a sentence published under "Match formula,
+   * as filed" that says something the filing does not say.
+   *
+   * Each control is the case where ONE refusal is the only protection, which
+   * `scripts/match-quote3-gate.mjs` asserts BY NAME over the same filings. */
+  ["v213: Aecom — \"are matched 50% by the Company\", a PASSIVE verb no shipped selector reaches",
+    "20260917145749NAL0006535586001", { match: null, quote: true }],
+  ["v213: Geico — \"the Companies' match is one dollar for each dollar of the first 6 percent\", a BARE noun",
+    "20261009091506NAL0035004579001", { match: null, quote: true }],
+  ["v213: Jubitz — \"The Company matches 50%, up to 6%, of employee deferrals.\", refused by the loops' 60-char floor",
+    "20261015100011NAL0007631235001", { match: null, quote: true }],
+  ["v213: Producers Dairy — a CAP stated as a negative must still publish",
+    "20260715104425NAL0002846225001", { match: null, quote: true }],
+  ["v213 control: Goldman Sachs — a TWO-COLUMN weld reads as prose and says nothing the filing says",
+    "20261014162515NAL0003209059001", { match: null, quote: null }],
+  ["v213 control: JHM Hotels — the weld INVENTED a number (\"match of 100 4 percent\")",
+    "20260922162735NAL0006264451001", { match: null, quote: null }],
+  ["v213 control: Intermountain — a flattened RATE TABLE is not a sentence",
+    "20261013142219NAL0004040769001", { match: null, quote: null }],
+  ["v213 control: Qualcomm — a VESTING schedule whose rate passes matchQuoteOk",
+    "20261013181921NAL0002232355001", { match: null, quote: null }],
+  ["v213 control: Quarles & Brady — the match was REMOVED and the 7% belongs to profit sharing",
+    "20260714071539NAL0000767267002", { match: null, quote: null }],
+  ["v213 control: Univ. of San Francisco — a COMBINED heading over a profit-sharing rate",
+    "20261008141403NAL0032682272001", { match: null, quote: null }],
+  ["v213 control: Delta Air Lines — a WITHDRAWAL sentence with no rate in match position",
+    "20261014140340NAL0010782050001", { match: null, quote: null }],
 ];
 
 const SPECIMENS = [

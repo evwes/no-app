@@ -95,6 +95,15 @@ const ELIGIBILITY_ONLY = /\b(?:not eligible for|(?:are|is) eligible to (?:receiv
  *                             it. When false the quote must stand alone as the
  *                             formula, which is the stricter test.
  */
+/* EXPORTED FOR THE v213 DIFFERENTIAL'S NARROWING, and the reason is a property
+ * of `matchQuoteOk` worth stating here rather than in the caller: with
+ * `hasFormula=false` every other branch RETURNS FALSE, so a sentence can only
+ * be accepted through `RATE_IN_MATCH_POSITION`. That test is a plain substring
+ * search, hence MONOTONE — true of a sentence implies true of any window
+ * containing it — which is what lets a window-based predicate superset the arm
+ * BY CONSTRUCTION rather than by sampling. */
+export const rateInMatchPosition = (text) => RATE_IN_MATCH_POSITION.test(String(text || ""));
+
 export function matchQuoteOk(text, hasFormula = false) {
   const t = String(text || "").replace(/\s+/g, " ").trim();
   if (!t) return false;

@@ -29,11 +29,10 @@
  */
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { buildLedger } from "./lib-ledger.mjs";
-import { extractPlanFeatures, MF_FVERB, mfWidened, mfMixedFraction, mfEqualTo, mfEqualToWords, mfFiniteVerb } from "./lib-4i.mjs";
+import { extractPlanFeatures, mfWidened, mfMixedFraction, mfEqualTo, mfEqualToWords, mfFiniteVerb } from "./lib-4i.mjs";
 import { planNoteArm, attachmentHasNoTextLayer, stripFormAndNameNoise, FIELD_WORD } from "./lib-plannote.mjs";
 import { read, seededShuffle } from "./lib-filingtext.mjs";
 
-const R = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
 const argv = process.argv.slice(2);
 const CACHE = process.env.MATCH_CAUSE_CACHE || "/tmp/wampo-match-cause.jsonl";
 const CACHED = argv.includes("--cached");
@@ -42,86 +41,12 @@ const SHOW = (() => { const i = argv.indexOf("--show"); return i > 0 ? argv[i + 
 const TOP = (() => { const i = argv.indexOf("--top"); return i > 0 ? +argv[i + 1] : 12; })();
 
 /* ---------------------------------------------------------------- the slice */
-const SRC = readFileSync(`${R}/scripts/lib-4i.mjs`, "utf8");
-
-/** One `const NAME = …;` statement, taken whole, by its own text. */
-function sliceConst(name, { multi = false } = {}) {
-  const a = SRC.indexOf(`  const ${name} = `);
-  if (a < 0) throw new Error(`match-cause-census: lib-4i has no \`const ${name} = \` — the slice boundary moved`);
-  // a single statement ends at the first newline whose line ends in `;`
-  let b = a;
-  for (;;) {
-    const nl = SRC.indexOf("\n", b + 1);
-    if (nl < 0) throw new Error(`match-cause-census: unterminated const ${name}`);
-    const line = SRC.slice(b, nl);
-    b = nl;
-    if (/;\s*$/.test(line) && (!multi || /^\s*\};?\s*$/.test(line) || /\.trim\(\);\s*$/.test(line))) break;
-  }
-  return SRC.slice(a, b);
-}
-
-const PIECES = [
-  sliceConst("BOILER"),
-  sliceConst("clean", { multi: true }),
-  sliceConst("cap"),
-  sliceConst("sentence", { multi: true }),
-  sliceConst("mre"),
-  sliceConst("OTHER_TOPIC"),
-  sliceConst("DOLLAR_TOTAL"),
-  sliceConst("ACCT_MECH"),
-  sliceConst("HAS_RATE"),
-];
-/* ASSERT THE SHAPE RATHER THAN TRUSTING THE OFFSETS. Each piece must carry the
- * token that makes it the thing it is named for; a boundary that slid one
- * statement would otherwise compile and measure something else. */
-const SHAPE = [
-  [0, "provide explanation"], [1, "Notes? to Financial Statements"], [2, "s.slice(0, n - 3)"],
-  [3, "lastIndexOf"], [4, "matching contributions? (?:is|are|equal|of|based|provided)"],
-  [5, "non-?forfeitable"], [6, "amounted to"], [7, "account is credited"], [8, "percent|%"],
-];
-for (const [i, must] of SHAPE)
-  if (!PIECES[i].includes(must)) throw new Error(`match-cause-census: slice ${i} is missing ${must}`);
-if (PIECES.some((p) => /process\.|readFileSync|import /.test(p)))
-  throw new Error("match-cause-census: a slice reaches outside the extractor");
-
-/* MF_FVERB IS IMPORTED, NOT SLICED, AND THE FIRST VERSION SLICED IT WRONG — the
- * equivalence control is what said so. `export const MF_FVERB = String.raw`…``
- * INTERPOLATES `${MF_FSUBJ}` and `${MF_FPLURAL}`, so the template's own source
- * text carries those two tokens LITERALLY: a regex compiled from it matches the
- * characters `${MF_FSUBJ}` and therefore nothing at all. The whole verb loop
- * read inert — 179 of 2,289 fallback quotes came back `null` — and *a broken arm
- * and an inert arm read the same zero*, which is exactly what the control
- * exists to separate. The exported VALUE is already interpolated. */
-const MF_FVERB_SRC = MF_FVERB;
-if (/\$\{/.test(MF_FVERB_SRC)) throw new Error("match-cause-census: MF_FVERB carries an un-interpolated template");
-
-/* The two loops, with ATTRIBUTION. The rejection EXPRESSIONS are the sliced
- * ones; only the bookkeeping around them is written here, and the equivalence
- * control below is what proves the bookkeeping changed no verdict. */
-const BODY = `
-${PIECES.join("\n")}
-const fre = new RegExp(MF_FVERB_SRC, "gi");
-const why = [];
-let found = null, cands = 0;
-for (const [tag, re] of [["noun", mre], ["verb", fre]]) {
-  if (found) break;
-  re.lastIndex = 0;
-  let mm;
-  while ((mm = re.exec(t))) {
-    const s = sentence(mm.index);
-    cands++;
-    if (BOILER.test(s)) { why.push(tag + ":boiler"); continue; }
-    if (s.length <= 60) { why.push(tag + ":short"); continue; }
-    if (ACCT_MECH.test(s)) { why.push(tag + ":acct-mech"); continue; }
-    if (!HAS_RATE.test(s) && OTHER_TOPIC.test(s)) { why.push(tag + ":other-topic"); continue; }
-    if (!HAS_RATE.test(s) && DOLLAR_TOTAL.test(s)) { why.push(tag + ":dollar-total"); continue; }
-    found = s; break;
-  }
-}
-return { found, why, cands };
-`;
-const runFallback = new Function("t", "MF_FVERB_SRC", BODY);
-const fallback = (text) => runFallback(String(text).replace(/[​-‏﻿]/g, "").replace(/\s+/g, " "), MF_FVERB_SRC);
+/* MOVED to `scripts/lib-matchslice.mjs` 2026-11-24, VERBATIM, because a second
+ * instrument needed the identical thing and this record's rule is that a
+ * construction is SHARED rather than retyped. The equivalence control below is
+ * unchanged and now guards the shared copy, which is the point: it fails the
+ * moment the slice drifts from `lib-4i.mjs`. */
+import { fallback } from "./lib-matchslice.mjs";
 
 /* ------------------------------------------------- the equivalence control */
 function control(L) {
