@@ -7,6 +7,65 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-24 (18:xxZ) — A WELDED VALUE COLUMN HID THE SYMBOL THE FILING PRINTS
+
+**WRONG.** IBEW Local 4 (759 readers) published **PTTRX** — PIMCO Total Return's
+INSTITUTIONAL class — on a row whose own name reads `PIMCO Total Return A
+(PTTAX) 236,653 il` and prints the Class A symbol. `resolveTrailingFiledTicker`
+is `$`-anchored, and the 4i VALUE cell had glued onto the end of the name, so
+the printed symbol was invisible to the resolver and the pattern table answered
+instead. One of the two standing `ticker-conflict` findings.
+
+**CHANGE — MERGE-SIDE, so no `PARSER_VERSION` bump and no re-parse.** `ftk` is
+written by `merge-4i` from the SEC registry, so the fix is a retry: try the raw
+name, and only if it declines, strip a VALUE-shaped tail and ask the SHIPPED
+body again. The corroboration is therefore literally unchanged. A wider regex
+was rejected on measurement: dropping the `$` takes the FIRST of two
+parentheticals in a welded row, and `audit-data`'s suppression B records the
+case whose correct answer is the LAST (FIHBX).
+
+**MEASURED over all 1,789,712 stored rows: 14 gain an `ftk`, 0 change.** Through
+`lookupTicker` — the page's own resolver, asked with the whole row — **1
+CORRECTION (PTTRX -> PTTAX) and 12 rows that published NOTHING gain a symbol**,
+1 no-op. All 14 read against the registry's own series name; the target-date
+vintages are the check that would catch a transposition, and the rows naming
+2045 / 2050 / 2055 / 2060 resolve to those funds.
+
+***AND THE SECOND FINDING IS NOT A TICKER CONFLICT AT ALL, which is the half
+worth keeping.*** St. Jude (11,230 readers, $41.9M) files `Vanguard Total Bond
+Market Index Fund Institutional (VBITX)`, and VBITX is registered — sourced, not
+recalled — to the **SHORT-TERM** Bond fund. So the FILER carries a transposition
+of VBTIX, and adopting the filed symbol would publish the wrong FUND, which is
+worse than the wrong share class shown today. The pipeline already knew:
+`resolveTrailingFiledTicker` refused it on its two-funds test, which is why the
+row has no `ftk`. Stripping the parenthetical does not help either —
+`lookupTicker` answers VBTLX with or without it, so the defect is `fund-er.js`
+reading a stated-**Institutional** name as **Admiral**, a member of owner
+decision #3's pending class ship (3,169 rows / 9.1M readers). Measured
+population of St. Jude's exact shape: **1 row in the whole store.**
+*A witness that a row is damaged is not a witness to which side the damage is
+on.*
+
+**PREVENTION.** `sec-tickers-test.mjs` section 8 — four assertions, each
+protecting a different thing: the motivating row resolves, the transposed symbol
+stays REFUSED, a welded two-parenthetical row still takes the LAST symbol, and
+only a value-shaped tail is stripped (narrowness). And `audit-data`'s finding
+now NAMES WHICH SIDE IS WRONG and says not to adopt the filed symbol — *an error
+code is a published claim, and so is a check*: a finding whose remedy is harmful
+is the same failure wearing a true sentence.
+
+**TWO COSTS, both this record's own rules met from the other side.** (1) My
+sibling corroboration built a SECOND index with `new URL(..., import.meta.url)`,
+and `ticker-conflict-test` slices this region into `new Function`, replacing the
+ONE such occurrence — `String.replace` takes only the FIRST, so the tether died
+on `Cannot use 'import.meta' outside a module`. It now shares the single lazy
+build. (2) Before that, the sibling landed INSIDE `filedTkCorroborated`'s
+braces, and the audit **exited 0 printing no ticker-conflict output at all** —
+that block swallows exceptions, so a broken check reads exactly like a clean
+store.
+
+---
+
 ## 2026-11-24 (16:xxZ) — A GATE WHOSE JUDGING HALF HAS BEEN DEAD FOR WEEKS, BEHIND A RED THAT WAS ALREADY EXPLAINED
 
 **WRONG.** `scripts/effective-date-test.mjs` is red, and CLAUDE.md recorded the

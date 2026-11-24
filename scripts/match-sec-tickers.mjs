@@ -871,8 +871,52 @@ export function resolveFiledTicker(idx, filedName) {
  * FAILS OPEN: the guard only ever removes rows from this arm, and this arm
  * only ever fills a blank. */
 const FILED_TICKER_TRAIL = /\(\s*([A-Z]{5})\s*\)\s*$/;
+/* A WELDED VALUE COLUMN IS NOT A DIFFERENT NAME, 2026-11-24.
+ *
+ * The arm below is `$`-anchored, and a 4i row often arrives with its VALUE cell
+ * glued onto the end of the name — `PIMCO Total Return A (PTTAX) 236,653 il`,
+ * where `236,653` is the shares column and `il` is the suffix debris the name
+ * repairs already strip elsewhere. So the symbol the filing PRINTS was invisible
+ * to this resolver on exactly the rows whose names the parser damaged, and the
+ * page answered from the pattern table instead: IBEW Local 4 published PTTRX,
+ * the INSTITUTIONAL class, on a row whose own name says `A` and prints PTTAX.
+ * That was one of the two `ticker-conflict` findings the audit raises.
+ *
+ * WHY THE RETRY RATHER THAN A WIDER REGEX. Dropping the `$` would take the
+ * FIRST of two parentheticals in a WELDED row, and `audit-data`'s suppression B
+ * records the case that breaks: I Am Boundless reads
+ * `CLASS (CMTFX) FEDERATED … (FIHBX)` and the correct answer is the LAST one,
+ * FIHBX. Stripping only a value-shaped tail and re-asking keeps the `$` anchor,
+ * so the last parenthetical still wins.
+ *
+ * ADDITIVE BY CONSTRUCTION: the raw string is tried FIRST and the retry runs
+ * only where it declined, so this can fill a blank and can never change an
+ * answer. MEASURED over all 1,789,712 stored rows — 14 rows gain an `ftk`,
+ * **0 change**. Through `lookupTicker`, the page's own resolver: 1 CORRECTION
+ * (PTTRX -> PTTAX), 12 rows that published NOTHING gain a symbol, 1 no-op. All
+ * 14 were read against the SEC registry's own series name, and the target-date
+ * vintages are the check that would have caught a transposition — the rows
+ * naming 2045 / 2050 / 2055 / 2060 resolve to the 2045 / 2050 / 2055 / 2060
+ * funds.
+ *
+ * AND THE CORROBORATION IS UNTOUCHED, which is the whole point of retrying into
+ * the SHIPPED body rather than widening it: St. Jude files
+ * `Vanguard Total Bond Market Index Fund Institutional (VBITX)` where VBITX is
+ * registered to the SHORT-TERM Bond fund, and `trailAttempt`'s two-funds test
+ * refuses it both before and after this change. *A witness that a row is
+ * damaged is not a witness to which side the damage is on*, and here the
+ * FILING carries the transposition. */
+const FILED_TICKER_DEBRIS_TAIL = /\s+\(?\$?[\d][\d.,]*\)?(?:\s+[A-Za-z]{1,4})?\s*$/;
 export function resolveTrailingFiledTicker(idx, filedName, issuer) {
   if (!idx || !idx.byTicker) return null;
+  const s = String(filedName || "").trim();
+  const direct = trailAttempt(idx, s, issuer);
+  if (direct) return direct;
+  const stripped = s.replace(FILED_TICKER_DEBRIS_TAIL, "").trim();
+  if (!stripped || stripped === s) return null;
+  return trailAttempt(idx, stripped, issuer);
+}
+function trailAttempt(idx, filedName, issuer) {
   const s = String(filedName || "").trim();
   const m = FILED_TICKER_TRAIL.exec(s);
   if (!m) return null;

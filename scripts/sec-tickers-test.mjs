@@ -492,6 +492,42 @@ ok(/typeof pooledVehicleRow !== "function"\s*\n?\s*\|\|/.test(APP),
 ok(/SEC_TICKERS\[\(f\.iss \|\| ""\) \+ "\\u0000" \+ \(f\.nameRaw \|\| f\.name \|\| ""\)\]/.test(APP),
   "app.js builds the key as (f.iss) NUL (f.nameRaw || f.name)");
 
+/* (8) THE WELDED VALUE TAIL, 2026-11-24. `resolveTrailingFiledTicker` is
+ * `$`-anchored, so a 4i row whose VALUE cell glued onto its name hid the symbol
+ * the filing PRINTS and the page answered from the pattern table instead. The
+ * resolver now retries once with a value-shaped tail stripped. Four properties
+ * are asserted because each protects a different thing, and the narrowness one
+ * is what keeps the strip from becoming a blanket. */
+{
+  const { buildIndex, resolveTrailingFiledTicker } = await import("./match-sec-tickers.mjs");
+  const idx = buildIndex(`${ROOT}/sec-funds.json`);
+  const T = (n) => resolveTrailingFiledTicker(idx, n, "");
+
+  /* (a) THE MOTIVATING ROW. IBEW Local 4 published PTTRX -- the Institutional
+   * class -- on a row whose own name says `A` and prints PTTAX. */
+  ok(T("PIMCO Total Return A (PTTAX) 236,653 il") === "PTTAX",
+    "a welded value tail no longer hides the filed symbol (PTTAX)");
+
+  /* (b) THE CORROBORATION SURVIVES THE WIDENING, which is why the retry calls
+   * the shipped body rather than loosening its regex. St. Jude files
+   * `Total Bond Market ... Institutional (VBITX)` and VBITX is registered to
+   * the SHORT-TERM Bond fund: the FILING carries the transposition, so adopting
+   * its symbol would publish the wrong FUND on $41.9M. */
+  ok(T("Vanguard Total Bond Market Index Fund Institutional (VBITX)") === null,
+    "a filed symbol registered to a DIFFERENT fund is still refused");
+
+  /* (c) THE LAST PARENTHETICAL STILL WINS. Dropping the `$` instead of
+   * stripping a tail would take the FIRST of two in a welded row;
+   * audit-data's suppression B records the case. */
+  ok(T("CLASS (CMTFX) FEDERATED INSTL HIGH YIELD BOND INSTL (FIHBX)") === "FIHBX",
+    "a welded two-parenthetical row still resolves to the LAST symbol");
+
+  /* (d) NARROWNESS. The tail is a VALUE column, not arbitrary trailing prose;
+   * a non-value tail must NOT be stripped, or this becomes a blanket rule. */
+  ok(T("PIMCO Total Return A (PTTAX) and other investments") === null,
+    "only a value-shaped tail is stripped, not arbitrary trailing text");
+}
+
 if (fail.length) {
   console.error(`\nsec-tickers-test: ${fail.length} FAILED`);
   for (const f of fail) console.error(`  FAIL ${f}`);

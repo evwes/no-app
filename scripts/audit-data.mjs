@@ -18,7 +18,7 @@ import { cleanFiledName } from "./lib-disclose.mjs";
 /* the SHIPPED leading-symbol rule, for `ticker-conflict`'s corroboration step.
  * Imported rather than reproduced: a check that re-implements the resolver it
  * polices is how this very check once published 65% false findings. */
-import { buildIndex, resolveFiledTicker } from "./match-sec-tickers.mjs";
+import { buildIndex, resolveFiledTicker, resolveTrailingFiledTicker } from "./match-sec-tickers.mjs";
 /* THE FILING'S OWN TICKER IS A CHECK WE HAVE NEVER RUN. Some 4i schedules state
  * the symbol in the holding name — "VITSX - Vanguard Total Stock Market Index
  * Inst.", "T. Rowe Price Retirement 2050 Fund (TRJLX)". Where fund-er.js also
@@ -124,11 +124,28 @@ const filedTkCorroborated = (name) => {
       const idx = buildIndex(secPath);
       if (!idx || !idx.byTicker || !idx.byTicker.size) throw new Error("empty index");
       __filedTk = (s) => resolveFiledTicker(idx, s);
-    } catch { __filedTk = false; }
+      __trailIdx = idx;        /* the SAME index; see trailCorroborated below */
+    } catch { __filedTk = false; __trailIdx = false; }
     if (__filedTk === false) console.log("ticker-conflict: sec-funds.json index unavailable — the leading-bare corroboration is OFF for this run (no finding is suppressed by it)");
   }
   return __filedTk ? __filedTk(name) : null;
 };
+
+/* THE TRAILING-PARENTHETICAL SIBLING, used only to say WHICH SIDE a conflict
+ * is on. It deliberately builds NO index of its own: `ticker-conflict-test`
+ * slices this region and evaluates it with `new Function`, replacing the ONE
+ * `new URL("../sec-funds.json", import.meta.url)` occurrence — and
+ * `String.replace` with a string replacement takes only the FIRST, so a second
+ * build here breaks the tether with `Cannot use 'import.meta' outside a
+ * module`. It did, on the first attempt. So this piggybacks on the lazy build
+ * above and shares its FAIL-OPEN contract: no index means null, which makes a
+ * conflict read as "the filed symbol is wrong" and is announced there. */
+let __trailIdx = null;
+const trailCorroborated = (name, iss) => {
+  if (__trailIdx === null) filedTkCorroborated("");    /* forces the one build */
+  return __trailIdx ? resolveTrailingFiledTicker(__trailIdx, name, iss || "") : null;
+};
+
 /* the guard pair, kept as ONE named function so the tether can slice it and so
  * the two conditions cannot drift apart in two call sites */
 const conflictSuppressed = (nm, leadBare, filed, gotTk) => {
@@ -629,6 +646,25 @@ try {
         /* the two measured suppressions — see `conflictSuppressed` above */
         const sup = conflictSuppressed(nm, !!m[1], filed, got.tk);
         if (sup) { tickerConflictSuppressed.push(`${ack} ${filed}/${got.tk} (${sup})`); continue; }
+        /* NAME THE SIDE THE DAMAGE IS ON, 2026-11-24. "the filing states X"
+         * is true about the TEXT and is not a prescription: the filer can be
+         * the one who is wrong. St. Jude files `Vanguard Total Bond Market
+         * Index Fund Institutional (VBITX)` and VBITX is registered to the
+         * SHORT-TERM Bond fund, so adopting the filed symbol would publish the
+         * wrong FUND on $41.9M and 11,230 readers — a worse error than the
+         * wrong share class the page shows today. The pipeline already knows
+         * this: `resolveTrailingFiledTicker` REFUSED that symbol on exactly the
+         * two-funds test, which is why the row carries no `ftk`.
+         *
+         * So the message now says which it is. *An ERROR CODE IS A PUBLISHED
+         * CLAIM, AND SO IS A CHECK* — this check's own comment above records it
+         * publishing 65% false findings once, and a finding whose remedy is
+         * harmful is the same failure wearing a true sentence. */
+        const corroborated = !m[1] ? trailCorroborated(nm, fd.iss) : null;
+        if (!m[1] && !corroborated) {
+          tickerConflicts.push(`[ticker-conflict] ${ack} publishes ${got.tk} and the filing prints ${filed}, but ${filed} is registered to a DIFFERENT fund — the FILED symbol is the wrong one, so do NOT adopt it; the page's share class is the open question — "${nm.slice(0, 48)}"`);
+          continue;
+        }
         tickerConflicts.push(`[ticker-conflict] ${ack} publishes ${got.tk} where the filing states ${filed} — "${nm.slice(0, 48)}"`);
       }
     }
