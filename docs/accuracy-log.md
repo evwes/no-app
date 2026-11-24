@@ -37,8 +37,17 @@ withdrawn from the EFAST2 public bucket"*. Probed: the newest copy answers
 withdrawal label is not durable — an error code is a published claim, so
 re-probe rather than inherit one***, met before on four whole-population HEAD
 probes and met here from the opposite direction: the label was TRUE when written
-and is FALSE now. 1,974 fallback lineups are in the store, each publishing such a
-provenance sentence; the class is unsized.
+and is FALSE now. **And the class it suggested is CLOSED the same
+hour, by measuring it rather than queueing it.** All 1,974 fallback lineups are
+published under one of eight provenance sentences, and only **225 / 286,665
+readers** make the refutable WITHDRAWAL claim; the other 1,749 claim
+unreadability or a failed reconciliation, which a download does not refute. All
+225 probed: **0 reachable, 225 still 403**, with both controls holding (live 200 /
+1,175,500 bytes; bogus ack 403 / 263 bytes). So the label is durable in FACT at 1
+reversal in 226 even though it is not durable in PRINCIPLE, and Corning's remedy
+is motivated by ONE plan / 16,330 readers — below the 500,000 floor. *The cheap
+measurement that CLOSES a class is worth more than the queue entry it replaces*;
+the general size needs prep's `fallbacks.json` and so cannot be taken in-session.
 
 **AND THE DEGRADED-ACK SET IS NOT CLOSED.** Nine consecutive re-parses have been
 written up as hitting "the six named acks". Run #897 named **seven**: the six

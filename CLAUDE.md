@@ -1040,12 +1040,18 @@ filing has **no readable schedule**, so ***a WORSE readable parse of a newer
 filing pre-empts a BETTER parse of an older one.*** A re-dispatch would
 reproduce the loss rather than fix it; the remedy is to prefer a prior-year
 CONFIDENT parse over a newest-filing NON-confident one, which lives in
-`fetch-4i` and so needs a `PARSER_VERSION` bump. **A second, larger class falls
-out of it:** 1,974 fallback lineups are in the store and each publishes a
-provenance sentence — Corning's reads *"the newest filing's public copy has been
-withdrawn from the EFAST2 public bucket"* — which **is false for Corning right
-now**. *An error code is a published claim, and a withdrawal label is not
-durable: re-probe rather than inherit one.* Unsized.
+`fetch-4i` and so needs a `PARSER_VERSION` bump. **THE LARGER CLASS THIS SUGGESTED IS
+CLOSED BY MEASUREMENT — do not reopen it without a new one.** All 1,974 fallback
+lineups are PUBLISHED and carry one of eight provenance sentences; only **225 /
+286,665 readers** make the refutable WITHDRAWAL claim (the other 1,749 claim
+unreadability or a failed reconciliation, which a successful download does not
+refute). All **225 probed: 0 reachable, 225 still 403** — so the claim is TRUE
+everywhere it is published, with both controls holding (Corning's live copy 200 /
+1,175,500 bytes, a bogus ack 403 / 263 bytes). *A withdrawal label is not durable
+in principle and is durable in fact at 1 observed reversal in 226* — which also
+means Corning's own remedy is motivated by ONE plan / 16,330 readers, **below the
+500,000 floor**, and the general size cannot be measured in-session because
+`fallbacks.json` is a prep-stage artifact.
 
 **`merge-4i`'s stale-delta guard is STILL unexercised:** the repair's local merge
 ran with no `results-*.json` present (checked before running, after the
