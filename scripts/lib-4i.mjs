@@ -15,7 +15,7 @@ import { vestingQuoteOk, matchQuoteOk, rateInMatchPosition, accelerationOnlyVest
 import { futureEffectiveGrant, catchupMandateRefusal, planYearEnd } from "./lib-effective-date.mjs";
 
 // Bump to invalidate previously parsed lineups.json entries and force a reparse.
-export const PARSER_VERSION = 212;
+export const PARSER_VERSION = 213;
 
 /* v207: THE QUOTE'S OWN WORDS CAN DENY WHAT THE FLAG ASSERTS, and 76 plans /
  * 175,656 readers were published that way — `afterTax: true` or `roth: true`
@@ -9710,6 +9710,29 @@ export function extractPlanFeatures(text, sponsorName = "", planYear = {}) {
    *                Measured ZERO over the whole population.
    * `out.match` is falsy here on every path that reaches this arm and nothing
    * after it writes `out.match`, so no plan can gain or change a match LABEL.
+   *
+   * AND TWO READERS LIVE IN `fetch-4i.mjs`, WHICH IS WHERE THIS ENUMERATION
+   * FIRST STOPPED SHORT — neither the differential nor the gate can see them,
+   * because BOTH observe `extractPlanFeatures` and this is the PIPELINE around
+   * it. *A write set closed under what READS it has to include the readers in
+   * other files.* Both are measured over the arm's own 689 acks:
+   *   `notesMissing` (the OCR TRIGGER): a base `matchText` makes it false, so a
+   *                plan whose parse is confident and has no image-table pages
+   *                loses OCR's only trigger. 629 of 689 already had a vesting
+   *                key, so nothing changes for them; 59 FLIP, 55 of those
+   *                confident. Cost on today's store is ZERO because **0 of the
+   *                59 carry `ocr: 1`** — no stored entry owes anything to OCR.
+   *                The standing cost is named rather than hidden: those 55 stop
+   *                attempting OCR, so a future `OCR_VERSION` bump cannot reach
+   *                them.
+   *   `FEATURE_GROUPS` / `mergeFeatures`: `["match", "matchText"]` is ONE
+   *                group, skipped when `g.some(k => k in base)`, so a base
+   *                `matchText` CLOSES it and an OCR-supplied match is no longer
+   *                merged — *adding a writer to a first-wins chain re-orders
+   *                it*, met in a second chain in a second file. Nothing can be
+   *                displaced: **0 of the 688 resolved entries were parsed from
+   *                OCR-combined text**, and all 688 are match-absent, so there
+   *                is no OCR formula and no OCR quote to lose.
    *
    * THE REFUSALS ARE EARNED BY READING, never by screening for the absence of
    * the good case — see `MQ3_REFUSE` and the accuracy log for 2026-11-24. */

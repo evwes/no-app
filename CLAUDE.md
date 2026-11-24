@@ -975,6 +975,54 @@ re-derive it, never bump it.
 
 ### Pre-registered for the next run that merges
 
+**v213 DISPATCHED — a third match-quote fallback. Baseline RE-SEATED on the trail
+line introduced by `d4edff3` (main's run #896), which is the line the audit will
+diff against; main's data commit moved ZERO ledger keys the registration names
+and ZERO of the arm's 689 acks** (only `data/lineups/21.json` moved, by one ack,
+not in the population; 0 plans' acks differ in either direction).
+
+| key | baseline | registered |
+|---|---|---|
+| `matchQuote` (trail) | 4,956 | **5,645 (+689)** |
+| `matchQuoteShown` | 2,035 | **2,724 (+689)** — 100% publishable |
+| `match` withheld (ledger) | 12,285,890 | **13,425,274 (+1,139,384)** |
+| `match` absent (**gap**) | 19,857,006 | **18,717,622 (−1,139,384)** |
+| `match` published | 78,310,555 | **UNCHANGED** |
+| `match_shown` | 70.90% | **70.90% — FLAT BY CONSTRUCTION** |
+| ONE SCALAR | 79.95% | **79.95% — FLAT BY CONSTRUCTION** |
+| ledger `addressable` | 83,417,245 | 82,277,861 (−1,139,384) |
+| `match`, `matchAny`, `matchInZeroEmp` (trail) | 46,618 / 50,314 | **UNCHANGED** |
+| `vesting`, `roth`, `aftertax`, contributions, custodian, lineup | — | **UNCHANGED** |
+
+**THE TWO FIGURES DISAGREE BY 155 AND THE 155 HAS A NAME.** The differential
+reports 689 plans / **1,139,539** readers moving absent -> withheld; the ledger
+projection registers **1,139,384**. The difference is exactly one plan —
+Southwestern Wisconsin CAP, 155 readers — which the store ALREADY has at
+`withheld`, because its stored quote is absent from the cached filing text
+entirely, so the differential sees a gain where production has one already.
+***The ledger figure is the one to settle against, because it reads the store;
+the differential reads the instrument's copy of the text.*** Measured generally:
+19 of 1,387 stored quotes (1.37%) are not substrings of the cached text, almost
+all page-header welds. `docs/accuracy-log.md` 2026-11-24.
+
+**Band:** exact over 98.5% of the readers of the population the arm can reach;
+unjudged 187 plans / 297,659 readers, all 403/withdrawn, which production cannot
+download either — so **−1,139,384 to ~−1,157,000**, the top end soft.
+**Readers who gain a VISIBLE cell** (the interactive report needs
+`contribEmployer != 0`): 661 plans / 1,091,317 there, 75 plans / 733,452 on the
+crawlable pages, union **664 plans / 1,120,265** — and **25 plans / 19,274
+readers move in the store and no reader sees anything**, stated rather than
+folded in.
+
+**One registered key is NOT a trail key:** `noMatchBacklog` (−476). `audit-data`
+prints it and never writes it, so it settles only from the merge job's log.
+
+**Jitter, registered separately because it is the RUN and not the change:** a
+`PARSER_VERSION` bump re-parses the universe, so `confident` (62,217), `lineups`
+(61,869), `entries` (68,040), `dl` (214) and `overshoot` (683) move by whatever
+the re-roll moves, and the six named acks (7 plans / 6,145 readers) have degraded
+on every re-parse since v207.
+
 **v212 DELIVERED, SETTLED over two runs, and MIRRORED as `fb1cd6e` — LIVE.**
 `mirror-gate` **0 plans / 0 participants losing service** (confident +1 / −0 by
 ack), **`sitetest-gate` a GENUINE pass on run #385** (the `ok` line printed with
@@ -1311,46 +1359,53 @@ the whole-account vesting claim.)
 | custodian / recordkeeper | 90.22% | **11.72M** | `tier-a-custodian` |
 | fund menu | 93.52% | **0.90M** (6.25M withheld on purpose) | `tier-a-lineup` |
 
-**RANKED BY ADDRESSABLE — MEASURED 2026-11-24, AND THE RANKING FLIPPED.** Both
-figures are bucket `C` of `notes-gap-census.mjs` over the field's whole absent
-bucket, which is the only comparable unit:
+**RANKED BY ADDRESSABLE — RE-MEASURED 2026-11-24 WITH `--download`, AND BUCKET
+`C` IS NOT THE RIGHT UNIT.** Re-derive with `node scripts/notes-gap-census.mjs
+match|vesting|nofeatures`; never read these.
 
 | | plans | readers | share of bucket judged |
 |---|---|---|---|
-| **match** C — parser candidate | 4,448 | **7.23M** | 99.6% (2026-11-22) |
-| **vesting** C — parser candidate | 3,436 | **6.87M** | 97.1% (2026-11-24) |
+| **match** C — notes carry the vocabulary | 3,783 | **6.37M** | 98.5% |
+| — of which a sentence the page's GUARD would publish | **731** | **1.35M** | |
+| **vesting** C — notes carry the vocabulary | 3,436 | **6.87M** | 97.1% |
+| — its equivalent guard ceiling | **UNMEASURED** | | |
 
-**So MATCH leads vesting by ~359,000 addressable readers**, where this block
-previously claimed vesting led or was level. contributions' 40.70M is 34.3M of
-closed 2K disjunction and custodian's 11.72M is 9.45M short-form with no
-Schedule C by law, so match is the largest addressable class.
+**`matchQuoteOk(s, false)` IS THE REAL CEILING AND IT IS 4.7x BELOW BUCKET C.**
+The guard both renderers call requires a rate in match position when no formula
+is parsed, so a filing whose match sentences state no rate can never yield a
+quote however wide the selector gets: 3,052 plans / **5.03M readers of bucket C
+are a ceiling, not a backlog**. *A count of a condition is not a measure of a
+defect* — and C is exactly such a count, so **the fields cannot be ranked on it
+until vesting's own guard ceiling is measured the same way.**
+`scripts/match-quote-ceiling.mjs` is the instrument; the vesting half is unbuilt.
 
-***THE ARITHMETIC THIS REPLACES WAS WRONG BY 430K AND WRONG IN THE FLATTERING
-DIRECTION.*** It read vesting at "~7.3M", reached by subtracting v212's 1.72M
-from a pre-v211 census — i.e. a delta against a remembered number, which is the
-thing *a re-size is a NEW MEASUREMENT* forbids. It over-stated the field that had
-just been shipped. **Re-derive; never subtract.**
-
-**AND THE COMPARABILITY WAS PROVEN BY THE BUCKET'S OWN SIZE, not by argument.**
-The worry was that match's census predated v210's delivery. Measured: the match
-bucket is **10,708 plans / 17,802,751 readers today** against **10,700 /
-17,799,471** at census time — 8 plans apart, so the bucket has not moved and the
-census is over the current population. *A first attempt to settle this by summing
-the census's own rounded buckets printed a conclusion those numbers did not
-support; comparing the POPULATION then and now is the check that works.*
+***AND THIS BLOCK'S OWN RANKING FLIPPED TWICE IN ONE DAY, which is the part to
+carry forward.*** It read vesting-leads, then match-leads-by-359K this morning,
+and on C it is now **vesting ahead by ~496,000** — because match's 7.23M was
+re-derived to 6.37M the moment the corpus was completed. Two arithmetic faults
+produced the middle reading, both self-flattering: the vesting figure was reached
+by SUBTRACTING v212's 1.72M from a pre-v211 census (*a re-size is a NEW
+MEASUREMENT, never a delta against a remembered one*), and the comparability
+check that was supposed to catch it **compared today's bucket against today's
+bucket** — the "10,700 plans / 17,799,471 at census time" figure came from a
+re-run made that same morning, not from the 2026-11-22 census, so 8 plans apart
+proved nothing about then. ***The signal was sitting in plain sight and was
+explained away:*** the 2026-11-22 census's own buckets sum to **18.73M against a
+17.80M bucket**, a 930K residual I attributed to rounding. It was v210's match
+delivery, which landed BETWEEN the census and the comparison. *An unexplained
+residual reports on the query exactly as a clean zero does.*
 
 **A CENSUS RE-RUN WITHOUT `--download` IS NOT A MEASUREMENT OF ITS FIELD.** The
 match re-run judged **42.2%** of readers and put 10,284,985 / 7,662 plans in
 `D0`, whose label reads "no public copy reachable (403 / withdrawn)" — but
-UNCACHED filings land there too, and `/tmp/wampo-corpus` was built for the
-VESTING populations. Its `C` of 2,326,353 is a floor over a biased subset and
-must never be quoted as match's figure. *The script says a census under 70% is a
-floor; the bucket NAME says 403, and those are two different claims.*
+UNCACHED filings land there too. Its `C` of 2,326,353 is a floor over a biased
+subset. *The script says a census under 70% is a floor; the bucket NAME says 403,
+and those are two different claims.*
 
-**THE CORPUS SURVIVES A CONTAINER RESTART.** `/tmp/wampo-corpus` holds 16,691
-filings / 2.3 GB, rebuilt 2026-11-23 and still present after the restart that
-followed. An agent brief asserting it was wiped cost a rebuild once; check
-`cachedAcks()` before assuming.
+**THE CORPUS SURVIVES A CONTAINER RESTART and is now 24,266 filings** (grown from
+16,691 by the match pass; 7,191 fetched, 87 unreachable). An agent brief
+asserting `/tmp/wampo-corpus` was wiped cost a rebuild once; check `cachedAcks()`
+before assuming.
 
 **THE SCALAR WENT DOWN AND THAT WAS ACCURACY, TWICE.** 79.82% -> 78.33% when
 `lib-ledger` stopped reading code **2R** as designated Roth (2R is the
