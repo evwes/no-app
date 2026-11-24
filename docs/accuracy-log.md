@@ -51,11 +51,24 @@ the general size needs prep's `fallbacks.json` and so cannot be taken in-session
 
 **AND THE DEGRADED-ACK SET IS NOT CLOSED.** Nine consecutive re-parses have been
 written up as hitting "the six named acks". Run #897 named **seven**: the six
-plus **Corning at 16,330 readers**, 73% of the new total of 8 plans / **22,610**
-against the recorded 7 / 6,145. All seven `ocr: 0`, five `ds: "readfail"`, two
-removed outright. *A recurring defect described by an enumerated set is wrong the
-moment the set grows, and it fails in the flattering direction — the recorded
-cost was 3.7x too low.*
+plus **Corning**. All seven `ocr: 0`, five `ds: "readfail"`, two removed
+outright. *A recurring defect described by an enumerated set is wrong the moment
+the set grows.*
+**AND THE COST CLAIM I FIRST ATTACHED TO IT WAS WRONG, IN THE FLATTERING
+DIRECTION — the third such error in this wake.** I reported 8 plans / 22,610
+readers and a 2.7x escalation. Under the SERVING condition it is **7 plans /
+6,280 readers**, against the recorded 6,145: drift, not escalation. **Corning
+lost nothing** — `servedLineup` falls back to the LINKED TRUST, its master
+trust's menu is confident, and its `lineup` cell still reads *published*. My
+screen counted owner-plus-member plans and never asked whether the plan had
+another serving path. ***A measurement of what a page PUBLISHES must apply every
+condition the page applies, in order*** — and that rule was quoted in the
+screen's own header comment, which is the part to sit with: a rule written at the
+top of an instrument is not a rule applied inside it.
+**`mirror-gate` WAS RIGHT WHERE THE HAND SCREEN WAS WRONG**, printing `0 plan(s)
+/ 0 participants actually stop being served`. This record retired the hand-rolled
+force-push because the git check read by eye failed once; the LOSS check has now
+earned the same verdict.
 
 **THE CHANGE.** Six repaired by `ONLY_ACKS_4I` to their exact prior row counts
 (3, 23, 35, 9, 25, 30; `confident` 62,210 -> 62,216), with `pv` held at 213 on all

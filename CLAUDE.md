@@ -1018,11 +1018,24 @@ consecutive run on a write set provably limited to `out.matchText`.
 
 **AND THE DEGRADED-ACK SET GREW FOR THE FIRST TIME — IT IS NOT A FIXED SIX.**
 Run #897's `READ BEFORE MIRRORING` list named **7** acks: the recorded six plus
-**Corning Incorporated at 16,330 readers**, which is 73% of the new total of
-**8 plans / 22,610 readers** against the recorded 7 plans / 6,145. All seven are
-`ocr: 0`; five carry `ds: "readfail"` and two were REMOVED outright. *Nine
-consecutive re-parses have been described as hitting "the six named acks"; the
-set is not closed, and the one that joined it is 2.7x the whole recorded cost.*
+**Corning Incorporated**. All seven are `ocr: 0`; five carry `ds: "readfail"` and
+two were REMOVED outright. *Nine consecutive re-parses have been described as
+hitting "the six named acks"; the set is not closed.*
+***BUT THE READER COST DID NOT GROW, AND MY FIRST SCREEN SAID IT TRIPLED.***
+Measured under the SERVING condition: **7 plans / 6,280 readers lost service**,
+against the recorded 6,145 — universe drift, not escalation — and **Corning lost
+NOTHING**, because `servedLineup` falls back to the LINKED TRUST and its master
+trust's menu is confident, so its `lineup` cell still reads *published — "the
+plan's own menu is unusable; its master trust's menu is served"*. My screen
+counted owner-plus-member plans and never asked the second question, reporting
+16,330 readers lost and a 2.7x escalation. *A measurement of what a page
+PUBLISHES must apply every condition the page applies, in order* — the rule was
+quoted in that screen's own header comment and then not applied.
+**`mirror-gate` GOT THIS RIGHT WHERE THE HAND SCREEN DID NOT**, printing `-1 by
+ACK` and `0 plan(s) / 0 participants actually stop being served`. This record
+already retired the hand-rolled force-push because reading the git check by eye
+failed once; the LOSS check now has the same history, and the gate is the
+instrument.
 Six were repaired by `ONLY_ACKS_4I` to their exact prior counts (3, 23, 35, 9,
 25, 30, every one `ok=true`), `confident` 62,210 -> 62,216, **`pv` held at 213
 on all six** and **0 collateral acks moved**.
@@ -1049,9 +1062,13 @@ refute). All **225 probed: 0 reachable, 225 still 403** — so the claim is TRUE
 everywhere it is published, with both controls holding (Corning's live copy 200 /
 1,175,500 bytes, a bogus ack 403 / 263 bytes). *A withdrawal label is not durable
 in principle and is durable in fact at 1 observed reversal in 226* — which also
-means Corning's own remedy is motivated by ONE plan / 16,330 readers, **below the
-500,000 floor**, and the general size cannot be measured in-session because
-`fallbacks.json` is a prep-stage artifact.
+re-prices Corning's remedy at **ZERO published readers**, not 16,330: its plan
+keeps a published menu throughout, so this is a STORE-QUALITY question (the
+plan's own 17-row menu replaced by its trust's) and not a reader-facing loss.
+Worth one caveat and no more: a trust's menu can cover a small fraction of a
+member plan, so the answer may be less representative without being absent. The
+general size cannot be measured in-session because `fallbacks.json` is a
+prep-stage artifact.
 
 **`merge-4i`'s stale-delta guard is STILL unexercised:** the repair's local merge
 ran with no `results-*.json` present (checked before running, after the
