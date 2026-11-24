@@ -976,8 +976,17 @@ re-derive it, never bump it.
 ### Pre-registered for the next run that merges
 
 **v213 DELIVERED by run #897 (04:01Z–05:18Z on `724b941`, all 22 jobs SUCCESS,
-`pv` 213 at 99.7% — NOT partial, so no completion run).** Settled against the
-registration:
+`pv` 213 at 99.7% — NOT partial, so no completion run) and MIRRORED as
+`b393496` — LIVE.** Every gate reported its genuine form with **no override of
+any kind**: `mirror-gate: ok` (0 plans / 0 participants stop being served),
+**`sitetest-gate: ok — site-test run #393 on this exact commit concluded
+success`**, and `deploy-check: DEPLOYED — pages run 1329 on b3934960 concluded
+success in 1.9 min`. The log-only commit at the head would have created no
+site-test run (that filter deliberately omits `docs/accuracy-log.md`), so the run
+was DISPATCHED on the ref rather than reaching for `--force`, which would have
+disabled the very gate being satisfied. `mirror.sh` also confirmed main holds a
+MATCHED pair — `PARSER_VERSION` 213 against a dominant store `pv` 213 — so no run
+on main is needed. Settled against the registration:
 
 | key | registered | DELIVERED |
 |---|---|---|
