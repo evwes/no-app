@@ -990,7 +990,38 @@ re-derive it, never bump it.
 ### Pre-registered for the next run that merges
 
 **v215 DELIVERED by run #902** (23:14Z–00:11Z on `2d235a4`, all 22 jobs SUCCESS,
-`pv` 215 at 99.7% — NOT partial, so no completion run is owed). The ship is the
+`pv` 215 at 99.7% — NOT partial, so no completion run is owed) **and MIRRORED as
+`3566990` — LIVE.** Every gate reported its genuine form with **no override of
+any kind**, pushed as a FAST-FORWARD: `mirror-gate: ok` (0 plans / 0
+participants stop being served, +0/−0 by ack, `dl` 0.33%, `ex` 0.00%),
+**`sitetest-gate: ok — site-test run #411 on this exact commit concluded
+success`**, and `deploy-check: DEPLOYED — pages run 1337 on 35669901 concluded
+success in 1.9 min (attempt 1)`. `mirror.sh` also confirmed main holds a MATCHED
+pair — `PARSER_VERSION` 215 against a dominant store `pv` 215 — so no run on
+main is needed.
+
+***AND THE MIRROR TOOK THREE ATTEMPTS BECAUSE MAIN MOVED UNDER IT, WHICH IS THE
+PART WORTH CARRYING FORWARD: A REBASE IS THE WRONG TOOL HERE AND THIS FILE
+ALREADY KNEW IT.*** Main's cron committed `69fa3b0` mid-attempt, and
+`git rebase origin/main` **CONFLICTED on seven single-line JSON stores** — the
+exact failure the Architecture block records as having "killed a finished v9
+run". Aborted and replaced by `git merge --no-commit origin/main`, which keeps
+main's commit in the branch's history (so `mirror.sh`'s git gate is satisfied)
+and lets every conflict be resolved by a STATED RULE rather than by whatever git
+picks: the eight stores take the BRANCH's side, the coverage trail keeps BOTH
+lines. **The rule is justified by measurement, not preference** — main's store
+was `pv` **214** against the branch's 215, because v215's code lives only on the
+dev branch, and `ackdiff` found 0 plan keys either way and **0 plans whose ACK
+differs**, so main's run found no fresh filing and taking the branch lost
+nothing. Verified on the MERGED tree rather than assumed: all six repaired acks
+`pv=215 c=1`, and every ledger key byte-identical to the settled figures.
+**The cost is named rather than hidden:** main's pv-214 trail line now sits
+LAST, so `audit-data`'s next REPARSE VERDICT diffs a pv-215 store against a
+pv-214 line. Re-ordering them to flatter that verdict would falsify what
+happened; its confident (62,216) and lineups (61,868) ARE the post-repair
+counts, so the deltas read very nearly right and only the `pv` field disagrees.
+
+The ship is the
 employer-scope gate's SECOND arm: its noun list enumerates six roles, and an
 auditor who writes *"vested immediately in their contributions and the
 ORGANIZATION'S contributions"* was refused by a gate whose `continue` runs ahead
