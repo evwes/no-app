@@ -1313,10 +1313,28 @@ match|vesting|nofeatures`; never read these.
 | — of which a sentence the page's GUARD would publish | 731 | **1.35M** | |
 | — **REMAINING after v213 took 1,333,945 of it** | — | **~15K** | |
 | **vesting** C — notes carry the vocabulary | 3,436 | **6.87M** | 97.1% |
-| — its guard ceiling, MEASURED 2026-11-24 | **3,456** | **6.98M** | 97.0% |
-| — of which the SCOPE GATE refuses first | **2,868** | **5.39M** | |
-| — gate passes, a later ARM refused it | 588 | **1.60M** | |
-| — no publishable candidate at all (true ceiling) | 792 | 0.97M | |
+| — its guard ceiling, RE-MEASURED post-v215 | **2,507** | **5.83M** | 96.5% |
+| — of which the SCOPE GATE refuses first | **1,957** | **4.26M** | |
+| — gate passes, a later ARM refused it | 550 | **1.57M** | |
+| — no publishable candidate at all (true ceiling) | 662 | 0.89M | |
+
+***AND THE CEILING CORROBORATES v215's REGISTRATION DIGIT FOR DIGIT, from an
+instrument that knows nothing about it.*** Re-run after the v215 mirror
+(`node scripts/vesting-quote-ceiling.mjs`, positive control 93.2% of 398
+judged): **GATED fell 4,729,690 -> 4,260,999, which is exactly −468,691 — the
+ship's registered population to the reader** — and the whole ceiling fell
+6,305,569 -> 5,827,824, exactly the **−477,745** registered as the gap
+reduction. The delivered gap fall was larger (−514,530), and the ~36,785
+difference is accounted for by the NONE bucket falling 36,337: the run also
+reached plans the registration did not claim, which is the same over-delivery
+the band was stated to absorb. *A second instrument reproducing a registration's
+figures is stronger evidence than the settlement itself, because it cannot have
+been fitted to them.*
+**GATED remains the largest addressable plan-level class at 4.26M readers /
+1,957 plans** — 8.5x the floor — and it is one mechanism: `lib-vestslice`'s
+slice records that a false `scopeGate` verdict `continue`s BEFORE every quote
+fallback, so those filings store nothing at all. v214 and v215 each took a bite
+by widening what the gate ACCEPTS, never by removing it.
 
 **`matchQuoteOk(s, false)` IS THE REAL CEILING AND IT IS 4.7x BELOW BUCKET C.**
 The guard both renderers call requires a rate in match position when no formula
