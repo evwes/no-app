@@ -7,6 +7,67 @@ prevention machinery is listed at the bottom.
 
 ---
 
+## 2026-11-25 — CLOSED BY MEASUREMENT: "no provider resolved from Schedule C" is 99.57% A CEILING, and the string is TRUE where its sibling's was not
+
+**THE CLASS.** `lib-ledger`'s `custodianCell` returns `absent` with that reason
+for every plan that is not short form and has no `recordkeeper`: **4,843 plans /
+2,269,834 readers**, the second-largest addressable plan-level class on the
+ledger and never sized. Its SIBLING string promised 9.45M readers were reachable
+by reading one discarded field and measured 49x smaller (2026-11-06), so the
+first question was whether the filing names anybody at all.
+
+**THE STORE CANNOT ANSWER IT, AND A STORE-SIDE PARTITION LOOKS LIKE AN ANSWER.**
+`data/fees/NN.json`'s `p` rows and `scanSchC`'s `best` map are filled from THE
+SAME LOOP past the same `if (!name) continue`, so "no recordkeeper" implies "no
+provider rows in the shard" BY CONSTRUCTION. My first pass partitioned the
+shards and got a clean 0 in every backlog bucket — *reporting its own premise.*
+The question had to go to the DOL extracts, which `askebsa.dol.gov` serves here.
+
+**ASKED OF THE WHOLE OF SCHEDULE C** (Part I items 1, 2, **3** and **Part II** —
+the last two the pipeline never downloads) over **seven plan-year folders**
+(2019-2025, three more than `build-data`'s own window; folder years are PLAN
+years, so a 2026 ack prefix is not a missing folder):
+
+| | plans | readers | |
+|---|---|---|---|
+| no Schedule C filed at all | 4,333 | 1,126,814 | not required — nobody was paid $5,000+ from the plan |
+| filed, names NO provider on any line | 428 | 1,108,008 | exclude-ind "2" |
+| filed ONLY for a TERMINATED ACCOUNTANT (Part III) | 71 | 25,327 | the instructions' second trigger; never a recordkeeper |
+| item 3 / Part II names somebody, NOT coded 15/64 | 8 | 8,990 | |
+| **Part II names a provider CODED 15/64** | **3** | **695** | and Part II means *they refused to disclose* |
+
+**ADDRESSABLE: 11 plans / 9,685 readers — 52x below the floor. CEILING: 99.57%.**
+So the reason string over-promises nothing; it is merely phrased as a fact about
+US ("nothing resolved") where the fact is about the FILING ("Schedule C names
+nobody"). **The one-line rewording is QUEUED, not shipped: `lib-ledger.mjs` is
+in `lib-sec-fingerprint`'s hashed slice, so editing a COMMENT there reddens
+`sec-tickers-stamp-test` and buys a ~30-minute `sec-tickers.yml` regen** — the
+hazard this record already carries, met from the cheap side. Batch it with the
+next ship that moves that slice.
+
+**TWO THINGS THE FIRST PASS GOT WRONG AND THE SECOND CAUGHT.** (1) The inline
+`*_SRVC_CODES` columns are empty in the Latest extracts — recorded 2026-08-07
+for item 2, and **true of item 3 and Part II too**, whose codes ship in
+`F_SCH_C_PART1_ITEM3_CODES` / `F_SCH_C_PART2_CODES`. Reading the inline column
+printed "no code filed" on all eleven, a clean zero on the query, and would have
+hidden the only coded members. *A fix for one table of a family is not a fix for
+the family.* (2) Part III is a TERMINATED ACCOUNTANT and an accountant is never a
+recordkeeper, so it is a CAUSE of an empty Schedule C and never a candidate name.
+
+**PREVENTION.** `scripts/custodian-schc-size.mjs` re-derives all of it, asserts
+every header (a guessed column throws instead of reading empty), and carries two
+controls that make its zeros mean something: published custodians must be present
+in item1/item2 at ≥95% or it **throws** (measured **66,649 / 66,649 = 100.00%**,
+which is what construction predicts), and an item1/item2 hit on the absent side
+is bucketed `Z — a BUG in this script` rather than reported as a finding. The
+STAGE is named in its header because it is the thing worth knowing if this ever
+reopens: `recordkeeper` is `build-data.mjs:1254`, **PREP**, so a repair here
+would have needed no `PARSER_VERSION` bump — which is exactly why it was worth
+measuring before spending a cycle on it. The Schedule A carrier route stays
+closed and was not reopened.
+
+---
+
 ## 2026-11-24 (23:xxZ) — THE DEAD GATE'S CAUSE IS A SHALLOW CLONE, AND BOTH EARLIER DIAGNOSES WERE WRONG
 
 **WRONG, TWICE, AND THE SECOND TIME BY ME NINE HOURS AGO.** `effective-date-test`'s
