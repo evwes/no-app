@@ -168,7 +168,7 @@ function custodianCell(plan) {
    * SENTENCE in code.*** `docs/accuracy-log.md` 2026-11-06, 2026-11-11. */
   return cell("absent", plan.sf
     ? "short form: no Schedule C; Schedule A names a carrier for only ~647 of these plans (measured 2026-11-06)"
-    : "no provider resolved from Schedule C");
+    : "Schedule C names no provider at all — 99.57% of these readers are a ceiling: no Schedule C filed, or one naming nobody (measured 2026-11-25)");
 }
 
 /* THE SHARED CAUSE, AND IT IS A SOURCE GAP RATHER THAN A PARSER ONE. `!ft`

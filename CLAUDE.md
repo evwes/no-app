@@ -1294,7 +1294,7 @@ alone.
 | contributions (pre-tax / Roth / after-tax / brokerage) | 66.05% | **40.71M** | `tier-a-contributions` |
 | match | 70.89% | **18.52M** (13.63M withheld on purpose) | `tier-a-plan-terms` |
 | vesting | 80.34% | **8.99M** (12.73M withheld on purpose) | `tier-a-plan-terms` |
-| custodian / recordkeeper | 90.22% | **11.72M** | `tier-a-custodian` |
+| custodian / recordkeeper | 90.22% | **11.72M** — but **CLOSED**, see below | `tier-a-custodian` |
 | fund menu | 93.52% | **0.90M** (6.25M withheld on purpose) | `tier-a-lineup` |
 
 ***CONTRIBUTIONS NOW LEADS BY 22.2M READERS, which is more than the next two
@@ -1302,6 +1302,61 @@ fields combined*** — and its 40.71M is `partial`, not `absent`: 34.35M of it i
 the 2K disjunction, where the page already tells the reader something true and
 checkable. Re-derive before acting; the ranking has flipped three times on a
 unit that could not answer the question.
+
+***AND AS OF 2026-11-25 EVERY PLAN-LEVEL FIELD IS EITHER SHIPPED OUT OR MEASURED
+TO A CEILING. THE LEDGER-DRIVEN QUEUE HAS NO ≥500,000-READER ADDRESSABLE CLASS
+LEFT, AND THAT IS A STATE CHANGE FOR THE PROJECT, NOT A QUIET DAY.*** Derived
+from the ledger's own measured reason strings rather than its raw gaps:
+
+| field | absent | addressable, after measurement |
+|---|---|---|
+| vesting | 6.96M | 5.83M, but **fragments under the floor** (see the ceiling block) |
+| custodian | 11.72M | **11 plans / 9,685 readers — CLOSED 2026-11-25** |
+| match | 16.50M | **~15K** (v213 took 1.33M of the 1.35M publishable) |
+| contributions | 6.36M | **~0.4M** — the 5.96M is self-described as a ceiling |
+| lineup | 0.90M | mostly a SOURCE gap |
+
+**CUSTODIAN'S 2.27M IS 99.57% A CEILING — do not reopen it without a new
+source.** `custodianCell`'s *"no provider resolved from Schedule C"* covers
+4,843 FULL-FORM plans / 2,269,834 readers, and it was the only large addressable
+class nobody had ever sized. Measured over the DOL extracts across **seven**
+plan-year folders, asking the WHOLE of Schedule C — Part I items 1, 2 **and 3**,
+plus **Part II**, the last two of which the pipeline never downloads: **no
+Schedule C filed at all 4,333 plans / 1,126,814** (not required — no provider
+was paid $5,000+ *from the plan*), **filed and names NOBODY 428 / 1,108,008**,
+**filed solely to report a terminated ACCOUNTANT 71 / 25,327**, leaving
+**11 plans / 9,685 readers, 52x below the floor.** *Unlike its 49x-over-promising
+sibling, this reason string is TRUE* — it is only phrased as a fact about us
+where the fact is about the filing. **And reading the eleven closes it harder:**
+the three coded 15/64 are named in **Part II, the schedule for a provider who
+REFUSED to disclose**, so publishing one as the recordkeeper would publish a
+name the filing records as non-disclosing; of the other eight, Fidelity
+Investments Institutional carries code **60**, which is not recordkeeping.
+Control: **66,649 / 66,649 = 100.00%** of published custodians are present in
+item1/item2, which is what construction predicts and is what makes the zero mean
+something. `scripts/custodian-schc-size.mjs` re-derives all of it and throws
+below 95%.
+**THE STAGE WAS THE CHEAPEST POSSIBLE SHAPE, WHICH IS THE ARGUMENT FOR MEASURING
+FIRST RATHER THAN AGAINST IT.** `recordkeeper` is `schC.get(p.ack) ||
+schC.get(p.mtiaAck)` at `build-data.mjs:1254` — **PREP**, so a repair would have
+needed no `PARSER_VERSION` bump and no 1.5-hour re-parse, landing on the next
+ordinary run. A class that would have been cheap to fix is exactly the one worth
+sizing before a cycle is spent on it.
+**AND THE INLINE `*_SRVC_CODES` EMPTINESS IS A FAMILY, NOT ONE TABLE.** The
+record noted it for item 2 since 2026-08-07; it is equally true of **item 3 and
+Part II**, whose codes ship in `F_SCH_C_PART1_ITEM3_CODES` and
+`F_SCH_C_PART2_CODES`. Reading the inline column printed "no code filed" on all
+eleven and would have hidden the only coded members — *a fix for one table of a
+family is not a fix for the family.*
+
+**SO THE NEXT WORK IS NOT A LEDGER PICK.** What remains at scale is the
+**owner-gated row-level** list (the comparable half at 49.1M, fee pre-emption at
+13.3M, the share-class families at 11.1M and 9.1M, the store-contradicts-page
+class at 8.2M) — and *a session must not start those unasked*. The alternative
+is batching sub-floor plan-level fragments, which the floor exists to encourage
+but which needs a decision about which fragments belong together. **Both are
+owner questions, and a cycle should say so rather than manufacture a small
+ship.**
 
 **RANKED BY ADDRESSABLE — RE-MEASURED 2026-11-24 WITH `--download`, AND BUCKET
 `C` IS NOT THE RIGHT UNIT.** Re-derive with `node scripts/notes-gap-census.mjs
@@ -2006,6 +2061,19 @@ reason the queue was — it is re-read at the start of every turn.
   controls passing).
 - **A clean zero, a round number, or an implausibly large one reports on the
   QUERY.** So does a both-sided zero across a whole population.
+- **AN INSTRUMENT DOWNSTREAM OF THE CONDITION UNDER TEST CAN ONLY CONFIRM IT**,
+  and that is a sharper trap than a clean zero because the instrument looks
+  independent. Measured 2026-11-25, and it was MY OWN BRIEF that got it wrong: I
+  told the custodian agent to size "Schedule C names a provider we fail to
+  resolve" by reading `data/fees/NN.json`. But the fee shards' provider rows and
+  `scanSchC`'s recordkeeper map are filled **from the same loop, past the same
+  `if (!name) continue`** — so *"no recordkeeper" implies "no provider rows in
+  the shard" BY CONSTRUCTION*. The first pass did exactly as briefed and
+  returned a clean 0 in every backlog bucket: it had re-derived its own premise
+  and called it a finding. The answer needed the **DOL extracts**, which sit
+  UPSTREAM of our filter. *Before sizing a gap, ask whether the data you are
+  about to read was produced by the very filter whose output you are
+  questioning; if it was, go to the source.*
 - **A measurement of what a page PUBLISHES must apply every condition the page
   applies, in order** — the publish gate, the SERVING condition (a trust's menu
   is served only where the plan's own lineup is unusable), the suppressor chain,
