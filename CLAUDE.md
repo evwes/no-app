@@ -1336,6 +1336,21 @@ slice records that a false `scopeGate` verdict `continue`s BEFORE every quote
 fallback, so those filings store nothing at all. v214 and v215 each took a bite
 by widening what the gate ACCEPTS, never by removing it.
 
+***BUT THAT LEAD IS NO LONGER DISPATCHABLE, AND THAT IS THE HONEST END OF THE
+THREE-SHIP VESTING RUN (2026-11-25).*** The 4.26M is the largest addressable
+class by a factor of ~1.9 over the next one, and it does NOT decompose into
+anything above the floor. The v215 agent measured its own residual: **~1.54M is
+the CORRECT employee-money refusal** — not a defect at all, and the gate exists
+to make it — and the rest fragments into **356K** (object-less *"immediately
+vested 100%"*), **307K** (schedule sentences naming no employer) and **253K**
+(*"the schedule VARIES / RANGES"*, where no label is true and a generic widening
+would publish a false `Immediate`; CommonSpirit, 41,166, would). ***A large
+class is not a large opportunity once its members are partitioned by cause***,
+and three of these four partitions are under the 500,000 floor while the fourth
+must not be touched. Two could batch (356K + 307K = 663K) but they are
+DIFFERENT mechanisms — one is a LABEL question and one a QUOTE question — so
+batching them is a decision, not a convenience. Re-derive before reopening.
+
 **`matchQuoteOk(s, false)` IS THE REAL CEILING AND IT IS 4.7x BELOW BUCKET C.**
 The guard both renderers call requires a rate in match position when no formula
 is parsed, so a filing whose match sentences state no rate can never yield a

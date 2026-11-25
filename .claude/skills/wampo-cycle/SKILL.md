@@ -60,7 +60,17 @@ Two wampo tasks exist today:
 
 - **`wampo daily cycle (self-bind)`** (`trig_017vdX5dSSYh5v68Cwe6EUBu`),
   `CRON_TZ=America/New_York 59 7 * * *`, bound to the session that owns the
-  repo. **It is DISABLED as of 2026-10-25 and has not fired since 2026-10-19.**
+  repo. **IT IS ENABLED AND FIRING — corrected 2026-11-25 by its own wake.**
+  This line read *"DISABLED as of 2026-10-25 and has not fired since
+  2026-10-19"* until that routine fired into a session at 12:59:54Z on
+  2026-11-25, which is direct proof of the opposite; CLAUDE.md records the
+  2026-11-05 re-enable. ***So this file became the THIRD document to carry a
+  stale cadence claim, in the section that exists to warn about exactly that***
+  — it says the banner "is hardcoded and has been wrong twice" and then was
+  wrong itself in the next sentence. The reason is the same every time: a
+  cadence written into prose cannot be refreshed by the thing that changes it.
+  *Read `list_triggers`; where this file and a live wake disagree, the wake is
+  the evidence.*
 - **`Wampo unresolved funds (Sunday)`** (`trig_01522BhCucS2ghmrYcJxPkJm`),
   `CRON_TZ=America/New_York 44 7 * * 0`, which delivers the owner's weekly
   unresolved-fund worklist.
