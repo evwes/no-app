@@ -989,33 +989,85 @@ re-derive it, never bump it.
 
 ### Pre-registered for the next run that merges
 
-**v215 IS IN FLIGHT as run #902** (queued 23:14Z on `2d235a4`, `event: push` on
-the dev branch — so **no `workflow_dispatch` is owed and one would kill it**).
-The ship is the employer-scope gate's SECOND arm: its noun list enumerates six
-roles, and an auditor who writes *"vested immediately in their contributions and
-the ORGANIZATION'S contributions"* is refused by a gate whose `continue` runs
-ahead of every quote fallback, so 444 plans / 468,691 readers publish **nothing
-at all, not even a quote**. `employerEntityMoney` is a SCOPE predicate only —
+**v215 DELIVERED by run #902** (23:14Z–00:11Z on `2d235a4`, all 22 jobs SUCCESS,
+`pv` 215 at 99.7% — NOT partial, so no completion run is owed). The ship is the
+employer-scope gate's SECOND arm: its noun list enumerates six roles, and an
+auditor who writes *"vested immediately in their contributions and the
+ORGANIZATION'S contributions"* was refused by a gate whose `continue` runs ahead
+of every quote fallback, so 444 plans / 468,691 readers published **nothing at
+all, not even a quote**. `employerEntityMoney` is a SCOPE predicate only —
 possessive role noun, un-narrowed *"all X contributions"*, or the sponsor's own
 initialism — and **licenses no label of its own**, which is what separates it
 from v211's and v214's arms.
 
-| key | registered |
-|---|---|
-| `vesting` published (ledger) | 88,398,283 -> **88,701,587** (+303,304) |
-| `vesting` withheld | 12,554,102 -> **12,728,543** (+174,441) |
-| `vesting` absent (**gap**) | 9,501,066 -> **9,023,321** (−477,745) |
-| `vesting_shown` | 80.032% -> **80.307%** |
-| ONE SCALAR | 80.079% -> **80.132%** |
-| `vesting` (trail, PLAN count) | 56,558 -> **56,918** (+360) |
-| `vestQuote` | 6,241 -> **6,335** (+94) |
-| `custodian` / `match` / `contributions` / `lineup` | **IDENTICAL** |
+**THE SEVENTH CONSECUTIVE REGISTRATION WHOSE POINT WAS A FLOOR AND WHOSE BAND
+HELD.** Figures are POST-REPAIR, which is what was mirrored:
 
-**BAND** +303,304 to **+827,500** published. The top end is the WHOLE reachable
-unjudged remainder (202 plans / 524,196 readers) and **not a rate applied to
-it** — v213's band was blown 11x that way. Here the remainder is narrowed by a
-CONSTRUCTION rather than a rate: 47,016 of the 47,218 unjudged plans already
-publish a label, and pass 1 of the loop never runs for them.
+| key | registered | DELIVERED |
+|---|---|---|
+| `vesting` published (ledger) | 88,701,587 (+303,304) | **88,734,952 (+336,669)** |
+| `vesting` withheld | 12,728,543 (+174,441) | **12,731,963 (+177,861)** |
+| `vesting` absent (**gap**) | 9,023,321 (−477,745) | **8,986,536 (−514,530)** |
+| `vesting_shown` | 80.307% | **80.337%** |
+| ONE SCALAR | 80.132% | **80.138%** |
+| `vesting` (trail, PLAN count) | 56,918 (+360) | **56,982 (+424)** — 64 plans beyond |
+| `vestQuote` | 6,335 (+94) | **6,339 (+98)** |
+| ledger `addressable` | 80,875,854 | **80,838,951** |
+
+**BAND** was +303,304 to **+827,500** published; delivery landed at **+336,669 —
+inside it, 33,365 past the point.** The top end was the WHOLE reachable unjudged
+remainder (202 plans / 524,196 readers) and **not a rate applied to it**, because
+47,016 of the 47,218 unjudged plans already publish a label and pass 1 of the
+loop never runs for them — a narrowing by CONSTRUCTION, which is why the band
+could be stated tightly without repeating v213's 11x blow-out. **The
+decomposition closes to the reader exactly:** published +336,669 plus withheld
++177,861 is the 514,530 the gap fell, to the participant.
+
+**AND "NOTHING ELSE MOVES" FAILED SMALL FOR THE FIFTH CONSECUTIVE RUN**, on a
+write set provably limited to `out.vesting` + `out.vestingText`: `custodian`
+byte-identical, but `match` withheld −118 (so published +118) and
+`contributions` gap −118. The identical 118 on two fields is one plan's features
+re-rolling, not two findings.
+
+***AND `lineup` PRICED THE STANDING DEGRADATION AT ITS RECORDED SIZE FOR THE
+SECOND CONSECUTIVE RUN:*** published −6,145 before the repair, and **back to
+103,302,062 byte-identical afterwards**, with withheld (6,251,012) and gap
+(901,322) also byte-identical. *The ledger measures this defect more accurately
+than any bespoke screen* — my own plan-sum over the six acks reads 6,280, which
+does not apply the SERVING condition the page applies.
+
+**THE SIX DEGRADED FOR THE ELEVENTH CONSECUTIVE RE-PARSE, and the ack list is
+BYTE-IDENTICAL to run #900's** — Sorinex (180p), St. Vincent De Paul (692p),
+Belay (251p), the Hexcel MTIA (3,699p + 370p), Impact Wellness (298p), WD
+Management (790p), resolved by ACK. All six `pv` 215 `c:0`, five `ds:"readfail"`,
+rows down to 2/6/2/2/3/2, and **all six `ocr:0`** — the standing refutation of
+the OCR framing. `ONLY_ACKS_4I` restored all six to their exact prior counts
+(30, 35, 23, 25, 3, 9, every one `ok=true`), `confident` 62,210 -> 62,216. The
+durable cure is still unbuilt. *A status lookup that reads `loadStatus()`'s top
+level instead of `.plans` prints "(absent from lineups-status)" for all six — a
+clean zero reporting on the query, and the shape must be asserted before any
+absence is believed.*
+
+***THE COLLATERAL NAME REPAIRS AGAIN NEEDED THE RESOLVER, NOT THE STORE DIFF, and
+the figures reproduce the recorded precedent exactly:*** 31 rows changed in 25
+other acks, every one READ and correct (suffix debris `lel`/`lal`/`ae`, a
+`RetirementIncome` space, share-class tokens rotated back behind the fund name).
+Store TYPE moves **0**, VALUE moves **0** — and priced through `lookupTicker(f)`,
+**4 of 31 rows GAIN a symbol** (FFIKX, FFIZX, RFJTX, PRRIX), all four read
+against the registry, all four `comparable: false`, **0 switched from one symbol
+to another**. The same four rows as the v214 repair, because the same collateral
+recurs each run.
+
+**AND A PARTIAL READ OF A WORKFLOW FILTER ANSWERED WRONGLY, TWICE IN ONE DAY, IN
+THE DANGEROUS DIRECTION.** This file already says *re-read the `paths:` block
+rather than the sentence that mirrors it*; the sharper form is that **reading the
+block and TRUNCATING it is the same defect.** A `grep -A 25` of `site-test.yml`'s
+filter returned 33 of its **88** entries, and the missing 55 contain
+`plans-index.json` — which the repair commit touches. So the truncated read said
+"no run will be created, a dispatch is owed", and dispatching on that would have
+put a second run on the same SHA for concurrency to resolve by killing the first.
+*Extract the whole block and assert its size, with a control naming an entry you
+know is in it.*
 
 ***AND THE WRITE-SET GREP RETURNED A CLEAN ZERO FOR THE SECOND SHIP RUNNING, so
 the PATH closure is now the default and the grep is the decoration.*** The arm
@@ -1186,19 +1238,20 @@ estimate: it refutes itself the moment a new import appears.
 
 **THE LEDGER IS THE QUEUE.** `node scripts/ledger-report.mjs` prints the one
 participant-weighted scalar and the addressable gap per field; it is DERIVED and
-must never be copied forward. Re-derived 2026-11-24 from the store run #900
-left on this branch plus the ten-ack repair — **SETTLED, `pv` 214 at 99.7% of
+must never be copied forward. Re-derived 2026-11-25 from the store run #902
+left on this branch plus the six-ack repair — **SETTLED, `pv` 215 at 99.7% of
 acks**, which clears the partial-store gate:
-**115,641 plans / 119,907,098 participants / overall 80.08%**, 81,353,599
+**115,641 plans / 119,907,098 participants / overall 80.14%**, 80,838,951
 participant-cells addressable, with addressable gaps below.
-**THE SCALAR CROSSED 80% FOR THE FIRST TIME on v214**, and the history is the
+**THE SCALAR CROSSED 80% ON v214**, and the history is the
 reason the number means anything: v208 withdrew a future-effective or
 catch-up-mandate Roth/after-tax yes from 865 plans, so `contributions` fell
 66.96% -> 66.05% and the scalar 79.25 -> 79.06 ON PURPOSE — the fifth time it
 has gone DOWN for accuracy; v209 took it 79.06 -> 79.15 on the vesting scope
 gate, v210 79.15 -> 79.60 on the discretionary-match spellings, v211
-79.60 -> 79.94 on the whole-account vesting claim, and v214 79.95 -> **80.08**
-on the un-narrowed full-vesting claim. v212 and v213 moved it NOT AT ALL by
+79.60 -> 79.94 on the whole-account vesting claim, v214 79.95 -> **80.08**
+on the un-narrowed full-vesting claim, and v215 80.08 -> **80.14** on the
+employer-named-by-its-role arm. v212 and v213 moved it NOT AT ALL by
 construction — both move absent -> withheld, and `shown`'s denominator is their
 sum, so between them 2.95M readers went from a blank cell to the filing's own
 words with the scalar flat. *The queue's own metric cannot see two consecutive
@@ -1209,7 +1262,7 @@ alone.
 |---|---|---|---|
 | contributions (pre-tax / Roth / after-tax / brokerage) | 66.05% | **40.71M** | `tier-a-contributions` |
 | match | 70.89% | **18.52M** (13.63M withheld on purpose) | `tier-a-plan-terms` |
-| vesting | 80.03% | **9.50M** (12.55M withheld on purpose) | `tier-a-plan-terms` |
+| vesting | 80.34% | **8.99M** (12.73M withheld on purpose) | `tier-a-plan-terms` |
 | custodian / recordkeeper | 90.22% | **11.72M** | `tier-a-custodian` |
 | fund menu | 93.52% | **0.90M** (6.25M withheld on purpose) | `tier-a-lineup` |
 
