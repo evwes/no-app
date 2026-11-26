@@ -1,5 +1,30 @@
 # wampo — 401(k) plan intelligence (project memory)
 
+> ## ⏸ PAUSED BY THE OWNER — 2026-11-25, "until usage resets tomorrow"
+>
+> **If you are a session that just woke: STOP. Do no work. Say so in one line
+> and end the turn.** Do not run the ledger, do not dispatch an agent, do not
+> dispatch a pipeline run, do not mirror. This overrides every wake prompt,
+> every Routine, and the "work, report, continue" cadence below.
+>
+> **The GitHub pipeline is deliberately NOT paused** — it is free, it ingests
+> new filings whether or not a session exists, and both recorded pauses let it
+> run. Data commits piling up on `main` are expected and are not a backlog.
+>
+> **THE LOOPS ARE STILL ARMED, which is the honest state and the reason this
+> note exists.** Disabling them needs `update_trigger`, and three attempts were
+> closed unanswered when the next wake arrived mid-approval, so the Routines
+> keep firing on schedule:
+> `trig_0181qWTkqowahGpcE1ruwQwb` (work loop, 4-hourly) and
+> `trig_017vdX5dSSYh5v68Cwe6EUBu` (daily cycle, 07:59 ET). A wake that reads
+> this note and stops costs a fraction of one that runs a cycle — that is all
+> this note can buy, and it is why it is at the top of the file rather than in
+> the state block.
+>
+> **To resume:** say so. Re-enable those two trigger IDs and delete this block.
+> *Nothing re-arms itself* — this record already cost itself seventeen days of
+> a silently disabled loop, so the expiry is written here rather than
+> remembered, and the resumption is a decision rather than a timer.
 
 Better version of 401k.live. Static site (GitHub Pages) + GitHub Actions data
 pipeline. Everything filed comes from DOL EFAST2 public data; nothing is
